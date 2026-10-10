@@ -6,7 +6,14 @@ import {
   ExamMode,
   SUBJECT_CONFIGS,
 } from '../types/exam';
-import { ALL_YEARS, ALL_MONTHS, getSubjectStats } from '../data/questionBankManager';
+import {
+  ALL_YEARS,
+  ALL_MONTHS,
+  getSubjectStats,
+  hasExamData,
+  isYearAvailable,
+  isMonthAvailable,
+} from '../data/questionBankManager';
 import {
   Calculator,
   Compass,
@@ -22,6 +29,8 @@ import {
   Sparkles,
   Zap,
   Eye,
+  Lock,
+  AlertCircle,
 } from 'lucide-react';
 
 interface SubjectSelectorProps {
@@ -59,14 +68,16 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
   const stats = getSubjectStats(selectedSubject);
 
+  const hasSelectedData = hasExamData(selectedSubject, selectedYear, selectedMonth);
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      {/* Hero Banner with Arnie Font Title */}
+      {/* Hero Banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 border border-slate-700/80 shadow-2xl bg-blueprint-grid">
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>PRC Board Exam Questions 2011–2025</span>
+            <span>PRC Board Exam Questions • MSTC, HPGE &amp; PSAD</span>
           </div>
           <h1 className="font-arnie text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             Civil Engineering Board Examination
@@ -89,7 +100,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
           <span className="text-xs text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
-            MSTC (50 Qs), HPGE (48 Qs) &amp; PSAD (75 Qs) April 2024 Full Sets
+            MSTC (50 Qs), HPGE (48 Qs) &amp; PSAD (75 Qs) April 2024
           </span>
         </div>
 
@@ -98,7 +109,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           <button
             type="button"
             onClick={() => onSubjectChange('MSTC')}
-            className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
+            className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
               selectedSubject === 'MSTC'
                 ? 'border-amber-400 bg-amber-500/10 shadow-lg shadow-amber-500/10'
                 : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
@@ -134,7 +145,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           <button
             type="button"
             onClick={() => onSubjectChange('HPGE')}
-            className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
+            className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
               selectedSubject === 'HPGE'
                 ? 'border-cyan-400 bg-cyan-500/10 shadow-lg shadow-cyan-500/10'
                 : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
@@ -170,7 +181,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           <button
             type="button"
             onClick={() => onSubjectChange('PSAD')}
-            className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between ${
+            className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
               selectedSubject === 'PSAD'
                 ? 'border-emerald-400 bg-emerald-500/10 shadow-lg shadow-emerald-500/10'
                 : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
@@ -191,11 +202,11 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 Principles of Structural Analysis &amp; Design
               </p>
               <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
-                Equilibrium &amp; Cables, Trusses, Dams, Pressure Vessels, Torsion, Mohr's Circle, Purlins, Pile Caps, Prestressed &amp; RC Flexure.
+                Shear &amp; Moment, NSCP 2015 RC Beams, Footing Punching, Welded Joints &amp; Steel Columns.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="text-emerald-400 font-tech-mono">Std. Time: 6 Hours</span>
+              <span className="text-emerald-400 font-tech-mono">Std. Time: 5 Hours</span>
               {selectedSubject === 'PSAD' && (
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               )}
@@ -204,69 +215,150 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         </div>
       </div>
 
-      {/* STEP 2: Select Year & Month (2011 - 2025) */}
-      <div className="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
-        <div className="flex items-center space-x-2.5">
-          <span className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm">
-            2
+      {/* STEP 2: Select Past Board Exam Year & Month */}
+      <div className="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <span className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm">
+              2
+            </span>
+            <h2 className="text-lg font-bold text-white font-arnie tracking-wide">
+              Select Past Board Exam Year &amp; Month
+            </h2>
+          </div>
+          <span className="text-xs text-slate-400 font-tech-mono">
+            Available Data: <strong className="text-amber-400">April 2024</strong>
           </span>
-          <h2 className="text-lg font-bold text-white font-arnie tracking-wide">
-            Select Past Board Exam Year &amp; Month
-          </h2>
         </div>
 
         {/* Year Selector (2011 to 2025) */}
         <div>
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-2">
-            <Calendar className="w-3.5 h-3.5 text-amber-400" />
-            <span>Examination Year (2011 – 2025)</span>
+          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span className="flex items-center space-x-2">
+              <Calendar className="w-3.5 h-3.5 text-amber-400" />
+              <span>Examination Year (2011 – 2025)</span>
+            </span>
+            <span className="text-[10px] text-slate-400 normal-case">
+              Years without uploaded question data are blurred out
+            </span>
           </label>
           <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-15 gap-1.5">
-            {ALL_YEARS.map((yr) => (
-              <button
-                key={yr}
-                type="button"
-                onClick={() => onYearChange(yr)}
-                className={`py-2 px-1 text-center rounded-lg text-xs font-tech-mono font-medium transition-colors ${
-                  selectedYear === yr
-                    ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20 scale-105'
-                    : 'bg-slate-950/70 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800'
-                }`}
-              >
-                {yr}
-              </button>
-            ))}
+            {ALL_YEARS.map((yr) => {
+              const hasData = isYearAvailable(yr);
+              const isSelected = selectedYear === yr;
+
+              return (
+                <button
+                  key={yr}
+                  type="button"
+                  onClick={() => {
+                    if (hasData) {
+                      onYearChange(yr);
+                    }
+                  }}
+                  disabled={!hasData}
+                  title={
+                    hasData
+                      ? `Select ${yr} (Contains exam questions)`
+                      : `${yr} - No questions uploaded yet (Locked)`
+                  }
+                  className={`py-2 px-1 text-center rounded-lg text-xs font-tech-mono font-medium transition-all relative ${
+                    isSelected
+                      ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20 scale-105 z-10'
+                      : hasData
+                      ? 'bg-slate-950/70 text-slate-200 hover:bg-slate-800 hover:text-white border border-slate-700 cursor-pointer'
+                      : 'bg-slate-950/20 text-slate-600 border border-slate-800/40 opacity-35 filter blur-[0.6px] hover:blur-none select-none cursor-not-allowed'
+                  }`}
+                >
+                  <span>{yr}</span>
+                  {!hasData && (
+                    <span className="sr-only">Unavailable</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Month Selector */}
         <div>
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center space-x-2">
-            <Layers className="w-3.5 h-3.5 text-amber-400" />
-            <span>Examination Month</span>
+          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span className="flex items-center space-x-2">
+              <Layers className="w-3.5 h-3.5 text-amber-400" />
+              <span>Examination Month</span>
+            </span>
+            <span className="text-[10px] text-slate-400 normal-case">
+              Months without uploaded question data are blurred out
+            </span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {ALL_MONTHS.map((mon) => (
-              <button
-                key={mon}
-                type="button"
-                onClick={() => onMonthChange(mon)}
-                className={`p-3 rounded-xl border text-sm font-semibold transition-all flex items-center justify-between ${
-                  selectedMonth === mon
-                    ? 'border-amber-400 bg-amber-500/10 text-amber-300'
-                    : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
-                }`}
-              >
-                <span>{mon} Exam</span>
-                {selectedMonth === mon && (
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                )}
-              </button>
-            ))}
+            {ALL_MONTHS.map((mon) => {
+              const hasData = isMonthAvailable(mon, selectedYear);
+              const isSelected = selectedMonth === mon;
+
+              return (
+                <button
+                  key={mon}
+                  type="button"
+                  onClick={() => {
+                    if (hasData) {
+                      onMonthChange(mon);
+                    }
+                  }}
+                  disabled={!hasData}
+                  title={
+                    hasData
+                      ? `Select ${mon} ${selectedYear} examination`
+                      : `${mon} ${selectedYear} - No questions uploaded yet (Locked)`
+                  }
+                  className={`p-3 rounded-xl border text-sm font-semibold transition-all flex items-center justify-between ${
+                    isSelected
+                      ? 'border-amber-400 bg-amber-500/10 text-amber-300 shadow-md ring-1 ring-amber-400/40'
+                      : hasData
+                      ? 'border-slate-800 bg-slate-950/60 text-slate-200 hover:border-slate-700 cursor-pointer'
+                      : 'border-slate-800/40 bg-slate-950/20 text-slate-600 opacity-35 filter blur-[0.6px] hover:blur-none select-none cursor-not-allowed'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    {!hasData && <Lock className="w-3.5 h-3.5 text-slate-500" />}
+                    <span>{mon} Exam</span>
+                  </div>
+
+                  {isSelected && hasData && (
+                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                  )}
+                  {!hasData && (
+                    <span className="text-[10px] font-tech-mono text-slate-500 font-normal">
+                      No Data
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
-          <p className="text-[11px] text-slate-400 mt-2">
-            Selected Set: <strong className="text-amber-400">{selectedMonth} {selectedYear}</strong> — {currentConfig.fullName}
-          </p>
+
+          {/* Current Set Status Notice */}
+          <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
+            <div className="flex items-center space-x-2 text-slate-300">
+              <span>Selected Set:</span>
+              <strong className="text-amber-400 font-tech-mono">
+                {selectedMonth} {selectedYear}
+              </strong>
+              <span>— {currentConfig.fullName}</span>
+            </div>
+
+            {hasSelectedData ? (
+              <span className="text-emerald-400 flex items-center space-x-1 font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Verified PRC Exam Set Ready ({stats.total} Questions)</span>
+              </span>
+            ) : (
+              <span className="text-amber-400 flex items-center space-x-1 font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>No question data uploaded yet for this period.</span>
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -283,148 +375,145 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
         {/* Timer Mode Selection */}
         <div>
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
-            Timer Configuration
+          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
+            <Clock className="w-3.5 h-3.5 text-amber-400" />
+            <span>Clock &amp; Timing Rules</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Standard PRC Countdown */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <button
               type="button"
-              onClick={() => {
-                onTimerModeChange('exam_timer');
-                setShowCustomTimeInput(false);
-              }}
-              className={`p-4 rounded-xl border text-left transition-all ${
-                timerMode === 'exam_timer' && !showCustomTimeInput
-                  ? 'border-amber-400 bg-amber-500/10 text-white'
+              onClick={() => onTimerModeChange('exam_timer')}
+              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
+                timerMode === 'exam_timer'
+                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
                   : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
               }`}
             >
-              <div className="flex items-center space-x-2 mb-1">
-                <Timer className="w-4 h-4 text-amber-400" />
-                <span className="font-semibold text-sm">PRC Official Timer</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-amber-400" />
+                  <span className="font-bold text-sm">Standard PRC Timer</span>
+                </div>
+                {timerMode === 'exam_timer' && (
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                )}
               </div>
-              <p className="text-xs text-amber-300 font-tech-mono">
-                {currentConfig.defaultHoursLabel}
-              </p>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Standard countdown timer matching official board exam regulation.
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Countdown timer for {selectedSubject}: {currentConfig.defaultMinutes / 60} hours ({currentConfig.defaultMinutes} minutes). Auto-submits on timeout.
               </p>
             </button>
 
-            {/* Stopwatch Mode */}
             <button
               type="button"
-              onClick={() => {
-                onTimerModeChange('stopwatch');
-                setShowCustomTimeInput(false);
-              }}
-              className={`p-4 rounded-xl border text-left transition-all ${
+              onClick={() => onTimerModeChange('stopwatch')}
+              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
                 timerMode === 'stopwatch'
-                  ? 'border-amber-400 bg-amber-500/10 text-white'
+                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
                   : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
               }`}
             >
-              <div className="flex items-center space-x-2 mb-1">
-                <Clock className="w-4 h-4 text-cyan-400" />
-                <span className="font-semibold text-sm">Stopwatch (Elapsed)</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2">
+                  <Timer className="w-4 h-4 text-cyan-400" />
+                  <span className="font-bold text-sm">Stopwatch Mode</span>
+                </div>
+                {timerMode === 'stopwatch' && (
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                )}
               </div>
-              <p className="text-xs text-cyan-300 font-tech-mono">Counts Up</p>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Track how long it takes you to complete without hard cutoff.
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Counts elapsed time upwards from 00:00:00 without hard cutoff. Ideal for measuring problem pacing.
               </p>
             </button>
 
-            {/* No Limit Mode */}
             <button
               type="button"
-              onClick={() => {
-                onTimerModeChange('no_limit');
-                setShowCustomTimeInput(false);
-              }}
-              className={`p-4 rounded-xl border text-left transition-all ${
+              onClick={() => onTimerModeChange('no_limit')}
+              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
                 timerMode === 'no_limit'
-                  ? 'border-amber-400 bg-amber-500/10 text-white'
+                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
                   : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
               }`}
             >
-              <div className="flex items-center space-x-2 mb-1">
-                <InfinityIcon className="w-4 h-4 text-emerald-400" />
-                <span className="font-semibold text-sm">No Time Limit</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2">
+                  <InfinityIcon className="w-4 h-4 text-emerald-400" />
+                  <span className="font-bold text-sm">Untimed Practice</span>
+                </div>
+                {timerMode === 'no_limit' && (
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                )}
               </div>
-              <p className="text-xs text-emerald-300 font-tech-mono">Untimed Review</p>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Relaxed study pace to digest concepts and solutions carefully.
+              <p className="text-xs text-slate-400 leading-relaxed">
+                No clock or time pressure. Solve equations and check solutions at your own relaxed pace.
               </p>
             </button>
           </div>
+        </div>
 
-          {/* Option to set custom minutes */}
-          <div className="mt-3 flex items-center space-x-3 text-xs">
+        {/* Custom duration toggle if in exam timer mode */}
+        {timerMode === 'exam_timer' && (
+          <div className="pt-2 border-t border-slate-800/80">
             <button
               type="button"
-              onClick={() => {
-                setShowCustomTimeInput(!showCustomTimeInput);
-                if (!showCustomTimeInput) onTimerModeChange('exam_timer');
-              }}
-              className="text-amber-400 hover:underline font-medium"
+              onClick={() => setShowCustomTimeInput(!showCustomTimeInput)}
+              className="text-xs text-amber-400 hover:underline flex items-center space-x-1 cursor-pointer"
             >
-              {showCustomTimeInput ? '• Use standard time' : '+ Custom timer duration (specify minutes)'}
+              <span>{showCustomTimeInput ? '− Hide custom duration' : '+ Customize duration (default ' + currentConfig.defaultMinutes + ' mins)'}</span>
             </button>
-
             {showCustomTimeInput && (
-              <div className="flex items-center space-x-2">
+              <div className="mt-3 flex items-center space-x-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                <label className="text-xs text-slate-300">Set Timer in Minutes:</label>
                 <input
                   type="number"
                   min="5"
                   max="600"
                   value={customMinutes}
-                  onChange={(e) => onCustomMinutesChange(Math.max(1, parseInt(e.target.value) || 60))}
-                  className="w-20 px-2 py-1 bg-slate-950 border border-slate-700 rounded text-center text-amber-300 font-tech-mono"
+                  onChange={(e) => onCustomMinutesChange(Number(e.target.value))}
+                  className="w-24 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-tech-mono"
                 />
-                <span className="text-slate-400">minutes ({ (customMinutes / 60).toFixed(1) } hrs)</span>
+                <span className="text-xs text-slate-400">({Math.round(customMinutes / 6) / 10} hours)</span>
               </div>
             )}
           </div>
-        </div>
+        )}
 
-        {/* Interactive vs Non-interactive */}
+        {/* Interactive vs Non-Interactive Mode */}
         <div>
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
-            Interactive vs. Non-Interactive Mode
+          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span>Question Feedback Mode</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Interactive */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => onExamModeChange('interactive')}
-              className={`p-4 rounded-xl border text-left transition-all ${
+              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
                 examMode === 'interactive'
-                  ? 'border-amber-400 bg-amber-500/10 text-white'
+                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
                   : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center space-x-2">
                   <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="font-bold text-sm">Interactive Mode</span>
+                  <span className="font-bold text-sm">Interactive Study Mode</span>
                 </div>
                 {examMode === 'interactive' && (
                   <CheckCircle2 className="w-4 h-4 text-amber-400" />
                 )}
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Clicking an answer immediately pops whether <strong className="text-emerald-400">Correct</strong> or <strong className="text-rose-400">Wrong</strong>. You can click to see the step-by-step engineering solution immediately during the test.
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Instant feedback on choice selection. Reveals immediate correct/wrong validation with the official engineering solution and step derivations.
               </p>
             </button>
 
-            {/* Non-Interactive */}
             <button
               type="button"
               onClick={() => onExamModeChange('non_interactive')}
-              className={`p-4 rounded-xl border text-left transition-all ${
+              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
                 examMode === 'non_interactive'
-                  ? 'border-amber-400 bg-amber-500/10 text-white'
+                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
                   : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
               }`}
             >
@@ -437,7 +526,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                   <CheckCircle2 className="w-4 h-4 text-amber-400" />
                 )}
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-400 leading-relaxed">
                 Strict PRC board exam simulation: only questions and choices appear during the test. Complete answer keys and solutions are revealed upon submission.
               </p>
             </button>
@@ -449,7 +538,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 rounded-2xl p-6 text-slate-950 flex flex-col sm:flex-row items-center justify-between shadow-2xl gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider bg-slate-950 text-amber-400 px-2.5 py-0.5 rounded-full inline-block mb-1">
-            Ready to Begin
+            {hasSelectedData ? 'Ready to Begin' : 'Awaiting Data Update'}
           </span>
           <h3 className="font-arnie text-2xl font-bold">
             Proceed to {selectedSubject} Examination
@@ -462,7 +551,12 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         <button
           type="button"
           onClick={onStartExam}
-          className="w-full sm:w-auto px-8 py-3.5 bg-slate-950 hover:bg-slate-900 text-white rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl hover:scale-105 transition-all cursor-pointer font-arnie tracking-wider"
+          disabled={!hasSelectedData}
+          className={`w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider ${
+            hasSelectedData
+              ? 'bg-slate-950 hover:bg-slate-900 text-white hover:scale-105 cursor-pointer'
+              : 'bg-slate-950/50 text-slate-500 cursor-not-allowed opacity-60'
+          }`}
         >
           <Play className="w-5 h-5 text-amber-400 fill-amber-400" />
           <span>START EXAMINATION</span>
