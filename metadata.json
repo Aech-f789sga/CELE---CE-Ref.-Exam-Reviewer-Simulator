@@ -1,0 +1,8 @@
+{
+  "name": "Remix CE Board Exam Reviewer \u0026 Simulator",
+  "description": "Philippine Civil Engineering Licensure Examination simulator for MSTC, HPGE, and PSAD with 2011-2025 past papers, figures, step-by-step solutions, timer modes, and PRC composite rating evaluation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
