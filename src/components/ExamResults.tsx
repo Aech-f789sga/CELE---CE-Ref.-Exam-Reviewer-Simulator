@@ -20,6 +20,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
+import { MathView } from './MathView';
 
 interface ExamResultsProps {
   subject: SubjectArea;
@@ -380,9 +381,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                           Page {q.solution.pageNumber || 11}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300 line-clamp-1 mt-0.5">
-                        {q.text}
-                      </p>
+                      <div className="text-xs text-slate-300 line-clamp-1 mt-0.5">
+                        <MathView text={q.text} />
+                      </div>
                     </div>
                   </div>
 
@@ -405,9 +406,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                   <div className="p-5 border-t border-slate-800 bg-slate-950/90 space-y-4">
                     {/* Full Question Text */}
                     <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                      <p className="font-arnie text-sm text-slate-200 leading-relaxed">
-                        {q.text}
-                      </p>
+                      <div className="font-arnie text-sm text-slate-200 leading-relaxed">
+                        <MathView text={q.text} />
+                      </div>
                       {q.figureSvg && (
                         <EngineeringFigure
                           figureSvg={q.figureSvg}
@@ -430,7 +431,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                           }`}
                         >
                           <span className="font-bold">({opt.label})</span>
-                          <span>{opt.text}</span>
+                          <span>
+                            <MathView text={opt.text} />
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -442,18 +445,18 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                         <span className="font-arnie text-sm">Step-by-Step Solution Breakdown</span>
                       </div>
 
-                      <p className="text-xs text-slate-300 leading-relaxed italic bg-slate-900/50 p-3 rounded-lg border border-slate-800">
-                        {q.solution.summary}
-                      </p>
+                      <div className="text-xs text-slate-300 leading-relaxed italic bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <MathView text={q.solution.summary} />
+                      </div>
 
                       {q.solution.formulas && (
-                        <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 font-tech-mono text-xs text-amber-300 space-y-1">
+                        <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-amber-300 space-y-1.5">
                           <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">
-                            Governing Civil Engineering Formulas:
+                            Governing Civil Engineering Formulas (LaTeX):
                           </span>
                           {q.solution.formulas.map((f, i) => (
-                            <div key={i} className="pl-2 border-l-2 border-amber-500">
-                              {f}
+                            <div key={i} className="pl-2 border-l-2 border-amber-500 py-0.5">
+                              <MathView formula block={false} text={f} className="text-amber-200" />
                             </div>
                           ))}
                         </div>
@@ -462,14 +465,16 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                       <div className="space-y-2 pt-1 text-xs text-slate-200">
                         {q.solution.steps.map((st, i) => (
                           <div key={i} className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800/60 leading-relaxed font-sans">
-                            {st}
+                            <MathView text={st} />
                           </div>
                         ))}
                       </div>
 
                       <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs font-tech-mono">
                         <span className="text-slate-300">Final Answer:</span>
-                        <strong className="text-emerald-300 text-sm">{q.solution.finalAnswer}</strong>
+                        <strong className="text-emerald-300 text-sm">
+                          <MathView text={q.solution.finalAnswer} />
+                        </strong>
                       </div>
                     </div>
                   </div>

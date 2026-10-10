@@ -16,9 +16,13 @@ import { ExamEngine } from './components/ExamEngine';
 import { ExamResults } from './components/ExamResults';
 import { PerformanceReview } from './components/PerformanceReview';
 import { BookletView } from './components/BookletView';
+import { ThemeModal } from './components/ThemeModal';
+import { useTheme } from './context/ThemeContext';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'setup' | 'performance' | 'booklet'>('setup');
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
+  const { themeConfig } = useTheme();
   
   // Selection states
   const [selectedSubject, setSelectedSubject] = useState<SubjectArea>('MSTC'); // Default MSTC first
@@ -123,13 +127,20 @@ export default function App() {
     timerMode === 'exam_timer' ? customMinutes * 60 : 0;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div
+      className="min-h-screen flex flex-col transition-colors duration-250"
+      style={{
+        backgroundColor: themeConfig.bgPage,
+        color: themeConfig.textPrimary,
+      }}
+    >
       <Navbar
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         activeSubject={selectedSubject}
         onSubjectChange={handleSubjectChange}
         isExamRunning={isExamRunning}
+        onOpenThemeModal={() => setIsThemeModalOpen(true)}
       />
 
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
@@ -211,13 +222,26 @@ export default function App() {
         )}
       </main>
 
+      {/* Theme & Fonts Customizer Modal */}
+      <ThemeModal
+        isOpen={isThemeModalOpen}
+        onClose={() => setIsThemeModalOpen(false)}
+      />
+
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
+      <footer
+        className="border-t py-6 text-center text-xs transition-colors"
+        style={{
+          borderColor: themeConfig.border,
+          backgroundColor: themeConfig.bgPage,
+          color: themeConfig.textMuted,
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="font-tech-mono">
             Philippine Civil Engineering Licensure Examination (CE Board Exam) Simulator
           </p>
-          <p className="text-[11px] text-slate-600">
+          <p className="text-[11px]" style={{ color: themeConfig.textMuted }}>
             PRC Criteria: GWA ≥ 70.00% • MSTC 35% • HPGE 30% • PSAD 35% • No Rating &lt; 50.00%
           </p>
         </div>

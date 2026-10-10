@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sun, Moon, Maximize2, Minimize2, Eye } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface EngineeringFigureProps {
   figureSvg: string;
@@ -16,6 +17,7 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
 }) => {
   const [mode, setMode] = useState<'blueprint' | 'paper' | 'slate'>(initialMode);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
+  const { themeConfig, isHighContrastFigures } = useTheme();
 
   // Background styles
   const bgStyles = {
@@ -37,7 +39,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden my-4 ${
         bgStyles[mode]
-      } ${className} ${isZoomed ? 'fixed inset-4 z-50 flex flex-col justify-between p-6 max-w-5xl mx-auto overflow-y-auto' : 'p-4'}`}
+      } ${className} ${
+        isZoomed
+          ? 'fixed inset-4 z-50 flex flex-col justify-between p-6 max-w-5xl mx-auto overflow-y-auto'
+          : 'p-4'
+      }`}
     >
       {/* Top Header Controls: Mode Selector & Zoom */}
       <div className="flex items-center justify-between pb-3 mb-3 border-b border-current/15 text-xs font-tech-mono">
@@ -107,7 +113,7 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
       {/* SVG Container with subtle drafting grid overlay */}
       <div
         className={`relative flex items-center justify-center p-3 rounded-xl transition-all ${
-          mode === 'paper' ? 'bg-[#f8fafc]' : 'bg-[#030914]/80'
+          mode === 'paper' || isHighContrastFigures ? 'bg-[#f8fafc]' : 'bg-[#030914]/80'
         }`}
         style={{
           backgroundImage: gridOverlay[mode],

@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
+import { MathView } from './MathView';
 
 interface BookletViewProps {
   activeSubject: SubjectArea;
@@ -170,9 +171,9 @@ export const BookletView: React.FC<BookletViewProps> = ({
                     </span>
                   </div>
 
-                  <p className="font-arnie text-base sm:text-lg text-slate-100 leading-relaxed">
-                    {q.text}
-                  </p>
+                  <div className="font-arnie text-base sm:text-lg text-slate-100 leading-relaxed">
+                    <MathView text={q.text} />
+                  </div>
 
                   {/* Figure if present */}
                   {q.figureSvg && (
@@ -193,7 +194,9 @@ export const BookletView: React.FC<BookletViewProps> = ({
                         <span className="font-tech-mono font-bold text-amber-400">
                           ({opt.label})
                         </span>
-                        <span>{opt.text}</span>
+                        <span>
+                          <MathView text={opt.text} />
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -306,9 +309,9 @@ export const BookletView: React.FC<BookletViewProps> = ({
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-300 italic font-mono bg-slate-950 p-3 rounded-xl border border-slate-800">
-                  {q.solution.summary}
-                </p>
+                <div className="text-xs text-slate-300 italic bg-slate-950 p-3 rounded-xl border border-slate-800">
+                  <MathView text={q.solution.summary} />
+                </div>
 
                 {q.figureSvg && (
                   <EngineeringFigure
@@ -319,13 +322,13 @@ export const BookletView: React.FC<BookletViewProps> = ({
                 )}
 
                 {q.solution.formulas && (
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-tech-mono text-xs text-amber-300 space-y-1">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                      Governing Formulas:
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-amber-300 space-y-1.5">
+                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+                      Governing Formulas (LaTeX):
                     </span>
                     {q.solution.formulas.map((f, i) => (
-                      <div key={i} className="pl-2 border-l-2 border-amber-500">
-                        {f}
+                      <div key={i} className="pl-2 border-l-2 border-amber-500 py-0.5">
+                        <MathView formula block={false} text={f} className="text-amber-200" />
                       </div>
                     ))}
                   </div>
@@ -334,7 +337,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
                 <div className="space-y-1.5 text-xs text-slate-200">
                   {q.solution.steps.map((st, i) => (
                     <div key={i} className="p-2 rounded bg-slate-950/60 border border-slate-800/80 leading-relaxed font-sans">
-                      {st}
+                      <MathView text={st} />
                     </div>
                   ))}
                 </div>
@@ -342,7 +345,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
                 <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs font-tech-mono">
                   <span className="text-slate-300">Official Correct Answer:</span>
                   <strong className="text-emerald-300 text-sm">
-                    ({q.correctAnswer}) — {q.solution.finalAnswer}
+                    ({q.correctAnswer}) — <MathView text={q.solution.finalAnswer} />
                   </strong>
                 </div>
               </div>

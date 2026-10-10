@@ -23,6 +23,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
+import { MathView } from './MathView';
 
 interface ExamEngineProps {
   subject: SubjectArea;
@@ -226,9 +227,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
 
             {/* Question Text */}
             <div className="space-y-4">
-              <p className="font-arnie text-lg sm:text-xl font-medium text-slate-100 leading-relaxed tracking-wide">
-                {currentQuestion.text}
-              </p>
+              <div className="font-arnie text-lg sm:text-xl font-medium text-slate-100 leading-relaxed tracking-wide">
+                <MathView text={currentQuestion.text} />
+              </div>
 
               {/* Engineering Figure / Diagram (if question has one) */}
               {currentQuestion.figureSvg && (
@@ -271,7 +272,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                       {option.label}
                     </span>
                     <span className="text-sm sm:text-base font-normal leading-relaxed pt-0.5">
-                      {option.text}
+                      <MathView text={option.text} />
                     </span>
                   </button>
                 );
@@ -319,26 +320,33 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                   <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs text-slate-300">
                     <div className="flex items-center justify-between text-amber-400 font-semibold border-b border-slate-800 pb-2">
                       <span className="font-arnie text-sm">Page {currentQuestion.solution.pageNumber || 11} Solution</span>
-                      <span className="font-tech-mono">{currentQuestion.solution.finalAnswer}</span>
+                      <span className="font-tech-mono">
+                        <MathView text={currentQuestion.solution.finalAnswer} />
+                      </span>
                     </div>
 
-                    <p className="text-slate-300 italic">
-                      {currentQuestion.solution.summary}
-                    </p>
+                    <div className="text-slate-300 italic">
+                      <MathView text={currentQuestion.solution.summary} />
+                    </div>
 
                     {currentQuestion.solution.formulas && (
-                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 font-tech-mono text-[11px] text-amber-300 space-y-1">
-                        <span className="text-slate-400 block text-[10px] uppercase font-bold">Key Formulas:</span>
+                      <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-amber-300 space-y-1.5">
+                        <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">
+                          Key Governing Formulas (LaTeX):
+                        </span>
                         {currentQuestion.solution.formulas.map((f, i) => (
-                          <div key={i}>• {f}</div>
+                          <div key={i} className="flex items-start space-x-2 py-0.5">
+                            <span className="text-amber-400 font-bold shrink-0 mt-0.5">•</span>
+                            <MathView formula block={false} text={f} className="text-amber-200" />
+                          </div>
                         ))}
                       </div>
                     )}
 
                     <div className="space-y-1.5 pt-1">
                       {currentQuestion.solution.steps.map((st, i) => (
-                        <div key={i} className="leading-relaxed">
-                          {st}
+                        <div key={i} className="leading-relaxed p-1.5 rounded bg-slate-900/40 border border-slate-800/40">
+                          <MathView text={st} />
                         </div>
                       ))}
                     </div>

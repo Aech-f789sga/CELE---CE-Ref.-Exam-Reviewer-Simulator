@@ -5,31 +5,218 @@
     --font-arnie: 'Architects Daughter', cursive, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --font-sans: 'Plus Jakarta Sans', sans-serif;
+    --app-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --app-font-scale: 100%;
+    --app-bg-page: #020617;
+    --app-bg-card: #0f172a;
+    --app-bg-card-subtle: #1e293b;
+    --app-border: #334155;
+    --app-text-primary: #f8fafc;
+    --app-text-secondary: #cbd5e1;
+    --app-text-muted: #94a3b8;
+    --app-accent: #f59e0b;
+    --app-accent-hover: #d97706;
+    --app-accent-text: #0f172a;
+    --app-accent-badge: rgba(245, 158, 11, 0.15);
+    --app-grid-line: rgba(56, 189, 248, 0.05);
   }
 
   body {
-    font-family: var(--font-sans);
+    font-family: var(--app-font-family);
+    background-color: var(--app-bg-page);
+    color: var(--app-text-primary);
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
-.font-arnie {
+/* Default brand font for specific titles */
+.font-arnie-brand {
   font-family: 'Architects Daughter', cursive, sans-serif;
   letter-spacing: 0.02em;
 }
 
+/* Dynamic question, answer, solution, and reader font (inherits user's chosen font) */
+.font-reader,
+.font-arnie {
+  font-family: var(--app-font-family) !important;
+}
+
+/* Code & numbers font */
 .font-tech-mono {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* =========================================================================
+   HIGH CONTRAST & ADAPTIVE TEXT OUTLINE (Theme Change Protection)
+   Ensures text is always easily readable against any background color
+   ========================================================================= */
+
+/* Dark Theme Text Contrast Rules */
+html.dark [data-contrast-outline="true"] .font-reader,
+html.dark [data-contrast-outline="true"] .font-arnie,
+html.dark[data-contrast-outline="true"] .font-reader,
+html.dark[data-contrast-outline="true"] .font-arnie {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 1px rgba(0, 0, 0, 0.9);
+}
+
+html.dark [data-contrast-outline="true"] h1,
+html.dark [data-contrast-outline="true"] h2,
+html.dark [data-contrast-outline="true"] h3,
+html.dark[data-contrast-outline="true"] h1,
+html.dark[data-contrast-outline="true"] h2,
+html.dark[data-contrast-outline="true"] h3 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Light & Sepia Theme Text Contrast Overrides */
+html.light body,
+html.light {
+  color: var(--app-text-primary) !important;
+}
+
+html.light [data-contrast-outline="true"] .font-reader,
+html.light [data-contrast-outline="true"] .font-arnie,
+html.light[data-contrast-outline="true"] .font-reader,
+html.light[data-contrast-outline="true"] .font-arnie {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95), 0 0 1px rgba(255, 255, 255, 0.85);
+}
+
+/* Universal text contrast outline utility */
+.text-contrast-outline {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+html.light .text-contrast-outline {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95);
+}
+
+/* In light themes, adapt hardcoded Tailwind slate text colors so they maintain sharp contrast */
+html.light .text-white {
+  color: #020617 !important;
+}
+
+html.light .text-slate-100 {
+  color: #090d16 !important;
+}
+
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #475569 !important;
+}
+
+/* In light themes, adapt cards that had hardcoded dark backgrounds */
+html.light .bg-slate-950,
+html.light .bg-slate-900,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/95,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90 {
+  background-color: var(--app-bg-card) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text-primary) !important;
+}
+
+html.light .bg-slate-800,
+html.light .bg-slate-850,
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/80 {
+  background-color: var(--app-bg-card-subtle) !important;
+  border-color: var(--app-border) !important;
+}
+
+html.light .border-slate-800,
+html.light .border-slate-700,
+html.light .border-slate-900 {
+  border-color: var(--app-border) !important;
+}
+
+/* For blueprint mode, guarantee cards adopt blueprint navy background */
+html[data-theme="blueprint_navy"] .bg-slate-950,
+html[data-theme="blueprint_navy"] .bg-slate-900,
+html[data-theme="blueprint_navy"] .bg-slate-900\/90,
+html[data-theme="blueprint_navy"] .bg-slate-900\/95,
+html[data-theme="blueprint_navy"] .bg-slate-950\/70,
+html[data-theme="blueprint_navy"] .bg-slate-950\/90 {
+  background-color: #0d2342 !important;
+  border-color: #2563eb !important;
+}
+
+/* For cyber cad mode, guarantee cards adopt dark green background */
+html[data-theme="cyber_cad"] .bg-slate-950,
+html[data-theme="cyber_cad"] .bg-slate-900,
+html[data-theme="cyber_cad"] .bg-slate-900\/90,
+html[data-theme="cyber_cad"] .bg-slate-900\/95,
+html[data-theme="cyber_cad"] .bg-slate-950\/70,
+html[data-theme="cyber_cad"] .bg-slate-950\/90 {
+  background-color: #08170d !important;
+  border-color: #15803d !important;
+}
+
+/* For emerald matrix mode */
+html[data-theme="emerald_matrix"] .bg-slate-950,
+html[data-theme="emerald_matrix"] .bg-slate-900,
+html[data-theme="emerald_matrix"] .bg-slate-900\/90,
+html[data-theme="emerald_matrix"] .bg-slate-900\/95,
+html[data-theme="emerald_matrix"] .bg-slate-950\/70,
+html[data-theme="emerald_matrix"] .bg-slate-950\/90 {
+  background-color: #062424 !important;
+  border-color: #0f766e !important;
+}
+
+/* Dynamic theme background styling classes */
+.app-theme-bg {
+  background-color: var(--app-bg-page);
+  color: var(--app-text-primary);
+}
+
+.app-card-bg {
+  background-color: var(--app-bg-card);
+  border-color: var(--app-border);
+}
+
+.app-card-subtle-bg {
+  background-color: var(--app-bg-card-subtle);
+  border-color: var(--app-border);
 }
 
 /* Engineering blueprint grid background */
 .bg-blueprint-grid {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, var(--app-grid-line, rgba(56, 189, 248, 0.05)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--app-grid-line, rgba(56, 189, 248, 0.05)) 1px, transparent 1px);
 }
 
 .bg-blueprint-dot {
   background-size: 24px 24px;
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--app-grid-line, rgba(148, 163, 184, 0.12)) 1px, transparent 1px);
+}
+
+/* Custom scrollbars matching theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--app-bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--app-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--app-accent);
 }
