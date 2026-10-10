@@ -35,6 +35,18 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
       'radial-gradient(circle, rgba(15,23,42,0.08) 1px, transparent 1px) 0 0 / 16px 16px',
   };
 
+  // Inspect figureSvg: if it contains an image reference for PSAD April 2024,
+  // extract the situation number so we can support both local files (/src/images/...)
+  // and cloud fallback (https://i.postimg.cc/...) with smooth image error handling.
+  const isPostimg = figureSvg.includes('PSAD-April-2024-') || figureSvg.includes('PSAD_April_2024_');
+  let situationNum: number | null = null;
+  if (isPostimg) {
+    const match = figureSvg.match(/PSAD[-_]April[-_]2024[-_](\d+)\.png/i);
+    if (match && match[1]) {
+      situationNum = parseInt(match[1], 10);
+    }
+  }
+
   return (
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden my-4 ${
@@ -52,6 +64,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
             <Eye className="w-3.5 h-3.5" />
             <span>Illustration Contrast</span>
           </span>
+          {situationNum && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              Situation {situationNum} Figure
+            </span>
+          )}
         </div>
 
         {/* Contrast / Background Mode Switcher */}
@@ -103,14 +120,14 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
             type="button"
             onClick={() => setIsZoomed(!isZoomed)}
             title={isZoomed ? 'Exit Fullscreen' : 'Enlarge Illustration'}
-            className="p-1.5 rounded-lg bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all ml-1"
+            className="p-1.5 rounded-lg bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all ml-1 cursor-pointer"
           >
             {isZoomed ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
 
-      {/* SVG Container with subtle drafting grid overlay */}
+      {/* Image / SVG Container with subtle drafting grid overlay */}
       <div
         className={`relative flex items-center justify-center p-3 rounded-xl transition-all ${
           mode === 'paper' || isHighContrastFigures ? 'bg-[#f8fafc]' : 'bg-[#030914]/80'
@@ -119,10 +136,41 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           backgroundImage: gridOverlay[mode],
         }}
       >
-        <div
-          className={`overflow-x-auto flex justify-center w-full ${isZoomed ? 'max-w-2xl py-4' : ''}`}
-          dangerouslySetInnerHTML={{ __html: figureSvg }}
-        />
+        {situationNum ? (
+          // Optimized multi-source loader for situations 1-17 and 20-21:
+          // 1. Tries /src/images/PSAD_April_2024_{X}.png (as user uploaded in src/images/)
+          // 2. Tries /images/PSAD_April_2024_{X}.png (Vite standard public assets)
+          // 3. Fallbacks to cloud hosted postimg CDN image
+          <div className={`overflow-x-auto flex justify-center w-full py-2 ${isZoomed ? 'max-w-3xl py-4' : ''}`}>
+            <img
+              src={`/src/images/PSAD_April_2024_${situationNum}.png`}
+              alt={figureCaption || `PSAD April 2024 Situation ${situationNum} Illustration`}
+              className="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+              loading="eager"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const target = e.currentTarget;
+                const tried = target.getAttribute('data-load-phase') || 'phase-1';
+                if (tried === 'phase-1') {
+                  target.setAttribute('data-load-phase', 'phase-2');
+                  target.src = `/images/PSAD_April_2024_${situationNum}.png`;
+                } else if (tried === 'phase-2') {
+                  target.setAttribute('data-load-phase', 'phase-3');
+                  // Extract original cloud url from figureSvg
+                  const cloudMatch = figureSvg.match(/https:\/\/[^"\s]+/);
+                  if (cloudMatch && cloudMatch[0]) {
+                    target.src = cloudMatch[0];
+                  }
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            className={`overflow-x-auto flex justify-center w-full ${isZoomed ? 'max-w-2xl py-4' : ''}`}
+            dangerouslySetInnerHTML={{ __html: figureSvg }}
+          />
+        )}
       </div>
 
       {/* Figure Caption */}
@@ -138,7 +186,7 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           <button
             type="button"
             onClick={() => setIsZoomed(false)}
-            className="px-4 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-tech-mono hover:bg-slate-700 font-semibold"
+            className="px-4 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-tech-mono hover:bg-slate-700 font-semibold cursor-pointer"
           >
             Close Fullscreen View
           </button>

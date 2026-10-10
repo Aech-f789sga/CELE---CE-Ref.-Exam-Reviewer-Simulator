@@ -1,17 +1,20 @@
 import React from 'react';
 
 /**
- * Compatibility shim component.
- * Prevents build crashes on external platforms like Vercel/GitHub
- * if older cached commits or references to MathView exist.
+ * Universal compatibility MathView component.
+ * Supports all props (latex, math, text, formula, block, inline, children, className)
+ * so that both local builds and external deployments (Vercel, GitHub) always compile smoothly.
  */
 interface MathViewProps {
   latex?: string;
   math?: string;
   text?: string;
-  children?: React.ReactNode;
+  formula?: boolean;
+  block?: boolean;
   inline?: boolean;
+  children?: React.ReactNode;
   className?: string;
+  [key: string]: any;
 }
 
 export const MathView: React.FC<MathViewProps> = ({
@@ -20,10 +23,11 @@ export const MathView: React.FC<MathViewProps> = ({
   text,
   children,
   inline = false,
+  block = false,
   className = '',
 }) => {
   const content = children || latex || math || text || '';
-  if (inline) {
+  if (inline && !block) {
     return <span className={`font-tech-mono ${className}`}>{content}</span>;
   }
   return <div className={`font-tech-mono ${className}`}>{content}</div>;
