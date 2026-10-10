@@ -32,11 +32,15 @@ export const BookletView: React.FC<BookletViewProps> = ({
   onStartExam,
 }) => {
   const [section, setSection] = useState<'questions' | 'answer_key' | 'solutions'>('questions');
-  const [activePage, setActivePage] = useState<number>(1); // Pages 1 to 10
+  const [activePage, setActivePage] = useState<number>(1);
 
   const questions = getQuestionsForExam(activeSubject, activeYear, activeMonth);
 
   // Group questions by page
+  const availablePages = Array.from(new Set(questions.map((q) => q.pageNumber))).sort((a, b) => a - b);
+  const totalBookletPages = availablePages.length > 0 ? Math.max(...availablePages) : 10;
+  const pageList = availablePages.length > 0 ? availablePages : Array.from({ length: 10 }, (_, i) => i + 1);
+
   const pageQuestions = questions.filter((q) => q.pageNumber === activePage);
 
   return (
@@ -80,7 +84,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span>Pages 1–10: Questions &amp; Figures</span>
+            <span>Pages 1–{totalBookletPages}: Questions &amp; Figures</span>
           </button>
 
           <button
@@ -122,7 +126,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
               Exam Booklet Page:
             </span>
             <div className="flex items-center space-x-1.5 overflow-x-auto">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((p) => (
+              {pageList.map((p) => (
                 <button
                   key={p}
                   type="button"
@@ -143,7 +147,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
           <div className="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <span className="text-xs font-tech-mono text-slate-400 uppercase tracking-widest">
-                BOOKLET PAGE {activePage} OF 10
+                BOOKLET PAGE {activePage} OF {totalBookletPages}
               </span>
               <span className="font-arnie text-sm text-amber-400 font-semibold">
                 PRC Licensure Examination
@@ -152,7 +156,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
 
             {pageQuestions.length === 0 ? (
               <div className="p-8 text-center text-slate-400 text-xs">
-                Additional questions for page {activePage} are in the next problem set. Select Page 1–4 to view questions with figures.
+                No questions assigned to booklet page {activePage} for this set.
               </div>
             ) : (
               pageQuestions.map((q) => (

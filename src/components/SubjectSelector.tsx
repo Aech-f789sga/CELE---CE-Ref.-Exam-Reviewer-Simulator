@@ -89,7 +89,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
           <span className="text-xs text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
-            MSTC Active &amp; Ready First
+            MSTC (50 Qs), HPGE (48 Qs) &amp; PSAD (75 Qs) April 2024 Full Sets
           </span>
         </div>
 
@@ -191,7 +191,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 Principles of Structural Analysis &amp; Design
               </p>
               <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
-                NSCP 2015 RC Beams, AISC Steel Tension Members, Shear &amp; Moment Diagrams.
+                Equilibrium &amp; Cables, Trusses, Dams, Pressure Vessels, Torsion, Mohr's Circle, Purlins, Pile Caps, Prestressed &amp; RC Flexure.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
