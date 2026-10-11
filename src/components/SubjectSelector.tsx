@@ -66,7 +66,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
-  const stats = getSubjectStats(selectedSubject);
+  const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
 
   const hasSelectedData = hasExamData(selectedSubject, selectedYear, selectedMonth);
 
@@ -77,7 +77,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>PRC Board Exam Questions • MSTC, HPGE &amp; PSAD</span>
+            <span>PRC Board Exam Questions • April 2024 &amp; November 2024</span>
           </div>
           <h1 className="font-arnie text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             Civil Engineering Board Examination
@@ -100,7 +100,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
           <span className="text-xs text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
-            MSTC (50 Qs), HPGE (48 Qs) &amp; PSAD (75 Qs) April 2024
+            MSTC (Nov 2024: 66 Qs, Apr 2024: 50 Qs), HPGE (48 Qs) &amp; PSAD (75 Qs)
           </span>
         </div>
 
@@ -227,7 +227,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
           <span className="text-xs text-slate-400 font-tech-mono">
-            Available Data: <strong className="text-amber-400">April 2024</strong>
+            Available Sets: <strong className="text-amber-400">April 2024 (MSTC, HPGE, PSAD)</strong> • <strong className="text-amber-400">November 2024 (MSTC • 66 Items)</strong>
           </span>
         </div>
 
@@ -244,7 +244,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </label>
           <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-15 gap-1.5">
             {ALL_YEARS.map((yr) => {
-              const hasData = isYearAvailable(yr);
+              const hasData = isYearAvailable(yr, selectedSubject);
               const isSelected = selectedYear === yr;
 
               return (
@@ -293,7 +293,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {ALL_MONTHS.map((mon) => {
-              const hasData = isMonthAvailable(mon, selectedYear);
+              const hasData = isMonthAvailable(mon, selectedYear, selectedSubject);
               const isSelected = selectedMonth === mon;
 
               return (

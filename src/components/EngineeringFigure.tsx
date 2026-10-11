@@ -47,6 +47,16 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
     }
   }
 
+  // Inspect figureSvg for MSTC November 2024 illustrations
+  const isMstcNov = figureSvg.includes('MSTC_November_2024_') || figureSvg.includes('MSTCNov2024');
+  let mstcNum: number | null = null;
+  if (isMstcNov) {
+    const match = figureSvg.match(/MSTC[-_]November[-_]2024[-_](\d+)\.png/i);
+    if (match && match[1]) {
+      mstcNum = parseInt(match[1], 10);
+    }
+  }
+
   return (
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden my-4 ${
@@ -67,6 +77,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           {situationNum && (
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
               Situation {situationNum} Figure
+            </span>
+          )}
+          {mstcNum && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+              MSTC Nov 2024 · Q{mstcNum} Illustration
             </span>
           )}
         </div>
@@ -161,6 +176,30 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
                   if (cloudMatch && cloudMatch[0]) {
                     target.src = cloudMatch[0];
                   }
+                }
+              }}
+            />
+          </div>
+        ) : mstcNum ? (
+          // Optimized multi-source loader for MSTC November 2024 questions:
+          // 1. Tries /src/images/MSTCNov2024/MSTC_November_2024_{X}.png
+          // 2. Tries /images/MSTCNov2024/MSTC_November_2024_{X}.png
+          // 3. Tries /images/MSTC_November_2024_{X}.png
+          <div className={`overflow-x-auto flex justify-center w-full py-2 ${isZoomed ? 'max-w-4xl py-4' : ''}`}>
+            <img
+              src={`/src/images/MSTCNov2024/MSTC_November_2024_${mstcNum}.png`}
+              alt={figureCaption || `MSTC November 2024 Question ${mstcNum} Illustration`}
+              className="max-w-xl w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+              loading="eager"
+              onError={(e) => {
+                const target = e.currentTarget;
+                const tried = target.getAttribute('data-load-phase') || 'phase-1';
+                if (tried === 'phase-1') {
+                  target.setAttribute('data-load-phase', 'phase-2');
+                  target.src = `/images/MSTCNov2024/MSTC_November_2024_${mstcNum}.png`;
+                } else if (tried === 'phase-2') {
+                  target.setAttribute('data-load-phase', 'phase-3');
+                  target.src = `/images/MSTC_November_2024_${mstcNum}.png`;
                 }
               }}
             />

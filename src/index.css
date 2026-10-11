@@ -220,3 +220,46 @@ html[data-theme="emerald_matrix"] .bg-slate-950\/90 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--app-accent);
 }
+
+/* KaTeX formula contrast & typography */
+.katex {
+  font-size: 1.05em;
+  line-height: 1.2;
+}
+
+.inline-math {
+  display: inline-block;
+  vertical-align: -0.05em;
+}
+
+html.light .katex {
+  color: #0f172a !important;
+}
+
+html.dark .katex {
+  color: #f8fafc !important;
+}
+
+/* Authentic Engineering Examination Table */
+.exam-table-card {
+  border: 2px solid var(--app-border, #334155);
+  background-color: var(--app-bg-card, #0f172a);
+}
+
+.exam-table-header {
+  background-color: var(--app-bg-card-subtle, #1e293b);
+  border-bottom: 2px solid var(--app-border, #334155);
+}
+
+.exam-table-row-even {
+  background-color: var(--app-bg-card, #0f172a);
+}
+
+.exam-table-row-odd {
+  background-color: var(--app-bg-card-subtle, #1e293b);
+}
+
+.exam-table-cell {
+  border-right: 1px solid var(--app-border, #334155);
+  border-bottom: 1px solid var(--app-border, #334155);
+}

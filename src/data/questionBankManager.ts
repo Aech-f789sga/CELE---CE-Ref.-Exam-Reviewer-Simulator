@@ -2,14 +2,16 @@ import { Question, SubjectArea, ExamMonth } from '../types/exam';
 import { MSTC_QUESTIONS } from './questionBanks/mstcQuestions';
 import { HPGE_QUESTIONS } from './questionBanks/hpgeQuestions';
 import { PSAD_QUESTIONS } from './questionBanks/psadQuestions';
+import { MSTC_NOVEMBER_2024_QUESTIONS } from './questionBanks/mstc/nov2024Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2025 - i); // 2025 down to 2011
 export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
 
 /**
  * Registry of available exam sets that contain actual verified question data.
- * Currently, data is provided for MSTC, HPGE, and PSAD of April 2024.
- * Other years and months will be blurred out until new data is added.
+ * Currently, data is provided for:
+ * 1. MSTC, HPGE, and PSAD of April 2024
+ * 2. MSTC of November 2024 (66 Items)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -20,6 +22,11 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2024,
     month: 'April',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+  },
+  {
+    year: 2024,
+    month: 'November',
+    subjects: ['MSTC'],
   },
 ];
 
@@ -62,11 +69,24 @@ export function isMonthAvailable(
   });
 }
 
-const BASE_QUESTIONS_BY_SUBJECT: Record<SubjectArea, Question[]> = {
-  MSTC: MSTC_QUESTIONS,
-  HPGE: HPGE_QUESTIONS,
-  PSAD: PSAD_QUESTIONS,
-};
+/**
+ * Key mapping for question sets based on subject, year, and month.
+ */
+function getBaseQuestions(subject: SubjectArea, year: number, month: ExamMonth): Question[] {
+  if (subject === 'MSTC' && year === 2024 && month === 'November') {
+    return MSTC_NOVEMBER_2024_QUESTIONS;
+  }
+  if (subject === 'MSTC') {
+    return MSTC_QUESTIONS;
+  }
+  if (subject === 'HPGE') {
+    return HPGE_QUESTIONS;
+  }
+  if (subject === 'PSAD') {
+    return PSAD_QUESTIONS;
+  }
+  return [];
+}
 
 /**
  * Retrieve questions for the chosen subject, year, and month.
@@ -82,7 +102,7 @@ export function getQuestionsForExam(
     return [];
   }
 
-  const baseList = BASE_QUESTIONS_BY_SUBJECT[subject] || [];
+  const baseList = getBaseQuestions(subject, year, month);
   
   return baseList.map((q, idx) => ({
     ...q,
@@ -93,10 +113,10 @@ export function getQuestionsForExam(
 }
 
 /**
- * Get question bank statistics
+ * Get question bank statistics for a given subject (defaults to latest available set)
  */
-export function getSubjectStats(subject: SubjectArea) {
-  const list = BASE_QUESTIONS_BY_SUBJECT[subject] || [];
+export function getSubjectStats(subject: SubjectArea, year: number = 2024, month: ExamMonth = 'April') {
+  const list = getBaseQuestions(subject, year, month);
   const withFigures = list.filter((q) => !!q.figureSvg).length;
   const pagesCovered = Array.from(new Set(list.map((q) => q.pageNumber))).sort((a, b) => a - b);
   return {

@@ -8,7 +8,7 @@ import {
   ExamAttempt,
   SUBJECT_CONFIGS,
 } from './types/exam';
-import { getQuestionsForExam } from './data/questionBankManager';
+import { getQuestionsForExam, hasExamData } from './data/questionBankManager';
 import { getStoredAttempts, saveAttempt } from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { SubjectSelector } from './components/SubjectSelector';
@@ -52,6 +52,12 @@ export default function App() {
     setSelectedSubject(newSub);
     const config = SUBJECT_CONFIGS[newSub];
     setCustomMinutes(config.defaultMinutes);
+    // If current selected month has no data for the newly selected subject, adjust to an available month
+    if (!hasExamData(newSub, selectedYear, selectedMonth)) {
+      if (hasExamData(newSub, selectedYear, 'April')) {
+        setSelectedMonth('April');
+      }
+    }
   };
 
   const handleStartExam = () => {

@@ -22,6 +22,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
+import { MathView } from './MathView';
 
 interface BookletViewProps {
   activeSubject: SubjectArea;
@@ -115,7 +116,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
             <div className="flex items-center space-x-1 overflow-x-auto py-1">
               <span className="text-slate-400 font-tech-mono mr-1">Year:</span>
               {ALL_YEARS.map((yr) => {
-                const isAvail = isYearAvailable(yr);
+                const isAvail = isYearAvailable(yr, activeSubject);
                 return (
                   <button
                     key={yr}
@@ -142,7 +143,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
           <div className="flex items-center space-x-2 text-xs">
             <span className="text-slate-400 font-tech-mono mr-1">Month:</span>
             {ALL_MONTHS.map((mon) => {
-              const isAvail = isMonthAvailable(mon, activeYear);
+              const isAvail = isMonthAvailable(mon, activeYear, activeSubject);
               return (
                 <button
                   key={mon}
@@ -291,9 +292,9 @@ export const BookletView: React.FC<BookletViewProps> = ({
                         </span>
                       </div>
 
-                      <p className="font-arnie text-base sm:text-lg text-slate-100 leading-relaxed">
-                        {q.text}
-                      </p>
+                      <div className="font-arnie text-base sm:text-lg text-slate-100 leading-relaxed">
+                        <MathView text={q.text} />
+                      </div>
 
                       {/* Figure if present */}
                       {q.figureSvg && (
@@ -314,7 +315,9 @@ export const BookletView: React.FC<BookletViewProps> = ({
                             <span className="font-tech-mono font-bold text-amber-400">
                               ({opt.label})
                             </span>
-                            <span>{opt.text}</span>
+                            <div className="flex-1 font-sans">
+                              <MathView inline text={opt.text} />
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -421,9 +424,9 @@ export const BookletView: React.FC<BookletViewProps> = ({
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300 italic font-mono bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    {q.solution.summary}
-                  </p>
+                  <div className="text-xs text-slate-300 italic font-mono bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <MathView text={q.solution.summary} />
+                  </div>
 
                   {q.figureSvg && (
                     <EngineeringFigure
@@ -434,13 +437,13 @@ export const BookletView: React.FC<BookletViewProps> = ({
                   )}
 
                   {q.solution.formulas && (
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-tech-mono text-xs text-amber-300 space-y-1">
+                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-tech-mono text-xs text-amber-300 space-y-1.5">
                       <span className="text-[10px] text-slate-400 uppercase font-bold block">
                         Governing Formulas:
                       </span>
                       {q.solution.formulas.map((f, i) => (
-                        <div key={i} className="pl-2 border-l-2 border-amber-500">
-                          {f}
+                        <div key={i} className="pl-2 border-l-2 border-amber-500 py-0.5">
+                          <MathView text={f} />
                         </div>
                       ))}
                     </div>
@@ -449,7 +452,7 @@ export const BookletView: React.FC<BookletViewProps> = ({
                   <div className="space-y-1.5 text-xs text-slate-200">
                     {q.solution.steps.map((st, i) => (
                       <div key={i} className="p-2 rounded bg-slate-950/60 border border-slate-800/80 leading-relaxed font-sans">
-                        {st}
+                        <MathView text={st} />
                       </div>
                     ))}
                   </div>
