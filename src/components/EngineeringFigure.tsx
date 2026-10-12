@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sun, Moon, Maximize2, Minimize2, Eye } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { PSAD_NOV_2024_SITUATIONS } from '../data/situationImages';
 
 interface EngineeringFigureProps {
   figureSvg: string;
@@ -262,6 +263,58 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
               }}
             />
           </div>
+        ) : psadNovSitNum && PSAD_NOV_2024_SITUATIONS[psadNovSitNum] ? (
+          // Dedicated multi-source loader for PSAD November 2024 situations:
+          // 1. Tries bundled Vite asset URL (dist/assets/...)
+          // 2. Tries /images/PSADNov2024/{filename} (public directory)
+          // 3. Tries /images/{filename}
+          // 4. Tries /src/images/PSADNov2024/{filename}
+          (() => {
+            const sit = PSAD_NOV_2024_SITUATIONS[psadNovSitNum];
+            return (
+              <div
+                className={`overflow-x-auto flex ${
+                  sit.files.length > 1 ? 'flex-col md:flex-row gap-4' : 'flex-col'
+                } items-center justify-center w-full py-2 ${isZoomed ? 'max-w-5xl py-4' : ''}`}
+              >
+                {sit.files.map((f) => (
+                  <div
+                    key={f.filename}
+                    className={`flex flex-col items-center justify-center w-full ${
+                      sit.files.length > 1 ? 'flex-1 max-w-lg' : 'max-w-xl'
+                    }`}
+                  >
+                    <img
+                      src={f.bundledUrl || `/src/images/PSADNov2024/${f.filename}`}
+                      alt={f.subCaption || sit.caption}
+                      className="max-w-full w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+                      loading="eager"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        const tried = target.getAttribute('data-load-phase') || 'phase-1';
+                        if (tried === 'phase-1') {
+                          target.setAttribute('data-load-phase', 'phase-2');
+                          target.src = `/images/PSADNov2024/${f.filename}`;
+                        } else if (tried === 'phase-2') {
+                          target.setAttribute('data-load-phase', 'phase-3');
+                          target.src = `/images/${f.filename}`;
+                        } else if (tried === 'phase-3') {
+                          target.setAttribute('data-load-phase', 'phase-4');
+                          target.src = `/src/images/PSADNov2024/${f.filename}`;
+                        }
+                      }}
+                    />
+                    {f.subCaption && sit.files.length > 1 && (
+                      <span className="text-[11px] font-tech-mono text-slate-500 mt-1.5 text-center font-medium">
+                        {f.subCaption}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          })()
         ) : (
           <div
             className={`overflow-x-auto flex justify-center w-full ${isZoomed ? 'max-w-5xl py-4' : ''}`}
