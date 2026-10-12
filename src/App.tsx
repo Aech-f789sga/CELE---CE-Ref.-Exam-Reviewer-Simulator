@@ -15,7 +15,6 @@ import { SubjectSelector } from './components/SubjectSelector';
 import { ExamEngine } from './components/ExamEngine';
 import { ExamResults } from './components/ExamResults';
 import { PerformanceReview } from './components/PerformanceReview';
-import { BookletView } from './components/BookletView';
 import { AdminPanel } from './components/AdminPanel';
 import { LeaderboardView } from './components/LeaderboardView';
 import { AnnouncementSection } from './components/AnnouncementSection';
@@ -28,10 +27,9 @@ import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './ser
 
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<
-    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'booklet' | 'admin'
+    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin'
   >('setup');
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
-  const [bookletSearchQuery, setBookletSearchQuery] = useState<string>('');
   const [latestAnnouncement, setLatestAnnouncement] = useState<SystemAnnouncement | null>(null);
   const { themeConfig } = useTheme();
   const { user, profile } = useAuth();
@@ -305,20 +303,6 @@ function MainApp() {
                     handleSubjectChange(sub);
                     setCurrentTab('setup');
                   }}
-                />
-              )}
-
-              {currentTab === 'booklet' && (
-                <BookletView
-                  activeSubject={selectedSubject}
-                  onSubjectChange={handleSubjectChange}
-                  activeYear={selectedYear}
-                  onYearChange={setSelectedYear}
-                  activeMonth={selectedMonth}
-                  onMonthChange={setSelectedMonth}
-                  onStartExam={handleStartExam}
-                  searchQuery={bookletSearchQuery}
-                  onSearchChange={setBookletSearchQuery}
                 />
               )}
 

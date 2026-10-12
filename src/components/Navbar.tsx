@@ -5,7 +5,6 @@ import {
   BookOpen,
   BarChart3,
   Clock,
-  Sparkles,
   Palette,
   Type,
   ShieldCheck,
@@ -22,8 +21,8 @@ import { useAuth } from '../context/AuthContext';
 import { Cube3D } from './Cube3D';
 
 interface NavbarProps {
-  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'booklet' | 'admin';
-  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'booklet' | 'admin') => void;
+  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin';
+  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin') => void;
   activeSubject: SubjectArea;
   onSubjectChange?: (subject: SubjectArea) => void;
   isExamRunning: boolean;
@@ -151,21 +150,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <BarChart3 className="w-4 h-4" />
                   <span>Performance</span>
-                </button>
-
-                <button
-                  onClick={() => setCurrentTab('booklet')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                    currentTab === 'booklet' ? 'shadow-md font-semibold' : 'hover:opacity-80'
-                  }`}
-                  style={{
-                    backgroundColor: currentTab === 'booklet' ? themeConfig.accent : 'transparent',
-                    color: currentTab === 'booklet' ? themeConfig.accentText : themeConfig.textSecondary,
-                  }}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span className="hidden lg:inline">Pages 1-33 Booklet</span>
-                  <span className="lg:hidden">Booklet</span>
                 </button>
 
                 {/* Admin Tab (Only visible to admin) */}
