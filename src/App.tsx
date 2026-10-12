@@ -18,8 +18,7 @@ import { PerformanceReview } from './components/PerformanceReview';
 import { BookletView } from './components/BookletView';
 import { AdminPanel } from './components/AdminPanel';
 import { ThemeModal } from './components/ThemeModal';
-import { VoiceCommander } from './components/VoiceCommander';
-import { useVoiceCommander } from './hooks/useVoiceCommander';
+import { AuthModal } from './components/AuthModal';
 import { useTheme } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
@@ -29,8 +28,9 @@ function MainApp() {
   const [currentTab, setCurrentTab] = useState<'setup' | 'performance' | 'booklet' | 'admin'>('setup');
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [bookletSearchQuery, setBookletSearchQuery] = useState<string>('');
-  const { themeConfig, setThemeId } = useTheme();
-  const { user, isAdmin } = useAuth();
+  const { themeConfig } = useTheme();
+  const { user, profile } = useAuth();
+  const activeUser = profile || user;
 
   // Selection states
   const [selectedSubject, setSelectedSubject] = useState<SubjectArea>('MSTC'); // Default MSTC first
@@ -110,10 +110,10 @@ function MainApp() {
     setAttempts(updatedList);
 
     // If user is authenticated, also sync attempt to Firestore
-    if (user) {
+    if (activeUser) {
       recordExamAttempt({
-        userId: user.uid,
-        userEmail: user.email || '',
+        userId: activeUser.uid,
+        userEmail: activeUser.email || '',
         subject: selectedSubject,
         year: selectedYear,
         month: selectedMonth,
@@ -154,37 +154,6 @@ function MainApp() {
     setCurrentTab('setup');
   };
 
-  // Initialize Voice Commander
-  const voiceCommander = useVoiceCommander({
-    onNavigateTab: (tab) => {
-      setIsExamRunning(false);
-      setIsExamFinished(false);
-      setCurrentTab(tab);
-    },
-    onSubjectChange: (sub) => {
-      handleSubjectChange(sub);
-    },
-    onYearChange: (yr) => {
-      setSelectedYear(yr);
-    },
-    onMonthChange: (mon) => {
-      setSelectedMonth(mon);
-    },
-    onStartExam: () => {
-      handleStartExam();
-    },
-    onSearchQuestions: (q) => {
-      setBookletSearchQuery(q);
-      setIsExamRunning(false);
-      setIsExamFinished(false);
-      setCurrentTab('booklet');
-    },
-    onThemeChange: (th) => {
-      setThemeId(th);
-    },
-    isAdmin,
-  });
-
   // Compute duration in seconds for timer
   const totalDurationSeconds =
     timerMode === 'exam_timer' ? customMinutes * 60 : 0;
@@ -212,8 +181,6 @@ function MainApp() {
           onSubjectChange={handleSubjectChange}
           isExamRunning={isExamRunning}
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
-          onOpenVoiceCommander={voiceCommander.startListening}
-          isVoiceListening={voiceCommander.isListening}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
@@ -248,7 +215,7 @@ function MainApp() {
             />
           )}
 
-          {/* VIEW 3: Standard Tabs when not taking an exam */}
+          {/* VIEW 3: Standard Navigation Views */}
           {!isExamRunning && !isExamFinished && (
             <>
               {currentTab === 'setup' && (
@@ -283,10 +250,10 @@ function MainApp() {
               {currentTab === 'booklet' && (
                 <BookletView
                   activeSubject={selectedSubject}
-                  activeYear={selectedYear}
-                  activeMonth={selectedMonth}
                   onSubjectChange={handleSubjectChange}
+                  activeYear={selectedYear}
                   onYearChange={setSelectedYear}
+                  activeMonth={selectedMonth}
                   onMonthChange={setSelectedMonth}
                   onStartExam={handleStartExam}
                   searchQuery={bookletSearchQuery}
@@ -300,18 +267,14 @@ function MainApp() {
                     handleSubjectChange(sub);
                     setCurrentTab('setup');
                   }}
-                  onRunVoiceCommand={(cmd) => voiceCommander.executeCommandText(cmd)}
                 />
               )}
             </>
           )}
         </main>
 
-        {/* AI Voice Assistant Controller */}
-        <VoiceCommander
-          commander={voiceCommander}
-          isAdmin={isAdmin}
-        />
+        {/* Authentication Modal */}
+        <AuthModal />
 
         {/* Theme & Fonts Customizer Modal */}
         <ThemeModal

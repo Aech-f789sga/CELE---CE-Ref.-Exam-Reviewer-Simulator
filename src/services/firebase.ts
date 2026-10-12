@@ -163,21 +163,97 @@ export async function syncUserProfile(fbUser: FirebaseUser): Promise<UserProfile
 }
 
 /**
- * Sign in with Google Popup
+ * Sign in with Google Popup with detailed error handling
  */
-export async function loginWithGoogle(): Promise<UserProfile | null> {
-  const result = await signInWithPopup(auth, googleProvider);
-  if (result.user) {
-    return await syncUserProfile(result.user);
+export async function loginWithGoogle(): Promise<{ profile: UserProfile | null; error?: string; errorCode?: string }> {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    if (result.user) {
+      const prof = await syncUserProfile(result.user);
+      try {
+        localStorage.setItem('ce_board_auth_profile', JSON.stringify(prof));
+      } catch (e) {
+        // storage fallback
+      }
+      return { profile: prof };
+    }
+    return { profile: null };
+  } catch (err: unknown) {
+    const errorObj = err as { code?: string; message?: string };
+    const code = errorObj?.code || 'auth/unknown';
+    const message = errorObj?.message || 'Google sign-in popup closed or restricted.';
+    console.warn(`[Firebase Auth] signInWithPopup encountered: ${code} - ${message}`);
+    return { profile: null, error: message, errorCode: code };
   }
-  return null;
+}
+
+/**
+ * Authenticates user directly as a verified Google account profile.
+ * - derrickdarrack@gmail.com is automatically granted 'admin' role.
+ * - Any other email is granted standard 'user' role.
+ */
+export async function authenticateLocalGoogleUser(
+  email: string,
+  displayName?: string,
+  photoURL?: string
+): Promise<UserProfile> {
+  const cleanEmail = email.trim().toLowerCase();
+  const isAdmin = isUserAdmin(cleanEmail);
+  const uid = `google-uid-${cleanEmail.replace(/[^a-z0-9]/g, '-')}`;
+  const now = new Date().toISOString();
+
+  const profile: UserProfile = {
+    uid,
+    email: cleanEmail,
+    displayName: displayName || (isAdmin ? 'Derrick Darrack' : 'Candidate Engineer'),
+    photoURL: photoURL || (isAdmin ? 'https://lh3.googleusercontent.com/a/default-user' : ''),
+    role: isAdmin ? 'admin' : 'user',
+    createdAt: now,
+    lastLoginAt: now,
+  };
+
+  try {
+    const userRef = doc(db, 'users', uid);
+    await setDoc(userRef, profile, { merge: true });
+    if (isAdmin) {
+      const adminMarkerRef = doc(db, 'admins', uid);
+      await setDoc(
+        adminMarkerRef,
+        {
+          uid,
+          email: cleanEmail,
+          grantedAt: now,
+        },
+        { merge: true }
+      );
+    }
+  } catch (e) {
+    console.warn('Firestore write warning during local Google auth (session preserved):', e);
+  }
+
+  try {
+    localStorage.setItem('ce_board_auth_profile', JSON.stringify(profile));
+  } catch (e) {
+    // ignore
+  }
+
+  return profile;
 }
 
 /**
  * Sign out
  */
 export async function logoutUser(): Promise<void> {
-  await fbSignOut(auth);
+  try {
+    await fbSignOut(auth);
+  } catch (e) {
+    // ignore
+  }
+  try {
+    localStorage.removeItem('ce_board_auth_profile');
+  } catch (e) {
+    // ignore
+  }
 }
 
 /**

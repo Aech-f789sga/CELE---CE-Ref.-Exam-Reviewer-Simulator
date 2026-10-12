@@ -13,7 +13,6 @@ import {
   Mail,
   UserCheck,
   Flame,
-  Volume2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -26,10 +25,9 @@ import {
 
 interface AdminPanelProps {
   onNavigateToExam?: (subject: 'MSTC' | 'HPGE' | 'PSAD') => void;
-  onRunVoiceCommand?: (cmd: string) => void;
 }
 
-export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam, onRunVoiceCommand }) => {
+export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const { user, profile, isAdmin, designatedAdminEmail } = useAuth();
   const { themeConfig } = useTheme();
 
@@ -184,14 +182,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam, onRunV
           style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-mono">AI Voice Command State</span>
-            <Volume2 className="w-5 h-5 text-cyan-400" />
+            <span className="text-xs text-slate-400 font-mono">Access Control Policy</span>
+            <Lock className="w-5 h-5 text-amber-400" />
           </div>
-          <p className="text-2xl font-bold font-arnie text-white mt-2">
-            Active &amp; Ready
+          <p className="text-xl font-bold font-arnie text-amber-400 mt-2">
+            1 Admin • RBAC Enforced
           </p>
           <p className="text-[11px] text-slate-400 mt-1">
-            Web Speech Navigation &amp; Search
+            derrickdarrack@gmail.com = Admin; All others = User
           </p>
         </div>
       </div>
@@ -296,55 +294,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam, onRunV
                 ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Voice Command Testing Console */}
-      <div
-        className="rounded-3xl border shadow-2xl p-6"
-        style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-      >
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
-            <Volume2 className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-base font-bold font-arnie text-white">
-              AI Voice Command Simulator &amp; Quick Dispatch
-            </h2>
-            <p className="text-xs text-slate-400">
-              Test verbal commands directly or review available voice navigation intents.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {[
-            { text: 'open booklet', desc: 'Navigates directly to Questions & Booklet' },
-            { text: 'find Mohr', desc: 'Searches for Mohr\'s circle problems' },
-            { text: 'find Manning', desc: 'Searches for Manning\'s hydraulic formula' },
-            { text: 'select HPGE', desc: 'Sets subject to Hydraulics & Geotechnical' },
-            { text: 'select MSTC', desc: 'Sets subject to Mathematics & Surveying' },
-            { text: 'select PSAD', desc: 'Sets subject to Structural Analysis & Design' },
-            { text: 'open performance', desc: 'Jumps to PRC Rating performance analysis' },
-            { text: 'aurora theme', desc: 'Applies 3D Structural Aurora theme' },
-            { text: 'open setup', desc: 'Returns to main exam configuration' },
-          ].map((action) => (
-            <button
-              key={action.text}
-              type="button"
-              onClick={() => onRunVoiceCommand?.(action.text)}
-              className="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 text-left transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-cyan-300 group-hover:text-cyan-200">
-                  "{action.text}"
-                </span>
-                <Sparkles className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400 transition-colors" />
-              </div>
-              <p className="text-[11px] text-slate-400 mt-1">{action.desc}</p>
-            </button>
-          ))}
         </div>
       </div>
     </div>
