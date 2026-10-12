@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control (Admin or User).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique identifier of the user (Firebase Auth UID)." },
+        "email": { "type": "string", "format": "email", "description": "User email address." },
+        "displayName": { "type": "string", "description": "Display name of the user." },
+        "photoURL": { "type": "string", "description": "Avatar photo URL of the user." },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "User role: admin or standard user." },
+        "createdAt": { "type": "string", "description": "ISO timestamp of account creation." },
+        "lastLoginAt": { "type": "string", "description": "ISO timestamp of last login." }
+      },
+      "required": ["uid", "email", "displayName", "role", "createdAt"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Marker document establishing trusted admin role in Firestore.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "UID of the admin user." },
+        "email": { "type": "string", "format": "email", "description": "Email of the admin user." },
+        "grantedAt": { "type": "string", "description": "ISO timestamp when admin role was granted." }
+      },
+      "required": ["uid", "email", "grantedAt"]
+    },
+    "ExamAttempt": {
+      "title": "ExamAttempt",
+      "description": "Persistent record of an exam attempt taken by a user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Attempt unique ID." },
+        "userId": { "type": "string", "description": "UID of the user who took the exam." },
+        "userEmail": { "type": "string", "description": "Email of the user." },
+        "subject": { "type": "string", "enum": ["MSTC", "HPGE", "PSAD"], "description": "Exam subject area." },
+        "year": { "type": "number", "description": "Exam year." },
+        "month": { "type": "string", "enum": ["April", "November"], "description": "Exam month." },
+        "score": { "type": "number", "description": "Correct answers score." },
+        "totalQuestions": { "type": "number", "description": "Total number of questions." },
+        "ratingPercentage": { "type": "number", "description": "Percentage rating." },
+        "passedArea": { "type": "boolean", "description": "Whether user met 50% threshold." },
+        "timeSpentSeconds": { "type": "number", "description": "Time spent taking the exam in seconds." },
+        "timerMode": { "type": "string", "description": "Timer mode used." },
+        "completedAt": { "type": "string", "description": "ISO timestamp when completed." }
+      },
+      "required": ["id", "userId", "subject", "year", "month", "score", "totalQuestions", "ratingPercentage", "completedAt"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "System announcement or exam bulletin published by admin.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique announcement ID." },
+        "title": { "type": "string", "description": "Announcement title." },
+        "message": { "type": "string", "description": "Announcement message content." },
+        "authorEmail": { "type": "string", "description": "Email of the publishing admin." },
+        "createdAt": { "type": "string", "description": "ISO timestamp of publication." },
+        "isActive": { "type": "boolean", "description": "Active status of the announcement." }
+      },
+      "required": ["id", "title", "message", "authorEmail", "createdAt", "isActive"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "entities/User" },
+      "description": "User profiles indexed by UID. Users can read/write their own record (cannot escalate role), admin can read all."
+    },
+    "/admins/{userId}": {
+      "schema": { "$ref": "entities/AdminRecord" },
+      "description": "Admin identity markers. Only verified admins can read/write."
+    },
+    "/examAttempts/{attemptId}": {
+      "schema": { "$ref": "entities/ExamAttempt" },
+      "description": "Exam attempts records. Users can read/create their own attempts, admin can read all."
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "entities/Announcement" },
+      "description": "System announcements. All signed in users can read, only admins can create/update/delete."
+    }
+  }
+}

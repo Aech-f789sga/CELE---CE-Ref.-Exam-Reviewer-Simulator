@@ -16,15 +16,22 @@ import { ExamEngine } from './components/ExamEngine';
 import { ExamResults } from './components/ExamResults';
 import { PerformanceReview } from './components/PerformanceReview';
 import { BookletView } from './components/BookletView';
+import { AdminPanel } from './components/AdminPanel';
 import { ThemeModal } from './components/ThemeModal';
+import { VoiceCommander } from './components/VoiceCommander';
+import { useVoiceCommander } from './hooks/useVoiceCommander';
 import { useTheme } from './context/ThemeContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
+import { recordExamAttempt } from './services/firebase';
 
-export default function App() {
-  const [currentTab, setCurrentTab] = useState<'setup' | 'performance' | 'booklet'>('setup');
+function MainApp() {
+  const [currentTab, setCurrentTab] = useState<'setup' | 'performance' | 'booklet' | 'admin'>('setup');
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
-  const { themeConfig } = useTheme();
-  
+  const [bookletSearchQuery, setBookletSearchQuery] = useState<string>('');
+  const { themeConfig, setThemeId } = useTheme();
+  const { user, isAdmin } = useAuth();
+
   // Selection states
   const [selectedSubject, setSelectedSubject] = useState<SubjectArea>('MSTC'); // Default MSTC first
   const [selectedYear, setSelectedYear] = useState<number>(2024);
@@ -102,6 +109,24 @@ export default function App() {
     const updatedList = saveAttempt(newAttempt);
     setAttempts(updatedList);
 
+    // If user is authenticated, also sync attempt to Firestore
+    if (user) {
+      recordExamAttempt({
+        userId: user.uid,
+        userEmail: user.email || '',
+        subject: selectedSubject,
+        year: selectedYear,
+        month: selectedMonth,
+        score: correctCount,
+        totalQuestions: activeQuestions.length,
+        ratingPercentage,
+        passedArea,
+        timeSpentSeconds,
+        timerMode,
+        completedAt: new Date().toISOString(),
+      }).catch((e) => console.warn('Cloud attempt record fallback:', e));
+    }
+
     setLastUserAnswers(userAnswers);
     setLastTimeSpent(timeSpentSeconds);
     setIsExamRunning(false);
@@ -129,6 +154,37 @@ export default function App() {
     setCurrentTab('setup');
   };
 
+  // Initialize Voice Commander
+  const voiceCommander = useVoiceCommander({
+    onNavigateTab: (tab) => {
+      setIsExamRunning(false);
+      setIsExamFinished(false);
+      setCurrentTab(tab);
+    },
+    onSubjectChange: (sub) => {
+      handleSubjectChange(sub);
+    },
+    onYearChange: (yr) => {
+      setSelectedYear(yr);
+    },
+    onMonthChange: (mon) => {
+      setSelectedMonth(mon);
+    },
+    onStartExam: () => {
+      handleStartExam();
+    },
+    onSearchQuestions: (q) => {
+      setBookletSearchQuery(q);
+      setIsExamRunning(false);
+      setIsExamFinished(false);
+      setCurrentTab('booklet');
+    },
+    onThemeChange: (th) => {
+      setThemeId(th);
+    },
+    isAdmin,
+  });
+
   // Compute duration in seconds for timer
   const totalDurationSeconds =
     timerMode === 'exam_timer' ? customMinutes * 60 : 0;
@@ -137,131 +193,159 @@ export default function App() {
 
   return (
     <>
-    {isAurora && (
-      <div className="scene-layer">
-        <Scene3D variant="background" accent={themeConfig.accent} />
-      </div>
-    )}
-    <div
-      className={`min-h-screen flex flex-col transition-colors duration-250 ${isAurora ? 'app-above-scene' : ''}`}
-      style={{
-        backgroundColor: isAurora ? 'transparent' : themeConfig.bgPage,
-        color: themeConfig.textPrimary,
-      }}
-    >
-      <Navbar
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        activeSubject={selectedSubject}
-        onSubjectChange={handleSubjectChange}
-        isExamRunning={isExamRunning}
-        onOpenThemeModal={() => setIsThemeModalOpen(true)}
-      />
-
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        {/* VIEW 1: Active Exam Engine */}
-        {isExamRunning && (
-          <ExamEngine
-            subject={selectedSubject}
-            year={selectedYear}
-            month={selectedMonth}
-            questions={activeQuestions}
-            timerMode={timerMode}
-            totalDurationSeconds={totalDurationSeconds}
-            examMode={examMode}
-            onSubmit={handleSubmitExam}
-            onExit={handleExitHome}
-          />
-        )}
-
-        {/* VIEW 2: Exam Results (Answer Keys Page 11 & Solutions Pages 11-33) */}
-        {!isExamRunning && isExamFinished && (
-          <ExamResults
-            subject={selectedSubject}
-            year={selectedYear}
-            month={selectedMonth}
-            questions={activeQuestions}
-            userAnswers={lastUserAnswers}
-            timeSpentSeconds={lastTimeSpent}
-            onRetakeSameArea={handleRetakeSameArea}
-            onTakeNextArea={handleTakeNextArea}
-            onViewPerformance={handleViewPerformance}
-            onExitHome={handleExitHome}
-          />
-        )}
-
-        {/* VIEW 3: Standard Tabs when not taking an exam */}
-        {!isExamRunning && !isExamFinished && (
-          <>
-            {currentTab === 'setup' && (
-              <SubjectSelector
-                selectedSubject={selectedSubject}
-                onSubjectChange={handleSubjectChange}
-                selectedYear={selectedYear}
-                onYearChange={setSelectedYear}
-                selectedMonth={selectedMonth}
-                onMonthChange={setSelectedMonth}
-                timerMode={timerMode}
-                onTimerModeChange={setTimerMode}
-                customMinutes={customMinutes}
-                onCustomMinutesChange={setCustomMinutes}
-                examMode={examMode}
-                onExamModeChange={setExamMode}
-                onStartExam={handleStartExam}
-              />
-            )}
-
-            {currentTab === 'performance' && (
-              <PerformanceReview
-                attempts={attempts}
-                onAttemptsChange={setAttempts}
-                onTakeExamArea={(sub) => {
-                  handleSubjectChange(sub);
-                  setCurrentTab('setup');
-                }}
-              />
-            )}
-
-            {currentTab === 'booklet' && (
-              <BookletView
-                activeSubject={selectedSubject}
-                activeYear={selectedYear}
-                activeMonth={selectedMonth}
-                onSubjectChange={handleSubjectChange}
-                onYearChange={setSelectedYear}
-                onMonthChange={setSelectedMonth}
-                onStartExam={handleStartExam}
-              />
-            )}
-          </>
-        )}
-      </main>
-
-      {/* Theme & Fonts Customizer Modal */}
-      <ThemeModal
-        isOpen={isThemeModalOpen}
-        onClose={() => setIsThemeModalOpen(false)}
-      />
-
-      {/* Footer */}
-      <footer
-        className="border-t py-6 text-center text-xs transition-colors"
+      {isAurora && (
+        <div className="scene-layer">
+          <Scene3D variant="background" accent={themeConfig.accent} />
+        </div>
+      )}
+      <div
+        className={`min-h-screen flex flex-col transition-colors duration-250 ${isAurora ? 'app-above-scene' : ''}`}
         style={{
-          borderColor: themeConfig.border,
-          backgroundColor: themeConfig.bgPage,
-          color: themeConfig.textMuted,
+          backgroundColor: isAurora ? 'transparent' : themeConfig.bgPage,
+          color: themeConfig.textPrimary,
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="font-tech-mono">
-            Philippine Civil Engineering Licensure Examination (CE Board Exam) Simulator
-          </p>
-          <p className="text-[11px]" style={{ color: themeConfig.textMuted }}>
-            PRC Criteria: GWA ≥ 70.00% • MSTC 35% • HPGE 30% • PSAD 35% • No Rating &lt; 50.00%
-          </p>
-        </div>
-      </footer>
-    </div>
+        <Navbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          activeSubject={selectedSubject}
+          onSubjectChange={handleSubjectChange}
+          isExamRunning={isExamRunning}
+          onOpenThemeModal={() => setIsThemeModalOpen(true)}
+          onOpenVoiceCommander={voiceCommander.startListening}
+          isVoiceListening={voiceCommander.isListening}
+        />
+
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {/* VIEW 1: Active Exam Engine */}
+          {isExamRunning && (
+            <ExamEngine
+              subject={selectedSubject}
+              year={selectedYear}
+              month={selectedMonth}
+              questions={activeQuestions}
+              timerMode={timerMode}
+              totalDurationSeconds={totalDurationSeconds}
+              examMode={examMode}
+              onSubmit={handleSubmitExam}
+              onExit={handleExitHome}
+            />
+          )}
+
+          {/* VIEW 2: Exam Results */}
+          {!isExamRunning && isExamFinished && (
+            <ExamResults
+              subject={selectedSubject}
+              year={selectedYear}
+              month={selectedMonth}
+              questions={activeQuestions}
+              userAnswers={lastUserAnswers}
+              timeSpentSeconds={lastTimeSpent}
+              onRetakeSameArea={handleRetakeSameArea}
+              onTakeNextArea={handleTakeNextArea}
+              onViewPerformance={handleViewPerformance}
+              onExitHome={handleExitHome}
+            />
+          )}
+
+          {/* VIEW 3: Standard Tabs when not taking an exam */}
+          {!isExamRunning && !isExamFinished && (
+            <>
+              {currentTab === 'setup' && (
+                <SubjectSelector
+                  selectedSubject={selectedSubject}
+                  onSubjectChange={handleSubjectChange}
+                  selectedYear={selectedYear}
+                  onYearChange={setSelectedYear}
+                  selectedMonth={selectedMonth}
+                  onMonthChange={setSelectedMonth}
+                  timerMode={timerMode}
+                  onTimerModeChange={setTimerMode}
+                  customMinutes={customMinutes}
+                  onCustomMinutesChange={setCustomMinutes}
+                  examMode={examMode}
+                  onExamModeChange={setExamMode}
+                  onStartExam={handleStartExam}
+                />
+              )}
+
+              {currentTab === 'performance' && (
+                <PerformanceReview
+                  attempts={attempts}
+                  onAttemptsChange={setAttempts}
+                  onTakeExamArea={(sub) => {
+                    handleSubjectChange(sub);
+                    setCurrentTab('setup');
+                  }}
+                />
+              )}
+
+              {currentTab === 'booklet' && (
+                <BookletView
+                  activeSubject={selectedSubject}
+                  activeYear={selectedYear}
+                  activeMonth={selectedMonth}
+                  onSubjectChange={handleSubjectChange}
+                  onYearChange={setSelectedYear}
+                  onMonthChange={setSelectedMonth}
+                  onStartExam={handleStartExam}
+                  searchQuery={bookletSearchQuery}
+                  onSearchChange={setBookletSearchQuery}
+                />
+              )}
+
+              {currentTab === 'admin' && (
+                <AdminPanel
+                  onNavigateToExam={(sub) => {
+                    handleSubjectChange(sub);
+                    setCurrentTab('setup');
+                  }}
+                  onRunVoiceCommand={(cmd) => voiceCommander.executeCommandText(cmd)}
+                />
+              )}
+            </>
+          )}
+        </main>
+
+        {/* AI Voice Assistant Controller */}
+        <VoiceCommander
+          commander={voiceCommander}
+          isAdmin={isAdmin}
+        />
+
+        {/* Theme & Fonts Customizer Modal */}
+        <ThemeModal
+          isOpen={isThemeModalOpen}
+          onClose={() => setIsThemeModalOpen(false)}
+        />
+
+        {/* Footer */}
+        <footer
+          className="border-t py-6 text-center text-xs transition-colors"
+          style={{
+            borderColor: themeConfig.border,
+            backgroundColor: themeConfig.bgPage,
+            color: themeConfig.textMuted,
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="font-tech-mono">
+              Philippine Civil Engineering Licensure Examination (CE Board Exam) Simulator
+            </p>
+            <p className="text-[11px]" style={{ color: themeConfig.textMuted }}>
+              PRC Criteria: GWA ≥ 70.00% • MSTC 35% • HPGE 30% • PSAD 35% • No Rating &lt; 50.00%
+            </p>
+          </div>
+        </footer>
+      </div>
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SubjectArea, ExamMonth, Question } from '../types/exam';
 import {
   getQuestionsForExam,
@@ -20,6 +20,8 @@ import {
   Calendar,
   Layers,
   AlertCircle,
+  Search,
+  X,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
@@ -32,6 +34,8 @@ interface BookletViewProps {
   onYearChange: (yr: number) => void;
   onMonthChange: (mon: ExamMonth) => void;
   onStartExam: () => void;
+  searchQuery?: string;
+  onSearchChange?: (q: string) => void;
 }
 
 export const BookletView: React.FC<BookletViewProps> = ({
@@ -42,9 +46,21 @@ export const BookletView: React.FC<BookletViewProps> = ({
   onYearChange,
   onMonthChange,
   onStartExam,
+  searchQuery: externalSearchQuery = '',
+  onSearchChange,
 }) => {
   const [section, setSection] = useState<'questions' | 'answer_key' | 'solutions'>('questions');
   const [activePage, setActivePage] = useState<number>(1);
+  const [localSearch, setLocalSearch] = useState<string>(externalSearchQuery);
+
+  useEffect(() => {
+    setLocalSearch(externalSearchQuery);
+  }, [externalSearchQuery]);
+
+  const handleSearchInput = (val: string) => {
+    setLocalSearch(val);
+    onSearchChange?.(val);
+  };
 
   const hasData = hasExamData(activeSubject, activeYear, activeMonth);
   const questions = getQuestionsForExam(activeSubject, activeYear, activeMonth);
@@ -54,7 +70,24 @@ export const BookletView: React.FC<BookletViewProps> = ({
   const totalBookletPages = availablePages.length > 0 ? Math.max(...availablePages) : 10;
   const pageList = availablePages.length > 0 ? availablePages : Array.from({ length: 10 }, (_, i) => i + 1);
 
-  const pageQuestions = questions.filter((q) => q.pageNumber === activePage);
+  // Filter questions if search is active
+  const trimmedSearch = localSearch.trim().toLowerCase();
+  const searchMatchingQuestions = trimmedSearch
+    ? questions.filter((q) => {
+        return (
+          q.text.toLowerCase().includes(trimmedSearch) ||
+          q.category.toLowerCase().includes(trimmedSearch) ||
+          q.number.toString() === trimmedSearch ||
+          q.solution.finalAnswer.toLowerCase().includes(trimmedSearch) ||
+          q.options.some((o) => o.text.toLowerCase().includes(trimmedSearch))
+        );
+      })
+    : [];
+
+  const isSearchActive = trimmedSearch.length > 0;
+  const displayedQuestions = isSearchActive
+    ? searchMatchingQuestions
+    : questions.filter((q) => q.pageNumber === activePage);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-24">
@@ -242,46 +275,94 @@ export const BookletView: React.FC<BookletViewProps> = ({
           {/* 1. QUESTIONS VIEW (PAGES 1 - 10) */}
           {section === 'questions' && (
             <div className="space-y-6">
-              {/* Page Navigator bar */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
-                <span className="font-arnie text-sm font-bold text-amber-400">
-                  Exam Booklet Page:
-                </span>
-                <div className="flex items-center space-x-1.5 overflow-x-auto">
-                  {pageList.map((p) => (
+              {/* Page Navigator & Search bar */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center space-x-2">
+                  <span className="font-arnie text-sm font-bold text-amber-400">
+                    {isSearchActive ? 'Search Filter:' : 'Exam Booklet Page:'}
+                  </span>
+                  {!isSearchActive && (
+                    <div className="flex items-center space-x-1.5 overflow-x-auto">
+                      {pageList.map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setActivePage(p)}
+                          className={`w-9 h-9 rounded-xl text-xs font-tech-mono font-bold transition-all cursor-pointer ${
+                            activePage === p
+                              ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                              : 'bg-slate-950 text-slate-400 hover:bg-slate-800 border border-slate-800'
+                          }`}
+                        >
+                          P.{p}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Search input in booklet */}
+                <div className="relative min-w-56 sm:min-w-64">
+                  <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={localSearch}
+                    onChange={(e) => handleSearchInput(e.target.value)}
+                    placeholder="Search problems, terms, #..."
+                    className="w-full pl-9 pr-8 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-sans"
+                  />
+                  {localSearch && (
                     <button
-                      key={p}
                       type="button"
-                      onClick={() => setActivePage(p)}
-                      className={`w-9 h-9 rounded-xl text-xs font-tech-mono font-bold transition-all cursor-pointer ${
-                        activePage === p
-                          ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
-                          : 'bg-slate-950 text-slate-400 hover:bg-slate-800 border border-slate-800'
-                      }`}
+                      onClick={() => handleSearchInput('')}
+                      className="absolute right-2.5 top-2 text-slate-400 hover:text-white cursor-pointer"
                     >
-                      P.{p}
+                      <X className="w-3.5 h-3.5" />
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
+
+              {/* Active Search Notification Banner */}
+              {isSearchActive && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3 px-4 flex items-center justify-between text-xs text-amber-300">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>
+                      Found <strong>{displayedQuestions.length}</strong> matching questions for "<strong>{localSearch}</strong>" in {activeSubject} ({activeMonth} {activeYear}).
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSearchInput('')}
+                    className="text-[11px] underline font-tech-mono hover:text-white cursor-pointer"
+                  >
+                    Clear Search
+                  </button>
+                </div>
+              )}
 
               {/* Page Sheet Container */}
               <div className="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                   <span className="text-xs font-tech-mono text-slate-400 uppercase tracking-widest">
-                    BOOKLET PAGE {activePage} OF {totalBookletPages}
+                    {isSearchActive
+                      ? `SEARCH RESULTS (${displayedQuestions.length} ITEMS)`
+                      : `BOOKLET PAGE ${activePage} OF ${totalBookletPages}`}
                   </span>
                   <span className="font-arnie text-sm text-amber-400 font-semibold">
                     PRC Licensure Examination
                   </span>
                 </div>
 
-                {pageQuestions.length === 0 ? (
+                {displayedQuestions.length === 0 ? (
                   <div className="p-8 text-center text-slate-400 text-xs">
-                    No questions assigned to booklet page {activePage} for this set.
+                    {isSearchActive
+                      ? `No questions found matching "${localSearch}". Try another keyword or question number.`
+                      : `No questions assigned to booklet page ${activePage} for this set.`}
                   </div>
                 ) : (
-                  pageQuestions.map((q) => (
+                  displayedQuestions.map((q) => (
                     <div key={q.id} className="space-y-4 pb-6 border-b border-slate-800/80 last:border-b-0">
                       <div className="flex items-center space-x-2">
                         <span className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-tech-mono font-bold text-sm">
