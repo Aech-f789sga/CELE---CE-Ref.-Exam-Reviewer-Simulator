@@ -2,6 +2,7 @@ import React from 'react';
 import { SubjectArea } from '../types/exam';
 import { GraduationCap, BookOpen, BarChart3, Clock, Sparkles, Palette, Type } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { Cube3D } from './Cube3D';
 
 interface NavbarProps {
   currentTab: 'setup' | 'performance' | 'booklet';
@@ -21,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenThemeModal,
 }) => {
   const { themeConfig, fontId } = useTheme();
+  const isAurora = themeConfig.id === 'aurora_glass';
 
   return (
     <header
@@ -34,6 +36,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Brand & Title */}
           <div className="flex items-center space-x-3">
+            {isAurora ? (
+              <div className="w-10 h-10 flex items-center justify-center">
+                <Cube3D size={28} />
+              </div>
+            ) : (
             <div
               className="w-10 h-10 rounded-xl p-0.5 shadow-md flex items-center justify-center transition-transform hover:scale-105"
               style={{
@@ -47,6 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <GraduationCap className="w-5 h-5" style={{ color: themeConfig.accent }} />
               </div>
             </div>
+            )}
             <div>
               <div className="flex items-center space-x-2">
                 <span

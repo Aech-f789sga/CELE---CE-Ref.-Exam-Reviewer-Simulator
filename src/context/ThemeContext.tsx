@@ -35,7 +35,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [themeId, setThemeIdState] = useState<AppThemeId>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_THEME) as AppThemeId;
-    return saved && THEME_CONFIGS[saved] ? saved : 'engineering_dark';
+    return saved && THEME_CONFIGS[saved] ? saved : 'aurora_glass';
   });
 
   const [fontId, setFontIdState] = useState<FontFamilyId>(() => {
@@ -58,7 +58,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return saved !== null ? saved === 'true' : true; // Default ON so changing themes always guarantees contrast
   });
 
-  const themeConfig = THEME_CONFIGS[themeId] || THEME_CONFIGS.engineering_dark;
+  const themeConfig = THEME_CONFIGS[themeId] || THEME_CONFIGS.aurora_glass;
 
   const setThemeId = (id: AppThemeId) => {
     setThemeIdState(id);
@@ -86,7 +86,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const resetToDefaults = () => {
-    setThemeId('engineering_dark');
+    setThemeId('aurora_glass');
     setFontId('sans');
     setFontSizeId('medium');
     setIsHighContrastFigures(true);

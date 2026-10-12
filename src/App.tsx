@@ -18,6 +18,7 @@ import { PerformanceReview } from './components/PerformanceReview';
 import { BookletView } from './components/BookletView';
 import { ThemeModal } from './components/ThemeModal';
 import { useTheme } from './context/ThemeContext';
+import { Scene3D } from './components/Scene3D';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'setup' | 'performance' | 'booklet'>('setup');
@@ -132,11 +133,19 @@ export default function App() {
   const totalDurationSeconds =
     timerMode === 'exam_timer' ? customMinutes * 60 : 0;
 
+  const isAurora = themeConfig.id === 'aurora_glass';
+
   return (
+    <>
+    {isAurora && (
+      <div className="scene-layer">
+        <Scene3D variant="background" accent={themeConfig.accent} />
+      </div>
+    )}
     <div
-      className="min-h-screen flex flex-col transition-colors duration-250"
+      className={`min-h-screen flex flex-col transition-colors duration-250 ${isAurora ? 'app-above-scene' : ''}`}
       style={{
-        backgroundColor: themeConfig.bgPage,
+        backgroundColor: isAurora ? 'transparent' : themeConfig.bgPage,
         color: themeConfig.textPrimary,
       }}
     >
@@ -253,5 +262,6 @@ export default function App() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 export type AppThemeId =
+  | 'aurora_glass'
   | 'engineering_dark'
   | 'blueprint_navy'
   | 'pure_slate'
@@ -55,6 +56,26 @@ export interface FontSizeOption {
 }
 
 export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
+  // NEW DEFAULT - "Structural Aurora": glassmorphism + 3D depth over an animated wireframe scene
+  aurora_glass: {
+    id: 'aurora_glass',
+    name: 'Structural Aurora (3D)',
+    category: 'dark',
+    accentName: 'Violet / Aurora Cyan',
+    description: 'Glassy cards with 3D tilt, a living wireframe truss scene and aurora glow. The new default look.',
+    bgPage: '#070a1f',
+    bgCard: '#0e1334',
+    bgCardSubtle: '#1a1f4a',
+    border: '#3b3f9a',
+    textPrimary: '#f5f6ff',
+    textSecondary: '#cfd3ff',
+    textMuted: '#9aa0d6',
+    accent: '#8b7bff',
+    accentHover: '#7461f5',
+    accentText: '#0b0720',
+    accentBadge: 'rgba(139, 123, 255, 0.2)',
+    gridStyle: 'rgba(139, 123, 255, 0.10)',
+  },
   // ORIGINAL THEME - KEPT COMPLETELY PRESERVED AND UNCHANGED
   engineering_dark: {
     id: 'engineering_dark',

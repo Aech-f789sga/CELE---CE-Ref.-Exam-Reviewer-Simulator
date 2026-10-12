@@ -32,6 +32,9 @@ import {
   Lock,
   AlertCircle,
 } from 'lucide-react';
+import { Scene3D } from './Scene3D';
+import { Tilt3D } from './Tilt3D';
+import { useTheme } from '../context/ThemeContext';
 
 interface SubjectSelectorProps {
   selectedSubject: SubjectArea;
@@ -65,6 +68,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onStartExam,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
+  const { themeConfig } = useTheme();
+  const isAurora = themeConfig.id === 'aurora_glass';
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
   const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
 
@@ -73,8 +78,13 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
       {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 border border-slate-700/80 shadow-2xl bg-blueprint-grid">
-        <div className="relative z-10 space-y-3">
+      <div className="hero-aurora relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 border border-slate-700/80 shadow-2xl bg-blueprint-grid">
+        {isAurora && (
+          <div className="absolute inset-y-0 right-0 w-full sm:w-3/5 opacity-60 sm:opacity-100 pointer-events-none">
+            <Scene3D variant="hero" accent={themeConfig.accent} />
+          </div>
+        )}
+        <div className="relative z-10 space-y-3 sm:max-w-[60%]">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>PRC Board Exam Questions • April 2024 &amp; November 2024</span>
@@ -106,6 +116,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* MSTC Card */}
+          <Tilt3D>
           <button
             type="button"
             onClick={() => onSubjectChange('MSTC')}
@@ -140,8 +151,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </button>
+          </Tilt3D>
 
           {/* HPGE Card */}
+          <Tilt3D>
           <button
             type="button"
             onClick={() => onSubjectChange('HPGE')}
@@ -176,8 +189,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </button>
+          </Tilt3D>
 
           {/* PSAD Card */}
+          <Tilt3D>
           <button
             type="button"
             onClick={() => onSubjectChange('PSAD')}
@@ -212,6 +227,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </button>
+          </Tilt3D>
         </div>
       </div>
 
@@ -227,7 +243,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
           <span className="text-xs text-slate-400 font-tech-mono">
-            Available Sets: <strong className="text-amber-400">April 2024 (MSTC, HPGE, PSAD)</strong> • <strong className="text-amber-400">November 2024 (MSTC • 66 Items)</strong>
+            Available Sets: <strong className="text-amber-400">April 2024 (MSTC, HPGE, PSAD)</strong> • <strong className="text-cyan-400">November 2024 (MSTC • 66 Items, HPGE • 46 Items, PSAD • 75 Items)</strong>
           </span>
         </div>
 

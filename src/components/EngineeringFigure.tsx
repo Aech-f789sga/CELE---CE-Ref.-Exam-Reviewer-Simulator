@@ -57,6 +57,16 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
     }
   }
 
+  // Inspect figureSvg for HPGE November 2024 illustrations
+  const isHpgeNov = figureSvg.includes('HPGE_November_2024_') || figureSvg.includes('HPGENov2024');
+  let hpgeNum: number | null = null;
+  if (isHpgeNov) {
+    const match = figureSvg.match(/HPGE[-_]November[-_]2024[-_](\d+)\.png/i);
+    if (match && match[1]) {
+      hpgeNum = parseInt(match[1], 10);
+    }
+  }
+
   return (
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden my-4 ${
@@ -82,6 +92,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           {mstcNum && (
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
               MSTC Nov 2024 · Q{mstcNum} Illustration
+            </span>
+          )}
+          {hpgeNum && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              HPGE Nov 2024 · Q{hpgeNum} Illustration
             </span>
           )}
         </div>
@@ -200,6 +215,34 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
                 } else if (tried === 'phase-2') {
                   target.setAttribute('data-load-phase', 'phase-3');
                   target.src = `/images/MSTC_November_2024_${mstcNum}.png`;
+                }
+              }}
+            />
+          </div>
+        ) : hpgeNum ? (
+          // Multi-source loader for HPGE November 2024 illustrations:
+          // 1. Tries /src/images/HPGENov2024/HPGE_November_2024_{X}.png
+          // 2. Tries /images/HPGENov2024/HPGE_November_2024_{X}.png
+          // 3. Tries /images/HPGE_November_2024_{X}.png
+          // 4. Tries /src/images/HPGE_November_2024_{X}.png
+          <div className={`overflow-x-auto flex justify-center w-full py-2 ${isZoomed ? 'max-w-4xl py-4' : ''}`}>
+            <img
+              src={`/src/images/HPGENov2024/HPGE_November_2024_${hpgeNum}.png`}
+              alt={figureCaption || `HPGE November 2024 Question ${hpgeNum} Illustration`}
+              className="max-w-xl w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+              loading="eager"
+              onError={(e) => {
+                const target = e.currentTarget;
+                const tried = target.getAttribute('data-load-phase') || 'phase-1';
+                if (tried === 'phase-1') {
+                  target.setAttribute('data-load-phase', 'phase-2');
+                  target.src = `/images/HPGENov2024/HPGE_November_2024_${hpgeNum}.png`;
+                } else if (tried === 'phase-2') {
+                  target.setAttribute('data-load-phase', 'phase-3');
+                  target.src = `/images/HPGE_November_2024_${hpgeNum}.png`;
+                } else if (tried === 'phase-3') {
+                  target.setAttribute('data-load-phase', 'phase-4');
+                  target.src = `/src/images/HPGE_November_2024_${hpgeNum}.png`;
                 }
               }}
             />
