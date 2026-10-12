@@ -78,6 +78,24 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
     }
   }
 
+  // Inspect figureSvg for MSTC April 2025 illustrations
+  const isMstcApr25 =
+    figureSvg.includes('MSTC_April_2025_') ||
+    figureSvg.includes('MSTCApr2025') ||
+    (figureCaption && figureCaption.includes('Figure') && figureCaption.includes('3: Stacks'));
+  let mstcApr25Num: number | null = null;
+  if (isMstcApr25) {
+    const match = figureSvg.match(/MSTC[-_]April[-_]2025[-_](\d+)/i);
+    if (match && match[1]) {
+      mstcApr25Num = parseInt(match[1], 10);
+    } else if (figureCaption) {
+      const capMatch = figureCaption.match(/Figure\s*(\d+)/i);
+      if (capMatch && capMatch[1]) {
+        mstcApr25Num = parseInt(capMatch[1], 10);
+      }
+    }
+  }
+
   return (
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden my-4 ${
@@ -113,6 +131,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           {hpgeNum && (
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
               HPGE Nov 2024 · Q{hpgeNum} Illustration
+            </span>
+          )}
+          {mstcApr25Num && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              MSTC Apr 2025 · Q{mstcApr25Num} Illustration
             </span>
           )}
         </div>
