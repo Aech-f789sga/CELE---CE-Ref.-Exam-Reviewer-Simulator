@@ -25,11 +25,13 @@ import {
   fetchAllAttemptsForLeaderboard,
   fetchAllUsers,
   computeLeaderboards,
+  isUserAdmin,
   OverallLeaderboardEntry,
   AreaLeaderboardEntry,
   CloudExamAttempt,
   UserProfile,
 } from '../services/firebase';
+import { CommunityStatsCards } from './CommunityStatsCards';
 
 interface LeaderboardViewProps {
   onTakeExamArea?: (subject: SubjectArea) => void;
@@ -53,6 +55,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
   });
 
   const [rawAttempts, setRawAttempts] = useState<CloudExamAttempt[]>([]);
+  const [allUsersList, setAllUsersList] = useState<UserProfile[]>([]);
 
   const loadLeaderboards = async () => {
     setLoading(true);
@@ -62,6 +65,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
         fetchAllUsers(),
       ]);
       setRawAttempts(attempts);
+      setAllUsersList(users);
       const computed = computeLeaderboards(attempts, users);
       setOverallList(computed.overall);
       setPerAreaLists(computed.perArea);
@@ -76,6 +80,14 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
     loadLeaderboards();
   }, []);
 
+  // Compute community stats
+  const totalUsersCount = allUsersList.length;
+  const adminUsersCount = allUsersList.filter(
+    (u) => u.role === 'admin' || isUserAdmin(u.email)
+  ).length || 1;
+  const standardUsersCount = Math.max(0, totalUsersCount - adminUsersCount);
+  const attemptsCount = rawAttempts.length;
+
   // Check current user's completion progress across the 3 areas
   const userAttempts = rawAttempts.filter(
     (a) => a.userId === activeUser?.uid || a.userEmail.toLowerCase() === activeUser?.email?.toLowerCase()
@@ -85,17 +97,13 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
   const userHasPSAD = userAttempts.some((a) => a.subject === 'PSAD');
   const userQualifiedOverall = userHasMSTC && userHasHPGE && userHasPSAD;
 
-  // Filtered lists based on search
-  const filteredOverall = overallList.filter(
-    (item) =>
-      item.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filtered lists based on search (privacy: search by display name only)
+  const filteredOverall = overallList.filter((item) =>
+    item.displayName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredAreaList = (perAreaLists[selectedArea] || []).filter(
-    (item) =>
-      item.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.userEmail.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAreaList = (perAreaLists[selectedArea] || []).filter((item) =>
+    item.displayName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const getRankBadge = (rankIndex: number) => {
@@ -189,6 +197,15 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
           style={{ backgroundColor: themeConfig.accent }}
         />
       </div>
+
+      {/* Community & Examination Participation Statistics */}
+      <CommunityStatsCards
+        totalUsers={totalUsersCount}
+        standardUsersCount={standardUsersCount}
+        adminUsersCount={adminUsersCount}
+        attemptsCount={attemptsCount}
+        loading={loading}
+      />
 
       {/* Main Tab Switcher: Overall vs Per Area */}
       <div className="grid grid-cols-2 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800">
@@ -411,8 +428,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-[11px] text-slate-400 font-mono">
-                                    {entry.userEmail}
+                                  <p className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80 shrink-0" />
+                                    <span>{isCurrentUser ? 'Your Candidate Account' : 'Verified Reviewee Candidate'}</span>
                                   </p>
                                 </div>
                               </div>
@@ -625,8 +643,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-[11px] text-slate-400 font-mono">
-                                  {entry.userEmail}
+                                <p className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80 shrink-0" />
+                                  <span>{isCurrentUser ? 'Your Candidate Account' : 'Verified Reviewee Candidate'}</span>
                                 </p>
                               </div>
                             </div>

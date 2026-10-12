@@ -149,8 +149,7 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Real-time advisories, review tips, exam timetable announcements, and PRC licensure updates posted by the designated System Administrator (
-              <span className="text-amber-300 font-mono font-medium">{designatedAdminEmail}</span>).
+              Real-time advisories, review tips, exam timetable announcements, and PRC licensure updates posted by the designated System Administrator.
             </p>
           </div>
 
@@ -297,7 +296,7 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                   <div className="flex items-center space-x-2 text-slate-400">
                     <ShieldCheck className="w-4 h-4 text-amber-400" />
                     <span className="text-[11px]">
-                      Posted by <strong className="text-white">{ann.authorName || 'Derrick Darrack'}</strong> ({ann.authorEmail})
+                      Posted by <strong className="text-white">{ann.authorName || 'System Administrator'}</strong> (Official Broadcast)
                     </span>
                   </div>
                   {onTakeExam && (
@@ -349,7 +348,7 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                   <div className="flex items-center space-x-2 text-slate-400">
                     <ShieldCheck className="w-4 h-4 text-amber-400" />
                     <span className="text-[11px]">
-                      Posted by <strong className="text-white">{ann.authorName || 'System Admin'}</strong> ({ann.authorEmail})
+                      Posted by <strong className="text-white">{ann.authorName || 'System Administrator'}</strong> (Official Broadcast)
                     </span>
                   </div>
                 </div>

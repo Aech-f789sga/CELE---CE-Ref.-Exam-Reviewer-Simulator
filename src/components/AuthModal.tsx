@@ -202,7 +202,7 @@ export const AuthModal: React.FC = () => {
               </span>
             </div>
             <p className="text-slate-300 leading-relaxed text-[11px]">
-              • Super Admin: <strong className="text-amber-300 font-mono">{designatedAdminEmail}</strong> (Admin control, post announcements, user roster).
+              • Super Admin: <strong className="text-amber-300">Designated System Administrator</strong> (Admin control, post announcements, user roster).
               <br />
               • All other examinee emails: registered as independent Reviewee accounts with separate history, attempts, and leaderboard rankings.
             </p>
@@ -260,7 +260,7 @@ export const AuthModal: React.FC = () => {
                 <input
                   type="email"
                   required
-                  placeholder={authMode === 'signin' ? 'Enter email (e.g. derrickdarrack@gmail.com)' : 'Enter your email address'}
+                  placeholder="Enter your email address"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);

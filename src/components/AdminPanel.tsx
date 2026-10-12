@@ -37,6 +37,7 @@ import {
   CloudExamAttempt,
   SystemAnnouncement,
 } from '../services/firebase';
+import { CommunityStatsCards } from './CommunityStatsCards';
 
 interface AdminPanelProps {
   onNavigateToExam?: (subject: 'MSTC' | 'HPGE' | 'PSAD') => void;
@@ -206,7 +207,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
               <span>Admin Management Center</span>
             </h1>
             <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-              Designated Super Administrator account: <strong className="text-emerald-400 font-mono">{designatedAdminEmail}</strong>.
+              Designated Super Administrator: <strong className="text-emerald-400 font-mono">System Administrator (Verified)</strong>.
               All other Google accounts registered in the database are assigned standard candidate examinee permissions.
             </p>
           </div>
@@ -254,7 +255,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                   ADMIN
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 font-mono">{profile?.email || designatedAdminEmail}</span>
+              <span className="text-[11px] text-slate-400 font-mono">System Administrator Account</span>
             </div>
           </div>
 
@@ -266,80 +267,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1 */}
-        <div
-          className="rounded-2xl p-5 border shadow-lg"
-          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">Total Registered Users</span>
-            <Users className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div className="mt-3 flex items-baseline space-x-2">
-            <span className="text-3xl font-bold font-arnie text-white">{totalUsers}</span>
-            <span className="text-xs text-slate-400 font-mono">accounts</span>
-          </div>
-          <div className="mt-2 text-[11px] text-indigo-300">
-            Synced with Cloud Firestore database
-          </div>
-        </div>
-
-        {/* Card 2 */}
-        <div
-          className="rounded-2xl p-5 border shadow-lg"
-          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">Examinees / Reviewees</span>
-            <UserCheck className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="mt-3 flex items-baseline space-x-2">
-            <span className="text-3xl font-bold font-arnie text-emerald-400">{standardUsersCount}</span>
-            <span className="text-xs text-slate-400 font-mono">candidates</span>
-          </div>
-          <div className="mt-2 text-[11px] text-emerald-300">
-            Assigned standard examinee permissions
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div
-          className="rounded-2xl p-5 border shadow-lg"
-          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">Super Administrator</span>
-            <ShieldCheck className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="mt-3 flex items-baseline space-x-2">
-            <span className="text-3xl font-bold font-arnie text-amber-400">{adminUsersCount}</span>
-            <span className="text-xs text-slate-400 font-mono">admin</span>
-          </div>
-          <div className="mt-2 text-[11px] text-amber-300 font-mono truncate" title={designatedAdminEmail}>
-            {designatedAdminEmail}
-          </div>
-        </div>
-
-        {/* Card 4 */}
-        <div
-          className="rounded-2xl p-5 border shadow-lg"
-          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400">Recorded Exam Attempts</span>
-            <Award className="w-4 h-4 text-cyan-400" />
-          </div>
-          <div className="mt-3 flex items-baseline space-x-2">
-            <span className="text-3xl font-bold font-arnie text-cyan-400">{attemptsList.length}</span>
-            <span className="text-xs text-slate-400 font-mono">attempts</span>
-          </div>
-          <div className="mt-2 text-[11px] text-cyan-300">
-            MSTC (66) • HPGE (46) • PSAD (75)
-          </div>
-        </div>
-      </div>
+      {/* Metrics Row (Community & Examination Participation Statistics) */}
+      <CommunityStatsCards
+        totalUsers={totalUsers}
+        standardUsersCount={standardUsersCount}
+        adminUsersCount={adminUsersCount}
+        attemptsCount={attemptsList.length}
+        loading={loading}
+      />
 
       {/* User Directory Table */}
       <div
@@ -353,7 +288,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
               <span>Registered Accounts &amp; Email Roster</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Role permissions: Only <code className="text-emerald-400 font-mono">{designatedAdminEmail}</code> possesses administrative privileges. All other accounts are standard users.
+              Role permissions: The designated Super Administrator possesses administrative privileges. All other accounts are standard users.
             </p>
           </div>
 
@@ -750,9 +685,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
               </div>
 
               <div className="text-[11px] text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
-                • If email is <strong className="text-amber-300">{designatedAdminEmail}</strong>, it receives <span className="text-amber-300 font-bold">ADMIN</span> role.
+                • The designated Super Administrator account receives <span className="text-amber-300 font-bold">ADMIN</span> role.
                 <br />
-                • Any other email address receives <span className="text-emerald-400 font-bold">USER</span> (Examinee) role.
+                • All candidate email addresses receive <span className="text-emerald-400 font-bold">USER</span> (Examinee) role.
               </div>
 
               <div className="flex justify-end space-x-2 pt-2">
