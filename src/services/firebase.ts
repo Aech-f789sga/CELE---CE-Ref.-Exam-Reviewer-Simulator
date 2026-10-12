@@ -205,13 +205,14 @@ export async function authenticateLocalGoogleUser(
   const profile: UserProfile = {
     uid,
     email: cleanEmail,
-    displayName: displayName || (isAdmin ? 'Derrick Darrack' : 'Candidate Engineer'),
+    displayName: displayName?.trim() || (isAdmin ? 'Derrick Darrack (Admin)' : cleanEmail.split('@')[0]),
     photoURL: photoURL || (isAdmin ? 'https://lh3.googleusercontent.com/a/default-user' : ''),
     role: isAdmin ? 'admin' : 'user',
     createdAt: now,
     lastLoginAt: now,
   };
 
+  // 1. Save to Cloud Firestore
   try {
     const userRef = doc(db, 'users', uid);
     await setDoc(userRef, profile, { merge: true });
@@ -228,11 +229,29 @@ export async function authenticateLocalGoogleUser(
       );
     }
   } catch (e) {
-    console.warn('Firestore write warning during local Google auth (session preserved):', e);
+    console.warn('Firestore write warning during Google auth:', e);
   }
 
+  // 2. Save active session to localStorage
   try {
     localStorage.setItem('ce_board_auth_profile', JSON.stringify(profile));
+  } catch (e) {
+    // ignore
+  }
+
+  // 3. Save to registered users roster in localStorage as persistent cache
+  try {
+    const rosterStr = localStorage.getItem('ce_board_all_users') || '[]';
+    const roster: UserProfile[] = JSON.parse(rosterStr);
+    const existingIndex = roster.findIndex(
+      (u) => u.email.toLowerCase() === cleanEmail || u.uid === uid
+    );
+    if (existingIndex >= 0) {
+      roster[existingIndex] = { ...roster[existingIndex], ...profile, lastLoginAt: now };
+    } else {
+      roster.push(profile);
+    }
+    localStorage.setItem('ce_board_all_users', JSON.stringify(roster));
   } catch (e) {
     // ignore
   }
@@ -257,21 +276,99 @@ export async function logoutUser(): Promise<void> {
 }
 
 /**
+ * Register a new user email directly into Firestore and roster (used by Admin)
+ */
+export async function registerUserByAdmin(
+  email: string,
+  displayName?: string
+): Promise<UserProfile> {
+  const cleanEmail = email.trim().toLowerCase();
+  const isAdmin = isUserAdmin(cleanEmail);
+  const uid = `google-uid-${cleanEmail.replace(/[^a-z0-9]/g, '-')}`;
+  const now = new Date().toISOString();
+
+  const profile: UserProfile = {
+    uid,
+    email: cleanEmail,
+    displayName: displayName?.trim() || cleanEmail.split('@')[0],
+    photoURL: '',
+    role: isAdmin ? 'admin' : 'user',
+    createdAt: now,
+    lastLoginAt: now,
+  };
+
+  try {
+    const userRef = doc(db, 'users', uid);
+    await setDoc(userRef, profile, { merge: true });
+  } catch (e) {
+    console.warn('Error saving new user to Firestore:', e);
+  }
+
+  try {
+    const rosterStr = localStorage.getItem('ce_board_all_users') || '[]';
+    const roster: UserProfile[] = JSON.parse(rosterStr);
+    if (!roster.some((u) => u.email.toLowerCase() === cleanEmail)) {
+      roster.push(profile);
+      localStorage.setItem('ce_board_all_users', JSON.stringify(roster));
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  return profile;
+}
+
+/**
  * Fetch all registered users (Admin only)
+ * Reads from Cloud Firestore and merges any cached accounts.
  */
 export async function fetchAllUsers(): Promise<UserProfile[]> {
+  const usersMap = new Map<string, UserProfile>();
+
+  // Always ensure designated admin is present
+  usersMap.set(DESIGNATED_ADMIN_EMAIL.toLowerCase(), {
+    uid: `google-uid-${DESIGNATED_ADMIN_EMAIL.replace(/[^a-z0-9]/g, '-')}`,
+    email: DESIGNATED_ADMIN_EMAIL,
+    displayName: 'Derrick Darrack (Admin)',
+    photoURL: 'https://lh3.googleusercontent.com/a/default-user',
+    role: 'admin',
+    createdAt: '2024-11-01T00:00:00.000Z',
+    lastLoginAt: new Date().toISOString(),
+  });
+
+  // 1. Fetch from Cloud Firestore
   try {
     const q = collection(db, 'users');
     const snapshot = await getDocs(q);
-    const users: UserProfile[] = [];
     snapshot.forEach((d) => {
-      users.push(d.data() as UserProfile);
+      const u = d.data() as UserProfile;
+      if (u && u.email) {
+        usersMap.set(u.email.toLowerCase(), u);
+      }
     });
-    return users.sort((a, b) => b.lastLoginAt.localeCompare(a.lastLoginAt));
   } catch (e) {
-    console.error('Error fetching all users:', e);
-    return [];
+    console.error('Error fetching users from Firestore:', e);
   }
+
+  // 2. Fetch from persistent local roster cache
+  try {
+    const rosterStr = localStorage.getItem('ce_board_all_users');
+    if (rosterStr) {
+      const roster: UserProfile[] = JSON.parse(rosterStr);
+      for (const u of roster) {
+        if (u && u.email && !usersMap.has(u.email.toLowerCase())) {
+          usersMap.set(u.email.toLowerCase(), u);
+          // Sync missing user to Firestore in background
+          setDoc(doc(db, 'users', u.uid), u).catch(() => {});
+        }
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  const result = Array.from(usersMap.values());
+  return result.sort((a, b) => (b.lastLoginAt || '').localeCompare(a.lastLoginAt || ''));
 }
 
 /**

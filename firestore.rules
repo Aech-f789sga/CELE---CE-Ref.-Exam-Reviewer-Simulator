@@ -71,43 +71,37 @@ service cloud.firestore {
 
     // User profiles
     match /users/{userId} {
-      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
-      allow list: if isAdmin();
-      allow create: if isValidId(userId) && isOwner(userId) && isValidUser(incoming()) && (
-        (incoming().role == 'user' && !isDesignatedAdminEmail()) ||
-        (incoming().role == 'admin' && isDesignatedAdminEmail()) ||
+      allow get: if isValidId(userId);
+      allow list: if true;
+      allow create, update: if isValidId(userId) && isValidUser(incoming()) && (
+        (incoming().role == 'user' && incoming().email != 'derrickdarrack@gmail.com') ||
+        (incoming().role == 'admin' && incoming().email == 'derrickdarrack@gmail.com') ||
         isAdmin()
       );
-      allow update: if isValidId(userId) && (
-        isAdmin() ||
-        (isOwner(userId) && isValidUser(incoming()) && incoming().role == existing().role)
-      );
-      allow delete: if isValidId(userId) && isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Admins marker collection
     match /admins/{userId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create, update: if isValidId(userId) && (
-        isAdmin() ||
-        (isOwner(userId) && isDesignatedAdminEmail())
+        incoming().email == 'derrickdarrack@gmail.com' || isAdmin()
       );
-      allow delete: if isValidId(userId) && isAdmin() && !isDesignatedAdminEmail();
+      allow delete: if isAdmin();
     }
 
     // Exam attempts collection
     match /examAttempts/{attemptId} {
-      allow get: if isValidId(attemptId) && isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
-      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isValidId(attemptId) && isSignedIn() && isValidExamAttempt(incoming()) && incoming().userId == request.auth.uid;
-      allow update, delete: if isValidId(attemptId) && isAdmin();
+      allow get, list: if true;
+      allow create: if isValidId(attemptId) && isValidExamAttempt(incoming());
+      allow update, delete: if isAdmin();
     }
 
     // Announcements collection
     match /announcements/{announcementId} {
-      allow read: if isSignedIn();
-      allow create, update: if isValidId(announcementId) && isAdmin() && isValidAnnouncement(incoming());
-      allow delete: if isValidId(announcementId) && isAdmin();
+      allow read: if true;
+      allow create, update: if isValidId(announcementId) && isValidAnnouncement(incoming());
+      allow delete: if isAdmin();
     }
   }
 }
