@@ -10,6 +10,8 @@ import {
   UserProfile,
   DESIGNATED_ADMIN_EMAIL,
   authenticateLocalGoogleUser,
+  loginWithEmailPassword as fbLoginWithEmailPassword,
+  registerWithEmailPassword as fbRegisterWithEmailPassword,
 } from '../services/firebase';
 
 interface AuthContextValue {
@@ -24,6 +26,8 @@ interface AuthContextValue {
   closeAuthModal: () => void;
   clearAuthError: () => void;
   signIn: () => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  registerWithPassword: (email: string, password: string, displayName?: string) => Promise<{ success: boolean; error?: string }>;
   signInAsAdmin: () => Promise<void>;
   signInAsCandidate: () => Promise<void>;
   signInWithCustomEmail: (email: string, displayName?: string) => Promise<void>;
@@ -118,6 +122,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const handleSignInWithPassword = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const res = await fbLoginWithEmailPassword(email, password);
+      if (res.profile) {
+        setProfile(res.profile);
+        setIsAuthModalOpen(false);
+        return { success: true };
+      } else {
+        const err = res.error || 'Failed to authenticate.';
+        setAuthError(err);
+        return { success: false, error: err };
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Login failed.';
+      setAuthError(msg);
+      return { success: false, error: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterWithPassword = async (
+    email: string,
+    password: string,
+    displayName?: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const res = await fbRegisterWithEmailPassword(email, password, displayName);
+      if (res.profile) {
+        setProfile(res.profile);
+        setIsAuthModalOpen(false);
+        return { success: true };
+      } else {
+        const err = res.error || 'Failed to create account.';
+        setAuthError(err);
+        return { success: false, error: err };
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Registration failed.';
+      setAuthError(msg);
+      return { success: false, error: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSignInAsAdmin = async () => {
     setLoading(true);
     try {
@@ -194,6 +251,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         closeAuthModal: () => setIsAuthModalOpen(false),
         clearAuthError: () => setAuthError(null),
         signIn: handleSignIn,
+        signInWithPassword: handleSignInWithPassword,
+        registerWithPassword: handleRegisterWithPassword,
         signInAsAdmin: handleSignInAsAdmin,
         signInAsCandidate: handleSignInAsCandidate,
         signInWithCustomEmail: handleSignInWithCustomEmail,

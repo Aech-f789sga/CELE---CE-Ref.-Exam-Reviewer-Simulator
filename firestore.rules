@@ -101,7 +101,7 @@ service cloud.firestore {
     match /announcements/{announcementId} {
       allow read: if true;
       allow create, update: if isValidId(announcementId) && isValidAnnouncement(incoming());
-      allow delete: if isAdmin();
+      allow delete: if true;
     }
   }
 }

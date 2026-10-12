@@ -16,6 +16,12 @@ import {
   UserPlus,
   Plus,
   X,
+  Megaphone,
+  Pin,
+  Trash2,
+  Eye,
+  EyeOff,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -23,8 +29,13 @@ import {
   fetchAllUsers,
   fetchExamAttempts,
   registerUserByAdmin,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement,
+  fetchAnnouncements,
   UserProfile,
   CloudExamAttempt,
+  SystemAnnouncement,
 } from '../services/firebase';
 
 interface AdminPanelProps {
@@ -37,6 +48,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
 
   const [usersList, setUsersList] = useState<UserProfile[]>([]);
   const [attemptsList, setAttemptsList] = useState<CloudExamAttempt[]>([]);
+  const [announcementsList, setAnnouncementsList] = useState<SystemAnnouncement[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState<boolean>(false);
@@ -45,20 +57,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [isAddingUser, setIsAddingUser] = useState<boolean>(false);
   const [addUserSuccess, setAddUserSuccess] = useState<string | null>(null);
 
-  const [adminNotice, setAdminNotice] = useState<string>(
-    'PRC Board Exam Simulator is updated with November 2024 MSTC (66 items), HPGE (46 items), and PSAD (75 items).'
-  );
-  const [noticeSaved, setNoticeSaved] = useState<boolean>(false);
+  // New announcement states
+  const [annTitle, setAnnTitle] = useState<string>('');
+  const [annMessage, setAnnMessage] = useState<string>('');
+  const [annCategory, setAnnCategory] = useState<'General' | 'Exam Notice' | 'PRC Advisory' | 'Schedule' | 'Tip'>('Exam Notice');
+  const [annPriority, setAnnPriority] = useState<'normal' | 'important' | 'urgent'>('important');
+  const [annPinned, setAnnPinned] = useState<boolean>(false);
+  const [isPostingAnn, setIsPostingAnn] = useState<boolean>(false);
+  const [annSuccessMsg, setAnnSuccessMsg] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [allUsers, allAttempts] = await Promise.all([
+      const [allUsers, allAttempts, allAnnouncements] = await Promise.all([
         fetchAllUsers(),
         fetchExamAttempts(undefined, true),
+        fetchAnnouncements(false),
       ]);
       setUsersList(allUsers);
       setAttemptsList(allAttempts);
+      setAnnouncementsList(allAnnouncements);
     } catch (e) {
       console.error('Error loading admin data:', e);
     } finally {
@@ -90,6 +108,65 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
       console.error('Failed to create user:', err);
     } finally {
       setIsAddingUser(false);
+    }
+  };
+
+  const handlePostAnnouncement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!annTitle.trim() || !annMessage.trim()) return;
+
+    setIsPostingAnn(true);
+    setAnnSuccessMsg(null);
+    try {
+      const createdId = await createAnnouncement({
+        title: annTitle.trim(),
+        message: annMessage.trim(),
+        category: annCategory,
+        priority: annPriority,
+        isPinned: annPinned,
+        isActive: true,
+        authorEmail: designatedAdminEmail,
+        authorName: 'Derrick Darrack (Admin)',
+      });
+
+      if (createdId) {
+        setAnnSuccessMsg('Official announcement broadcasted to all examinees successfully!');
+        setAnnTitle('');
+        setAnnMessage('');
+        setAnnPinned(false);
+        const updated = await fetchAnnouncements(false);
+        setAnnAnnouncementsList(updated);
+        setTimeout(() => setAnnSuccessMsg(null), 3500);
+      }
+    } catch (err) {
+      console.error('Failed to post announcement:', err);
+    } finally {
+      setIsPostingAnn(false);
+    }
+  };
+
+  const setAnnAnnouncementsList = (list: SystemAnnouncement[]) => {
+    setAnnouncementsList(list);
+  };
+
+  const handleToggleAnnouncement = async (id: string, currentActive: boolean) => {
+    try {
+      await updateAnnouncement(id, { isActive: !currentActive });
+      const updated = await fetchAnnouncements(false);
+      setAnnouncementsList(updated);
+    } catch (e) {
+      console.error('Error toggling announcement:', e);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this announcement?')) return;
+    try {
+      await deleteAnnouncement(id);
+      const updated = await fetchAnnouncements(false);
+      setAnnouncementsList(updated);
+    } catch (e) {
+      console.error('Error deleting announcement:', e);
     }
   };
 
@@ -397,43 +474,213 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
         </div>
       </div>
 
-      {/* Broadcast Announcements Section */}
+      {/* Official Broadcast Announcements Section */}
       <div
-        className="rounded-3xl p-6 border shadow-2xl"
+        className="rounded-3xl p-6 border shadow-2xl space-y-6"
         style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold font-arnie text-white flex items-center space-x-2">
-            <Mail className="w-5 h-5 text-amber-400" />
-            <span>Examinee Portal System Announcement</span>
-          </h2>
-          {noticeSaved && (
-            <span className="text-xs font-mono text-emerald-400 flex items-center space-x-1">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Broadcast Notice Updated</span>
-            </span>
-          )}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
+          <div>
+            <h2 className="text-lg font-bold font-arnie text-white flex items-center space-x-2">
+              <Megaphone className="w-5 h-5 text-amber-400" />
+              <span>Official Broadcast Announcements Management</span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Updates and bulletins posted here sync directly to Cloud Firestore and appear immediately on examinees' Announcements portal and top broadcast bar.
+            </p>
+          </div>
+
+          <span className="text-xs font-mono px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold self-start sm:self-auto">
+            {announcementsList.length} Announcements Stored
+          </span>
         </div>
-        <p className="text-xs text-slate-400 mb-3">
-          This system notice is broadcast across the portal header for all registered examinees.
-        </p>
-        <textarea
-          rows={3}
-          value={adminNotice}
-          onChange={(e) => setAdminNotice(e.target.value)}
-          className="w-full p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-400 font-mono"
-        />
-        <div className="mt-3 flex justify-end">
-          <button
-            type="button"
-            onClick={() => {
-              setNoticeSaved(true);
-              setTimeout(() => setNoticeSaved(false), 3000);
-            }}
-            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer"
-          >
-            Update Portal Announcement
-          </button>
+
+        {/* Success Alert */}
+        {annSuccessMsg && (
+          <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center space-x-2.5 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="font-medium">{annSuccessMsg}</span>
+          </div>
+        )}
+
+        {/* Create New Announcement Form */}
+        <form onSubmit={handlePostAnnouncement} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+          <h3 className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+            <Plus className="w-4 h-4" />
+            <span>Create &amp; Publish New Announcement</span>
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="sm:col-span-2 space-y-1.5">
+              <label className="block text-xs font-medium text-slate-300">
+                Announcement Title <span className="text-rose-400">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. November 2024 Exam Coverage & Time Limits Finalized"
+                value={annTitle}
+                onChange={(e) => setAnnTitle(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-sans"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-slate-300">
+                Category
+              </label>
+              <select
+                value={annCategory}
+                onChange={(e) => setAnnCategory(e.target.value as any)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-400"
+              >
+                <option value="Exam Notice">Exam Notice</option>
+                <option value="PRC Advisory">PRC Advisory</option>
+                <option value="Schedule">Schedule</option>
+                <option value="Tip">Tip</option>
+                <option value="General">General</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-slate-300">
+              Announcement Message Body <span className="text-rose-400">*</span>
+            </label>
+            <textarea
+              rows={3}
+              required
+              placeholder="Enter bulletin text, PRC guidelines, tips, or exam timetable updates..."
+              value={annMessage}
+              onChange={(e) => setAnnMessage(e.target.value)}
+              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 leading-relaxed font-sans"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center space-x-2">
+                <label className="text-xs text-slate-300 font-medium">Priority:</label>
+                <select
+                  value={annPriority}
+                  onChange={(e) => setAnnPriority(e.target.value as any)}
+                  className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-400"
+                >
+                  <option value="normal">Normal Notice</option>
+                  <option value="important">Important (Amber)</option>
+                  <option value="urgent">Urgent (Red Alert)</option>
+                </select>
+              </div>
+
+              <label className="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={annPinned}
+                  onChange={(e) => setAnnPinned(e.target.checked)}
+                  className="rounded bg-slate-950 border-slate-800 text-amber-500 focus:ring-0"
+                />
+                <span className="flex items-center gap-1 text-amber-300 font-semibold">
+                  <Pin className="w-3.5 h-3.5" />
+                  Pin to Top
+                </span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isPostingAnn || !annTitle.trim() || !annMessage.trim()}
+              className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg transition-all cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+            >
+              <span>{isPostingAnn ? 'Publishing...' : 'Broadcast Announcement'}</span>
+              <Megaphone className="w-4 h-4" />
+            </button>
+          </div>
+        </form>
+
+        {/* Existing Announcements List */}
+        <div className="space-y-3">
+          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+            Active Published Announcements ({announcementsList.length})
+          </h3>
+
+          {announcementsList.length === 0 ? (
+            <p className="text-xs text-slate-500 italic p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
+              No announcements published yet. Post your first bulletin above to notify examinees.
+            </p>
+          ) : (
+            <div className="space-y-2.5">
+              {announcementsList.map((ann) => (
+                <div
+                  key={ann.id}
+                  className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    ann.isActive
+                      ? ann.isPinned
+                        ? 'bg-amber-500/5 border-amber-500/40'
+                        : 'bg-slate-900/60 border-slate-800'
+                      : 'bg-slate-950/40 border-slate-900 opacity-60'
+                  }`}
+                >
+                  <div className="space-y-1 max-w-2xl">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {ann.isPinned && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-slate-950 flex items-center gap-1">
+                          <Pin className="w-3 h-3" />
+                          PINNED
+                        </span>
+                      )}
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300">
+                        {ann.category}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          ann.priority === 'urgent'
+                            ? 'bg-rose-500/20 text-rose-300'
+                            : ann.priority === 'important'
+                            ? 'bg-amber-500/20 text-amber-300'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {ann.priority?.toUpperCase()}
+                      </span>
+                      <span className="text-[11px] text-slate-500 font-mono">
+                        {new Date(ann.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <h4 className="text-xs font-bold text-white">{ann.title}</h4>
+                    <p className="text-[11px] text-slate-300 leading-relaxed line-clamp-2">
+                      {ann.message}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleAnnouncement(ann.id, ann.isActive)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 ${
+                        ann.isActive
+                          ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20'
+                          : 'bg-slate-800 text-slate-400 hover:text-white'
+                      }`}
+                      title={ann.isActive ? 'Deactivate announcement' : 'Activate announcement'}
+                    >
+                      {ann.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      <span>{ann.isActive ? 'Active' : 'Hidden'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteAnnouncement(ann.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                      title="Delete announcement"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

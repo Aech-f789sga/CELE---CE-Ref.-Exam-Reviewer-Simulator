@@ -8,8 +8,11 @@ import {
   ArrowRight,
   Sparkles,
   Lock,
-  RefreshCw,
   CheckCircle2,
+  Eye,
+  EyeOff,
+  Globe,
+  KeyRound,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -20,46 +23,94 @@ export const AuthModal: React.FC = () => {
     closeAuthModal,
     authError,
     clearAuthError,
-    signInWithCustomEmail,
+    signInWithPassword,
+    registerWithPassword,
     signIn,
     designatedAdminEmail,
     loading,
-    profile,
   } = useAuth();
 
   const { themeConfig } = useTheme();
-  const [googleEmail, setGoogleEmail] = useState('');
+
+  // Mode: 'signin' | 'register'
+  const [authMode, setAuthMode] = useState<'signin' | 'register'>('signin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   if (!isAuthModalOpen) return null;
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const isCurrentInputAdmin =
+    email.trim().toLowerCase() === designatedAdminEmail.toLowerCase();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanEmail = googleEmail.trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes('@')) return;
+    setLocalError(null);
+    clearAuthError();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      setLocalError('Please enter a valid email address.');
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setLocalError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (authMode === 'register') {
+      if (password !== confirmPassword) {
+        setLocalError('Passwords do not match. Please re-enter.');
+        return;
+      }
+    }
 
     setIsSubmitting(true);
-    setSuccessMessage(null);
     try {
-      await signInWithCustomEmail(
-        cleanEmail,
-        displayName.trim() || undefined
-      );
-      setSuccessMessage(`Signed in successfully as ${cleanEmail}`);
-      setTimeout(() => {
-        closeAuthModal();
-      }, 700);
-    } catch (err) {
-      console.error('Sign-in error:', err);
+      if (authMode === 'signin') {
+        const res = await signInWithPassword(cleanEmail, password);
+        if (res.success) {
+          setSuccessMessage(`Welcome back! Signed in as ${cleanEmail}`);
+          setTimeout(() => {
+            closeAuthModal();
+          }, 600);
+        } else {
+          setLocalError(res.error || 'Failed to sign in.');
+        }
+      } else {
+        const res = await registerWithPassword(
+          cleanEmail,
+          password,
+          displayName.trim() || undefined
+        );
+        if (res.success) {
+          setSuccessMessage(`Account created successfully! Logged in as ${cleanEmail}`);
+          setTimeout(() => {
+            closeAuthModal();
+          }, 600);
+        } else {
+          setLocalError(res.error || 'Failed to register account.');
+        }
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Authentication encountered an error.';
+      setLocalError(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isCurrentInputAdmin =
-    googleEmail.trim().toLowerCase() === designatedAdminEmail.toLowerCase();
+  const handleGoogleSignInClick = async () => {
+    setLocalError(null);
+    clearAuthError();
+    await signIn();
+  };
 
   return (
     <div
@@ -77,19 +128,19 @@ export const AuthModal: React.FC = () => {
       >
         {/* Header */}
         <div
-          className="p-6 border-b flex items-center justify-between"
+          className="p-5 border-b flex items-center justify-between"
           style={{ borderColor: themeConfig.border, backgroundColor: themeConfig.bgCardSubtle }}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center shadow-inner">
+              <KeyRound className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-arnie text-lg font-bold text-white flex items-center gap-2">
-                Google Account Sign In
+                Examinee Portal Authentication
               </h3>
               <p className="text-xs text-slate-400">
-                Civil Engineering Board Exam Portal
+                Philippine Civil Engineering Licensure Exam
               </p>
             </div>
           </div>
@@ -102,27 +153,62 @@ export const AuthModal: React.FC = () => {
           </button>
         </div>
 
-        <div className="p-6 space-y-6 max-h-[82vh] overflow-y-auto">
-          {/* Policy Information Card */}
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs space-y-2">
+        <div className="p-6 space-y-5 max-h-[84vh] overflow-y-auto">
+          {/* Mode Switcher Tabs */}
+          <div className="grid grid-cols-2 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('signin');
+                setLocalError(null);
+                clearAuthError();
+              }}
+              className={`py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 ${
+                authMode === 'signin'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Sign In with Password</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('register');
+                setLocalError(null);
+                clearAuthError();
+              }}
+              className={`py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 ${
+                authMode === 'register'
+                  ? 'bg-amber-500 text-slate-950 shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Create Account</span>
+            </button>
+          </div>
+
+          {/* Role Policy Notice */}
+          <div className="p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 text-[11px] space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="font-bold text-white flex items-center space-x-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Account Role Policy</span>
+                <span>Account Role &amp; Sync</span>
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                Cloud Firestore Sync
+                Cloud Firestore
               </span>
             </div>
             <p className="text-slate-300 leading-relaxed text-[11px]">
-              • Super Administrator:{' '}
-              <strong className="text-amber-300 font-mono">{designatedAdminEmail}</strong> (full administrative &amp; user management access).
+              • Super Admin: <strong className="text-amber-300 font-mono">{designatedAdminEmail}</strong> (Admin control, post announcements, user roster).
               <br />
-              • All other Google email addresses are registered as standard candidates with separate exam history and review progress.
+              • All other examinee emails: registered as independent Reviewee accounts with separate history, attempts, and leaderboard rankings.
             </p>
           </div>
 
-          {/* Success Message Banner */}
+          {/* Success Banner */}
           {successMessage && (
             <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center space-x-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -130,13 +216,179 @@ export const AuthModal: React.FC = () => {
             </div>
           )}
 
-          {/* Native Google Popup Option */}
-          <div className="space-y-3">
+          {/* Error Banner */}
+          {(localError || authError) && (
+            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs flex items-start space-x-2.5">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <p className="font-bold text-rose-300">Notice</p>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  {localError || authError}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Email & Password Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Display Name (Only on register) */}
+            {authMode === 'register' && (
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-slate-300">
+                  Full Name / Reviewee Title <span className="text-slate-500 text-[10px]">(Optional)</span>
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Engr. Juan Dela Cruz"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-slate-300">
+                Email Address <span className="text-rose-400">*</span>
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <input
+                  type="email"
+                  required
+                  placeholder={authMode === 'signin' ? 'Enter email (e.g. derrickdarrack@gmail.com)' : 'Enter your email address'}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (localError) setLocalError(null);
+                  }}
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-medium text-slate-300">
+                  Password <span className="text-rose-400">*</span>
+                </label>
+                <span className="text-[10px] text-slate-500">Min. 6 characters</span>
+              </div>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (localError) setLocalError(null);
+                  }}
+                  className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password Field (Register only) */}
+            {authMode === 'register' && (
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-slate-300">
+                  Confirm Password <span className="text-rose-400">*</span>
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    placeholder="Re-type your password"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      if (localError) setLocalError(null);
+                    }}
+                    className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Dynamic Role Indicator */}
+            {email.trim() && (
+              <div
+                className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${
+                  isCurrentInputAdmin
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  {isCurrentInputAdmin ? (
+                    <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
+                  ) : (
+                    <User className="w-4 h-4 text-emerald-400 shrink-0" />
+                  )}
+                  <span className="font-semibold text-[11px]">
+                    {isCurrentInputAdmin
+                      ? 'Recognized as Super Administrator (Derrick Darrack)'
+                      : 'Separate Reviewee Candidate Account'}
+                  </span>
+                </div>
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    isCurrentInputAdmin
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                  }`}
+                >
+                  {isCurrentInputAdmin ? 'ADMIN' : 'USER'}
+                </span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting || !email.includes('@') || password.length < 6}
+              className="w-full py-3 px-4 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg"
+            >
+              <span>
+                {isSubmitting
+                  ? 'Authenticating...'
+                  : authMode === 'signin'
+                  ? 'Sign In with Password'
+                  : 'Create Account & Sign In'}
+              </span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-slate-800 w-full" />
+            <span className="bg-slate-900 px-3 text-[10px] font-mono text-slate-500 uppercase tracking-wider shrink-0">
+              OR USE GOOGLE SIGN IN
+            </span>
+          </div>
+
+          {/* Google Popup Button */}
+          <div className="space-y-2.5">
             <button
               type="button"
               disabled={loading || isSubmitting}
-              onClick={signIn}
-              className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-center space-x-3 shadow-lg transition-all hover:scale-[1.01] cursor-pointer"
+              onClick={handleGoogleSignInClick}
+              className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-center space-x-3 shadow-md transition-all hover:scale-[1.01] cursor-pointer"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                 <path
@@ -158,106 +410,25 @@ export const AuthModal: React.FC = () => {
               </svg>
               <span>{loading ? 'Connecting to Google...' : 'Sign In with Google Popup'}</span>
             </button>
+
+            {/* Vercel Deployment Troubleshooting Note */}
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+              <div className="flex items-center space-x-1.5 text-slate-300 font-semibold">
+                <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Deploying on Vercel?</span>
+              </div>
+              <p className="leading-relaxed">
+                Google popup on Vercel requires adding your domain (e.g.{' '}
+                <code className="text-amber-300 font-mono">your-project.vercel.app</code>) to{' '}
+                <span className="text-white">Firebase Console &gt; Authentication &gt; Settings &gt; Authorized Domains</span>.
+                <br />
+                <span className="text-emerald-400 font-medium">
+                  ✓ Or simply use the Email &amp; Password option above
+                </span>{' '}
+                — it works instantly on Vercel, localhost, and any custom domain without any setup!
+              </p>
+            </div>
           </div>
-
-          <div className="relative flex items-center justify-center">
-            <div className="border-t border-slate-800 w-full" />
-            <span className="bg-slate-900 px-3 text-[11px] font-mono text-slate-500 uppercase tracking-wider shrink-0">
-              OR SIGN IN DIRECTLY WITH GOOGLE EMAIL
-            </span>
-          </div>
-
-          {/* Direct Google Account Sign-In Form */}
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-slate-300">
-                Google Account Email <span className="text-rose-400">*</span>
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your Google email (e.g. derrickdarrack@gmail.com)"
-                  value={googleEmail}
-                  onChange={(e) => {
-                    setGoogleEmail(e.target.value);
-                    if (authError) clearAuthError();
-                  }}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-slate-300">
-                Display Name <span className="text-slate-500 text-[10px]">(Optional)</span>
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                <input
-                  type="text"
-                  placeholder="e.g. Derrick Darrack or Candidate Name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* Dynamic Role Indicator */}
-            {googleEmail.trim() && (
-              <div
-                className={`p-3 rounded-xl border text-xs flex items-center justify-between ${
-                  isCurrentInputAdmin
-                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  {isCurrentInputAdmin ? (
-                    <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
-                  ) : (
-                    <User className="w-4 h-4 text-emerald-400 shrink-0" />
-                  )}
-                  <span className="font-semibold text-[11px]">
-                    {isCurrentInputAdmin
-                      ? 'Recognized as Designated Super Admin'
-                      : 'Separate Candidate Account'}
-                  </span>
-                </div>
-                <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    isCurrentInputAdmin
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                  }`}
-                >
-                  {isCurrentInputAdmin ? 'ADMIN' : 'USER'}
-                </span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isSubmitting || !googleEmail.includes('@')}
-              className="w-full py-3 px-4 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 transition-all cursor-pointer flex items-center justify-center space-x-2 shadow-lg"
-            >
-              <span>{isSubmitting ? 'Signing In & Registering...' : 'Sign In with this Google Account'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-
-          {/* Error Notice */}
-          {authError && (
-            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-start space-x-2.5">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <div className="space-y-0.5">
-                <p className="font-bold text-amber-300">Notice</p>
-                <p className="text-slate-300 text-[11px] leading-relaxed">{authError}</p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

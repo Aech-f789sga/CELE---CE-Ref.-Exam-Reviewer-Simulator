@@ -17,17 +17,22 @@ import { ExamResults } from './components/ExamResults';
 import { PerformanceReview } from './components/PerformanceReview';
 import { BookletView } from './components/BookletView';
 import { AdminPanel } from './components/AdminPanel';
+import { LeaderboardView } from './components/LeaderboardView';
+import { AnnouncementSection } from './components/AnnouncementSection';
 import { ThemeModal } from './components/ThemeModal';
 import { AuthModal } from './components/AuthModal';
 import { useTheme } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
-import { recordExamAttempt } from './services/firebase';
+import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './services/firebase';
 
 function MainApp() {
-  const [currentTab, setCurrentTab] = useState<'setup' | 'performance' | 'booklet' | 'admin'>('setup');
+  const [currentTab, setCurrentTab] = useState<
+    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'booklet' | 'admin'
+  >('setup');
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [bookletSearchQuery, setBookletSearchQuery] = useState<string>('');
+  const [latestAnnouncement, setLatestAnnouncement] = useState<SystemAnnouncement | null>(null);
   const { themeConfig } = useTheme();
   const { user, profile } = useAuth();
   const activeUser = profile || user;
@@ -50,9 +55,16 @@ function MainApp() {
   // Stored attempts
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
 
-  // Load stored attempts on mount
+  // Load stored attempts and announcements on mount
   useEffect(() => {
     setAttempts(getStoredAttempts());
+    fetchAnnouncements(true)
+      .then((list) => {
+        if (list.length > 0) {
+          setLatestAnnouncement(list[0]);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Sync default timer duration when subject changes
@@ -218,6 +230,39 @@ function MainApp() {
           {/* VIEW 3: Standard Navigation Views */}
           {!isExamRunning && !isExamFinished && (
             <>
+              {/* Optional Top Announcement Alert Banner on Exam Portal */}
+              {currentTab === 'setup' && latestAnnouncement && (
+                <div className="max-w-7xl mx-auto mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                  <div className="flex items-start sm:items-center space-x-3">
+                    <span className="p-2 rounded-xl bg-amber-500/20 text-amber-300 shrink-0">
+                      📣
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white text-xs">
+                          {latestAnnouncement.title}
+                        </span>
+                        {latestAnnouncement.isPinned && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 font-black">
+                            PINNED
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-300 line-clamp-1 mt-0.5">
+                        {latestAnnouncement.message}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentTab('announcements')}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
+                  >
+                    Read All Updates
+                  </button>
+                </div>
+              )}
+
               {currentTab === 'setup' && (
                 <SubjectSelector
                   selectedSubject={selectedSubject}
@@ -233,6 +278,22 @@ function MainApp() {
                   examMode={examMode}
                   onExamModeChange={setExamMode}
                   onStartExam={handleStartExam}
+                />
+              )}
+
+              {currentTab === 'leaderboard' && (
+                <LeaderboardView
+                  onTakeExamArea={(sub) => {
+                    handleSubjectChange(sub);
+                    setCurrentTab('setup');
+                  }}
+                />
+              )}
+
+              {currentTab === 'announcements' && (
+                <AnnouncementSection
+                  onNavigateToAdmin={() => setCurrentTab('admin')}
+                  onTakeExam={() => setCurrentTab('setup')}
                 />
               )}
 
