@@ -1,4 +1,17 @@
 import { Question } from '../../../types/exam';
+import {
+  PSAD_NOV_2024_SITUATIONS,
+  getPsadNov2024FigureHtml,
+} from '../../situationImages';
+
+const S6_FIG = getPsadNov2024FigureHtml(6);
+const S6_CAP = PSAD_NOV_2024_SITUATIONS[6].caption;
+
+const S7_FIG = getPsadNov2024FigureHtml(7);
+const S7_CAP = PSAD_NOV_2024_SITUATIONS[7].caption;
+
+const S8_FIG = getPsadNov2024FigureHtml(8);
+const S8_CAP = PSAD_NOV_2024_SITUATIONS[8].caption;
 
 export const PSAD_NOV2024_PART2: Question[] = [
   // Item 16
@@ -11,6 +24,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Pinned Frameworks',
     text: 'Situation 6 — The frame shown are pinned at A, B, and C, with details as shown.\nGiven: L = 1.5 m, θ = 30°, E = 200 GPa.\nBar sizes: Bar AC: 6 mm × 50 mm; Bar BC: 8 mm × 50 mm.\n\n16. If the tensile stress of AC is f_t = 124 MPa, what is the value of W (kN)?',
+    figureCaption: S6_CAP,
+    figureSvg: S6_FIG,
     options: [
       { label: 'A', text: '18.6' },
       { label: 'B', text: '24.8' },
@@ -47,6 +62,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Pinned Frameworks',
     text: 'Situation 6 — 17. What is the value of W (kN) if the strain of AC is 0.0002 mm/mm?',
+    figureCaption: S6_CAP,
+    figureSvg: S6_FIG,
     options: [
       { label: 'A', text: '8' },
       { label: 'B', text: '10.4' },
@@ -80,6 +97,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Cable Sizing',
     text: 'Situation 6 — 18. If AC is replaced by a 12-mm-diameter cable, find the maximum W (kN). Nominal stress = 148 MPa. Use a factor of safety, FS = 2.0.',
+    figureCaption: S6_CAP,
+    figureSvg: S6_FIG,
     options: [
       { label: 'A', text: '2' },
       { label: 'B', text: '4' },
@@ -116,6 +135,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Bolted Connections & Stresses',
     text: 'Situation 7 — The hoisting beam assembly shown is supported by 2-22 mm diameter bolts at A and a 150 mm × 200 mm plate at B.\nGiven: L₁ = 1 m, L₂ = 2.5 m, W = 80 kN.\n\n19. Determine the tensile stress (MPa) in the anchor bolts.',
+    figureCaption: S7_CAP,
+    figureSvg: S7_FIG,
     options: [
       { label: 'A', text: '263' },
       { label: 'B', text: '526' },
@@ -151,6 +172,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Bearing Stress',
     text: 'Situation 7 — 20. Determine the bearing stress (MPa) in the plate.',
+    figureCaption: S7_CAP,
+    figureSvg: S7_FIG,
     options: [
       { label: 'A', text: '4.67' },
       { label: 'B', text: '18.7' },
@@ -185,6 +208,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Bolted Connections & Stresses',
     text: 'Situation 7 — 21. If the allowable tensile stress of a bolt, F_t = 145 MPa, calculate the maximum W (kN).',
+    figureCaption: S7_CAP,
+    figureSvg: S7_FIG,
     options: [
       { label: 'A', text: '44' },
       { label: 'B', text: '33' },
@@ -219,6 +244,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Torsion of Shafts',
     text: 'Situation 8 — Given the following data of the figure shown. Dimensions: a = 200 mm; b = 750 mm; c = 600 mm. Load, P = 180 N. Diameter of rod BD = 40 mm. Modulus of rigidity, G = 78 GPa. Assume full fixity at D.\n\n22. Calculate the maximum shearing stress (MPa) in the rod.',
+    figureCaption: S8_CAP,
+    figureSvg: S8_FIG,
     options: [
       { label: 'A', text: '7.53' },
       { label: 'B', text: '15.10' },
@@ -252,6 +279,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Torsion of Shafts',
     text: 'Situation 8 — 23. Compute the maximum angle of twist (degrees) of BD.',
+    figureCaption: S8_CAP,
+    figureSvg: S8_FIG,
     options: [
       { label: 'A', text: '0.284' },
       { label: 'B', text: '0.158' },
@@ -285,6 +314,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Torsion of Hollow Shafts',
     text: 'Situation 8 — 24. Calculate the maximum shear stress (MPa) at D if member BD is hollowed with diameter, D = 50 mm and a uniform thickness of 5 mm.',
+    figureCaption: S8_CAP,
+    figureSvg: S8_FIG,
     options: [
       { label: 'A', text: '4.97' },
       { label: 'B', text: '2.93' },

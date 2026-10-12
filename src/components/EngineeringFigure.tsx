@@ -67,6 +67,16 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
     }
   }
 
+  // Inspect figureSvg for PSAD November 2024 illustrations
+  const isPsadNov = figureSvg.includes('PSAD_November_2024_') || figureSvg.includes('PSADNov2024');
+  let psadNovSitNum: number | null = null;
+  if (isPsadNov) {
+    const match = figureSvg.match(/PSAD[-_]November[-_]2024[-_](\d+)/i);
+    if (match && match[1]) {
+      psadNovSitNum = parseInt(match[1], 10);
+    }
+  }
+
   return (
     <div
       className={`rounded-2xl border transition-all duration-200 overflow-hidden my-4 ${
@@ -87,6 +97,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           {situationNum && (
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
               Situation {situationNum} Figure
+            </span>
+          )}
+          {psadNovSitNum && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              PSAD Nov 2024 · Situation {psadNovSitNum} Figure
             </span>
           )}
           {mstcNum && (
@@ -249,7 +264,7 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           </div>
         ) : (
           <div
-            className={`overflow-x-auto flex justify-center w-full ${isZoomed ? 'max-w-2xl py-4' : ''}`}
+            className={`overflow-x-auto flex justify-center w-full ${isZoomed ? 'max-w-5xl py-4' : ''}`}
             dangerouslySetInnerHTML={{ __html: figureSvg }}
           />
         )}

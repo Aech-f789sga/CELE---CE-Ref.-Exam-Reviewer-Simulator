@@ -1,4 +1,14 @@
 import { Question } from '../../../types/exam';
+import {
+  PSAD_NOV_2024_SITUATIONS,
+  getPsadNov2024FigureHtml,
+} from '../../situationImages';
+
+const S22_FIG = getPsadNov2024FigureHtml(22);
+const S22_CAP = PSAD_NOV_2024_SITUATIONS[22].caption;
+
+const S25_FIG = getPsadNov2024FigureHtml(25);
+const S25_CAP = PSAD_NOV_2024_SITUATIONS[25].caption;
 
 export const PSAD_NOV2024_PART5: Question[] = [
   // Item 61
@@ -111,6 +121,8 @@ export const PSAD_NOV2024_PART5: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Bolted Connections & Eccentric Shear',
     text: 'Situation 22 — A bracket is connected to the flange of a column by a group of six 20-mm diameter bolts in two vertical rows of three bolts each. The bolts are spaced at 100 mm horizontally and 80 mm vertically. A vertical load P = 120 kN acts at an eccentricity e = 250 mm to the right of the centroid of the bolt group.\n\n64. Determine the direct shear force (kN) acting on each bolt.',
+    figureCaption: S22_CAP,
+    figureSvg: S22_FIG,
     options: [
       { label: 'A', text: '20' },
       { label: 'B', text: '24' },
@@ -142,6 +154,8 @@ export const PSAD_NOV2024_PART5: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Bolted Connections & Eccentric Shear',
     text: 'Situation 22 — 65. Determine the polar moment of inertia J = Σ(x² + y²) (mm²) of the bolt group with respect to its centroid.',
+    figureCaption: S22_CAP,
+    figureSvg: S22_FIG,
     options: [
       { label: 'A', text: '40,600' },
       { label: 'B', text: '35,200' },
@@ -178,6 +192,8 @@ export const PSAD_NOV2024_PART5: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Bolted Connections & Eccentric Shear',
     text: 'Situation 22 — 66. Determine the maximum resultant shear force (kN) carried by the most heavily stressed bolt.',
+    figureCaption: S22_CAP,
+    figureSvg: S22_FIG,
     options: [
       { label: 'A', text: '82.1' },
       { label: 'B', text: '68.5' },
@@ -421,6 +437,8 @@ export const PSAD_NOV2024_PART5: Question[] = [
     month: 'November',
     category: 'Earthquake Engineering & NSCP 2015 - Equivalent Lateral Force Procedure',
     text: 'Situation 25 — A four-story office building located in Seismic Zone 4 has a total seismic dead weight W = 12,000 kN and fundamental period T = 0.50 s.\nGiven: Seismic coefficient Cv = 0.528, Ca = 0.44, Importance factor I = 1.0, Response modification factor R = 8.5.\n\n73. Determine the design total design base shear V (kN) according to the NSCP 2015 equivalent lateral force procedure.',
+    figureCaption: S25_CAP,
+    figureSvg: S25_FIG,
     options: [
       { label: 'A', text: '1,491' },
       { label: 'B', text: '1,553' },
@@ -456,6 +474,8 @@ export const PSAD_NOV2024_PART5: Question[] = [
     month: 'November',
     category: 'Earthquake Engineering & NSCP 2015 - Equivalent Lateral Force Procedure',
     text: 'Situation 25 — 74. For T = 0.50 s (T ≤ 0.7 s, so Ft = 0), calculate the lateral seismic force F₄ (kN) distributed to the roof level (Level 4, h₄ = 14 m, W₄ = 2,400 kN) where story weights are: Level 1 = 3,200 kN at 3.5 m, Level 2 = 3,200 kN at 7.0 m, Level 3 = 3,200 kN at 10.5 m, and Level 4 = 2,400 kN at 14.0 m.',
+    figureCaption: S25_CAP,
+    figureSvg: S25_FIG,
     options: [
       { label: 'A', text: '497' },
       { label: 'B', text: '420' },
@@ -494,6 +514,8 @@ export const PSAD_NOV2024_PART5: Question[] = [
     month: 'November',
     category: 'Earthquake Engineering & NSCP 2015 - Equivalent Lateral Force Procedure',
     text: 'Situation 25 — 75. Determine the lateral seismic force F₃ (kN) distributed to the 3rd floor level (h₃ = 10.5 m, W₃ = 3,200 kN).',
+    figureCaption: S25_CAP,
+    figureSvg: S25_FIG,
     options: [
       { label: 'A', text: '497' },
       { label: 'B', text: '331' },

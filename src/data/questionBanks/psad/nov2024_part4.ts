@@ -1,4 +1,20 @@
 import { Question } from '../../../types/exam';
+import {
+  PSAD_NOV_2024_SITUATIONS,
+  getPsadNov2024FigureHtml,
+} from '../../situationImages';
+
+const S16_FIG = getPsadNov2024FigureHtml(16);
+const S16_CAP = PSAD_NOV_2024_SITUATIONS[16].caption;
+
+const S17_FIG = getPsadNov2024FigureHtml(17);
+const S17_CAP = PSAD_NOV_2024_SITUATIONS[17].caption;
+
+const S18_FIG = getPsadNov2024FigureHtml(18);
+const S18_CAP = PSAD_NOV_2024_SITUATIONS[18].caption;
+
+const S19_FIG = getPsadNov2024FigureHtml(19);
+const S19_CAP = PSAD_NOV_2024_SITUATIONS[19].caption;
 
 export const PSAD_NOV2024_PART4: Question[] = [
   // Item 46
@@ -11,6 +27,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Compound Bridge Girders & Influence Lines',
     text: 'Situation 16 — The compound bridge girder shown is to be analyzed using the following loads. Dead load = 13 kN/m, Live load = 12 kN/m.\nGiven: L₁ = 4 m, L₂ = 10 m.\n\n46. What is the maximum reaction (kN) at C due to dead load only?',
+    figureCaption: S16_CAP,
+    figureSvg: S16_FIG,
     options: [
       { label: 'A', text: '163.8' },
       { label: 'B', text: '183.6' },
@@ -44,6 +62,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Compound Bridge Girders & Influence Lines',
     text: 'Situation 16 — 47. What is the maximum reaction (kN) at C due to live load only?',
+    figureCaption: S16_CAP,
+    figureSvg: S16_FIG,
     options: [
       { label: 'A', text: '132.0' },
       { label: 'B', text: '151.2' },
@@ -76,6 +96,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Compound Bridge Girders & Influence Lines',
     text: 'Situation 16 — 48. What is the maximum shear (kN) at the midspan due to dead and live load?',
+    figureCaption: S16_CAP,
+    figureSvg: S16_FIG,
     options: [
       { label: 'A', text: '34.2' },
       { label: 'B', text: '37.1' },
@@ -111,6 +133,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Welded Connections',
     text: 'Situation 17 — A 12-mm-thick plate acting as a bracket is joined to a structural tee column through fillet welds, welded on each side. Allowable shear stress of the weld, F_vw = 124 MPa.\n\n49. Compute the required length (mm) of each weld if e = 0, P = 85 kN, and weld thickness, t_w = 6 mm.',
+    figureCaption: S17_CAP,
+    figureSvg: S17_FIG,
     options: [
       { label: 'A', text: '162' },
       { label: 'B', text: '81' },
@@ -144,6 +168,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Welded Connections',
     text: 'Situation 17 — 50. Calculate the critical weld reaction, R (N/mm) if e = 200 mm, L = 300 mm, P = 85 kN, and weld thickness, t_w = 6 mm.',
+    figureCaption: S17_CAP,
+    figureSvg: S17_FIG,
     options: [
       { label: 'A', text: '584' },
       { label: 'B', text: '142' },
@@ -181,6 +207,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Welded Connections',
     text: 'Situation 17 — 51. Calculate the minimum required weld size if e = 250 mm, L = 350 mm, and P = 90 kN.',
+    figureCaption: S17_CAP,
+    figureSvg: S17_FIG,
     options: [
       { label: 'A', text: '6' },
       { label: 'B', text: '7' },
@@ -217,6 +245,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Column Analysis & Frame Buckling',
     text: 'Situation 18 — For the figure shown, members AC, BE, and DF are purely axially loaded members. Members AC and DF are tubular sections, while member BE is a wide flange section and buckling considered about x-axis of the section. Use Table 510.\nGiven: P₁ = 60 kN; P₂ = 80 kN; θ = 45°; β = 60°; H = 5 m.\nProperties of tubular section: A = 2.86 × 10³ mm², I_x = 12.11 × 10⁶ mm⁴, I_y = 3.58 × 10⁶ mm⁴.\n\n52. Compute the load (kN) on member AC.',
+    figureCaption: S18_CAP,
+    figureSvg: S18_FIG,
     options: [
       { label: 'A', text: '56.57' },
       { label: 'B', text: '113.12' },
@@ -251,6 +281,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Column Analysis & Frame Buckling',
     text: 'Situation 18 — 53. Compute the stress (MPa) in member BE.',
+    figureCaption: S18_CAP,
+    figureSvg: S18_FIG,
     options: [
       { label: 'A', text: '19.78' },
       { label: 'B', text: '39.56' },
@@ -283,6 +315,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Column Analysis & Frame Buckling',
     text: 'Situation 18 — 54. Compute the ratio of the actual to allowable stress of member BE. Use the table below.\n\nTable 510: Allowable Stress (MPa) for Compression Members with Fy = 248 MPa\n| kL/r | Fa (MPa) |\n|:---:|:---:|\n| 87 | 100.326 |\n| 88 | 99.521 |\n| 89 | 98.711 |\n| 90 | 97.896 |',
+    figureCaption: S18_CAP,
+    figureSvg: S18_FIG,
     options: [
       { label: 'A', text: '2.50' },
       { label: 'B', text: '1.02' },
@@ -321,6 +355,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Prestressed Concrete Design - Beam Stresses',
     text: 'Situation 19 — The section shown is subjected to prestressing, with the cable following a linear profile to ensure structural stability. The joists are simply supported on a span of 12 m.\nGiven: Eccentricity at the supports = 60 mm above N.A.; Eccentricity at the midspan = 200 mm below N.A.\nSection properties: Area, A = 2.25 × 10⁵ mm², Moment of inertia, I_na = 5 × 10⁹ mm⁴, Unit weight, γ_c = 24 kN/m³.\nDimensions: h = 520 mm, y_t = 165 mm, b = 150 mm, t = 75 mm, a = 75 mm.\nSuperimposed dead load = 3.5 kN/m, Final prestressing force, P = 650 kN.\n\n55. Calculate the stress (MPa) at the top fiber near the support due to prestress alone.',
+    figureCaption: S19_CAP,
+    figureSvg: S19_FIG,
     options: [
       { label: 'A', text: '0.28 C' },
       { label: 'B', text: '5.50 C' },
@@ -354,6 +390,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Prestressed Concrete Design - Beam Stresses',
     text: 'Situation 19 — 56. Calculate the stress (MPa) at the bottom fiber at L/4 due to prestress alone.',
+    figureCaption: S19_CAP,
+    figureSvg: S19_FIG,
     options: [
       { label: 'A', text: '1.39 C' },
       { label: 'B', text: '6.12 C' },
@@ -390,6 +428,8 @@ export const PSAD_NOV2024_PART4: Question[] = [
     month: 'November',
     category: 'Prestressed Concrete Design - Beam Stresses',
     text: 'Situation 19 — 57. What is the minimum final prestressing force P (kN) due to dead load and prestress that will not produce tensile stress at the midspan?',
+    figureCaption: S19_CAP,
+    figureSvg: S19_FIG,
     options: [
       { label: 'A', text: '479' },
       { label: 'B', text: '240' },

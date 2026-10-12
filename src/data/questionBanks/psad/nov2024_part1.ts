@@ -1,4 +1,17 @@
 import { Question } from '../../../types/exam';
+import {
+  PSAD_NOV_2024_SITUATIONS,
+  getPsadNov2024FigureHtml,
+} from '../../situationImages';
+
+const S2_FIG = getPsadNov2024FigureHtml(2);
+const S2_CAP = PSAD_NOV_2024_SITUATIONS[2].caption;
+
+const S3_FIG = getPsadNov2024FigureHtml(3);
+const S3_CAP = PSAD_NOV_2024_SITUATIONS[3].caption;
+
+const S4_FIG = getPsadNov2024FigureHtml(4);
+const S4_CAP = PSAD_NOV_2024_SITUATIONS[4].caption;
 
 export const PSAD_NOV2024_PART1: Question[] = [
   // Item 1
@@ -101,6 +114,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Trusses with Cable Diagonals',
     text: 'Situation 2 — For the truss configuration shown, members AD and BC are cables.\nGiven: V = 10 kN, H = 6 kN, a = 1.5 m, b = 4 m, c = 6 m.\n\n4. Calculate the vertical reaction (kN) at A.',
+    figureCaption: S2_CAP,
+    figureSvg: S2_FIG,
     options: [
       { label: 'A', text: '15.14' },
       { label: 'B', text: '10.00' },
@@ -142,6 +157,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Trusses with Cable Diagonals',
     text: 'Situation 2 — 5. Calculate the force (kN) in member AC.',
+    figureCaption: S2_CAP,
+    figureSvg: S2_FIG,
     options: [
       { label: 'A', text: '15.61 T' },
       { label: 'B', text: '15.61 C' },
@@ -173,6 +190,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Trusses with Cable Diagonals',
     text: 'Situation 2 — 6. Calculate the force (kN) in member BD.',
+    figureCaption: S2_CAP,
+    figureSvg: S2_FIG,
     options: [
       { label: 'A', text: '10.31 T' },
       { label: 'B', text: '13.11 C' },
@@ -205,6 +224,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Cable Guy Systems',
     text: 'Situation 3 — A flagpole is supported by four cables as shown in the figure.\nGiven: P = 5 kN, a = 12 m, b = 12 m, h = 20 m. Diameter of cable = 12 mm, E = 200 GPa.\n\n7. Calculate the tensile stress (MPa) in cable AF.',
+    figureCaption: S3_CAP,
+    figureSvg: S3_FIG,
     options: [
       { label: 'A', text: '44.2' },
       { label: 'B', text: '32.3' },
@@ -241,6 +262,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Cable Guy Systems',
     text: 'Situation 3 — 8. What is the elongation (mm) of cable AF if the stress in the cable is 220 MPa?',
+    figureCaption: S3_CAP,
+    figureSvg: S3_FIG,
     options: [
       { label: 'A', text: '8.8' },
       { label: 'B', text: '9.5' },
@@ -274,6 +297,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Cable Guy Systems',
     text: 'Situation 3 — 9. If the elongation of AF is 22 mm, find the horizontal displacement (mm) at G.',
+    figureCaption: S3_CAP,
+    figureSvg: S3_FIG,
     options: [
       { label: 'A', text: '51.9' },
       { label: 'B', text: '36.7' },
@@ -308,6 +333,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Statics & Friction',
     text: 'Situation 4 — Two cylinders A and B, weighing 750 N and 420 N, respectively, are connected by a rigid curved rod parallel to the cylindrical surface. Neglect the diameter of the cylinders. Given: θ = 90°, R = 6 m.\n\n10. If the surfaces are frictionless, what is the value of angle α to maintain equilibrium?',
+    figureCaption: S4_CAP,
+    figureSvg: S4_FIG,
     options: [
       { label: 'A', text: '50.17°' },
       { label: 'B', text: '60.75°' },
@@ -344,6 +371,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Statics & Friction',
     text: 'Situation 4 — 11. If the coefficient of friction is μ_s = 0.2 in the contacting surfaces, what is the smallest value of angle α to prevent counterclockwise rotation?',
+    figureCaption: S4_CAP,
+    figureSvg: S4_FIG,
     options: [
       { label: 'A', text: '56.88°' },
       { label: 'B', text: '49.44°' },
@@ -379,6 +408,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Statics & Friction',
     text: 'Situation 4 — 12. If the coefficient of friction is μ_s = 0.015 in the contacting surfaces, which of the following is the smallest value of angle α to impend motion?',
+    figureCaption: S4_CAP,
+    figureSvg: S4_FIG,
     options: [
       { label: 'A', text: '47.15°' },
       { label: 'B', text: '34.34°' },

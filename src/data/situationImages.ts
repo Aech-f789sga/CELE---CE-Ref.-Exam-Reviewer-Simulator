@@ -110,3 +110,150 @@ export function getSituationFigureHtml(
     />
   </div>`;
 }
+
+/**
+ * Registry of PSAD November 2024 situations and their illustration images.
+ * File names are "PSAD_November_2024_{X}.png" located in src/images/PSADNov2024.
+ * Situation 18 has two illustrations: "PSAD_November_2024_18.png" and "PSAD_November_2024_18(1).png".
+ */
+export const PSAD_NOV_2024_SITUATIONS: Record<
+  number,
+  {
+    caption: string;
+    files: {
+      filename: string;
+      subCaption?: string;
+    }[];
+  }
+> = {
+  2: {
+    caption: 'Figure S2: PSAD November 2024 Situation 2 - Truss Configuration with Cable Diagonals',
+    files: [{ filename: 'PSAD_November_2024_2.png', subCaption: 'Truss Configuration with Cable Diagonals' }],
+  },
+  3: {
+    caption: 'Figure S3: PSAD November 2024 Situation 3 - Flagpole Guy Cable System',
+    files: [{ filename: 'PSAD_November_2024_3.png', subCaption: 'Flagpole Guy Cable Assembly' }],
+  },
+  4: {
+    caption: 'Figure S4: PSAD November 2024 Situation 4 - Equilibrium and Friction on Incline',
+    files: [{ filename: 'PSAD_November_2024_4.png', subCaption: 'Equilibrium & Friction Diagram' }],
+  },
+  6: {
+    caption: 'Figure S6: PSAD November 2024 Situation 6 - Pinned Frame Assembly',
+    files: [{ filename: 'PSAD_November_2024_6.png', subCaption: 'Pinned Frame Structure' }],
+  },
+  7: {
+    caption: 'Figure S7: PSAD November 2024 Situation 7 - Hoisting Beam Assembly',
+    files: [{ filename: 'PSAD_November_2024_7.png', subCaption: 'Hoisting Beam Assembly with Anchor Bolts' }],
+  },
+  8: {
+    caption: 'Figure S8: PSAD November 2024 Situation 8 - Torsion & Shear in Rod BD',
+    files: [{ filename: 'PSAD_November_2024_8.png', subCaption: 'Rod BD Torque & Shear Assembly' }],
+  },
+  11: {
+    caption: 'Figure S11: PSAD November 2024 Situation 11 - Wide Flange Purlin on Sloping Truss',
+    files: [{ filename: 'PSAD_November_2024_11.png', subCaption: 'Sloping Truss Purlin System' }],
+  },
+  12: {
+    caption: 'Figure S12: PSAD November 2024 Situation 12 - Frame Support Indeterminacy',
+    files: [{ filename: 'PSAD_November_2024_12.png', subCaption: 'Continuous Frame & Support Indeterminacy' }],
+  },
+  13: {
+    caption: 'Figure S13: PSAD November 2024 Situation 13 - Beam Moment and Shear Diagram',
+    files: [{ filename: 'PSAD_November_2024_13.png', subCaption: 'Beam Loading & Shear/Moment Diagram' }],
+  },
+  14: {
+    caption: 'Figure S14: PSAD November 2024 Situation 14 - Two-Span Continuous Beam',
+    files: [{ filename: 'PSAD_November_2024_14.png', subCaption: 'Two-Span Continuous Beam Elevation' }],
+  },
+  15: {
+    caption: 'Figure S15: PSAD November 2024 Situation 15 - Propped Cantilever Beam',
+    files: [{ filename: 'PSAD_November_2024_15.png', subCaption: 'Propped Cantilever Beam Loading' }],
+  },
+  16: {
+    caption: 'Figure S16: PSAD November 2024 Situation 16 - Compound Bridge Girder System',
+    files: [{ filename: 'PSAD_November_2024_16.png', subCaption: 'Compound Bridge Girder System' }],
+  },
+  17: {
+    caption: 'Figure S17: PSAD November 2024 Situation 17 - Fillet-Welded Bracket Plate Connection',
+    files: [{ filename: 'PSAD_November_2024_17.png', subCaption: 'Fillet-Welded Bracket Connection' }],
+  },
+  18: {
+    caption: 'Figure S18: PSAD November 2024 Situation 18 - Axially Loaded Members & Section Table',
+    files: [
+      { filename: 'PSAD_November_2024_18.png', subCaption: 'Figure S18-A: Axially Loaded Frame System' },
+      { filename: 'PSAD_November_2024_18(1).png', subCaption: 'Figure S18-B: Member Specifications & Table 510' },
+    ],
+  },
+  19: {
+    caption: 'Figure S19: PSAD November 2024 Situation 19 - Prestressed Concrete Section & Cable Profile',
+    files: [{ filename: 'PSAD_November_2024_19.png', subCaption: 'Prestressed Concrete Joist & Cable Profile' }],
+  },
+  22: {
+    caption: 'Figure S22: PSAD November 2024 Situation 22 - Eccentric Bolt Group Bracket Connection',
+    files: [{ filename: 'PSAD_November_2024_22.png', subCaption: 'Eccentric Bolt Group Pattern' }],
+  },
+  25: {
+    caption: 'Figure S25: PSAD November 2024 Situation 25 - Building Elevation and Seismic Force Distribution',
+    files: [{ filename: 'PSAD_November_2024_25.png', subCaption: 'Building Elevation & Story Lateral Force' }],
+  },
+};
+
+/**
+ * Generates figure HTML string for PSAD November 2024 situations.
+ * Handles both single-image situations and multi-image situations (e.g. Situation 18).
+ * Provides robust fallback chain:
+ * 1. /src/images/PSADNov2024/{filename}
+ * 2. /images/PSADNov2024/{filename}
+ * 3. /images/{filename}
+ */
+export function getPsadNov2024FigureHtml(situationNumber: number): string {
+  const sit = PSAD_NOV_2024_SITUATIONS[situationNumber];
+  if (!sit) return '';
+
+  if (sit.files.length === 1) {
+    const f = sit.files[0];
+    const filename = f.filename;
+    const primarySrc = `/src/images/PSADNov2024/${filename}`;
+    const secondarySrc = `/images/PSADNov2024/${filename}`;
+    const tertiarySrc = `/images/${filename}`;
+
+    return `<div class="flex flex-col items-center justify-center w-full py-2">
+    <img 
+      src="${primarySrc}" 
+      alt="${sit.caption}" 
+      class="max-w-xl w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+      loading="eager" 
+      referrerpolicy="no-referrer"
+      onerror="if(this.dataset.tried === 'phase-2'){ this.src = '${tertiarySrc}'; this.dataset.tried = 'done'; } else if(!this.dataset.tried){ this.dataset.tried = 'phase-2'; this.src = '${secondarySrc}'; }"
+    />
+  </div>`;
+  }
+
+  // Multi-image situation (e.g. Situation 18 with 2 illustrations)
+  const renderedImgs = sit.files
+    .map((f, idx) => {
+      const filename = f.filename;
+      const primarySrc = `/src/images/PSADNov2024/${filename}`;
+      const secondarySrc = `/images/PSADNov2024/${filename}`;
+      const tertiarySrc = `/images/${filename}`;
+      const subCap = f.subCaption || `Illustration ${idx + 1}`;
+
+      return `<div class="flex flex-col items-center flex-1 max-w-lg w-full">
+      <img 
+        src="${primarySrc}" 
+        alt="${subCap}" 
+        class="max-w-full w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+        referrerpolicy="no-referrer"
+        onerror="if(this.dataset.tried === 'phase-2'){ this.src = '${tertiarySrc}'; this.dataset.tried = 'done'; } else if(!this.dataset.tried){ this.dataset.tried = 'phase-2'; this.src = '${secondarySrc}'; }"
+      />
+      <span class="text-[11px] font-tech-mono text-slate-500 mt-1.5 text-center font-medium">${subCap}</span>
+    </div>`;
+    })
+    .join('');
+
+  return `<div class="flex flex-col md:flex-row items-center justify-center gap-4 w-full py-2">
+    ${renderedImgs}
+  </div>`;
+}
