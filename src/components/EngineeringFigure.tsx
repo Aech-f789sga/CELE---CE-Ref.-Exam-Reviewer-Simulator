@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sun, Moon, Maximize2, Minimize2, Eye } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { PSAD_NOV_2024_SITUATIONS } from '../data/situationImages';
+import { getMstcNov2025ImageUrl } from '../data/mstcNov2025Images';
 
 interface EngineeringFigureProps {
   figureSvg: string;
@@ -258,16 +259,18 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           </div>
         ) : mstcNov25Num ? (
           // Optimized multi-source loader for MSTC November 2025 questions:
-          // 1. Tries /src/images/MSTCNov2025/MSTC_November_2024_{X}.png
-          // 2. Tries /images/MSTCNov2025/MSTC_November_2024_{X}.png
-          // 3. Tries /src/images/MSTCNov2025/MSTC_November_2025_{X}.png
-          // 4. Tries /images/MSTCNov2025/MSTC_November_2025_{X}.png
+          // 1. Tries Vite-bundled asset URL (guaranteed 100% reliable on Vercel deployments)
+          // 2. Tries /images/MSTCNov2025/MSTC_November_2024_{X}.png (Vite public folder)
+          // 3. Tries /images/MSTCNov2025/MSTC_November_2025_{X}.png
+          // 4. Tries /src/images/MSTCNov2025/MSTC_November_2024_{X}.png
+          // 5. Tries /src/images/MSTCNov2025/MSTC_November_2025_{X}.png
           <div className={`overflow-x-auto flex justify-center w-full py-2 ${isZoomed ? 'max-w-4xl py-4' : ''}`}>
             <img
-              src={`/src/images/MSTCNov2025/MSTC_November_2024_${mstcNov25Num}.png`}
+              src={getMstcNov2025ImageUrl(mstcNov25Num)}
               alt={figureCaption || `MSTC November 2025 Question ${mstcNov25Num} Illustration`}
               className="max-w-xl w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
               loading="eager"
+              referrerPolicy="no-referrer"
               onError={(e) => {
                 const target = e.currentTarget;
                 const tried = target.getAttribute('data-load-phase') || 'phase-1';
@@ -276,10 +279,13 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
                   target.src = `/images/MSTCNov2025/MSTC_November_2024_${mstcNov25Num}.png`;
                 } else if (tried === 'phase-2') {
                   target.setAttribute('data-load-phase', 'phase-3');
-                  target.src = `/src/images/MSTCNov2025/MSTC_November_2025_${mstcNov25Num}.png`;
+                  target.src = `/images/MSTCNov2025/MSTC_November_2025_${mstcNov25Num}.png`;
                 } else if (tried === 'phase-3') {
                   target.setAttribute('data-load-phase', 'phase-4');
-                  target.src = `/images/MSTCNov2025/MSTC_November_2025_${mstcNov25Num}.png`;
+                  target.src = `/src/images/MSTCNov2025/MSTC_November_2024_${mstcNov25Num}.png`;
+                } else if (tried === 'phase-4') {
+                  target.setAttribute('data-load-phase', 'phase-5');
+                  target.src = `/src/images/MSTCNov2025/MSTC_November_2025_${mstcNov25Num}.png`;
                 }
               }}
             />

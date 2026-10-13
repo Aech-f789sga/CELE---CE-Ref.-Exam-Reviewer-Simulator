@@ -11,7 +11,8 @@
         "photoURL": { "type": "string", "description": "Avatar photo URL of the user." },
         "role": { "type": "string", "enum": ["admin", "user"], "description": "User role: admin or standard user." },
         "createdAt": { "type": "string", "description": "ISO timestamp of account creation." },
-        "lastLoginAt": { "type": "string", "description": "ISO timestamp of last login." }
+        "lastLoginAt": { "type": "string", "description": "ISO timestamp of last login." },
+        "lastUsernameChangedAt": { "type": "string", "description": "ISO timestamp when username was last modified (restricted to once per week)." }
       },
       "required": ["uid", "email", "displayName", "role", "createdAt"]
     },

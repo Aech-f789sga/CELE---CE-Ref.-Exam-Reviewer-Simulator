@@ -12,6 +12,8 @@ import {
   authenticateLocalGoogleUser,
   loginWithEmailPassword as fbLoginWithEmailPassword,
   registerWithEmailPassword as fbRegisterWithEmailPassword,
+  updateUsernameWithWeeklyLimit,
+  getUsernameChangeCooldown,
 } from '../services/firebase';
 
 interface AuthContextValue {
@@ -31,6 +33,14 @@ interface AuthContextValue {
   signInAsAdmin: () => Promise<void>;
   signInAsCandidate: () => Promise<void>;
   signInWithCustomEmail: (email: string, displayName?: string) => Promise<void>;
+  updateUsername: (newUsername: string) => Promise<{ success: boolean; error?: string; profile?: UserProfile; nextAllowedDate?: Date }>;
+  checkUsernameCooldown: () => {
+    canChange: boolean;
+    daysRemaining: number;
+    hoursRemaining: number;
+    nextAllowedDate?: Date;
+    formattedRemaining: string;
+  };
   signOut: () => Promise<void>;
 }
 
@@ -223,6 +233,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const handleUpdateUsername = async (newUsername: string) => {
+    const targetUid = profile?.uid || user?.uid;
+    if (!targetUid) {
+      return { success: false, error: 'User is not signed in.' };
+    }
+    const res = await updateUsernameWithWeeklyLimit(targetUid, newUsername);
+    if (res.success && res.profile) {
+      setProfile(res.profile);
+    }
+    return res;
+  };
+
+  const handleCheckUsernameCooldown = () => {
+    return getUsernameChangeCooldown(profile?.lastUsernameChangedAt);
+  };
+
   const handleSignOut = async () => {
     try {
       await logoutUser();
@@ -256,6 +282,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signInAsAdmin: handleSignInAsAdmin,
         signInAsCandidate: handleSignInAsCandidate,
         signInWithCustomEmail: handleSignInWithCustomEmail,
+        updateUsername: handleUpdateUsername,
+        checkUsernameCooldown: handleCheckUsernameCooldown,
         signOut: handleSignOut,
       }}
     >

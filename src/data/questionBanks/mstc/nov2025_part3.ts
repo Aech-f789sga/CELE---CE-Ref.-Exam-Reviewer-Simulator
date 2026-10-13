@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { getMstcNov2025FigureHtml } from '../../mstcNov2025Images';
 
 export const MSTC_NOV2025_PART3: Question[] = [
   // Item 33
@@ -236,15 +237,8 @@ export const MSTC_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Surveying - Area of Irregular Boundary via Simpson\'s 1/3 Rule',
     text: 'A boundary and traverse bordering an irregular area are shown. The spacing between successive ordinates is 5 m. Using Simpson\'s 1/3 rule, the total area between the boundary and traverse line is most nearly:\nHint:\n$A = \\frac{w}{3} \\left( h_1 + 2\\sum h_{\\text{odd}} + 4\\sum h_{\\text{even}} + h_n \\right)$\n(Given ordinates: $h_1 = 4.2\\text{ m}$, $h_2 = 8.1\\text{ m}$, $h_3 = 6.7\\text{ m}$, $h_4 = 7.6\\text{ m}$, $h_5 = 8.3\\text{ m}$ with spacing $w = 5\\text{ m}$)',
-    figureCaption: 'Figure 39: Irregular boundary and traverse ordinates for Simpson\'s 1/3 Rule',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_39.png" 
-        alt="Figure 39: Irregular boundary and traverse ordinates" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 39: Irregular boundary and traverse ordinates for Simpson\'s 1/3 Rule (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(39, 'Figure 39: Irregular boundary and traverse ordinates for Simpson\'s 1/3 Rule'),
     options: [
       { label: 'A', text: '141 m²' },
       { label: 'B', text: '148 m²' },
@@ -283,15 +277,8 @@ export const MSTC_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Surveying - Angle Adjustment of Horizon Closure',
     text: 'At a survey station, three horizontal angles x, y, and z were observed to completely surround the station. The measured values are:\nx = 112°18\'24"\ny = 74°35\'18"\nz = 173°06\'30"\nAssuming that all observations are of equal precision, determine the corrected values of the three angles.',
-    figureCaption: 'Figure 40: Station horizon closure angles x, y, and z',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_40.png" 
-        alt="Figure 40: Station horizon closure angles" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 40: Station horizon closure angles x, y, and z (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(40, 'Figure 40: Station horizon closure angles x, y, and z'),
     options: [
       { label: 'A', text: 'x = 112°18\'20", y = 74°35\'14", z = 173°06\'26"' },
       { label: 'B', text: 'x = 112°18\'24", y = 74°35\'18", z = 173°06\'30"' },
@@ -486,7 +473,7 @@ export const MSTC_NOV2025_PART3: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Apply Webster\'s signal timing formula C_opt = (1.5L + 5) / (1 - ΣY) with total lost time L = 15 s and sum of flow ratios ΣY = 0.3 + 0.3 = 0.6.',
+      summary: 'Apply Webster\'s signal timing formula $C_{\\text{opt}} = (1.5L + 5) / (1 - \\sum Y)$ with total lost time $L = 15\\text{ s}$ and sum of flow ratios $\\sum Y = 0.3 + 0.3 = 0.6$.',
       formulas: [
         '\\sum Y_i = Y_1 + Y_2 = 0.30 + 0.30 = 0.60',
         'C_{\\text{opt}} = \\frac{1.5L + 5}{1.0 - \\sum Y_i}',

@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { getMstcNov2025FigureHtml } from '../../mstcNov2025Images';
 
 export const MSTC_NOV2025_PART4: Question[] = [
   // Item 49
@@ -45,15 +46,8 @@ export const MSTC_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Construction Materials - Masonry Block Proportional Area',
     text: 'Calculate the proportional area of the blocks.\nA standard block with mortar is 450 × 225 mm = 101,250 mm²\nA standard block format of 440 × 215 mm = 94,600 mm²',
-    figureCaption: 'Figure 50: Masonry block dimensions with mortar joint',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_50.png" 
-        alt="Figure 50: Masonry block dimensions with mortar joint" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 50: Masonry block dimensions with mortar joint (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(50, 'Figure 50: Masonry block dimensions with mortar joint'),
     options: [
       { label: 'A', text: '0.9443' },
       { label: 'B', text: '0.9334' },
@@ -67,9 +61,9 @@ export const MSTC_NOV2025_PART4: Question[] = [
         '\\frac{A_1}{A_2} = \\frac{94{,}600}{101{,}250} = 0.93432 \\approx 0.9343',
       ],
       steps: [
-        'Step 1: Net block format area: A_block = 440 mm × 215 mm = 94,600 mm².',
-        'Step 2: Coordinating block area including mortar joint: A_coordinating = 450 mm × 225 mm = 101,250 mm².',
-        'Step 3: Proportional area: 94,600 / 101,250 = 0.93432 ≈ 0.9343 (Option C).',
+        'Step 1: Net block format area: $A_{\\text{block}} = 440\\text{ mm} \\times 215\\text{ mm} = 94,600\\text{ mm}^2$.',
+        'Step 2: Coordinating block area including mortar joint: $A_{\\text{coordinating}} = 450\\text{ mm} \\times 225\\text{ mm} = 101,250\\text{ mm}^2$.',
+        'Step 3: Proportional area: $94,600 / 101,250 = 0.93432 \\approx 0.9343$ (Option C).',
       ],
       finalAnswer: '0.9343 (Option C)',
       pageNumber: 536,
@@ -244,15 +238,8 @@ export const MSTC_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Construction Methods - Scaffolding Types & Working Platforms',
     text: 'Identify what type of scaffold is shown below (Figure 56).\n(Figure 56 depicts a cradle platform suspended by ropes/wire cables from outrigger beams at roof level).',
-    figureCaption: 'Figure 56: Suspended scaffolding diagram',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_56.png" 
-        alt="Figure 56: Suspended scaffolding diagram" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 56: Suspended scaffolding diagram (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(56, 'Figure 56: Suspended scaffolding diagram'),
     options: [
       { label: 'A', text: 'Bird cage scaffold' },
       { label: 'B', text: 'Suspended scaffold' },

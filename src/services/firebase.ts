@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   signOut as fbSignOut,
   onAuthStateChanged,
+  updateProfile,
   User as FirebaseUser,
 } from 'firebase/auth';
 import {
@@ -67,6 +68,7 @@ export interface UserProfile {
   passwordHash?: string;
   createdAt: string;
   lastLoginAt: string;
+  lastUsernameChangedAt?: string;
 }
 
 export interface CloudExamAttempt {
@@ -134,13 +136,14 @@ export async function syncUserProfile(fbUser: FirebaseUser): Promise<UserProfile
 
     if (snap.exists()) {
       const data = snap.data() as UserProfile;
-      // Preserve existing profile but enforce designated admin
+      // Preserve existing profile, custom displayName, and lastUsernameChangedAt
       profile = {
         ...data,
-        displayName: fbUser.displayName || data.displayName || 'Candidate',
+        displayName: data.displayName || fbUser.displayName || 'Candidate',
         photoURL: fbUser.photoURL || data.photoURL || '',
         lastLoginAt: now,
         role: isAdmin ? 'admin' : data.role || 'user',
+        lastUsernameChangedAt: data.lastUsernameChangedAt,
       };
       await setDoc(userRef, profile, { merge: true });
     } else {
@@ -1019,4 +1022,128 @@ export function computeLeaderboards(
     overall: overallEntries,
     perArea: perAreaResult,
   };
+}
+
+/**
+ * Calculates remaining cooldown for changing username (7 days).
+ */
+export function getUsernameChangeCooldown(lastChangedAt?: string): {
+  canChange: boolean;
+  daysRemaining: number;
+  hoursRemaining: number;
+  nextAllowedDate?: Date;
+  formattedRemaining: string;
+} {
+  if (!lastChangedAt) {
+    return {
+      canChange: true,
+      daysRemaining: 0,
+      hoursRemaining: 0,
+      formattedRemaining: 'Available now',
+    };
+  }
+
+  const lastTime = new Date(lastChangedAt).getTime();
+  const now = Date.now();
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+  const elapsed = now - lastTime;
+
+  if (elapsed >= SEVEN_DAYS_MS) {
+    return {
+      canChange: true,
+      daysRemaining: 0,
+      hoursRemaining: 0,
+      formattedRemaining: 'Available now',
+    };
+  }
+
+  const remainingMs = SEVEN_DAYS_MS - elapsed;
+  const daysRemaining = Math.floor(remainingMs / (24 * 60 * 60 * 1000));
+  const hoursRemaining = Math.floor((remainingMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const nextAllowedDate = new Date(lastTime + SEVEN_DAYS_MS);
+
+  let formattedRemaining = '';
+  if (daysRemaining > 0) {
+    formattedRemaining = `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} and ${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`;
+  } else {
+    formattedRemaining = `${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`;
+  }
+
+  return {
+    canChange: false,
+    daysRemaining,
+    hoursRemaining,
+    nextAllowedDate,
+    formattedRemaining,
+  };
+}
+
+/**
+ * Updates the user's username/displayName in Firestore and Firebase Auth,
+ * strictly enforcing that users can only modify their username once per week.
+ */
+export async function updateUsernameWithWeeklyLimit(
+  uid: string,
+  newUsername: string
+): Promise<{ success: boolean; error?: string; profile?: UserProfile; nextAllowedDate?: Date }> {
+  const cleanName = newUsername.trim();
+  if (!cleanName || cleanName.length < 3) {
+    return { success: false, error: 'Username must be at least 3 characters long.' };
+  }
+  if (cleanName.length > 30) {
+    return { success: false, error: 'Username must be 30 characters or fewer.' };
+  }
+
+  const userRef = doc(db, 'users', uid);
+  const snap = await getDoc(userRef);
+  const existingData = snap.exists() ? (snap.data() as UserProfile) : null;
+
+  if (existingData) {
+    if (existingData.displayName.toLowerCase() === cleanName.toLowerCase()) {
+      return { success: false, error: 'New username must be different from your current username.' };
+    }
+
+    const cooldown = getUsernameChangeCooldown(existingData.lastUsernameChangedAt);
+    if (!cooldown.canChange) {
+      const dateStr = cooldown.nextAllowedDate?.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+      return {
+        success: false,
+        error: `Username can only be modified once per week. You can change it again in ${cooldown.formattedRemaining} (${dateStr}).`,
+        nextAllowedDate: cooldown.nextAllowedDate,
+      };
+    }
+  }
+
+  const nowIso = new Date().toISOString();
+
+  // 1. Update Firebase Auth user displayName if applicable
+  if (auth.currentUser && auth.currentUser.uid === uid) {
+    try {
+      await updateProfile(auth.currentUser, { displayName: cleanName });
+    } catch (e) {
+      console.warn('Could not update Firebase Auth profile displayName:', e);
+    }
+  }
+
+  // 2. Update Firestore user document
+  const updatedDoc: Partial<UserProfile> = {
+    displayName: cleanName,
+    lastUsernameChangedAt: nowIso,
+  };
+
+  await setDoc(userRef, updatedDoc, { merge: true });
+
+  const freshSnap = await getDoc(userRef);
+  const finalProfile = freshSnap.data() as UserProfile;
+
+  // 3. Update localStorage session cache
+  try {
+    localStorage.setItem('ce_board_auth_profile', JSON.stringify(finalProfile));
+  } catch {}
+
+  return { success: true, profile: finalProfile };
 }

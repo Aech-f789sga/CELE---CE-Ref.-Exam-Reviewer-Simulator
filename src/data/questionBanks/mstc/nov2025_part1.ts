@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { getMstcNov2025FigureHtml } from '../../mstcNov2025Images';
 
 export const MSTC_NOV2025_PART1: Question[] = [
   // Item 1
@@ -50,15 +51,8 @@ export const MSTC_NOV2025_PART1: Question[] = [
     month: 'November',
     category: 'Algebra - Geometric Cost Functions & Polynomial Modeling',
     text: 'A rectangular box has a square copper base, wooden sides, and a wooden top. The copper costs $21 per square foot and the wood costs $2 per square foot. Write an expression giving the total cost of the materials used to make the box in terms of the dimensions.',
-    figureCaption: 'Figure 2: Rectangular box with square copper base, wooden sides, and wooden top',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_2.png" 
-        alt="Figure 2: Rectangular box with square base x and height h" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 2: Rectangular box with square copper base, wooden sides, and wooden top (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(2, 'Figure 2: Rectangular box with square copper base, wooden sides, and wooden top'),
     options: [
       { label: 'A', text: '21x² + 2xh' },
       { label: 'B', text: '21x² + 8xh' },
@@ -146,10 +140,10 @@ export const MSTC_NOV2025_PART1: Question[] = [
       ],
       steps: [
         'Step 1: Determine total design occupants: 1 site agent + 1 assistant + 3 visitors = 5 persons.',
-        'Step 2: Area based on minimum floor area per person: A_area = 5 × 3.7 m² = 18.5 m².',
-        'Step 3: Total required internal air volume: V = 5 × 11.5 m³ = 57.5 m³.',
-        'Step 4: Floor area required to provide this volume with ceiling height H = 2.4 m: A_space = 57.5 / 2.4 = 23.958 m².',
-        'Step 5: To satisfy both building regulations, the larger requirement governs: A = 23.96 m² ≈ 24 m² (Option C).',
+        'Step 2: Area based on minimum floor area per person: $A_{\\text{area}} = 5 \\times 3.7\\text{ m}^2 = 18.5\\text{ m}^2$.',
+        'Step 3: Total required internal air volume: $V = 5 \\times 11.5\\text{ m}^3 = 57.5\\text{ m}^3$.',
+        'Step 4: Floor area required to provide this volume with ceiling height $H = 2.4\\text{ m}$: $A_{\\text{space}} = 57.5 / 2.4 = 23.958\\text{ m}^2$.',
+        'Step 5: To satisfy both building regulations, the larger requirement governs: $A = 23.96\\text{ m}^2 \\approx 24\\text{ m}^2$ (Option C).',
       ],
       finalAnswer: '24 m² (Option C)',
       pageNumber: 503,
@@ -174,7 +168,7 @@ export const MSTC_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Compute average velocity as change in position divided by change in time: v_ave = Δs / Δt.',
+      summary: 'Compute average velocity as change in position divided by change in time: $v_{\\text{ave}} = \\Delta s / \\Delta t$.',
       formulas: [
         'v_{\\text{ave}} = \\frac{\\Delta s}{\\Delta t} = \\frac{s(4) - s(2)}{4 - 2}',
         'v_{\\text{ave}} = \\frac{79.2 - 20.6}{2} = \\frac{58.6}{2} = 29.3',
@@ -183,7 +177,7 @@ export const MSTC_NOV2025_PART1: Question[] = [
         'Step 1: Read positions from the table: at t = 2 s, s(2) = 20.6 ft; at t = 4 s, s(4) = 79.2 ft.',
         'Step 2: Displacement over the interval: Δs = 79.2 - 20.6 = 58.6 ft.',
         'Step 3: Time duration: Δt = 4 - 2 = 2 s.',
-        'Step 4: Average velocity: v_ave = 58.6 / 2 = 29.3 ft/s (Option A).',
+        'Step 4: Average velocity: $v_{\\text{ave}} = 58.6 / 2 = 29.3\\text{ ft/s}$ (Option A).',
       ],
       finalAnswer: '29.3 ft/s (Option A)',
       pageNumber: 504,
@@ -418,15 +412,8 @@ export const MSTC_NOV2025_PART1: Question[] = [
     month: 'November',
     category: 'Trigonometry - Angles of Elevation & Height Clearance Restriction',
     text: 'The traffic pattern for airplanes into San Diego\'s airport is over the heart of downtown. Therefore, there are restrictions on the heights of new construction. The owner of an office building wishes to erect a microwave tower on top of the building. According to the architect\'s design, the angle of elevation from a point on the ground to the top of the 40-foot tower is 56°. The angle of elevation from the ground point to the top of the building is 42°. The maximum allowed height of any structure is 100 feet. Will the city allow the building of this tower?',
-    figureCaption: 'Figure 12: Airplane traffic pattern & microwave tower elevation angles',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_12.png" 
-        alt="Figure 12: Microwave tower on building elevation angles" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 12: Airplane traffic pattern & microwave tower elevation angles (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(12, 'Figure 12: Airplane traffic pattern & microwave tower elevation angles'),
     options: [
       { label: 'A', text: 'No, the height of the building is about 62 feet for a total of about 102 feet with the tower.' },
       { label: 'B', text: 'Yes, the height of the building is about 62 feet for a total of about 102 feet with the tower.' },
@@ -466,15 +453,8 @@ export const MSTC_NOV2025_PART1: Question[] = [
     month: 'November',
     category: 'Surveying & Geometry - Uniform Slope Interpolation & Distances',
     text: 'Determine the value of $x_1$ and $x_2$.',
-    figureCaption: 'Figure 13: Ground profile elevations and benchmark contour distances x1 and x2',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_13.png" 
-        alt="Figure 13: Profile elevations benchmark B2 to B3" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 13: Ground profile elevations and benchmark contour distances x1 and x2 (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(13, 'Figure 13: Ground profile elevations and benchmark contour distances x1 and x2'),
     options: [
       { label: 'A', text: '3.64 m and 8.18 m' },
       { label: 'B', text: '6.64 m and 9.13 m' },
@@ -512,15 +492,8 @@ export const MSTC_NOV2025_PART1: Question[] = [
     month: 'November',
     category: 'Calculus - Optimization of Circumscribed Isosceles Triangle',
     text: 'An isosceles triangle is circumscribed about the unit circle so that the equal sides meet at the point (0, a) on the y-axis (see the figure). Find the value of a that minimizes the lengths of the equal sides.',
-    figureCaption: 'Figure 14: Isosceles triangle circumscribed about the unit circle',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_14.png" 
-        alt="Figure 14: Isosceles triangle circumscribed about unit circle" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 14: Isosceles triangle circumscribed about the unit circle (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(14, 'Figure 14: Isosceles triangle circumscribed about the unit circle'),
     options: [
       { label: 'A', text: '1.26' },
       { label: 'B', text: '2.16' },
@@ -559,15 +532,8 @@ export const MSTC_NOV2025_PART1: Question[] = [
     month: 'November',
     category: 'Calculus - Optimization of Illumination Intensity',
     text: 'A light is to be placed atop a pole of height h feet to illuminate a busy traffic circle, which has a radius of 40 ft. The intensity of illumination I at any point P on the circle is directly proportional to the cosine of the angle θ (see the figure) and inversely proportional to the square of the distance d from the source. How tall should the light pole be to maximize I?',
-    figureCaption: 'Figure 15: Traffic circle illumination from pole of height h',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_15.png" 
-        alt="Figure 15: Illumination geometry from pole to traffic circle boundary" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 15: Traffic circle illumination from pole of height h (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(15, 'Figure 15: Traffic circle illumination from pole of height h'),
     options: [
       { label: 'A', text: '28 ft' },
       { label: 'B', text: '30 ft' },

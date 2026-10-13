@@ -211,7 +211,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={openAuthModal}
-                  title="Manage Account & Roles"
+                  title="Manage Profile & Username"
                   className="flex items-center space-x-2 px-2.5 py-1 rounded-xl border text-xs transition-all hover:scale-102 cursor-pointer"
                   style={{
                     backgroundColor: themeConfig.bgCardSubtle,

@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { getMstcNov2025FigureHtml } from '../../mstcNov2025Images';
 
 export const MSTC_NOV2025_PART2: Question[] = [
   // Item 17
@@ -118,15 +119,8 @@ export const MSTC_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Hydraulics & Differential Calculus - Tank Drainage Time via Bottom Orifice',
     text: 'Water flows out from a cylindrical tank with a hole at the bottom. If the tank has diameter 2 m, the hole has diameter 1 cm, and the initial height of the water when the hole is opened is 2.25 m, when will the tank be empty?\nHint: v(t) = 0.600 √(2gh(t))',
-    figureCaption: 'Figure 20: Cylindrical tank with orifice hole at bottom',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_20.png" 
-        alt="Figure 20: Cylindrical water tank with bottom orifice drainage" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 20: Cylindrical tank with orifice hole at bottom (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(20, 'Figure 20: Cylindrical tank with orifice hole at bottom'),
     options: [
       { label: 'A', text: '16.2 hours' },
       { label: 'B', text: '21.6 hours' },
@@ -280,15 +274,8 @@ export const MSTC_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Static Equilibrium of Forearm & Muscle Force',
     text: 'A man is holding a mass m of 10 kg in his hand as shown in the accompanying figure. The forces acting on his arm are (1) the weight w = mg downward, (2) the force Fm exerted by the biceps muscles making an angle θm with the + X-axis, and (3) the reaction force Fr at the elbow making an angle θr with the + X-axis. As shown, the value of θm = (180° - 120°) = 60°. Calculate Fm and Fr.',
-    figureCaption: 'Figure 24: Forearm static equilibrium holding mass m with biceps muscle and elbow reaction',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_24.png" 
-        alt="Figure 24: Forearm static equilibrium holding 10 kg mass" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 24: Forearm static equilibrium holding mass m with biceps muscle and elbow reaction (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(24, 'Figure 24: Forearm static equilibrium holding mass m with biceps muscle and elbow reaction'),
     options: [
       { label: 'A', text: '788 N, 708 N' },
       { label: 'B', text: '394 N, 588 N' },
@@ -329,15 +316,8 @@ export const MSTC_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Cable Tension System Equilibrium',
     text: 'Determine the tension in cables A and cable B.\n(Given: Cable A is horizontal, Cable B is inclined at 20° above horizontal, and they support a central vertical load of 500 N).',
-    figureCaption: 'Figure 25: Cable tension system equilibrium with Cable A and Cable B supporting central load',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_25.png" 
-        alt="Figure 25: Cable A and Cable B tension system" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 25: Cable tension system equilibrium with Cable A and Cable B supporting central load (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(25, 'Figure 25: Cable tension system equilibrium with Cable A and Cable B supporting central load'),
     options: [
       { label: 'A', text: '1462 and 1374' },
       { label: 'B', text: '1374 and 1462' },
@@ -375,15 +355,8 @@ export const MSTC_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Pulley Mechanical Advantage & Required Effort',
     text: 'Which of the following pulley systems require the most force?',
-    figureCaption: 'Figure 26: Pulley configurations comparison (a, b, c, d)',
-    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
-      <img 
-        src="/src/images/MSTCNov2025/MSTC_November_2024_26.png" 
-        alt="Figure 26: Pulley systems mechanical advantage comparison" 
-        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
-        loading="eager" 
-      />
-    </div>`,
+    figureCaption: 'Figure 26: Pulley configurations comparison (a, b, c, d) (MSTC Nov 2025)',
+    figureSvg: getMstcNov2025FigureHtml(26, 'Figure 26: Pulley configurations comparison (a, b, c, d)'),
     options: [
       { label: 'A', text: 'c' },
       { label: 'B', text: 'a' },
