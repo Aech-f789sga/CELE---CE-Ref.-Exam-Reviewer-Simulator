@@ -1,0 +1,615 @@
+import { Question } from '../../../types/exam';
+
+export const MSTC_NOV2025_PART3: Question[] = [
+  // Item 33
+  {
+    id: 'mstc-nov2025-q33',
+    number: 33,
+    pageNumber: 491,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Engineering Economics - Semi-Annual Loan Equal Installment Amortization',
+    text: 'A loan of ₱15,000,000 is granted at a nominal annual interest rate of 12%, compounded semi-annually. The loan is to be repaid twice a year in equal installments over 4 years. Determine the amount of each payment.\nA. ₱4,215,539.14\nB. ₱1,425,539.14\nC. ₱2,415,539.14\nD. ₱5,412,539.14',
+    options: [
+      { label: 'A', text: '₱4,215,539.14' },
+      { label: 'B', text: '₱1,425,539.14' },
+      { label: 'C', text: '₱2,415,539.14' },
+      { label: 'D', text: '₱5,412,539.14' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Compute ordinary annuity installment using present worth factor with semi-annual interest rate i = 6% over n = 8 compounding periods.',
+      formulas: [
+        'P = A \\left[ \\frac{(1 + i)^n - 1}{i(1 + i)^n} \\right]',
+        'i = \\frac{12\\%}{2} = 6\\% = 0.06, \\quad n = 4 \\times 2 = 8',
+        '15{,}000{,}000 = A \\left[ \\frac{(1.06)^8 - 1}{0.06(1.06)^8} \\right]',
+        'A = \\frac{15{,}000{,}000}{6.20979} = 2415539.14',
+      ],
+      steps: [
+        'Step 1: Identify loan parameters: Principal P = ₱15,000,000; compounding frequency m = 2 (semi-annually).',
+        'Step 2: Interest rate per period: i = 12% / 2 = 6% = 0.06.',
+        'Step 3: Total number of payments: n = 4 years × 2 periods/year = 8 payments.',
+        'Step 4: Present value factor: [(1.06)⁸ - 1] / [0.06(1.06)⁸] = [1.593848 - 1] / [0.06 × 1.593848] = 0.593848 / 0.095631 = 6.209794.',
+        'Step 5: Installment payment: A = 15,000,000 / 6.209794 = ₱2,415,539.14 (Option C).',
+      ],
+      finalAnswer: '₱2,415,539.14 (Option C)',
+      pageNumber: 523,
+    },
+  },
+
+  // Item 34
+  {
+    id: 'mstc-nov2025-q34',
+    number: 34,
+    pageNumber: 491,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Probability & Linear Algebra - Markov Chain Transition Matrix',
+    text: 'In a survey investigating changes in housing patterns in one urban area, it was found that 75% of the population lived in single-family dwellings and 25% in multiple housing of some kind. Five years later, in a follow-up survey, of those who had been living in single-family dwellings, 90% still did so, but 10% had moved to multiple-family dwellings. Of those in multiple-family housing, 95% were still living in that type of housing, while 5% had moved to single-family dwellings. Assume that these trends continue. Write a transition matrix for this information.\n\nA. \n| | single | multiple |\n| :--- | :--- | :--- |\n| single | 0.9 | 0.1 |\n| multiple | 0.05 | 0.95 |\n\nB. \n| | single | multiple |\n| :--- | :--- | :--- |\n| single | 0.1 | 0.9 |\n| multiple | 0.95 | 0.05 |\n\nC. \n| | single | multiple |\n| :--- | :--- | :--- |\n| single | 0.05 | 0.95 |\n| multiple | 0.9 | 0.1 |\n\nD. \n| | single | multiple |\n| :--- | :--- | :--- |\n| single | 0.95 | 0.05 |\n| multiple | 0.1 | 0.9 |',
+    options: [
+      { label: 'A', text: 'single to single: 0.9, single to multiple: 0.1; multiple to single: 0.05, multiple to multiple: 0.95' },
+      { label: 'B', text: 'single to single: 0.1, single to multiple: 0.9; multiple to single: 0.95, multiple to multiple: 0.05' },
+      { label: 'C', text: 'single to single: 0.05, single to multiple: 0.95; multiple to single: 0.9, multiple to multiple: 0.1' },
+      { label: 'D', text: 'single to single: 0.95, single to multiple: 0.05; multiple to single: 0.1, multiple to multiple: 0.9' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Construct the 2×2 stochastic transition matrix where rows represent current housing states and columns represent future housing states.',
+      formulas: [
+        'p_{1 \\to 1} = 0.90, \\quad p_{1 \\to 2} = 0.10',
+        'p_{2 \\to 1} = 0.05, \\quad p_{2 \\to 2} = 0.95',
+        'T = \\begin{bmatrix} 0.9 & 0.1 \\\\ 0.05 & 0.95 \\end{bmatrix}',
+      ],
+      steps: [
+        'Step 1: Let State S1 = single-family dwelling, and State S2 = multiple-family housing.',
+        'Step 2: From S1: 90% remain in S1 (p11 = 0.90), and 10% migrate to S2 (p12 = 0.10).',
+        'Step 3: From S2: 5% migrate to S1 (p21 = 0.05), and 95% remain in S2 (p22 = 0.95).',
+        'Step 4: Arranging into transition matrix form: [[0.9, 0.1], [0.05, 0.95]] (Option A).',
+      ],
+      finalAnswer: 'Option A (Row 1: 0.9, 0.1; Row 2: 0.05, 0.95)',
+      pageNumber: 523,
+    },
+  },
+
+  // Item 35
+  {
+    id: 'mstc-nov2025-q35',
+    number: 35,
+    pageNumber: 491,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Probability - Fundamental Counting Principle Sample Space',
+    text: 'The Flotterons plan to purchase paint for the walls and paint for the trim in their living room. They will select one color for the walls and one color for the trim at random from the following colors.\n\n| Walls | Trim |\n| :--- | :--- |\n| Sable | Alabaster |\n| Java | White |\n| Chocolate | Oyster |\n\nDetermine the number of sample points in the sample space.\nA. 1\nB. 3\nC. 6\nD. 9',
+    options: [
+      { label: 'A', text: '1' },
+      { label: 'B', text: '3' },
+      { label: 'C', text: '6' },
+      { label: 'D', text: '9' },
+    ],
+    correctAnswer: 'D',
+    solution: {
+      summary: 'Apply the Fundamental Counting Principle: m choices for wall color times n choices for trim color gives total outcomes in the sample space.',
+      formulas: [
+        'N = m \\times n',
+        'N = 3 \\times 3 = 9',
+      ],
+      steps: [
+        'Step 1: Number of color choices for walls: m = 3 (Sable, Java, Chocolate).',
+        'Step 2: Number of color choices for trim: n = 3 (Alabaster, White, Oyster).',
+        'Step 3: By the Fundamental Counting Principle, total combinations: N = 3 × 3 = 9.',
+        'Step 4: The sample space contains 9 distinct sample points (Option D).',
+      ],
+      finalAnswer: '9 (Option D)',
+      pageNumber: 524,
+    },
+  },
+
+  // Item 36
+  {
+    id: 'mstc-nov2025-q36',
+    number: 36,
+    pageNumber: 491,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Discrete Mathematics - Recurrence Relation for Checkerboard Tiling',
+    text: 'In how many ways can a 2 × n rectangular checkerboard be tiled using 1 × 2 and 2 × 2 pieces?\nA. [2ⁿ⁺¹ + (-1)ⁿ] / 3\nB. [2ⁿ + (-1)ⁿ⁺¹] / 3\nC. [2ⁿ⁺¹ + (-1)ⁿ] / 2\nD. [2ⁿ + (-1)ⁿ⁺¹] / 2',
+    options: [
+      { label: 'A', text: '[2ⁿ⁺¹ + (-1)ⁿ] / 3' },
+      { label: 'B', text: '[2ⁿ + (-1)ⁿ⁺¹] / 3' },
+      { label: 'C', text: '[2ⁿ⁺¹ + (-1)ⁿ] / 2' },
+      { label: 'D', text: '[2ⁿ + (-1)ⁿ⁺¹] / 2' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Formulate second-order linear recurrence Sn = Sn-1 + 2·Sn-2 with characteristic roots r = 2 and r = -1, and determine coefficients using initial conditions S0 = 1 and S1 = 1.',
+      formulas: [
+        'S_n = S_{n-1} + 2 S_{n-2}',
+        'r^2 - r - 2 = 0 \\implies r_1 = 2, \\quad r_2 = -1',
+        'S_n = C_1(2^n) + C_2(-1)^n',
+        'C_1 = \\frac{2}{3}, \\quad C_2 = \\frac{1}{3}',
+        'S_n = \\frac{2^{n+1} + (-1)^n}{3}',
+      ],
+      steps: [
+        'Step 1: Analyzing the leftmost column covering: Case 1 is vertical 1×2 (leaves 2×(n-1) board, Sn-1 ways); Case 2 is two horizontal 1×2 (leaves 2×(n-2), Sn-2 ways); Case 3 is one 2×2 piece (leaves 2×(n-2), Sn-2 ways).',
+        'Step 2: Recurrence relation: Sn = Sn-1 + 2·Sn-2.',
+        'Step 3: Characteristic equation: r² - r - 2 = 0 => (r - 2)(r + 1) = 0, giving roots r = 2 and r = -1.',
+        'Step 4: General solution form: Sn = C1(2ⁿ) + C2(-1)ⁿ.',
+        'Step 5: Initial conditions: S0 = 1 (empty board) => C1 + C2 = 1; S1 = 1 (single vertical piece) => 2C1 - C2 = 1.',
+        'Step 6: Solving system gives C1 = 2/3 and C2 = 1/3.',
+        'Step 7: Sn = (2/3)(2ⁿ) + (1/3)(-1)ⁿ = [2ⁿ⁺¹ + (-1)ⁿ] / 3 (Option A).',
+      ],
+      finalAnswer: '[2ⁿ⁺¹ + (-1)ⁿ] / 3 (Option A)',
+      pageNumber: 524,
+    },
+  },
+
+  // Item 37
+  {
+    id: 'mstc-nov2025-q37',
+    number: 37,
+    pageNumber: 492,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Operations Research & Inventory Theory - Spare Parts Stocking Policy Optimization',
+    text: 'Suppose that for a particular item, only 3 possible parts might need to be replaced. By studying past records of failures of the item, and finding necessary inventory costs, suppose that the following values have been found.\n\n| p₁ | p₂ | p₃ |\n| :--- | :--- | :--- |\n| 0.09 | 0.24 | 0.17 |\n\n| H₁ | H₂ | H₃ |\n| :--- | :--- | :--- |\n| $15 | $40 | $9 |\n\nSuppose N = 3 and L is $54. Which policy leads to the lowest expected cost?\nHint:\nC(M₁) = H₁ + NL[1 - (1 - p₂)(1 - p₃)]\nC(M₂₃) = H₂ + H₃ + NL[1 - (1 - p₁)]\nA. C(M₁) = 74.81\nB. C(M₂₃) = 63.58\nC. C(M₁₃) = 62.88\nD. C(M₃) = 58.96',
+    options: [
+      { label: 'A', text: 'C(M₁) = 74.81' },
+      { label: 'B', text: 'C(M₂₃) = 63.58' },
+      { label: 'C', text: 'C(M₁₃) = 62.88' },
+      { label: 'D', text: 'C(M₃) = 58.96' },
+    ],
+    correctAnswer: 'D',
+    solution: {
+      summary: 'Evaluate the expected cost for candidate inventory stocking policies: holding cost plus penalty cost if unstocked parts fail. Policy M3 (stock part 3 only) yields the minimum expected cost of $58.96.',
+      formulas: [
+        'NL = 3 \\times 54 = 162',
+        'C(M_3) = H_3 + NL[1 - (1 - p_1)(1 - p_2)]',
+        'C(M_3) = 9 + 162[1 - (1 - 0.09)(1 - 0.24)]',
+        'C(M_3) = 9 + 162[1 - 0.6916] = 9 + 162(0.3084) = 58.96',
+      ],
+      steps: [
+        'Step 1: Compute penalty multiplier: NL = 3 × $54 = $162.',
+        'Step 2: For policy M3 (carrying part 3 only): holding cost H3 = $9; uncarried parts are 1 and 2.',
+        'Step 3: Probability that neither part 1 nor part 2 fails: (1 - p1)(1 - p2) = (1 - 0.09)(1 - 0.24) = 0.91 × 0.76 = 0.6916.',
+        'Step 4: Probability that at least one unstocked part fails: 1 - 0.6916 = 0.3084.',
+        'Step 5: Expected penalty: 162 × 0.3084 = $49.96.',
+        'Step 6: Total expected cost: C(M3) = 9 + 49.96 = $58.96, which is lower than M1 ($74.81), M23 ($63.58), and M13 ($62.88) (Option D).',
+      ],
+      finalAnswer: 'C(M₃) = 58.96 (Option D)',
+      pageNumber: 526,
+    },
+  },
+
+  // Item 38
+  {
+    id: 'mstc-nov2025-q38',
+    number: 38,
+    pageNumber: 492,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Surveying - Precise Base Line Measurement Corrections in Catenary',
+    text: 'A base line was measured in catenary in four lengths giving 30.126 m, 29.973 m, 30.066 m, and 22.536 m. The differences of level were respectively 0.45, 0.60, 0.30, and 0.45 m. The temperature during observation was 10°C and the tension applied was 15 kgf. The tape was standardized as 30 m at 20°C, on the flat with a tension of 5 kgf. The coefficient of expansion was 0.000011 per °C, the weight of the tape 1 kg, the cross-sectional area 3 mm², E = 210 × 10³ N/mm² (210 kN/mm²), and gravitational acceleration g = 9.80665 m/s². Quote each equation used and calculate the length of the base.\nA. 121.760 m\nB. 171.620 m\nC. 116.270 m\nD. 112.670 m',
+    options: [
+      { label: 'A', text: '121.760 m' },
+      { label: 'B', text: '171.620 m' },
+      { label: 'C', text: '116.270 m' },
+      { label: 'D', text: '112.670 m' },
+    ],
+    correctAnswer: 'D',
+    solution: {
+      summary: 'Compute sum of measured bay lengths L = 112.701 m, calculate individual systematic corrections for tension (+0.0176 m), temperature (-0.0124 m), sag (-0.0209 m), and slope (-0.0154 m), yielding total corrected base length L\' = 112.670 m.',
+      formulas: [
+        'L = \\sum L_i = 30.126 + 29.973 + 30.066 + 22.536 = 112.701',
+        'C_p = \\frac{L(P - P_s)}{AE} = \\frac{112.701(15 - 5)(9.80665)}{3(210 \\times 10^3)} = +0.0176',
+        'C_T = \\alpha L(T - T_s) = 0.000011(112.701)(10 - 20) = -0.0124',
+        'C_s = -\\frac{W^2 L}{24 P^2} = -\\frac{1^2(112.701)}{24(15^2)} = -0.0209',
+        'C_g = -\\sum \\frac{h_i^2}{2 L_i} = -0.0154',
+        'L\' = 112.701 + (0.0176 - 0.0124 - 0.0209 - 0.0154) = 112.670',
+      ],
+      steps: [
+        'Step 1: Total nominal catenary length: L = 30.126 + 29.973 + 30.066 + 22.536 = 112.701 m.',
+        'Step 2: Tension correction: Cp = L(P - Ps) / (AE) = [112.701 × 10 × 9.80665] / [3 × 210,000] = +0.0176 m.',
+        'Step 3: Temperature correction: CT = α · L · (T - Ts) = 0.000011 × 112.701 × (10 - 20) = -0.0124 m.',
+        'Step 4: Sag correction: Cs = -W²L / (24P²) = -[1² × 112.701] / [24 × 15²] = -0.0209 m.',
+        'Step 5: Slope correction: Cg = -Σ(hi² / 2Li) = -(0.45²/60.25 + 0.60²/59.95 + 0.30²/60.13 + 0.45²/45.07) = -0.0154 m.',
+        'Step 6: Total algebraic correction: C = +0.0176 - 0.0124 - 0.0209 - 0.0154 = -0.0311 m.',
+        'Step 7: Corrected base line length: L\' = 112.701 - 0.0311 = 112.670 m (Option D).',
+      ],
+      finalAnswer: '112.670 m (Option D)',
+      pageNumber: 527,
+    },
+  },
+
+  // Item 39
+  {
+    id: 'mstc-nov2025-q39',
+    number: 39,
+    pageNumber: 492,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Surveying - Area of Irregular Boundary via Simpson\'s 1/3 Rule',
+    text: 'A boundary and traverse bordering an irregular area are shown. The spacing between successive ordinates is 5 m. Using Simpson\'s 1/3 rule, the total area between the boundary and traverse line is most nearly:\nHint:\nA = w [(h₁ + 2 Σh_odd + 4 Σh_even + hₙ) / 3]\n(Given ordinates: h₁ = 4.2 m, h₂ = 8.1 m, h₃ = 6.7 m, h₄ = 7.6 m, h₅ = 8.3 m with spacing w = 5 m)',
+    figureCaption: 'Figure 39: Irregular boundary and traverse ordinates for Simpson\'s 1/3 Rule',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_39.png" 
+        alt="Figure 39: Irregular boundary and traverse ordinates" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: '141 m²' },
+      { label: 'B', text: '148 m²' },
+      { label: 'C', text: '151 m²' },
+      { label: 'D', text: '143 m²' },
+    ],
+    correctAnswer: 'B',
+    solution: {
+      summary: 'Evaluate parabolic area under irregular boundary using Simpson\'s 1/3 rule across 4 equal intervals with w = 5 m.',
+      formulas: [
+        'A = w \\left( \\frac{h_1 + 2\\sum h_{\\text{odd}} + 4\\sum h_{\\text{even}} + h_n}{3} \\right)',
+        '\\sum h_{\\text{odd}} = h_3 = 6.7',
+        '\\sum h_{\\text{even}} = h_2 + h_4 = 8.1 + 7.6 = 15.7',
+        'A = 5 \\left( \\frac{4.2 + 2(6.7) + 4(15.7) + 8.3}{3} \\right) = 5 \\left( \\frac{88.7}{3} \\right) = 147.833 \\approx 148',
+      ],
+      steps: [
+        'Step 1: Spacing between consecutive offsets: w = 5 m.',
+        'Step 2: First and last ordinates: h1 = 4.2 m, h5 = 8.3 m.',
+        'Step 3: Intermediate odd ordinate: h3 = 6.7 m => 2 Σh_odd = 2(6.7) = 13.4 m.',
+        'Step 4: Intermediate even ordinates: h2 + h4 = 8.1 + 7.6 = 15.7 m => 4 Σh_even = 4(15.7) = 62.8 m.',
+        'Step 5: Bracket sum = 4.2 + 13.4 + 62.8 + 8.3 = 88.7 m.',
+        'Step 6: Total Simpson area: A = 5 × (88.7 / 3) = 147.833 m² ≈ 148 m² (Option B).',
+      ],
+      finalAnswer: '148 m² (Option B)',
+      pageNumber: 530,
+    },
+  },
+
+  // Item 40
+  {
+    id: 'mstc-nov2025-q40',
+    number: 40,
+    pageNumber: 493,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Surveying - Angle Adjustment of Horizon Closure',
+    text: 'At a survey station, three horizontal angles x, y, and z were observed to completely surround the station. The measured values are:\nx = 112°18\'24"\ny = 74°35\'18"\nz = 173°06\'30"\nAssuming that all observations are of equal precision, determine the corrected values of the three angles.',
+    figureCaption: 'Figure 40: Station horizon closure angles x, y, and z',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_40.png" 
+        alt="Figure 40: Station horizon closure angles" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: 'x = 112°18\'20", y = 74°35\'14", z = 173°06\'26"' },
+      { label: 'B', text: 'x = 112°18\'24", y = 74°35\'18", z = 173°06\'30"' },
+      { label: 'C', text: 'x = 112°18\'28", y = 74°35\'22", z = 173°06\'34"' },
+      { label: 'D', text: 'x = 112°18\'22", y = 74°35\'16", z = 173°06\'28"' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Find the closure error E = Σθ - 360° = +12", and distribute an equal subtractive correction of 4" to each observed angle.',
+      formulas: [
+        'S = x + y + z = 112^\\circ 18\' 24" + 74^\\circ 35\' 18" + 173^\\circ 06\' 30" = 360^\\circ 00\' 12"',
+        'E = 360^\\circ 00\' 12" - 360^\\circ = +12"',
+        'c = -\\frac{12"}{3} = -4"',
+      ],
+      steps: [
+        'Step 1: Sum the three measured angles around the horizon: 112°18\'24" + 74°35\'18" + 173°06\'30" = 360°00\'12".',
+        'Step 2: Total closure error: E = +12".',
+        'Step 3: Since all observations have equal precision, distribute error equally: correction c = -12" / 3 = -4" per angle.',
+        'Step 4: Apply corrections:',
+        'x\' = 112°18\'24" - 4" = 112°18\'20"',
+        'y\' = 74°35\'18" - 4" = 74°35\'14"',
+        'z\' = 173°06\'30" - 4" = 173°06\'26" (Option A).',
+      ],
+      finalAnswer: 'x = 112°18\'20", y = 74°35\'14", z = 173°06\'26" (Option A)',
+      pageNumber: 530,
+    },
+  },
+
+  // Item 41
+  {
+    id: 'mstc-nov2025-q41',
+    number: 41,
+    pageNumber: 493,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Transportation Engineering - Horizontal Curve Middle Ordinate Sight Distance Clearance',
+    text: 'A 2-way horizontal curve has a length of 200 m, radius of 300 m, and width of pavement is 8 m. For an SSD of 75 m, what is the required set back distance from the centerline of the inner lane of the pavement?\nHint: m = Rᵢ [1 - cos(S / 2Rᵢ)]\nA. 2.36 m\nB. 2.16 m\nC. 2.26 m\nD. 1.16 m',
+    options: [
+      { label: 'A', text: '2.36 m' },
+      { label: 'B', text: '2.16 m' },
+      { label: 'C', text: '2.26 m' },
+      { label: 'D', text: '1.16 m' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Compute radius to centerline of inner lane Ri = R - W/4 = 298 m, and determine lateral clearance setback distance m using the circular arc formula.',
+      formulas: [
+        'R_i = R - \\frac{W}{4} = 300 - \\frac{8}{4} = 298',
+        'm = R_i \\left( 1 - \\cos\\left(\\frac{S}{2R_i}\\right) \\right)',
+        'm = 298 \\left( 1 - \\cos\\left(\\frac{75}{2 \\times 298}\\right) \\right) = 2.356 \\approx 2.36',
+      ],
+      steps: [
+        'Step 1: Pavement is 2-way with width W = 8 m (lane width = 4 m). Centerline of inner lane is at distance W/4 = 2 m from road centerline.',
+        'Step 2: Radius of inner lane centerline: Ri = 300 m - 2 m = 298 m.',
+        'Step 3: Sight distance angle in radians: θ/2 = S / (2Ri) = 75 / (2 × 298) = 75 / 596 = 0.125839 rad.',
+        'Step 4: cos(0.125839 rad) = 0.992095.',
+        'Step 5: Lateral clearance setback: m = 298 × (1 - 0.992095) = 298 × 0.007905 = 2.356 m ≈ 2.36 m (Option A).',
+      ],
+      finalAnswer: '2.36 m (Option A)',
+      pageNumber: 531,
+    },
+  },
+
+  // Item 42
+  {
+    id: 'mstc-nov2025-q42',
+    number: 42,
+    pageNumber: 494,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Transportation Engineering - Cumulative Standard Axles Pavement Design',
+    text: 'A two-lane single carriage way is to be designed for a design life of 15 years. Total two-way traffic intensity in the year completion of construction is expected to be 2000 commercial vehicle per day. The vehicle damage factor is 3.0, and lane distribution factor = 0.75. Assuming an annual rate of 7.5%, the design traffic expressed as commutative number of standard axles, is:\nHint: For pavement design, the cumulative number of standard axles (CSA) is computed using\nN = 365 × A × [((1 + r)ⁿ - 1) / r] × D × F\nA. 22.6×10⁶\nB. 5.3×10⁶\nC. 42.9×10⁶\nD. 10.1×10⁶',
+    options: [
+      { label: 'A', text: '22.6×10⁶' },
+      { label: 'B', text: '5.3×10⁶' },
+      { label: 'C', text: '42.9×10⁶' },
+      { label: 'D', text: '10.1×10⁶' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Compute cumulative equivalent standard axles using the IRC/AASHTO traffic growth formula over design life n = 15 years.',
+      formulas: [
+        'N = 365 \\times A \\times \\left[ \\frac{(1 + r)^n - 1}{r} \\right] \\times D \\times F',
+        'N = 365 \\times 2000 \\times \\left[ \\frac{(1 + 0.075)^{15} - 1}{0.075} \\right] \\times 0.75 \\times 3.0',
+        'N = 730{,}000 \\times 26.1184 \\times 2.25 = 42{,}901{,}000 = 42.9 \\times 10^6',
+      ],
+      steps: [
+        'Step 1: Identify given design inputs: initial traffic A = 2000 CVPD, growth rate r = 7.5% = 0.075, life n = 15 years, D = 0.75, F = 3.0.',
+        'Step 2: Cumulative growth factor: [(1.075)¹⁵ - 1] / 0.075 = [2.95888 - 1] / 0.075 = 1.95888 / 0.075 = 26.1184.',
+        'Step 3: Annual multiplier: 365 × 2000 = 730,000.',
+        'Step 4: Commercial vehicle loading factor: D × F = 0.75 × 3.0 = 2.25.',
+        'Step 5: Total cumulative standard axles: N = 730,000 × 26.1184 × 2.25 = 42,901,000 = 42.9 × 10⁶ (Option C).',
+      ],
+      finalAnswer: '42.9×10⁶ (Option C)',
+      pageNumber: 532,
+    },
+  },
+
+  // Item 43
+  {
+    id: 'mstc-nov2025-q43',
+    number: 43,
+    pageNumber: 494,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Transportation Engineering - Greenshields Macroscopic Traffic Flow Model',
+    text: 'A linear relationship is observed between speed and density on a certain section of a highway. The free flow speed is observed to be 80 km per hour, and the jam density is estimated as 100 vehicles per km length. Based on the above relationship, the maximum flow expected on this section and the speed at the maximum flow will respectively be\nA. 8000 vehicles per hour and 80 km per hour\nB. 8000 vehicles per hour and 25 km per hour\nC. 2000 vehicles per hour and 40 km per hour\nD. 2000 vehicles per hour and 80 km per hour',
+    options: [
+      { label: 'A', text: '8000 vehicles per hour and 80 km per hour' },
+      { label: 'B', text: '8000 vehicles per hour and 25 km per hour' },
+      { label: 'C', text: '2000 vehicles per hour and 40 km per hour' },
+      { label: 'D', text: '2000 vehicles per hour and 80 km per hour' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'In Greenshields\' linear speed-density model, maximum traffic flow occurs at half of free-flow speed (u = uf / 2 = 40 km/h) and half of jam density (k = kj / 2 = 50 veh/km), giving capacity qmax = 2000 veh/h.',
+      formulas: [
+        'u = u_f \\left(1 - \\frac{k}{k_j}\\right)',
+        'u_{\\text{cap}} = \\frac{1}{2} u_f = \\frac{1}{2}(80) = 40',
+        'k_{\\text{cap}} = \\frac{1}{2} k_j = \\frac{1}{2}(100) = 50',
+        'q_{\\max} = u_{\\text{cap}} k_{\\text{cap}} = 40 \\times 50 = 2000',
+      ],
+      steps: [
+        'Step 1: Greenshields model states speed varies linearly: u = uf(1 - k/kj).',
+        'Step 2: Flow equation: q = u · k = uf · k · (1 - k/kj). Differentiating gives maximum flow at k = kj / 2.',
+        'Step 3: Optimum speed at capacity: u_cap = uf / 2 = 80 / 2 = 40 km/h.',
+        'Step 4: Optimum density at capacity: k_cap = kj / 2 = 100 / 2 = 50 veh/km.',
+        'Step 5: Maximum highway capacity: qmax = 40 km/h × 50 veh/km = 2000 veh/h.',
+        'Step 6: Respectively: 2000 vehicles per hour and 40 km per hour (Option C).',
+      ],
+      finalAnswer: '2000 vehicles per hour and 40 km per hour (Option C)',
+      pageNumber: 532,
+    },
+  },
+
+  // Item 44
+  {
+    id: 'mstc-nov2025-q44',
+    number: 44,
+    pageNumber: 494,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Transportation Engineering & Queuing - Ramp Metering Queue Length',
+    text: 'Given the following data:\n• Ramp will hold 15 vehicles\n• Vehicles can enter expressway at 1 vehicle every 6 seconds\n• Vehicles arrive at ramp at 1 vehicle every 8 seconds\nDetermine the expected number of vehicles on ramp in peak hour.\nHint:\nE(n) = [ρ / (1 - ρ)] · [(1 - (N + 1)ρᴺ + N ρᴺ⁺¹) / (1 - ρᴺ⁺¹)]\nA. 4\nB. 3\nC. 5\nD. 2',
+    options: [
+      { label: 'A', text: '4' },
+      { label: 'B', text: '3' },
+      { label: 'C', text: '5' },
+      { label: 'D', text: '2' },
+    ],
+    correctAnswer: 'B',
+    solution: {
+      summary: 'Compute traffic intensity ρ = λ / μ = (1/8) / (1/6) = 0.75 and evaluate the finite capacity M/M/1/N expected system size formula with N = 15.',
+      formulas: [
+        '\\lambda = \\frac{1}{8}, \\quad \\mu = \\frac{1}{6}',
+        '\\rho = \\frac{\\lambda}{\\mu} = \\frac{1/8}{1/6} = 0.75',
+        'E(n) = \\left(\\frac{0.75}{1 - 0.75}\\right) \\left( \\frac{1 - (16)(0.75)^{15} + 15(0.75)^{16}}{1 - 0.75^{16}} \\right)',
+        'E(n) = 3(0.9427) = 2.83 \\approx 3',
+      ],
+      steps: [
+        'Step 1: Arrival rate λ = 1/8 veh/s = 0.125 veh/s.',
+        'Step 2: Service metering rate μ = 1/6 veh/s = 0.1667 veh/s.',
+        'Step 3: Ramp utilization ratio: ρ = λ / μ = (1/8) / (1/6) = 6/8 = 0.75.',
+        'Step 4: Unbounded queue term: ρ / (1 - ρ) = 0.75 / 0.25 = 3.0.',
+        'Step 5: Finite capacity factor with N = 15: [1 - 16(0.75)¹⁵ + 15(0.75)¹⁶] / [1 - 0.75¹⁶] ≈ 0.9427.',
+        'Step 6: Expected number of vehicles on ramp: E(n) = 3.0 × 0.9427 = 2.83 ≈ 3 vehicles (Option B).',
+      ],
+      finalAnswer: '3 (Option B)',
+      pageNumber: 533,
+    },
+  },
+
+  // Item 45
+  {
+    id: 'mstc-nov2025-q45',
+    number: 45,
+    pageNumber: 495,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Transportation Engineering - Webster\'s Optimal Signal Cycle Length',
+    text: 'Calculate the optimal cycle lengths for the intersection of Oak Street and Washington Avenue, given that the critical v/c ratio is 0.9, the two critical approaches have a v/s ratio of 0.3, and the lost time equals 15 seconds.\nHint:\nC_opt = [(1.5L) + 5] / [1.0 - ΣYᵢ]\nA. 78.65\nB. 88.75\nC. 68.75\nD. 75.68',
+    options: [
+      { label: 'A', text: '78.65' },
+      { label: 'B', text: '88.75' },
+      { label: 'C', text: '68.75' },
+      { label: 'D', text: '75.68' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Apply Webster\'s signal timing formula C_opt = (1.5L + 5) / (1 - ΣY) with total lost time L = 15 s and sum of flow ratios ΣY = 0.3 + 0.3 = 0.6.',
+      formulas: [
+        '\\sum Y_i = Y_1 + Y_2 = 0.30 + 0.30 = 0.60',
+        'C_{\\text{opt}} = \\frac{1.5L + 5}{1.0 - \\sum Y_i}',
+        'C_{\\text{opt}} = \\frac{1.5(15) + 5}{1.0 - 0.60} = \\frac{22.5 + 5}{0.40} = \\frac{27.5}{0.40} = 68.75',
+      ],
+      steps: [
+        'Step 1: Sum of critical flow ratios: ΣY = Y1 + Y2 = 0.30 + 0.30 = 0.60.',
+        'Step 2: Total lost time per cycle: L = 15 seconds.',
+        'Step 3: Numerator in Webster\'s equation: 1.5L + 5 = 1.5(15) + 5 = 22.5 + 5 = 27.5.',
+        'Step 4: Denominator: 1.0 - ΣY = 1.0 - 0.60 = 0.40.',
+        'Step 5: Optimal cycle length: C_opt = 27.5 / 0.40 = 68.75 seconds (Option C).',
+      ],
+      finalAnswer: '68.75 (Option C)',
+      pageNumber: 533,
+    },
+  },
+
+  // Item 46
+  {
+    id: 'mstc-nov2025-q46',
+    number: 46,
+    pageNumber: 495,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Transportation Planning - Multinomial Logit Modal Split Model',
+    text: 'The utility functions for auto and transit are as follows.\nAuto: U_A = -0.46 - 0.35 T₁ - 0.08 T₂ - 0.005 C\nTransit: U_T = -0.07 - 0.05 T₁ - 0.15 T₂ - 0.005 C\nwhere T₁ = total travel time (minutes), T₂ = waiting time (minutes), C = cost (cents).\nThe travel characteristics between two zones are as follows:\n\n| | Auto | Transit |\n| :--- | :--- | :--- |\n| T₁ | 20 | 30 |\n| T₂ | 8 | 6 |\n| C | 320 | 100 |\n\nUse the logit model to determine the percent of travel in the zone by auto and transit.\nHint: P_A = e^(U_A) / [e^(U_A) + e^(U_T)]\nA. 0.86 and 0.14\nB. 0.76 and 0.24\nC. 0.14 and 0.86\nD. 0.00 and 1.00',
+    options: [
+      { label: 'A', text: '0.86 and 0.14' },
+      { label: 'B', text: '0.76 and 0.24' },
+      { label: 'C', text: '0.14 and 0.86' },
+      { label: 'D', text: '0.00 and 1.00' },
+    ],
+    correctAnswer: 'D',
+    solution: {
+      summary: 'Evaluate mode utility values UA = -9.70 and UT = -2.97, then substitute into the logit probability formula to determine mode split proportions.',
+      formulas: [
+        'U_A = -0.46 - 0.35(20) - 0.08(8) - 0.005(320) = -9.70',
+        'U_T = -0.07 - 0.05(30) - 0.15(6) - 0.005(100) = -2.97',
+        'P_A = \\frac{e^{-9.70}}{e^{-9.70} + e^{-2.97}} = 0.0012 \\approx 0.00',
+        'P_T = \\frac{e^{-2.97}}{e^{-9.70} + e^{-2.97}} = 0.9988 \\approx 1.00',
+      ],
+      steps: [
+        'Step 1: Compute Auto utility: UA = -0.46 - 0.35(20) - 0.08(8) - 0.005(320) = -0.46 - 7.0 - 0.64 - 1.6 = -9.70.',
+        'Step 2: Compute Transit utility: UT = -0.07 - 0.05(30) - 0.15(6) - 0.005(100) = -0.07 - 1.5 - 0.90 - 0.50 = -2.97.',
+        'Step 3: Auto probability: PA = e^(-9.70) / [e^(-9.70) + e^(-2.97)] = 0.0000612 / 0.05136 = 0.0012 ≈ 0.00 (0%).',
+        'Step 4: Transit probability: PT = 1 - PA = 0.9988 ≈ 1.00 (100%).',
+        'Step 5: Modal split proportions are 0.00 and 1.00 (Option D).',
+      ],
+      finalAnswer: '0.00 and 1.00 (Option D)',
+      pageNumber: 533,
+    },
+  },
+
+  // Item 47
+  {
+    id: 'mstc-nov2025-q47',
+    number: 47,
+    pageNumber: 495,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Construction Engineering - Earthwork Load & Shrinkage Factors',
+    text: 'A soil weigh 1163 kg/LCM, 1661 kg/BCM, and 2077 kg/CCM. Find the load factor and shrinkage factor for the soil.\nA. 0.7 and 0.8\nB. 0.6 and 0.7\nC. 0.8 and 0.7\nD. 0.5 and 0.8',
+    options: [
+      { label: 'A', text: '0.7 and 0.8' },
+      { label: 'B', text: '0.6 and 0.7' },
+      { label: 'C', text: '0.8 and 0.7' },
+      { label: 'D', text: '0.5 and 0.8' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Compute Load Factor LF = Loose Unit Weight / Bank Unit Weight, and Shrinkage Factor SF = Bank Unit Weight / Compacted Unit Weight.',
+      formulas: [
+        'LF = \\frac{W_L}{W_B} = \\frac{1163}{1661} = 0.7001 \\approx 0.70',
+        'SF = \\frac{W_B}{W_C} = \\frac{1661}{2077} = 0.7997 \\approx 0.80',
+      ],
+      steps: [
+        'Step 1: Load factor converts loose volume to bank volume: LF = Loose Weight / Bank Weight.',
+        'Step 2: LF = 1163 kg/LCM / 1661 kg/BCM = 0.7001 ≈ 0.70.',
+        'Step 3: Shrinkage factor converts bank volume to compacted volume: SF = Bank Weight / Compacted Weight.',
+        'Step 4: SF = 1661 kg/BCM / 2077 kg/CCM = 0.7997 ≈ 0.80.',
+        'Step 5: Values are 0.7 and 0.8 (Option A).',
+      ],
+      finalAnswer: '0.7 and 0.8 (Option A)',
+      pageNumber: 534,
+    },
+  },
+
+  // Item 48
+  {
+    id: 'mstc-nov2025-q48',
+    number: 48,
+    pageNumber: 496,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Statistics - Sample Size Determination for Estimating Population Mean',
+    text: 'A municipality plans to estimate the number of households that dispose of garbage weekly. A pilot survey was conducted in which households were classified according to family size (Single, Double, and Three or More occupants) and the number of garbage bags disposed of per week. The results are summarized below. From the pilot survey, the estimated mean number of garbage bags disposed of per household per week is 2.65 bags, with an estimated standard deviation of 1.30 bags. Determine the minimum number of households required for the full survey if a 95% confidence level and a margin of error of 0.025 bags are desired.\nHint: n = (z · σ / E)²\n\n| No. of Garbage Bags | Single | Double | Three or More |\n| :--- | :--- | :--- | :--- |\n| 1 | 24 | 18 | 10 |\n| 2 | 36 | 52 | 45 |\n| 3 | 20 | 48 | 60 |\n| 4 | 10 | 26 | 54 |\n| 5 | 5 | 6 | 16 |\n| Total | 95 | 150 | 185 |\n\nA. 13,053\nB. 13,880\nC. 10,388\nD. 13,388',
+    options: [
+      { label: 'A', text: '13,053' },
+      { label: 'B', text: '13,880' },
+      { label: 'C', text: '10,388' },
+      { label: 'D', text: '13,388' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Compute required sample size n = (z · σ / E)² using standard normal critical value z = 1.96 for 95% confidence, standard deviation σ = 1.30, and margin of error E = 0.025.',
+      formulas: [
+        'n = \\left( \\frac{z \\sigma}{E} \\right)^2',
+        'z = 1.96, \\quad \\sigma = 1.30, \\quad E = 0.025',
+        'n = \\left( \\frac{1.96 \\times 1.30}{0.025} \\right)^2 = (101.92)^2 = 10387.68 \\approx 10388',
+      ],
+      steps: [
+        'Step 1: For a 95% confidence level, the two-tailed z-critical score is z = 1.96.',
+        'Step 2: Given pilot sample standard deviation σ = 1.30 bags, and margin of error E = 0.025 bags.',
+        'Step 3: Sample size formula: n = [(1.96 × 1.30) / 0.025]².',
+        'Step 4: Compute numerator: 1.96 × 1.30 = 2.548.',
+        'Step 5: Ratio: 2.548 / 0.025 = 101.92.',
+        'Step 6: Square: (101.92)² = 10,387.68 ≈ 10,388 households (Option C).',
+      ],
+      finalAnswer: '10,388 (Option C)',
+      pageNumber: 535,
+    },
+  },
+];

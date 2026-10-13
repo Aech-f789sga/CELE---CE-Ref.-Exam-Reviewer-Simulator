@@ -48,8 +48,25 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
     }
   }
 
+  // Inspect figureSvg for MSTC November 2025 illustrations
+  const isMstcNov25 =
+    figureSvg.includes('MSTCNov2025') ||
+    (figureCaption && figureCaption.includes('MSTC Nov 2025'));
+  let mstcNov25Num: number | null = null;
+  if (isMstcNov25) {
+    const match =
+      figureSvg.match(/MSTC[-_]November[-_]202[45][-_](\d+)\.png/i) ||
+      figureSvg.match(/Figure\s*(\d+)/i) ||
+      (figureCaption && figureCaption.match(/Figure\s*(\d+)/i));
+    if (match && match[1]) {
+      mstcNov25Num = parseInt(match[1], 10);
+    }
+  }
+
   // Inspect figureSvg for MSTC November 2024 illustrations
-  const isMstcNov = figureSvg.includes('MSTC_November_2024_') || figureSvg.includes('MSTCNov2024');
+  const isMstcNov =
+    !isMstcNov25 &&
+    (figureSvg.includes('MSTC_November_2024_') || figureSvg.includes('MSTCNov2024'));
   let mstcNum: number | null = null;
   if (isMstcNov) {
     const match = figureSvg.match(/MSTC[-_]November[-_]2024[-_](\d+)\.png/i);
@@ -136,6 +153,11 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
           {mstcApr25Num && (
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
               MSTC Apr 2025 · Q{mstcApr25Num} Illustration
+            </span>
+          )}
+          {mstcNov25Num && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30">
+              MSTC Nov 2025 · Q{mstcNov25Num} Illustration
             </span>
           )}
         </div>
@@ -230,6 +252,34 @@ export const EngineeringFigure: React.FC<EngineeringFigureProps> = ({
                   if (cloudMatch && cloudMatch[0]) {
                     target.src = cloudMatch[0];
                   }
+                }
+              }}
+            />
+          </div>
+        ) : mstcNov25Num ? (
+          // Optimized multi-source loader for MSTC November 2025 questions:
+          // 1. Tries /src/images/MSTCNov2025/MSTC_November_2024_{X}.png
+          // 2. Tries /images/MSTCNov2025/MSTC_November_2024_{X}.png
+          // 3. Tries /src/images/MSTCNov2025/MSTC_November_2025_{X}.png
+          // 4. Tries /images/MSTCNov2025/MSTC_November_2025_{X}.png
+          <div className={`overflow-x-auto flex justify-center w-full py-2 ${isZoomed ? 'max-w-4xl py-4' : ''}`}>
+            <img
+              src={`/src/images/MSTCNov2025/MSTC_November_2024_${mstcNov25Num}.png`}
+              alt={figureCaption || `MSTC November 2025 Question ${mstcNov25Num} Illustration`}
+              className="max-w-xl w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+              loading="eager"
+              onError={(e) => {
+                const target = e.currentTarget;
+                const tried = target.getAttribute('data-load-phase') || 'phase-1';
+                if (tried === 'phase-1') {
+                  target.setAttribute('data-load-phase', 'phase-2');
+                  target.src = `/images/MSTCNov2025/MSTC_November_2024_${mstcNov25Num}.png`;
+                } else if (tried === 'phase-2') {
+                  target.setAttribute('data-load-phase', 'phase-3');
+                  target.src = `/src/images/MSTCNov2025/MSTC_November_2025_${mstcNov25Num}.png`;
+                } else if (tried === 'phase-3') {
+                  target.setAttribute('data-load-phase', 'phase-4');
+                  target.src = `/images/MSTCNov2025/MSTC_November_2025_${mstcNov25Num}.png`;
                 }
               }}
             />

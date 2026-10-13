@@ -1,0 +1,634 @@
+import { Question } from '../../../types/exam';
+
+export const MSTC_NOV2025_PART1: Question[] = [
+  // Item 1
+  {
+    id: 'mstc-nov2025-q1',
+    number: 1,
+    pageNumber: 482,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Algebra - System of Linear Equations in Three Variables',
+    text: 'A bank teller has a total of 70 bills in five-, ten-, and twenty-dollar denominations. The number of fives is three times the number of tens, while the total value of the money is $960. Find the number of each type of bill.\nA. 24 fives, 38 tens, and 8 twenties\nB. 24 fives, 8 tens, and 38 twenties\nC. 38 fives, 24 tens, and 8 twenties\nD. 38 fives, 8 tens, and 24 twenties',
+    options: [
+      { label: 'A', text: '24 fives, 38 tens, and 8 twenties' },
+      { label: 'B', text: '24 fives, 8 tens, and 38 twenties' },
+      { label: 'C', text: '38 fives, 24 tens, and 8 twenties' },
+      { label: 'D', text: '38 fives, 8 tens, and 24 twenties' },
+    ],
+    correctAnswer: 'B',
+    solution: {
+      summary: 'Formulate three simultaneous linear equations using total count, denomination ratio, and total monetary value, then solve for each count.',
+      formulas: [
+        'n_5 + n_{10} + n_{20} = 70',
+        'n_5 = 3 n_{10}',
+        '5 n_5 + 10 n_{10} + 20 n_{20} = 960',
+      ],
+      steps: [
+        'Step 1: Total number of bills equation: n5 + n10 + n20 = 70.',
+        'Step 2: Relation between $5 and $10 bills: n5 = 3(n10).',
+        'Step 3: Total value equation: 5(n5) + 10(n10) + 20(n20) = 960.',
+        'Step 4: Substitute n5 = 3(n10) into total bills: 3(n10) + n10 + n20 = 70 => 4(n10) + n20 = 70 => n20 = 70 - 4(n10).',
+        'Step 5: Substitute into value equation: 5[3(n10)] + 10(n10) + 20[70 - 4(n10)] = 960 => 15(n10) + 10(n10) + 1400 - 80(n10) = 960.',
+        'Step 6: -55(n10) = 960 - 1400 = -440 => n10 = 8.',
+        'Step 7: Compute remaining: n5 = 3(8) = 24, and n20 = 70 - 4(8) = 38.',
+        'Step 8: Therefore: 24 fives, 8 tens, and 38 twenties (Option B).',
+      ],
+      finalAnswer: '24 fives, 8 tens, and 38 twenties (Option B)',
+      pageNumber: 502,
+    },
+  },
+
+  // Item 2
+  {
+    id: 'mstc-nov2025-q2',
+    number: 2,
+    pageNumber: 482,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Algebra - Geometric Cost Functions & Polynomial Modeling',
+    text: 'A rectangular box has a square copper base, wooden sides, and a wooden top. The copper costs $21 per square foot and the wood costs $2 per square foot. Write an expression giving the total cost of the materials used to make the box in terms of the dimensions.',
+    figureCaption: 'Figure 2: Rectangular box with square copper base, wooden sides, and wooden top',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_2.png" 
+        alt="Figure 2: Rectangular box with square base x and height h" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: '21x² + 2xh' },
+      { label: 'B', text: '21x² + 8xh' },
+      { label: 'C', text: '23x² + 2xh' },
+      { label: 'D', text: '23x² + 8xh' },
+    ],
+    correctAnswer: 'D',
+    solution: {
+      summary: 'Compute the area of each box face and multiply by its unit material cost: copper bottom at $21/sq ft, wooden top and 4 sides at $2/sq ft.',
+      formulas: [
+        'A_c = x^2',
+        'A_{wt} = x^2',
+        'A_{ws} = 4 x h',
+        'C = 21(x^2) + 2(x^2 + 4xh) = 23x^2 + 8xh',
+      ],
+      steps: [
+        'Step 1: Square copper base has dimensions x by x, so area Ac = x² at $21/sq ft => Cost = 21x².',
+        'Step 2: Wooden top is identical in dimensions: Awt = x² at $2/sq ft => Cost = 2x².',
+        'Step 3: Four vertical wooden sides each have area x · h: Aws = 4xh at $2/sq ft => Cost = 2(4xh) = 8xh.',
+        'Step 4: Sum all components: Total Cost = 21x² + 2x² + 8xh = 23x² + 8xh (Option D).',
+      ],
+      finalAnswer: '23x² + 8xh (Option D)',
+      pageNumber: 502,
+    },
+  },
+
+  // Item 3
+  {
+    id: 'mstc-nov2025-q3',
+    number: 3,
+    pageNumber: 482,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Algebra - Polynomial Modeling of Financial Collectibles',
+    text: 'Instead of investing in the stock market, many people invest in collectibles, like baseball cards. Each year, Anna uses some of the money she receives for her birthday to buy one special baseball card. For the last four birthdays, she purchased cards for $6, $18, $24, and $18. The current value of these cards is modeled by T(x) = 6x⁴ + 18x³ + 24x² + 18x, where x represents the average rate of return plus one. If the cards are worth $81.58, write an equation to model this situation.\nA. 6x⁴ + 28x³ + 24x² + 18x = 81.58\nB. 6x⁴ + 18x³ + 24x² + 18x = 81.58\nC. 6x⁴ + 18x³ + 14x² + 18x = 81.58\nD. 6x⁴ + 18x³ + 24x² + 28x = 81.58',
+    options: [
+      { label: 'A', text: '6x⁴ + 28x³ + 24x² + 18x = 81.58' },
+      { label: 'B', text: '6x⁴ + 18x³ + 24x² + 18x = 81.58' },
+      { label: 'C', text: '6x⁴ + 18x³ + 14x² + 18x = 81.58' },
+      { label: 'D', text: '6x⁴ + 18x³ + 24x² + 28x = 81.58' },
+    ],
+    correctAnswer: 'B',
+    solution: {
+      summary: 'Equate the polynomial model of cumulative value T(x) to the current actual value of $81.58.',
+      formulas: [
+        'T(x) = 6x^4 + 18x^3 + 24x^2 + 18x',
+        'T(x) = 81.58',
+        '6x^4 + 18x^3 + 24x^2 + 18x = 81.58',
+      ],
+      steps: [
+        'Step 1: The model given for the portfolio valuation is T(x) = 6x⁴ + 18x³ + 24x² + 18x.',
+        'Step 2: The current evaluated worth is $81.58.',
+        'Step 3: Setting the model equal to this valuation gives 6x⁴ + 18x³ + 24x² + 18x = 81.58 (Option B).',
+      ],
+      finalAnswer: '6x⁴ + 18x³ + 24x² + 18x = 81.58 (Option B)',
+      pageNumber: 502,
+    },
+  },
+
+  // Item 4
+  {
+    id: 'mstc-nov2025-q4',
+    number: 4,
+    pageNumber: 483,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Construction & Architectural Planning - Minimum Office Area & Space Standards',
+    text: 'An office is to be provided for a site agent and an assistant, with an allowance for three visitors. Assuming an internal average ceiling height of 2.4 m, and that the minimum requirements are 3.7 m² of floor area and 11.5 m³ of space per person, what is the minimum floor area required for the office?\nA. 18 m²\nB. 22 m²\nC. 24 m²\nD. 28 m²',
+    options: [
+      { label: 'A', text: '18 m²' },
+      { label: 'B', text: '22 m²' },
+      { label: 'C', text: '24 m²' },
+      { label: 'D', text: '28 m²' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Calculate floor area required based on minimum floor area standard and minimum air volume standard divided by ceiling height; the larger value governs.',
+      formulas: [
+        'A_{\\text{area}} = N \\times 3.7',
+        'V = N \\times 11.5',
+        'A_{\\text{space}} = \\frac{V}{H} = \\frac{57.5}{2.4} = 23.96',
+        'A = \\max(A_{\\text{area}}, A_{\\text{space}}) = 23.96 \\approx 24',
+      ],
+      steps: [
+        'Step 1: Determine total design occupants: 1 site agent + 1 assistant + 3 visitors = 5 persons.',
+        'Step 2: Area based on minimum floor area per person: A_area = 5 × 3.7 m² = 18.5 m².',
+        'Step 3: Total required internal air volume: V = 5 × 11.5 m³ = 57.5 m³.',
+        'Step 4: Floor area required to provide this volume with ceiling height H = 2.4 m: A_space = 57.5 / 2.4 = 23.958 m².',
+        'Step 5: To satisfy both building regulations, the larger requirement governs: A = 23.96 m² ≈ 24 m² (Option C).',
+      ],
+      finalAnswer: '24 m² (Option C)',
+      pageNumber: 503,
+    },
+  },
+
+  // Item 5
+  {
+    id: 'mstc-nov2025-q5',
+    number: 5,
+    pageNumber: 483,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Kinematics & Calculus - Average Velocity from Tabulated Position',
+    text: 'The table shows the position of a motorcyclist after accelerating from rest.\n\n| t (seconds) | 0 | 1 | 2 | 3 | 4 | 5 | 6 |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| s (feet) | 0 | 4.9 | 20.6 | 46.5 | 79.2 | 124.8 | 176.7 |\n\nFind the average velocity for the time period [2, 4].\nA. 29.3 ft/s\nB. 32.7 ft/s\nC. 45.6 ft/s\nD. 48.8 ft/s',
+    options: [
+      { label: 'A', text: '29.3 ft/s' },
+      { label: 'B', text: '32.7 ft/s' },
+      { label: 'C', text: '45.6 ft/s' },
+      { label: 'D', text: '48.8 ft/s' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Compute average velocity as change in position divided by change in time: v_ave = Δs / Δt.',
+      formulas: [
+        'v_{\\text{ave}} = \\frac{\\Delta s}{\\Delta t} = \\frac{s(4) - s(2)}{4 - 2}',
+        'v_{\\text{ave}} = \\frac{79.2 - 20.6}{2} = \\frac{58.6}{2} = 29.3',
+      ],
+      steps: [
+        'Step 1: Read positions from the table: at t = 2 s, s(2) = 20.6 ft; at t = 4 s, s(4) = 79.2 ft.',
+        'Step 2: Displacement over the interval: Δs = 79.2 - 20.6 = 58.6 ft.',
+        'Step 3: Time duration: Δt = 4 - 2 = 2 s.',
+        'Step 4: Average velocity: v_ave = 58.6 / 2 = 29.3 ft/s (Option A).',
+      ],
+      finalAnswer: '29.3 ft/s (Option A)',
+      pageNumber: 504,
+    },
+  },
+
+  // Item 6
+  {
+    id: 'mstc-nov2025-q6',
+    number: 6,
+    pageNumber: 483,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Differential Equations - Newton\'s Law of Cooling Indoor Temperature',
+    text: 'Suppose that in winter the daytime temperature in a certain office building is maintained at 70°F. The heating is shut off at 10 P.M. and turned on again at 6 A.M.. On a certain day the temperature inside the building at 2 A.M. was found to be 65°F. The outside temperature was 50°F at 10 P.M. and had dropped to 40°F by 6 A.M.. What was the temperature drop inside the building when the heat was turned on at 6 A.M.?\nA. 9°F\nB. 10°F\nC. 15°F\nD. 20°F',
+    options: [
+      { label: 'A', text: '9°F' },
+      { label: 'B', text: '10°F' },
+      { label: 'C', text: '15°F' },
+      { label: 'D', text: '20°F' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Apply Newton\'s Law of Cooling using the mean ambient outdoor temperature Ts = 45°F, find decay constant e^(-4k) = 0.8 at 2 A.M. (t = 4 hrs), and determine building temperature at 6 A.M. (t = 8 hrs).',
+      formulas: [
+        'T_s = \\frac{50 + 40}{2} = 45',
+        'T(t) = 45 + (70 - 45)e^{-kt} = 45 + 25e^{-kt}',
+        'T(4) = 65 \\implies 25e^{-4k} = 20 \\implies e^{-4k} = 0.8',
+        'e^{-8k} = (e^{-4k})^2 = (0.8)^2 = 0.64',
+        'T(8) = 45 + 25(0.64) = 61',
+        '\\Delta T = 70 - 61 = 9',
+      ],
+      steps: [
+        'Step 1: Mean outdoor ambient temperature: Ts = (50 + 40) / 2 = 45°F.',
+        'Step 2: Newton\'s Law of Cooling: T(t) = Ts + (T0 - Ts)e^(-kt) = 45 + (70 - 45)e^(-kt) = 45 + 25e^(-kt).',
+        'Step 3: At 2 A.M. (t = 4 hours after 10 P.M.): 65 = 45 + 25e^(-4k) => 25e^(-4k) = 20 => e^(-4k) = 0.8.',
+        'Step 4: At 6 A.M. (t = 8 hours after 10 P.M.): e^(-8k) = [e^(-4k)]² = (0.8)² = 0.64.',
+        'Step 5: Inside temperature at 6 A.M.: T(8) = 45 + 25(0.64) = 45 + 16 = 61°F.',
+        'Step 6: Overall indoor temperature drop: ΔT = 70°F - 61°F = 9°F (Option A).',
+      ],
+      finalAnswer: '9°F (Option A)',
+      pageNumber: 504,
+    },
+  },
+
+  // Item 7
+  {
+    id: 'mstc-nov2025-q7',
+    number: 7,
+    pageNumber: 483,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Physics & Logarithms - Sound Intensity Level Doubling',
+    text: 'According to the sound intensity level equation\nL = k ln(I / I₀)\nwhich of the following expressions represents a doubling of the sound intensity level L?\nA. k ln(I² / I₀²)\nB. k ln(I³ / I₀³)\nC. k ln(I⁴ / I₀⁴)\nD. k ln(I⁵ / I₀⁵)',
+    options: [
+      { label: 'A', text: 'k ln(I² / I₀²)' },
+      { label: 'B', text: 'k ln(I³ / I₀³)' },
+      { label: 'C', text: 'k ln(I⁴ / I₀⁴)' },
+      { label: 'D', text: 'k ln(I⁵ / I₀⁵)' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Multiply the original sound level L by 2 and apply the logarithmic power property n · ln(x) = ln(x^n).',
+      formulas: [
+        'L = k \\ln\\left(\\frac{I}{I_0}\\right)',
+        'L\' = 2L = 2k \\ln\\left(\\frac{I}{I_0}\\right)',
+        'L\' = k \\ln\\left(\\left(\\frac{I}{I_0}\\right)^2\\right) = k \\ln\\left(\\frac{I^2}{I_0^2}\\right)',
+      ],
+      steps: [
+        'Step 1: Original sound level equation: L = k · ln(I / I₀).',
+        'Step 2: Doubling the level means L\' = 2L = 2 · k · ln(I / I₀).',
+        'Step 3: Recall the logarithm exponent rule: n · ln(x) = ln(xⁿ).',
+        'Step 4: Bring the factor of 2 inside the argument: L\' = k · ln[(I / I₀)²] = k · ln(I² / I₀²) (Option A).',
+      ],
+      finalAnswer: 'k ln(I² / I₀²) (Option A)',
+      pageNumber: 505,
+    },
+  },
+
+  // Item 8
+  {
+    id: 'mstc-nov2025-q8',
+    number: 8,
+    pageNumber: 484,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Probability & Statistics - Standard Error of Sample Proportion',
+    text: 'According to the Mendelian law of segregation in genetics, when certain types of peas are crossed, the probability that the plant yields a yellow pea is 3/4 and that it yields a green pea is 1/4. For a plant yielding 400 peas, find the standard error of the proportion of yellow peas.\nHint: SE = √[p(1 - p) / n]\nA. 0.0217\nB. 0.0721\nC. 0.0271\nD. 0.0712',
+    options: [
+      { label: 'A', text: '0.0217' },
+      { label: 'B', text: '0.0721' },
+      { label: 'C', text: '0.0271' },
+      { label: 'D', text: '0.0712' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Compute standard error of proportion using SE = √[p(1 - p) / n] with p = 3/4 = 0.75 and sample size n = 400.',
+      formulas: [
+        'SE = \\sqrt{\\frac{p(1 - p)}{n}}',
+        'p = \\frac{3}{4} = 0.75, \\quad 1 - p = 0.25, \\quad n = 400',
+        'SE = \\sqrt{\\frac{0.75 \\times 0.25}{400}} = \\sqrt{\\frac{0.1875}{400}} = \\sqrt{0.00046875} = 0.02165 \\approx 0.0217',
+      ],
+      steps: [
+        'Step 1: Identify given parameters: p = 3/4 = 0.75, 1 - p = 1/4 = 0.25, sample size n = 400.',
+        'Step 2: Compute variance of the sample proportion: p(1 - p) / n = (0.75 × 0.25) / 400 = 0.1875 / 400 = 0.00046875.',
+        'Step 3: Standard error is the square root: SE = √(0.00046875) = 0.02165 ≈ 0.0217 (Option A).',
+      ],
+      finalAnswer: '0.0217 (Option A)',
+      pageNumber: 505,
+    },
+  },
+
+  // Item 9
+  {
+    id: 'mstc-nov2025-q9',
+    number: 9,
+    pageNumber: 484,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Physics & Acoustic Wave Mechanics - Speed of Sound in Solid Rod',
+    text: 'A long aluminum rod has an elastic modulus of 70.0 × 10⁹ N/m² and a density of 2.70 × 10³ kg/m³. Determine the speed of sound through the aluminum rod.\nHint: v = √(E / ρ)\nA. 4305 m/s\nB. 5090 m/s\nC. 4050 m/s\nD. 9050 m/s',
+    options: [
+      { label: 'A', text: '4305 m/s' },
+      { label: 'B', text: '5090 m/s' },
+      { label: 'C', text: '4050 m/s' },
+      { label: 'D', text: '9050 m/s' },
+    ],
+    correctAnswer: 'B',
+    solution: {
+      summary: 'Calculate longitudinal wave speed through an elastic rod using v = √(E / ρ).',
+      formulas: [
+        'v = \\sqrt{\\frac{E}{\\rho}}',
+        'v = \\sqrt{\\frac{70.0 \\times 10^9}{2.70 \\times 10^3}} = \\sqrt{25{,}925{,}926} = 5091.75 \\approx 5090',
+      ],
+      steps: [
+        'Step 1: Formula for sound wave speed in a solid medium: v = √(E / ρ).',
+        'Step 2: Substitute Young\'s modulus E = 70.0 × 10⁹ N/m² and mass density ρ = 2.70 × 10³ kg/m³.',
+        'Step 3: v = √(70.0 × 10⁹ / 2700) = √(25,925,925.9) = 5091.75 m/s.',
+        'Step 4: Rounding to the nearest multiple gives 5090 m/s (Option B).',
+      ],
+      finalAnswer: '5090 m/s (Option B)',
+      pageNumber: 505,
+    },
+  },
+
+  // Item 10
+  {
+    id: 'mstc-nov2025-q10',
+    number: 10,
+    pageNumber: 484,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Physics - Wave Relationship Wavelength & Frequency',
+    text: 'The speed of sound through a long aluminum rod is 5090 m/s. If the rod vibrates at a frequency of 440 Hz, determine the wavelength of the sound waves produced.\nHint: v = f λ\nA. 12.3 m\nB. 12.2 m\nC. 11.6 m\nD. 11.1 m',
+    options: [
+      { label: 'A', text: '12.3 m' },
+      { label: 'B', text: '12.2 m' },
+      { label: 'C', text: '11.6 m' },
+      { label: 'D', text: '11.1 m' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Relate wave propagation velocity, frequency, and wavelength using λ = v / f.',
+      formulas: [
+        'v = f \\lambda',
+        '\\lambda = \\frac{v}{f}',
+        '\\lambda = \\frac{5090}{440} = 11.568 \\approx 11.6',
+      ],
+      steps: [
+        'Step 1: Fundamental wave relationship: v = f · λ.',
+        'Step 2: Solve for wavelength: λ = v / f.',
+        'Step 3: Substitute speed v = 5090 m/s and frequency f = 440 Hz.',
+        'Step 4: λ = 5090 / 440 = 11.568 m ≈ 11.6 m (Option C).',
+      ],
+      finalAnswer: '11.6 m (Option C)',
+      pageNumber: 506,
+    },
+  },
+
+  // Item 11
+  {
+    id: 'mstc-nov2025-q11',
+    number: 11,
+    pageNumber: 484,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Numerical Methods - Bisection Method Root Finding',
+    text: 'Use two iterations of the bisection method to find a root of f(x) = x³ - 2x - 7\nHint: ½(Lₙ + Rₙ)\nA. 2.375\nB. 2.334\nC. 2.442\nD. 2.863',
+    options: [
+      { label: 'A', text: '2.375' },
+      { label: 'B', text: '2.334' },
+      { label: 'C', text: '2.442' },
+      { label: 'D', text: '2.863' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Locate initial bracket [2, 3] where f(2) = -3 and f(3) = 14 have opposite signs, then execute two midpoint bisections.',
+      formulas: [
+        'f(x) = x^3 - 2x - 7',
+        'x_1 = \\frac{2 + 3}{2} = 2.5',
+        'f(2.5) = 2.5^3 - 2(2.5) - 7 = 3.625 > 0',
+        'x_2 = \\frac{2 + 2.5}{2} = 2.25',
+        'f(2.25) = 2.25^3 - 2(2.25) - 7 = -0.1094 < 0',
+        'x = \\frac{2.25 + 2.5}{2} = 2.375',
+      ],
+      steps: [
+        'Step 1: Check interval endpoints: f(2) = (2)³ - 2(2) - 7 = -3 < 0; f(3) = (3)³ - 2(3) - 7 = 14 > 0. Root is in [2, 3].',
+        'Step 2: 1st iteration: midpoint x1 = (2 + 3) / 2 = 2.5.',
+        'Step 3: Evaluate f(2.5) = (2.5)³ - 2(2.5) - 7 = 15.625 - 5 - 7 = 3.625 > 0. New interval is [2, 2.5].',
+        'Step 4: 2nd iteration: midpoint x2 = (2 + 2.5) / 2 = 2.25.',
+        'Step 5: Evaluate f(2.25) = (2.25)³ - 2(2.25) - 7 = 11.3906 - 4.5 - 7 = -0.1094 < 0. New bracket is [2.25, 2.5].',
+        'Step 6: The estimate after two complete iterations is x = (2.25 + 2.5) / 2 = 2.375 (Option A).',
+      ],
+      finalAnswer: '2.375 (Option A)',
+      pageNumber: 506,
+    },
+  },
+
+  // Item 12
+  {
+    id: 'mstc-nov2025-q12',
+    number: 12,
+    pageNumber: 485,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Trigonometry - Angles of Elevation & Height Clearance Restriction',
+    text: 'The traffic pattern for airplanes into San Diego\'s airport is over the heart of downtown. Therefore, there are restrictions on the heights of new construction. The owner of an office building wishes to erect a microwave tower on top of the building. According to the architect\'s design, the angle of elevation from a point on the ground to the top of the 40-foot tower is 56°. The angle of elevation from the ground point to the top of the building is 42°. The maximum allowed height of any structure is 100 feet. Will the city allow the building of this tower?',
+    figureCaption: 'Figure 12: Airplane traffic pattern & microwave tower elevation angles',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_12.png" 
+        alt="Figure 12: Microwave tower on building elevation angles" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: 'No, the height of the building is about 62 feet for a total of about 102 feet with the tower.' },
+      { label: 'B', text: 'Yes, the height of the building is about 62 feet for a total of about 102 feet with the tower.' },
+      { label: 'C', text: 'No, the height of the building is about 52 feet for a total of about 92 feet with the tower.' },
+      { label: 'D', text: 'Yes, the height of the building is about 52 feet for a total of about 92 feet with the tower.' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Solve the right triangles formed by the ground observer: tan 42° = h / x and tan 56° = (h + 40) / x. Solve for distance x and building height h, then compare total height against the 100 ft limit.',
+      formulas: [
+        'h = x \\tan 42^\\circ',
+        '\\tan 56^\\circ = \\frac{40 + x \\tan 42^\\circ}{x}',
+        'x = \\frac{40}{\\tan 56^\\circ - \\tan 42^\\circ} = \\frac{40}{1.4826 - 0.9004} = 68.71',
+        'h = 68.71 \\tan 42^\\circ = 61.87 \\approx 62',
+        'H = 61.87 + 40 = 101.87 \\approx 102',
+      ],
+      steps: [
+        'Step 1: Triangle to top of building: tan 42° = h / x => h = x · tan 42° = 0.9004x.',
+        'Step 2: Triangle to top of tower: tan 56° = (h + 40) / x => 1.4826x = 0.9004x + 40.',
+        'Step 3: Solve for ground distance: 0.5822x = 40 => x = 68.71 ft.',
+        'Step 4: Building height: h = 68.71 × tan 42° = 61.87 ft ≈ 62 ft.',
+        'Step 5: Total height of building plus tower: H = 61.87 + 40 = 101.87 ft ≈ 102 ft.',
+        'Step 6: Since 102 ft exceeds the 100-foot ceiling restriction, the city will not allow the tower (Option A).',
+      ],
+      finalAnswer: 'No, the height of the building is about 62 feet for a total of about 102 feet with the tower. (Option A)',
+      pageNumber: 507,
+    },
+  },
+
+  // Item 13
+  {
+    id: 'mstc-nov2025-q13',
+    number: 13,
+    pageNumber: 485,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Surveying & Geometry - Uniform Slope Interpolation & Distances',
+    text: 'Determine the value of x₁ and x₂.\n(Given: Benchmark B2 at elevation 30.20 m, B3 at 34.60 m, total vertical rise ΔH = 4.40 m over a total horizontal distance L = 20 m. At elevation 31 m, rise is 0.80 m; at elevation 32 m, rise is 1.80 m).',
+    figureCaption: 'Figure 13: Ground profile elevations and benchmark contour distances x1 and x2',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_13.png" 
+        alt="Figure 13: Profile elevations benchmark B2 to B3" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: '3.64 m and 8.18 m' },
+      { label: 'B', text: '6.64 m and 9.13 m' },
+      { label: 'C', text: '2.43 m and 7.98 m' },
+      { label: 'D', text: '7.53 m and 9.89 m' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Use linear ratio and proportion along the uniform slope: x = (rise / ΔH) · L.',
+      formulas: [
+        '\\frac{\\Delta H}{L} = \\frac{0.80}{x_1} = \\frac{1.80}{x_2}',
+        'x_1 = 0.80 \\times \\frac{L}{\\Delta H} = 0.80 \\times \\frac{20}{4.40} = 3.636 \\approx 3.64',
+        'x_2 = 1.80 \\times \\frac{L}{\\Delta H} = 1.80 \\times \\frac{20}{4.40} = 8.182 \\approx 8.18',
+      ],
+      steps: [
+        'Step 1: Total vertical rise ΔH = 34.60 m - 30.20 m = 4.40 m across L = 20 m.',
+        'Step 2: Rise to first contour station (31 m): Δh1 = 31.00 m - 30.20 m = 0.80 m.',
+        'Step 3: Distance x1 = 0.80 × (20 / 4.40) = 3.636 m ≈ 3.64 m.',
+        'Step 4: Rise to second contour station (32 m): Δh2 = 32.00 m - 30.20 m = 1.80 m.',
+        'Step 5: Distance x2 = 1.80 × (20 / 4.40) = 8.182 m ≈ 8.18 m.',
+        'Step 6: Values are 3.64 m and 8.18 m (Option A).',
+      ],
+      finalAnswer: '3.64 m and 8.18 m (Option A)',
+      pageNumber: 508,
+    },
+  },
+
+  // Item 14
+  {
+    id: 'mstc-nov2025-q14',
+    number: 14,
+    pageNumber: 486,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Calculus - Optimization of Circumscribed Isosceles Triangle',
+    text: 'An isosceles triangle is circumscribed about the unit circle so that the equal sides meet at the point (0, a) on the y-axis (see the figure). Find the value of a that minimizes the lengths of the equal sides.',
+    figureCaption: 'Figure 14: Isosceles triangle circumscribed about the unit circle',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_14.png" 
+        alt="Figure 14: Isosceles triangle circumscribed about unit circle" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: '1.26' },
+      { label: 'B', text: '2.16' },
+      { label: 'C', text: '1.62' },
+      { label: 'D', text: '2.61' },
+    ],
+    correctAnswer: 'C',
+    solution: {
+      summary: 'Express side length s in terms of apex ordinate a using circle tangency geometry, differentiate s(a), and find the critical value a = 1.62.',
+      formulas: [
+        '\\sin\\theta = \\frac{1}{a}, \\quad \\cos\\theta = \\frac{a + 1}{s}',
+        '\\sin^2\\theta + \\cos^2\\theta = 1 \\implies \\frac{1}{a^2} + \\frac{(a+1)^2}{s^2} = 1',
+        's = \\frac{a + a^2}{\\sqrt{a^2 - 1}}',
+        '\\frac{ds}{da} = 0 \\implies a = 1.618 \\approx 1.62',
+      ],
+      steps: [
+        'Step 1: Center of unit circle is at (0, 0) with radius r = 1.',
+        'Step 2: Triangle apex is at (0, a) with a > 1. Right triangle from apex to tangent point gives sin θ = 1 / a.',
+        'Step 3: Distance from apex to triangle base is a + 1; right triangle from apex to base vertex gives cos θ = (a + 1) / s.',
+        'Step 4: Using sin² θ + cos² θ = 1: (1 / a²) + [(a + 1)² / s²] = 1 => s = a(a + 1) / √(a² - 1).',
+        'Step 5: Differentiating s(a) and equating to zero yields the root a = 1.618 ≈ 1.62.',
+        'Step 6: At a = 1.62, the side length is minimized (Option C).',
+      ],
+      finalAnswer: '1.62 (Option C)',
+      pageNumber: 508,
+    },
+  },
+
+  // Item 15
+  {
+    id: 'mstc-nov2025-q15',
+    number: 15,
+    pageNumber: 486,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Calculus - Optimization of Illumination Intensity',
+    text: 'A light is to be placed atop a pole of height h feet to illuminate a busy traffic circle, which has a radius of 40 ft. The intensity of illumination I at any point P on the circle is directly proportional to the cosine of the angle θ (see the figure) and inversely proportional to the square of the distance d from the source. How tall should the light pole be to maximize I?',
+    figureCaption: 'Figure 15: Traffic circle illumination from pole of height h',
+    figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
+      <img 
+        src="/src/images/MSTCNov2025/MSTC_November_2024_15.png" 
+        alt="Figure 15: Illumination geometry from pole to traffic circle boundary" 
+        class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200" 
+        loading="eager" 
+      />
+    </div>`,
+    options: [
+      { label: 'A', text: '28 ft' },
+      { label: 'B', text: '30 ft' },
+      { label: 'C', text: '32 ft' },
+      { label: 'D', text: '34 ft' },
+    ],
+    correctAnswer: 'A',
+    solution: {
+      summary: 'Express illumination as I = k · cos θ / d² = k · h / (h² + 40²)^(3/2). Differentiate with respect to h to find the optimal height h = 40 / √2 ≈ 28.28 ft.',
+      formulas: [
+        'd = \\sqrt{h^2 + 40^2} = \\sqrt{h^2 + 1600}',
+        '\\cos\\theta = \\frac{h}{d} = \\frac{h}{\\sqrt{h^2 + 1600}}',
+        'I = k \\frac{\\cos\\theta}{d^2} = \\frac{k h}{(h^2 + 1600)^{3/2}}',
+        '\\frac{dI}{dh} = 0 \\implies (h^2 + 1600) - 3h^2 = 0 \\implies 2h^2 = 1600',
+        'h = \\sqrt{800} = 28.28 \\approx 28',
+      ],
+      steps: [
+        'Step 1: Distance from lamp to boundary point: d = √(h² + 40²).',
+        'Step 2: Cosine of incidence angle: cos θ = h / d.',
+        'Step 3: Illumination formula: I = k · cos θ / d² = k · h / (h² + 1600)^(3/2).',
+        'Step 4: Take derivative dI/dh: numerator of quotient rule gives (h² + 1600)^(3/2) - h · [3/2 · 2h(h² + 1600)^(1/2)] = 0.',
+        'Step 5: Factor out (h² + 1600)^(1/2): (h² + 1600) - 3h² = 0 => 2h² = 1600 => h² = 800.',
+        'Step 6: Optimal pole height: h = √800 = 28.28 ft ≈ 28 ft (Option A).',
+      ],
+      finalAnswer: '28 ft (Option A)',
+      pageNumber: 510,
+    },
+  },
+
+  // Item 16
+  {
+    id: 'mstc-nov2025-q16',
+    number: 16,
+    pageNumber: 486,
+    subject: 'MSTC',
+    year: 2025,
+    month: 'November',
+    category: 'Calculus - Differential Error Analysis on Disk Radius',
+    text: 'A machinist is required to manufacture a circular metal disk with area 1000 cm². If the machinist is allowed an error tolerance of ±5 cm² in the area of the disk, how close to the ideal radius must the machinist control the radius?\nA. 0.4045 cm\nB. 0.0445 cm\nC. 0.5054 cm\nD. 0.0554 cm',
+    options: [
+      { label: 'A', text: '0.4045 cm' },
+      { label: 'B', text: '0.0445 cm' },
+      { label: 'C', text: '0.5054 cm' },
+      { label: 'D', text: '0.0554 cm' },
+    ],
+    correctAnswer: 'B',
+    solution: {
+      summary: 'Relate area differential dA = 2πr dr to compute allowable tolerance in radius: |dr| = |dA| / (2πr).',
+      formulas: [
+        'A = \\pi r^2 \\implies r = \\sqrt{\\frac{A}{\\pi}} = \\sqrt{\\frac{1000}{\\pi}} = 17.841',
+        'dA = 2\\pi r dr',
+        '|dr| = \\frac{|dA|}{2\\pi r} = \\frac{5}{2\\pi(17.841)} = \\frac{5}{112.099} = 0.0446 \\approx 0.0445',
+      ],
+      steps: [
+        'Step 1: Compute target radius: r = √(1000 / π) = √(318.31) = 17.841 cm.',
+        'Step 2: Differentiate area formula: dA = 2πr · dr.',
+        'Step 3: Solve for radial error dr: |dr| = |dA| / (2πr).',
+        'Step 4: Substitute |dA| = 5 cm²: |dr| = 5 / [2π(17.841)] = 5 / 112.099 = 0.0446 cm ≈ 0.0445 cm (Option B).',
+      ],
+      finalAnswer: '0.0445 cm (Option B)',
+      pageNumber: 512,
+    },
+  },
+];

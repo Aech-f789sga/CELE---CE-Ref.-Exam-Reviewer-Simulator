@@ -8,6 +8,7 @@ import { PSAD_NOVEMBER_2024_QUESTIONS } from './questionBanks/psad/nov2024Questi
 import { MSTC_APRIL_2025_QUESTIONS } from './questionBanks/mstc/apr2025Questions';
 import { HPGE_APRIL_2025_QUESTIONS } from './questionBanks/hpge/apr2025Questions';
 import { HPGE_NOVEMBER_2025_QUESTIONS } from './questionBanks/hpge/nov2025Questions';
+import { MSTC_NOVEMBER_2025_QUESTIONS } from './questionBanks/mstc/nov2025Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2025 - i); // 2025 down to 2011
 export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
@@ -22,6 +23,7 @@ export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
  * 5. MSTC of April 2025 (66 Items)
  * 6. HPGE of April 2025 (45 Items)
  * 7. HPGE of November 2025 (47 Items)
+ * 8. MSTC of November 2025 (65 Items)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -46,7 +48,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2025,
     month: 'November',
-    subjects: ['HPGE'],
+    subjects: ['MSTC', 'HPGE'],
   },
 ];
 
@@ -95,6 +97,9 @@ export function isMonthAvailable(
 function getBaseQuestions(subject: SubjectArea, year: number, month: ExamMonth): Question[] {
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
+  }
+  if (subject === 'MSTC' && year === 2025 && month === 'November') {
+    return MSTC_NOVEMBER_2025_QUESTIONS;
   }
   if (subject === 'HPGE' && year === 2025 && month === 'April') {
     return HPGE_APRIL_2025_QUESTIONS;
