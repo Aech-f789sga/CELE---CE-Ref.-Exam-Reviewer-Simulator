@@ -465,7 +465,7 @@ export const MSTC_NOV2025_PART1: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Surveying & Geometry - Uniform Slope Interpolation & Distances',
-    text: 'Determine the value of x₁ and x₂.\n(Given: Benchmark B2 at elevation 30.20 m, B3 at 34.60 m, total vertical rise ΔH = 4.40 m over a total horizontal distance L = 20 m. At elevation 31 m, rise is 0.80 m; at elevation 32 m, rise is 1.80 m).',
+    text: 'Determine the value of $x_1$ and $x_2$.',
     figureCaption: 'Figure 13: Ground profile elevations and benchmark contour distances x1 and x2',
     figureSvg: `<div class="flex flex-col items-center justify-center w-full py-2">
       <img 
