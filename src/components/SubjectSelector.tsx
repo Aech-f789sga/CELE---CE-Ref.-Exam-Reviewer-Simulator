@@ -87,7 +87,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         <div className="relative z-10 space-y-3 sm:max-w-[60%]">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>PRC Board Exam Questions • April 2024 &amp; November 2024</span>
+            <span>PRC Board Exam Questions • 2024 &amp; 2025 Official Question Sets</span>
           </div>
           <h1 className="font-arnie text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             Civil Engineering Board Examination
