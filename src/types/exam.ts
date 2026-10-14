@@ -123,3 +123,20 @@ export interface PairedCycle {
   isPassed: boolean | null; // composite >= 70% AND all >= 50%
   failureReason?: string;
 }
+
+export interface PausedExamSession {
+  id: string; // e.g. `paused-${subject}-${year}-${month}`
+  subject: SubjectArea;
+  year: number;
+  month: ExamMonth;
+  timerMode: 'stopwatch' | 'no_limit';
+  examMode: 'interactive';
+  currentIndex: number;
+  userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
+  flaggedQuestions: Record<string, boolean>;
+  secondsElapsed: number;
+  savedAt: string; // ISO string
+  totalQuestions: number;
+  answeredCount: number;
+}
+

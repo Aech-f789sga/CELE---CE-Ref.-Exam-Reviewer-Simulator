@@ -21,9 +21,13 @@ import {
   Lightbulb,
   FileText,
   RotateCcw,
+  Pause,
+  Play,
+  BookmarkCheck,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
+import { deletePausedSession } from '../utils/storage';
 
 interface ExamEngineProps {
   subject: SubjectArea;
@@ -33,8 +37,18 @@ interface ExamEngineProps {
   timerMode: TimerMode;
   totalDurationSeconds: number;
   examMode: ExamMode;
+  initialCurrentIndex?: number;
+  initialUserAnswers?: Record<string, 'A' | 'B' | 'C' | 'D'>;
+  initialFlaggedQuestions?: Record<string, boolean>;
+  initialSecondsElapsed?: number;
   onSubmit: (userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>, timeSpentSeconds: number) => void;
   onExit: () => void;
+  onSaveAndExit?: (state: {
+    currentIndex: number;
+    userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
+    flaggedQuestions: Record<string, boolean>;
+    secondsElapsed: number;
+  }) => void;
 }
 
 export const ExamEngine: React.FC<ExamEngineProps> = ({
@@ -45,14 +59,20 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   timerMode,
   totalDurationSeconds,
   examMode,
+  initialCurrentIndex,
+  initialUserAnswers,
+  initialFlaggedQuestions,
+  initialSecondsElapsed,
   onSubmit,
   onExit,
+  onSaveAndExit,
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Record<string, 'A' | 'B' | 'C' | 'D'>>({});
-  const [flaggedQuestions, setFlaggedQuestions] = useState<Record<string, boolean>>({});
+  const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex ?? 0);
+  const [userAnswers, setUserAnswers] = useState<Record<string, 'A' | 'B' | 'C' | 'D'>>(initialUserAnswers ?? {});
+  const [flaggedQuestions, setFlaggedQuestions] = useState<Record<string, boolean>>(initialFlaggedQuestions ?? {});
   const [secondsRemaining, setSecondsRemaining] = useState(totalDurationSeconds);
-  const [secondsElapsed, setSecondsElapsed] = useState(0);
+  const [secondsElapsed, setSecondsElapsed] = useState(initialSecondsElapsed ?? 0);
+  const [isPaused, setIsPaused] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showSolutionForCurrent, setShowSolutionForCurrent] = useState(false);
@@ -60,11 +80,17 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const subjectConfig = SUBJECT_CONFIGS[subject];
   const currentQuestion = questions[currentIndex];
   const isInteractive = examMode === 'interactive';
+  const isPauseEligible = isInteractive && (timerMode === 'stopwatch' || timerMode === 'no_limit');
 
   // Timer reference
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (isPaused) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
     timerRef.current = setInterval(() => {
       setSecondsElapsed((prev) => prev + 1);
 
@@ -84,7 +110,27 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [timerMode]);
+  }, [timerMode, isPaused]);
+
+  const handleSaveAndExit = () => {
+    if (onSaveAndExit) {
+      onSaveAndExit({
+        currentIndex,
+        userAnswers,
+        flaggedQuestions,
+        secondsElapsed,
+      });
+    } else {
+      onExit();
+    }
+  };
+
+  const handleDiscardAndExit = () => {
+    if (isPauseEligible) {
+      deletePausedSession(subject, year, month);
+    }
+    onExit();
+  };
 
   // Reset interactive solution open state when switching question
   useEffect(() => {
@@ -170,6 +216,18 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           )}
 
           {/* Quick Actions */}
+          {isPauseEligible && (
+            <button
+              type="button"
+              onClick={() => setIsPaused(true)}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white border border-amber-500/30 text-xs font-semibold cursor-pointer transition-colors shadow-sm"
+              title="Pause study session & continue later"
+            >
+              <Pause className="w-3.5 h-3.5 fill-amber-300" />
+              <span>Pause</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => setShowSubmitModal(true)}
@@ -182,7 +240,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           <button
             type="button"
             onClick={() => setShowExitConfirm(true)}
-            className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1"
+            className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 cursor-pointer"
           >
             Exit
           </button>
@@ -520,31 +578,131 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
         </div>
       )}
 
+      {/* Pause Modal (Interactive Study Mode Only) */}
+      {isPaused && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+                  <Pause className="w-5 h-5 fill-amber-400/30" />
+                </div>
+                <div>
+                  <h3 className="font-arnie text-lg font-bold text-white tracking-wide">
+                    Study Session Paused
+                  </h3>
+                  <span className="text-[11px] text-amber-400 font-medium">
+                    Interactive Mode • {timerMode === 'stopwatch' ? 'Stopwatch Timing' : 'Unlimited Practice'}
+                  </span>
+                </div>
+              </div>
+              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-tech-mono">
+                {month} {year}
+              </span>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-3 gap-2.5 text-center">
+              <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
+                <span className="text-[10px] text-slate-400 block uppercase font-medium">Current</span>
+                <span className="font-arnie text-base font-bold text-white">
+                  #{currentIndex + 1}
+                  <span className="text-xs text-slate-400 font-normal"> / {questions.length}</span>
+                </span>
+              </div>
+              <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
+                <span className="text-[10px] text-slate-400 block uppercase font-medium">Answered</span>
+                <span className="font-arnie text-base font-bold text-amber-400">
+                  {answeredCount}
+                  <span className="text-xs text-slate-400 font-normal"> / {questions.length}</span>
+                </span>
+              </div>
+              <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
+                <span className="text-[10px] text-slate-400 block uppercase font-medium">Time</span>
+                <span className="font-tech-mono text-sm font-bold text-cyan-400">
+                  {timerMode === 'stopwatch' ? formatTime(secondsElapsed) : 'Untimed'}
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-200/90 leading-relaxed">
+              Your answered choices, flagged questions, and time are tracked. You can resume now, or save your progress to continue anytime later from the exam portal.
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsPaused(false)}
+                className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm font-arnie tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/10 transition-all cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-slate-950" />
+                <span>RESUME STUDY SESSION</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveAndExit}
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-700 flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+              >
+                <BookmarkCheck className="w-4 h-4 text-emerald-400" />
+                <span>Save & Continue Later</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPaused(false);
+                  setShowExitConfirm(true);
+                }}
+                className="w-full py-1 text-center text-xs text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
+              >
+                Discard Session & Return to Portal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Exit Modal */}
       {showExitConfirm && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 className="font-arnie text-lg font-bold text-white">
-              Exit Examination?
+              {isPauseEligible ? 'Leave Examination?' : 'Exit Examination?'}
             </h3>
-            <p className="text-xs text-slate-300">
-              Exiting will cancel this exam attempt without recording it. Are you sure you want to return to the portal?
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {isPauseEligible
+                ? 'You are in Interactive Study Mode. You can save your progress and continue right where you left off later, or discard this session.'
+                : 'Exiting will cancel this exam attempt without recording it. Are you sure you want to return to the portal?'}
             </p>
-            <div className="flex items-center justify-end space-x-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowExitConfirm(false)}
-                className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white"
-              >
-                Continue Exam
-              </button>
-              <button
-                type="button"
-                onClick={onExit}
-                className="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs"
-              >
-                Confirm Exit
-              </button>
+            <div className="flex flex-col space-y-2 pt-2">
+              {isPauseEligible && (
+                <button
+                  type="button"
+                  onClick={handleSaveAndExit}
+                  className="w-full px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs font-arnie tracking-wide flex items-center justify-center space-x-2 cursor-pointer shadow-md"
+                >
+                  <BookmarkCheck className="w-4 h-4 text-slate-950" />
+                  <span>Save & Continue Later</span>
+                </button>
+              )}
+              <div className="flex items-center justify-end space-x-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowExitConfirm(false)}
+                  className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white cursor-pointer"
+                >
+                  Back to Exam
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDiscardAndExit}
+                  className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white font-bold text-xs border border-rose-500/40 transition-colors cursor-pointer"
+                >
+                  {isPauseEligible ? 'Discard & Exit' : 'Confirm Exit'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -7,9 +7,16 @@ import {
   Question,
   ExamAttempt,
   SUBJECT_CONFIGS,
+  PausedExamSession,
 } from './types/exam';
 import { getQuestionsForExam, hasExamData } from './data/questionBankManager';
-import { getStoredAttempts, saveAttempt } from './utils/storage';
+import {
+  getStoredAttempts,
+  saveAttempt,
+  savePausedSession,
+  deletePausedSession,
+  getSessionKey,
+} from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { SubjectSelector } from './components/SubjectSelector';
 import { ExamEngine } from './components/ExamEngine';
@@ -49,6 +56,7 @@ function MainApp() {
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [lastUserAnswers, setLastUserAnswers] = useState<Record<string, 'A' | 'B' | 'C' | 'D'>>({});
   const [lastTimeSpent, setLastTimeSpent] = useState<number>(0);
+  const [resumedSession, setResumedSession] = useState<PausedExamSession | null>(null);
 
   // Stored attempts
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
@@ -79,10 +87,51 @@ function MainApp() {
   };
 
   const handleStartExam = () => {
+    setResumedSession(null);
     const qList = getQuestionsForExam(selectedSubject, selectedYear, selectedMonth);
     setActiveQuestions(qList);
     setIsExamRunning(true);
     setIsExamFinished(false);
+  };
+
+  const handleResumeExam = (session: PausedExamSession) => {
+    setSelectedSubject(session.subject);
+    setSelectedYear(session.year);
+    setSelectedMonth(session.month);
+    setTimerMode(session.timerMode);
+    setExamMode('interactive');
+    setResumedSession(session);
+    const qList = getQuestionsForExam(session.subject, session.year, session.month);
+    setActiveQuestions(qList);
+    setIsExamRunning(true);
+    setIsExamFinished(false);
+  };
+
+  const handleSaveAndExitExam = (state: {
+    currentIndex: number;
+    userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
+    flaggedQuestions: Record<string, boolean>;
+    secondsElapsed: number;
+  }) => {
+    const sessionToSave: PausedExamSession = {
+      id: getSessionKey(selectedSubject, selectedYear, selectedMonth),
+      subject: selectedSubject,
+      year: selectedYear,
+      month: selectedMonth,
+      timerMode: timerMode === 'stopwatch' ? 'stopwatch' : 'no_limit',
+      examMode: 'interactive',
+      currentIndex: state.currentIndex,
+      userAnswers: state.userAnswers,
+      flaggedQuestions: state.flaggedQuestions,
+      secondsElapsed: state.secondsElapsed,
+      savedAt: new Date().toISOString(),
+      totalQuestions: activeQuestions.length,
+      answeredCount: Object.keys(state.userAnswers).length,
+    };
+    savePausedSession(sessionToSave);
+    setIsExamRunning(false);
+    setResumedSession(null);
+    setCurrentTab('setup');
   };
 
   const handleSubmitExam = (
@@ -137,6 +186,8 @@ function MainApp() {
       }).catch((e) => console.warn('Cloud attempt record fallback:', e));
     }
 
+    deletePausedSession(selectedSubject, selectedYear, selectedMonth);
+    setResumedSession(null);
     setLastUserAnswers(userAnswers);
     setLastTimeSpent(timeSpentSeconds);
     setIsExamRunning(false);
@@ -161,6 +212,7 @@ function MainApp() {
   const handleExitHome = () => {
     setIsExamRunning(false);
     setIsExamFinished(false);
+    setResumedSession(null);
     setCurrentTab('setup');
   };
 
@@ -204,8 +256,13 @@ function MainApp() {
               timerMode={timerMode}
               totalDurationSeconds={totalDurationSeconds}
               examMode={examMode}
+              initialCurrentIndex={resumedSession?.currentIndex}
+              initialUserAnswers={resumedSession?.userAnswers}
+              initialFlaggedQuestions={resumedSession?.flaggedQuestions}
+              initialSecondsElapsed={resumedSession?.secondsElapsed}
               onSubmit={handleSubmitExam}
               onExit={handleExitHome}
+              onSaveAndExit={handleSaveAndExitExam}
             />
           )}
 
@@ -276,6 +333,7 @@ function MainApp() {
                   examMode={examMode}
                   onExamModeChange={setExamMode}
                   onStartExam={handleStartExam}
+                  onResumeExam={handleResumeExam}
                 />
               )}
 

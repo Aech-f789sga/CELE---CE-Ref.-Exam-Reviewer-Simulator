@@ -5,6 +5,7 @@ import {
   TimerMode,
   ExamMode,
   SUBJECT_CONFIGS,
+  PausedExamSession,
 } from '../types/exam';
 import {
   ALL_YEARS,
@@ -31,10 +32,21 @@ import {
   Eye,
   Lock,
   AlertCircle,
+  Pause,
+  BookmarkCheck,
+  RotateCcw,
+  Trash2,
+  ArrowRight,
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
 import { Tilt3D } from './Tilt3D';
 import { useTheme } from '../context/ThemeContext';
+import {
+  getPausedSession,
+  getAllPausedSessions,
+  deletePausedSession,
+  clearAllPausedSessions,
+} from '../utils/storage';
 
 interface SubjectSelectorProps {
   selectedSubject: SubjectArea;
@@ -50,6 +62,7 @@ interface SubjectSelectorProps {
   examMode: ExamMode;
   onExamModeChange: (mode: ExamMode) => void;
   onStartExam: () => void;
+  onResumeExam: (session: PausedExamSession) => void;
 }
 
 export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
@@ -66,12 +79,28 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   examMode,
   onExamModeChange,
   onStartExam,
+  onResumeExam,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
+  const [, setSessionRefreshTrigger] = useState(0);
+  const [sessionToDiscard, setSessionToDiscard] = useState<PausedExamSession | 'ALL' | null>(null);
   const { themeConfig } = useTheme();
   const isAurora = themeConfig.id === 'aurora_glass';
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
   const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
+
+  const currentPausedSession = getPausedSession(selectedSubject, selectedYear, selectedMonth);
+  const allPausedSessions = getAllPausedSessions();
+  const otherPausedSessions = allPausedSessions.filter(
+    (s) => !(s.subject === selectedSubject && s.year === selectedYear && s.month === selectedMonth)
+  );
+
+  const formatTime = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   const hasSelectedData = hasExamData(selectedSubject, selectedYear, selectedMonth);
 
@@ -550,6 +579,145 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         </div>
       </div>
 
+      {/* Paused Study Session Card (if saved session exists for this exam) */}
+      {currentPausedSession && (
+        <div className="bg-gradient-to-r from-slate-900 via-amber-950/30 to-slate-900 border-2 border-amber-500/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden animate-in fade-in">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2.5">
+                <span className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                  <BookmarkCheck className="w-3.5 h-3.5" />
+                  <span>Paused Session Found</span>
+                </span>
+                <span className="text-xs text-slate-400 font-tech-mono">
+                  Saved {new Date(currentPausedSession.savedAt).toLocaleDateString()} at{' '}
+                  {new Date(currentPausedSession.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+
+              <h4 className="font-arnie text-xl font-bold text-white">
+                Continue {selectedSubject} {selectedMonth} {selectedYear}
+              </h4>
+
+              <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
+                <div className="flex items-center space-x-1.5">
+                  <span className="text-slate-400">Next Question:</span>
+                  <span className="font-bold text-amber-400 font-arnie text-sm">
+                    #{currentPausedSession.currentIndex + 1}
+                  </span>
+                  <span className="text-slate-400">/ {currentPausedSession.totalQuestions}</span>
+                </div>
+                <span className="text-slate-600">•</span>
+                <div className="flex items-center space-x-1.5">
+                  <span className="text-slate-400">Answered:</span>
+                  <span className="font-bold text-emerald-400">
+                    {currentPausedSession.answeredCount} items ({Math.round((currentPausedSession.answeredCount / currentPausedSession.totalQuestions) * 100)}%)
+                  </span>
+                </div>
+                {currentPausedSession.timerMode === 'stopwatch' && (
+                  <>
+                    <span className="text-slate-600">•</span>
+                    <div className="flex items-center space-x-1.5 font-tech-mono">
+                      <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                      <span className="text-cyan-300">{formatTime(currentPausedSession.secondsElapsed)} elapsed</span>
+                    </div>
+                  </>
+                )}
+                {currentPausedSession.timerMode === 'no_limit' && (
+                  <>
+                    <span className="text-slate-600">•</span>
+                    <span className="text-emerald-400 font-medium">Untimed Practice</span>
+                  </>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full bg-slate-950/80 rounded-full h-2 overflow-hidden border border-slate-800 max-w-md mt-1">
+                <div
+                  className="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all"
+                  style={{
+                    width: `${Math.max(5, Math.round((currentPausedSession.answeredCount / currentPausedSession.totalQuestions) * 100))}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Resume / Discard Buttons */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => onResumeExam(currentPausedSession)}
+                className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm font-arnie tracking-wider flex items-center space-x-2 shadow-lg shadow-amber-500/20 hover:scale-105 transition-all cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-slate-950" />
+                <span>RESUME STUDY (Q#{currentPausedSession.currentIndex + 1})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSessionToDiscard(currentPausedSession)}
+                className="px-3.5 py-3 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-500/30 text-xs font-semibold transition-colors cursor-pointer flex items-center space-x-1.5"
+                title="Discard saved progress and start fresh"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Discard</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Other Paused Sessions Notification Bar */}
+      {otherPausedSessions.length > 0 && (
+        <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center space-x-2 text-slate-300">
+            <Pause className="w-4 h-4 text-cyan-400" />
+            <span>
+              You have <strong className="text-white">{otherPausedSessions.length}</strong> other paused study session{otherPausedSessions.length > 1 ? 's' : ''}:
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {otherPausedSessions.map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center rounded-lg bg-slate-800 border border-slate-700 overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => onResumeExam(s)}
+                  className="flex items-center space-x-1.5 px-2.5 py-1 text-slate-200 hover:text-amber-300 hover:bg-slate-700/80 text-xs transition-colors cursor-pointer"
+                >
+                  <span className="font-bold text-amber-400">{s.subject}</span>
+                  <span>{s.month} {s.year}</span>
+                  <span className="text-[10px] text-slate-400 font-tech-mono">({s.answeredCount}/{s.totalQuestions})</span>
+                  <ArrowRight className="w-3 h-3 text-slate-400" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSessionToDiscard(s)}
+                  className="px-2 py-1 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border-l border-slate-700 transition-colors cursor-pointer"
+                  title={`Discard ${s.subject} ${s.month} ${s.year} session`}
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+
+            {allPausedSessions.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setSessionToDiscard('ALL')}
+                className="px-2.5 py-1 rounded-lg text-xs text-rose-400/90 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-colors cursor-pointer"
+              >
+                Clear All ({allPausedSessions.length})
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Launch Exam CTA */}
       <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 rounded-2xl p-6 text-slate-950 flex flex-col sm:flex-row items-center justify-between shadow-2xl gap-4">
         <div>
@@ -564,20 +732,104 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onStartExam}
-          disabled={!hasSelectedData}
-          className={`w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider ${
-            hasSelectedData
-              ? 'bg-slate-950 hover:bg-slate-900 text-white hover:scale-105 cursor-pointer'
-              : 'bg-slate-950/50 text-slate-500 cursor-not-allowed opacity-60'
-          }`}
-        >
-          <Play className="w-5 h-5 text-amber-400 fill-amber-400" />
-          <span>START EXAMINATION</span>
-        </button>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {currentPausedSession ? (
+            <>
+              <button
+                type="button"
+                onClick={() => onResumeExam(currentPausedSession)}
+                className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider bg-slate-950 hover:bg-slate-900 text-amber-400 hover:scale-105 cursor-pointer"
+              >
+                <Play className="w-5 h-5 text-amber-400 fill-amber-400" />
+                <span>RESUME SESSION</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  deletePausedSession(selectedSubject, selectedYear, selectedMonth);
+                  setSessionRefreshTrigger((p) => p + 1);
+                  onStartExam();
+                }}
+                className="flex-1 sm:flex-none px-5 py-3.5 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md transition-all font-arnie tracking-wider bg-amber-600/30 hover:bg-amber-600/50 text-slate-950 border border-amber-600/40 cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>START FRESH</span>
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={onStartExam}
+              disabled={!hasSelectedData}
+              className={`w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider ${
+                hasSelectedData
+                  ? 'bg-slate-950 hover:bg-slate-900 text-white hover:scale-105 cursor-pointer'
+                  : 'bg-slate-950/50 text-slate-500 cursor-not-allowed opacity-60'
+              }`}
+            >
+              <Play className="w-5 h-5 text-amber-400 fill-amber-400" />
+              <span>START EXAMINATION</span>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* In-App Discard Confirmation Modal */}
+      {sessionToDiscard && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center space-x-3 text-rose-400">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-rose-400" />
+              </div>
+              <div>
+                <h3 className="font-arnie text-lg font-bold text-white">
+                  {sessionToDiscard === 'ALL' ? 'Clear All Paused Sessions?' : 'Discard Paused Session?'}
+                </h3>
+                <span className="text-[11px] text-slate-400">This action cannot be undone</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {sessionToDiscard === 'ALL' ? (
+                <>
+                  Are you sure you want to discard all <strong className="text-white">{allPausedSessions.length}</strong> saved paused study sessions? All saved answers and elapsed timers will be deleted.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to discard your saved session for <strong className="text-amber-400">{sessionToDiscard.subject} {sessionToDiscard.month} {sessionToDiscard.year}</strong> ({sessionToDiscard.answeredCount} of {sessionToDiscard.totalQuestions} answered)?
+                </>
+              )}
+            </p>
+
+            <div className="flex items-center justify-end space-x-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setSessionToDiscard(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (sessionToDiscard === 'ALL') {
+                    clearAllPausedSessions();
+                  } else {
+                    deletePausedSession(sessionToDiscard.subject, sessionToDiscard.year, sessionToDiscard.month);
+                  }
+                  setSessionToDiscard(null);
+                  setSessionRefreshTrigger((p) => p + 1);
+                }}
+                className="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs flex items-center space-x-1.5 transition-colors cursor-pointer shadow-md shadow-rose-500/20"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Yes, Discard</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

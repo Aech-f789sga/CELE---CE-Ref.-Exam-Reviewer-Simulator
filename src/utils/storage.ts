@@ -1,6 +1,8 @@
-import { ExamAttempt, PairedCycle, SubjectArea } from '../types/exam';
+import { ExamAttempt, PairedCycle, SubjectArea, ExamMonth, PausedExamSession } from '../types/exam';
 
 const ATTEMPTS_STORAGE_KEY = 'ce_board_exam_attempts_v1';
+const PAUSED_SESSIONS_STORAGE_KEY = 'ce_board_paused_exam_sessions_v1';
+
 
 export function getStoredAttempts(): ExamAttempt[] {
   try {
@@ -204,3 +206,79 @@ export function seedSampleAttempts(): ExamAttempt[] {
   }
   return sampleData;
 }
+
+/**
+ * ============================================================================
+ * PAUSED EXAM SESSIONS (INTERACTIVE STUDY MODE ONLY)
+ * Allows users to pause and continue later in Stopwatch and Untimed modes.
+ * ============================================================================
+ */
+
+export function getSessionKey(subject: SubjectArea, year: number, month: ExamMonth): string {
+  return `${subject}-${year}-${month}`;
+}
+
+export function getStoredPausedSessions(): Record<string, PausedExamSession> {
+  try {
+    const raw = localStorage.getItem(PAUSED_SESSIONS_STORAGE_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load paused exam sessions from storage', e);
+    return {};
+  }
+}
+
+export function getPausedSession(
+  subject: SubjectArea,
+  year: number,
+  month: ExamMonth
+): PausedExamSession | null {
+  const sessions = getStoredPausedSessions();
+  const key = getSessionKey(subject, year, month);
+  return sessions[key] || null;
+}
+
+export function getAllPausedSessions(): PausedExamSession[] {
+  const sessions = getStoredPausedSessions();
+  return Object.values(sessions).sort(
+    (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
+  );
+}
+
+export function savePausedSession(session: PausedExamSession): void {
+  try {
+    const sessions = getStoredPausedSessions();
+    const key = getSessionKey(session.subject, session.year, session.month);
+    sessions[key] = session;
+    localStorage.setItem(PAUSED_SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+  } catch (e) {
+    console.error('Failed to save paused exam session', e);
+  }
+}
+
+export function deletePausedSession(
+  subject: SubjectArea,
+  year: number,
+  month: ExamMonth
+): void {
+  try {
+    const sessions = getStoredPausedSessions();
+    const key = getSessionKey(subject, year, month);
+    if (sessions[key]) {
+      delete sessions[key];
+      localStorage.setItem(PAUSED_SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+    }
+  } catch (e) {
+    console.error('Failed to delete paused exam session', e);
+  }
+}
+
+export function clearAllPausedSessions(): void {
+  try {
+    localStorage.removeItem(PAUSED_SESSIONS_STORAGE_KEY);
+  } catch (e) {
+    console.error('Failed to clear all paused exam sessions', e);
+  }
+}
+
