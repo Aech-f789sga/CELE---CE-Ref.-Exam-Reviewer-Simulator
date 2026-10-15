@@ -227,6 +227,32 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                               ORIGINAL
                             </span>
                           )}
+                          {item.id === 'particle_flow' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"
+                              style={{
+                                backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                                borderColor: 'rgba(56, 189, 248, 0.45)',
+                                color: '#7dd3fc',
+                              }}
+                            >
+                              <Sparkles className="w-2.5 h-2.5 mr-0.5 text-cyan-300" />
+                              <span>3D PARTICLES &amp; REACTIVE BG</span>
+                            </span>
+                          )}
+                          {item.id === 'matilda_3d' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"
+                              style={{
+                                backgroundColor: 'rgba(224, 122, 104, 0.2)',
+                                borderColor: 'rgba(224, 122, 104, 0.45)',
+                                color: '#f3c8be',
+                              }}
+                            >
+                              <Sparkles className="w-2.5 h-2.5 mr-0.5 text-amber-300" />
+                              <span>3D MATILDA</span>
+                            </span>
+                          )}
                           {item.id === 'terrarium_orb' && (
                             <span
                               className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/20 border-emerald-500/40 text-emerald-300 tracking-wide"

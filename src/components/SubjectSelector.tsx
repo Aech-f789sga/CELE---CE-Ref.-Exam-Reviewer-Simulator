@@ -40,6 +40,8 @@ import {
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
 import { TerrariumOrb3D } from './TerrariumOrb3D';
+import { Matilda3D } from './Matilda3D';
+import { ParticleSystem3D } from './ParticleSystem3D';
 import { Tilt3D } from './Tilt3D';
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -101,6 +103,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const { themeConfig } = useTheme();
   const isAurora = themeConfig.id === 'aurora_glass';
   const isTerrarium = themeConfig.id === 'terrarium_orb';
+  const isMatilda = themeConfig.id === 'matilda_3d';
+  const isParticle = themeConfig.id === 'particle_flow';
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
   const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
 
@@ -135,11 +139,28 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <TerrariumOrb3D mode="hero" interactive={true} accent={themeConfig.accent} />
           </div>
         )}
-        <div className="relative z-10 space-y-3 sm:max-w-[55%]">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>PRC Board Exam Questions • 2024 &amp; 2025 Official Question Sets</span>
+        {isMatilda && (
+          <div className="absolute inset-y-0 right-0 w-full sm:w-1/2 md:w-3/5 opacity-95 sm:opacity-100 pointer-events-auto">
+            <Matilda3D mode="hero" interactive={true} accent={themeConfig.accent} />
           </div>
+        )}
+        {isParticle && (
+          <div className="absolute inset-y-0 right-0 w-full sm:w-1/2 md:w-3/5 opacity-95 sm:opacity-100 pointer-events-auto">
+            <ParticleSystem3D mode="hero" interactive={true} />
+          </div>
+        )}
+        <div className="relative z-10 space-y-3 sm:max-w-[55%]">
+          {isParticle ? (
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+              <span>3D Particle Theme • Reactive Background &amp; Hand Gestures Active</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>PRC Board Exam Questions • 2024 &amp; 2025 Official Question Sets</span>
+            </div>
+          )}
           <h1 className="font-arnie text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             Civil Engineering Board Examination
           </h1>

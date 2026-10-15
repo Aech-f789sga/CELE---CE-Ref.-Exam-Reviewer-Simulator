@@ -15,6 +15,7 @@ import {
   Trophy,
   Megaphone,
   KeyRound,
+  Sparkles,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -37,10 +38,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   isExamRunning,
   onOpenThemeModal,
 }) => {
-  const { themeConfig, fontId } = useTheme();
+  const { themeConfig, fontId, setThemeId } = useTheme();
   const { user, profile, isAdmin, openAuthModal, signOut, loading: authLoading } = useAuth();
   const isAurora = themeConfig.id === 'aurora_glass';
   const isTerrarium = themeConfig.id === 'terrarium_orb';
+  const isMatilda = themeConfig.id === 'matilda_3d';
+  const isParticle = themeConfig.id === 'particle_flow';
   const activeUser = profile || user;
 
   return (
@@ -51,6 +54,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           ? 'rgba(15, 23, 42, 0.75)'
           : isTerrarium
           ? 'rgba(11, 24, 21, 0.82)'
+          : isMatilda
+          ? 'rgba(36, 26, 32, 0.85)'
+          : isParticle
+          ? 'rgba(10, 16, 38, 0.85)'
           : themeConfig.bgCard,
         borderColor: themeConfig.border,
       }}
@@ -190,6 +197,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>EXAM SESSION IN PROGRESS</span>
               </div>
             )}
+
+            {/* Quick 3D Particles Button */}
+            <button
+              onClick={() => setThemeId('particle_flow')}
+              title="Interactive 3D Particle Theme & Gestures"
+              className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer ${
+                themeConfig.id === 'particle_flow'
+                  ? 'border-cyan-400 bg-cyan-950/60 text-cyan-200 ring-1 ring-cyan-400/50'
+                  : ''
+              }`}
+              style={{
+                backgroundColor: themeConfig.id === 'particle_flow' ? undefined : themeConfig.bgCardSubtle,
+                borderColor: themeConfig.id === 'particle_flow' ? undefined : themeConfig.border,
+                color: themeConfig.id === 'particle_flow' ? undefined : themeConfig.textPrimary,
+              }}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden md:inline">3D Particles</span>
+            </button>
 
             {/* Theme & Fonts Customizer Trigger */}
             <button

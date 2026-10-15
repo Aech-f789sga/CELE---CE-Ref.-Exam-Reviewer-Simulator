@@ -476,3 +476,163 @@ html[data-theme="terrarium_orb"] ::selection {
   color: #042f1a;
 }
 
+/* ========================================================
+   MATILDA 3D COMPANION THEME (data-theme="matilda_3d")
+   Animated 3D companion Matilda in cozy study ambiance
+   ======================================================== */
+html[data-theme="matilda_3d"] {
+  background-color: #161114 !important;
+}
+
+html[data-theme="matilda_3d"] body {
+  background:
+    radial-gradient(45rem 30rem at 50% 10%, rgba(224, 122, 104, 0.12), transparent 70%),
+    radial-gradient(42rem 32rem at 85% 80%, rgba(108, 140, 106, 0.11), transparent 70%),
+    radial-gradient(38rem 28rem at 12% 70%, rgba(199, 94, 76, 0.10), transparent 75%),
+    #161114 !important;
+}
+
+html[data-theme="matilda_3d"] .hero-aurora {
+  background:
+    radial-gradient(35rem 24rem at 85% 30%, rgba(224, 122, 104, 0.18), transparent 70%),
+    radial-gradient(32rem 22rem at 10% 90%, rgba(108, 140, 106, 0.14), transparent 70%),
+    linear-gradient(135deg, rgba(36, 26, 32, 0.92), rgba(22, 17, 20, 0.96)) !important;
+  border-color: rgba(224, 122, 104, 0.35) !important;
+  box-shadow: 0 30px 80px -30px rgba(224, 122, 104, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="matilda_3d"] .hero-aurora h1 {
+  background: linear-gradient(95deg, #ffffff 10%, #f3c8be 50%, #e2dfd4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="matilda_3d"] .bg-slate-900,
+html[data-theme="matilda_3d"] .bg-slate-900\/90,
+html[data-theme="matilda_3d"] .bg-slate-900\/95,
+html[data-theme="matilda_3d"] .bg-slate-900\/80 {
+  background-color: rgba(36, 26, 32, 0.92) !important;
+}
+
+html[data-theme="matilda_3d"] .bg-slate-950,
+html[data-theme="matilda_3d"] .bg-slate-950\/90,
+html[data-theme="matilda_3d"] .bg-slate-950\/80,
+html[data-theme="matilda_3d"] .bg-slate-950\/70 {
+  background-color: rgba(22, 17, 20, 0.95) !important;
+}
+
+html[data-theme="matilda_3d"] .border-slate-800,
+html[data-theme="matilda_3d"] .border-slate-700,
+html[data-theme="matilda_3d"] .border-slate-700\/80 {
+  border-color: rgba(94, 63, 75, 0.6) !important;
+}
+
+html[data-theme="matilda_3d"] .bg-amber-500:not(span),
+html[data-theme="matilda_3d"] button.bg-amber-500 {
+  background-image: linear-gradient(135deg, #e07a68, #c85e4c) !important;
+  background-color: #e07a68 !important;
+  color: #1c0c09 !important;
+  box-shadow: 0 10px 28px -8px rgba(224, 122, 104, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+html[data-theme="matilda_3d"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e07a68, #6c8c6a);
+}
+
+html[data-theme="matilda_3d"] ::selection {
+  background: #e07a68;
+  color: #1c0c09;
+}
+
+/* ========================================================
+   INTERACTIVE 3D PARTICLE SYSTEM (data-theme="particle_flow")
+   Real-time 3D particle morphing & hand tension controls
+   ======================================================== */
+html[data-theme="particle_flow"] {
+  background-color: #040714 !important;
+}
+
+html[data-theme="particle_flow"] body {
+  background: var(
+    --particle-dynamic-bg,
+    radial-gradient(45rem 30rem at 50% 12%, rgba(56, 189, 248, 0.12), transparent 70%),
+    radial-gradient(40rem 30rem at 85% 85%, rgba(236, 72, 153, 0.10), transparent 70%),
+    radial-gradient(40rem 30rem at 15% 75%, rgba(99, 102, 241, 0.12), transparent 75%),
+    #040714
+  ) !important;
+  transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="particle_flow"] .hero-aurora {
+  background:
+    radial-gradient(
+      var(--particle-glow-radius, 35rem) 24rem at 85% 30%,
+      var(--particle-p-color, #38bdf8) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      var(--particle-glow-radius, 35rem) 24rem at 10% 90%,
+      var(--particle-s-color, #ec4899) 0%,
+      transparent 70%
+    ),
+    linear-gradient(135deg, rgba(11, 17, 38, 0.94), rgba(4, 7, 20, 0.97)) !important;
+  border-color: var(--particle-p-color, rgba(56, 189, 248, 0.35)) !important;
+  box-shadow: 0 30px 80px -30px var(--particle-p-color, rgba(56, 189, 248, 0.28)), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="particle_flow"] .hero-aurora h1 {
+  background: linear-gradient(
+    95deg,
+    #ffffff 10%,
+    var(--particle-p-color, #7dd3fc) 50%,
+    var(--particle-s-color, #f472b6) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+  transition: all 0.3s ease-out;
+}
+
+html[data-theme="particle_flow"] .bg-slate-900,
+html[data-theme="particle_flow"] .bg-slate-900\/90,
+html[data-theme="particle_flow"] .bg-slate-900\/95,
+html[data-theme="particle_flow"] .bg-slate-900\/80 {
+  background-color: rgba(11, 17, 38, 0.92) !important;
+}
+
+html[data-theme="particle_flow"] .bg-slate-950,
+html[data-theme="particle_flow"] .bg-slate-950\/90,
+html[data-theme="particle_flow"] .bg-slate-950\/80,
+html[data-theme="particle_flow"] .bg-slate-950\/70 {
+  background-color: rgba(4, 7, 20, 0.95) !important;
+}
+
+html[data-theme="particle_flow"] .border-slate-800,
+html[data-theme="particle_flow"] .border-slate-700,
+html[data-theme="particle_flow"] .border-slate-700\/80 {
+  border-color: rgba(35, 53, 110, 0.6) !important;
+}
+
+html[data-theme="particle_flow"] .bg-amber-500:not(span),
+html[data-theme="particle_flow"] button.bg-amber-500 {
+  background-image: linear-gradient(135deg, #38bdf8, #0284c7) !important;
+  background-color: #38bdf8 !important;
+  color: #030712 !important;
+  box-shadow: 0 10px 28px -8px rgba(56, 189, 248, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+html[data-theme="particle_flow"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #38bdf8, #ec4899);
+}
+
+html[data-theme="particle_flow"] ::selection {
+  background: #38bdf8;
+  color: #030712;
+}
+
+
+

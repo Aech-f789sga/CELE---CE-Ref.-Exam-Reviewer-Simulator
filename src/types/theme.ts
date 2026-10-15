@@ -1,4 +1,6 @@
 export type AppThemeId =
+  | 'particle_flow'
+  | 'matilda_3d'
   | 'aurora_glass'
   | 'terrarium_orb'
   | 'engineering_dark'
@@ -57,7 +59,47 @@ export interface FontSizeOption {
 }
 
 export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
-  // NEW DEFAULT - "Structural Aurora": glassmorphism + 3D depth over an animated wireframe scene
+  // INTERACTIVE 3D PARTICLE SYSTEM THEME
+  particle_flow: {
+    id: 'particle_flow',
+    name: 'Interactive 3D Particles',
+    category: 'dark',
+    accentName: 'Cosmic Cyan & Nebula Rose',
+    description: 'Real-time 3D particle system: morph between hearts, lotus flowers, Saturn, Buddha statues, and fireworks with hand gesture camera tension control and custom color tuning.',
+    bgPage: '#040714',
+    bgCard: '#0a1026',
+    bgCardSubtle: '#121b3b',
+    border: '#22386e',
+    textPrimary: '#f8fafc',
+    textSecondary: '#cbd5e1',
+    textMuted: '#818cf8',
+    accent: '#38bdf8',
+    accentHover: '#0ea5e9',
+    accentText: '#030712',
+    accentBadge: 'rgba(56, 189, 248, 0.22)',
+    gridStyle: 'rgba(56, 189, 248, 0.08)',
+  },
+  // 3D ANIMATED COMPANION THEME - MATILDA
+  matilda_3d: {
+    id: 'matilda_3d',
+    name: 'Matilda Study Companion (3D)',
+    category: 'dark',
+    accentName: 'Terracotta Rose & Plant Sage',
+    description: 'Warm cinematic palette matching Matilda: terracotta rose blush (#e07a68), lush potted plant sage (#6c8c6a), vintage espresso noir, and warm ivory with realistic animated 3D hair, clothes, and botanical movement.',
+    bgPage: '#161114',
+    bgCard: '#241a20',
+    bgCardSubtle: '#31232c',
+    border: '#5e3f4b',
+    textPrimary: '#fdf6f3',
+    textSecondary: '#f3c8be',
+    textMuted: '#ad928c',
+    accent: '#e07a68',
+    accentHover: '#cc6352',
+    accentText: '#1c0c09',
+    accentBadge: 'rgba(224, 122, 104, 0.22)',
+    gridStyle: 'rgba(224, 122, 104, 0.08)',
+  },
+  // "Structural Aurora": glassmorphism + 3D depth over an animated wireframe scene
   aurora_glass: {
     id: 'aurora_glass',
     name: 'Structural Aurora (3D)',
