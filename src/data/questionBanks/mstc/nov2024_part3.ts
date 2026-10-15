@@ -65,10 +65,10 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Set y = 0 => 6 - 0.06x² = 0 => x² = 100 => x = ±10 ft (base width b = 20 ft, height h = 6 ft). Area = 2/3 b h = 2/3(20)(6) = 80 ft². Volume = Area × Length = 80 × 100 = 8,000 ft³.',
       formulas: [
-        'y = 6 - 0.06x² = 0 => x = ±10 ft',
-        'Base b = 20 ft, Height h = 6 ft',
-        'Area_parabola = (2/3) · b · h = (2/3) · (20) · (6) = 80 ft²',
-        'Volume = 80 ft² · 100 ft = 8,000 ft³',
+        'y = 6 - 0.06x^2 = 0 => x =  \\pm 10',
+        'Base b = 20, Height h = 6',
+        'Area_parabola = (2/3)  \\cdot  b  \\cdot  h = (2/3)  \\cdot  (20)  \\cdot  (6) = 80^2',
+        'Volume = 80^2  \\cdot  100 = 8,000^3',
       ],
       steps: [
         'Step 1: Find the tunnel floor width where y = 0: 6 - 0.06x² = 0 => x = ±10 ft.',
@@ -101,8 +101,8 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Intersection points: x + 2 = x² => x² - x - 2 = 0 => x = -1 and x = 2. Side of square s = (x + 2) - x². V = ∫₋₁² [(x + 2) - x²]² dx = 81/10.',
       formulas: [
-        'x² = x + 2 => (x - 2)(x + 1) = 0 => x = -1, 2',
-        's(x) = y_upper - y_lower = (x + 2) - x²',
+        'x^2 = x + 2 => (x - 2)(x + 1) = 0 => x = -1, 2',
+        's(x) = y_upper - y_lower = (x + 2) - x^2',
         'V = ∫₋₁² [(x + 2) - x²]² dx = 81/10',
       ],
       steps: [
@@ -136,10 +136,10 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Total weights = 9 (eight existing + one new at distance x). By Varignon\'s Theorem / Center of Gravity: 9 × 50 = 5 + 20 + 37 + 44 + 52 + 68 + 71 + 85 + x => 450 = 382 + x => x = 68 cm.',
       formulas: [
-        'Total weights N = 9',
-        'Σ(W · x) = (ΣW) · x_bar',
-        '9 · (50) = 5 + 20 + 37 + 44 + 52 + 68 + 71 + 85 + x',
-        '450 = 382 + x => x = 68 cm',
+        'Total weights = 9',
+        '\\Sigma (W  \\cdot  x) = (\\Sigma W)  \\cdot  x_bar',
+        '9  \\cdot  (50) = 5 + 20 + 37 + 44 + 52 + 68 + 71 + 85 + x',
+        '450 = 382 + x => x = 68',
       ],
       steps: [
         'Step 1: There are currently 8 one-gram weights, and adding 1 more makes 9 weights in total.',
@@ -173,10 +173,10 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Conservation of momentum: (m_child + m_boat) · v\'₂ + m_package · v₁ = 0 => (26 + 45) · v\'₂ + (6.4)(10) = 0 => 71 v\'₂ = -64 => v\'₂ = -0.901 m/s.',
       formulas: [
-        'Σ(mv)_initial = Σ(mv)_final = 0',
-        'm₁ = 6.4 kg, v₁ = 10 m/s',
-        'm₂ = 26 + 45 = 71 kg',
-        '71 · v\'₂ + (6.4)(10) = 0 => v\'₂ = -64 / 71 = -0.901 m/s',
+        '\\Sigma (mv)_initial = \\Sigma (mv)_final = 0',
+        'm_1 = 6.4, v_1 = 10/s',
+        'm_2 = 26 + 45 = 71',
+        '71  \\cdot  v\'_2 + (6.4)(10) = 0 => v\'_2 = -64 / 71 = -0.901/s',
       ],
       steps: [
         'Step 1: System begins from rest, so initial total linear momentum = 0.',
@@ -209,9 +209,9 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Work-Energy: 1/2 m v² = μ_k m g d => v = √(2 μ_k g d) = √(2 · 0.42 · 9.81 · 88) = 26.93 m/s ≈ 27 m/s. Mass cancels out because both friction force and kinetic energy are proportional to mass. The braking force acts opposite to motion.',
       formulas: [
-        '1/2 m v² = μ_k · m · g · d',
-        'v = √(2 · μ_k · g · d)',
-        'v = √(2 · 0.42 · 9.81 · 88) = √725.155 = 26.93 m/s ≈ 27 m/s',
+        '1/2 v^2 = \\mu _k  \\cdot   \\cdot  g  \\cdot  d',
+        'v = \\sqrt{2  \\cdot  \\mu _k  \\cdot  g  \\cdot  d}',
+        'v = \\sqrt{2  \\cdot  0.42  \\cdot  9.81  \\cdot  88} = \\sqrt{725}.155 = 26.93/s  \\approx  27/s',
       ],
       steps: [
         'Step 1: Work done by friction opposes car motion: W = f_k × d = μ_k m g d.',
@@ -245,7 +245,7 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'R_min = v² / [g(e + f)]. v = 110 / 3.6 = 30.556 m/s. R_min = (30.556)² / [9.81(0.08 + 0.10)] = 933.64 / 1.7658 = 528.74 m.',
       formulas: [
-        'v = 110 km/h = 110 / 3.6 = 30.556 m/s',
+        'v = 110 km/h = 110 / 3.6 = 30.556/s',
         'R_min = v² / [g(e + f)] = V² / [127(e + f)]',
         'R_min = (110)² / [127 · (0.08 + 0.10)] = 12,100 / 22.86 = 528.74 m',
       ],
@@ -290,9 +290,9 @@ export const MSTC_NOV2024_PART3: Question[] = [
       summary: 'Work-Energy from A to stalled spring C: 1/2 m v_A² + m g h - F_f · (d_total) = 1/2 k x². 1/2(4500)(1.2)² + 4500(9.81)(1) - 220(75 + 60 + 0.6) = 1/2 k (0.6)². 3240 + 44145 - 29832 = 0.18 k => 17553 = 0.18 k => k = 97,516.67 N/m = 97.5 kN/m.',
       formulas: [
         'KE_A + PE_A - Work_friction = PE_spring',
-        '1/2 · (4500) · (1.2)² + 4500 · (9.81) · (1) - 220 · (75 + 60 + 0.6) = 1/2 · k · (0.6)²',
-        '3240 + 44145 - 29832 = 0.18 · k',
-        '17,553 = 0.18 · k => k = 97,516.67 N/m = 97.5 kN/m',
+        '1/2  \\cdot  (4500)  \\cdot  (1.2)^2 + 4500  \\cdot  (9.81)  \\cdot  (1) - 220  \\cdot  (75 + 60 + 0.6) = 1/2  \\cdot  k  \\cdot  (0.6)^2',
+        '3240 + 44145 - 29832 = 0.18  \\cdot  k',
+        '17,553 = 0.18  \\cdot  k => k = 97,516.67/m = 97.5/m',
       ],
       steps: [
         'Step 1: Initial kinetic energy at A: KE_A = 1/2(4500)(1.2)² = 3,240 J.',
@@ -370,7 +370,7 @@ export const MSTC_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Sampling without replacement: P = (19/25) · (18/24) · (17/23) = 5814 / 13800 = 969 / 2300.',
       formulas: [
-        'P(all 3 favorable) = (19 / 25) · (18 / 24) · (17 / 23)',
+        'P(all 3 favorable) = (19 / 25)  \\cdot  (18 / 24)  \\cdot  (17 / 23)',
         'P = 5,814 / 13,800 = 969 / 2,300',
       ],
       steps: [

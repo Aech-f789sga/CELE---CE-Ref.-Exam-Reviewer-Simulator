@@ -1,5 +1,6 @@
 export type AppThemeId =
   | 'aurora_glass'
+  | 'terrarium_orb'
   | 'engineering_dark'
   | 'blueprint_navy'
   | 'pure_slate'
@@ -75,6 +76,26 @@ export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
     accentText: '#0b0720',
     accentBadge: 'rgba(139, 123, 255, 0.2)',
     gridStyle: 'rgba(139, 123, 255, 0.10)',
+  },
+  // COZY MINIATURE WORLD BUILDER THEME - 3D Faceted Terrarium Planet inside Glass Orb on Walnut Stand
+  terrarium_orb: {
+    id: 'terrarium_orb',
+    name: 'Cozy Terrarium Orb (3D World)',
+    category: 'dark',
+    accentName: 'Emerald Jade & Warm Walnut',
+    description: 'A cozy miniature world builder in Three.js: a faceted terrarium planet suspended inside a glowing glass orb on a sculpted walnut stand with semi-interactive world controls.',
+    bgPage: '#081313',
+    bgCard: '#0f2220',
+    bgCardSubtle: '#15302c',
+    border: '#225d50',
+    textPrimary: '#f0fdf4',
+    textSecondary: '#bbf7d0',
+    textMuted: '#6ee7b7',
+    accent: '#10b981',
+    accentHover: '#059669',
+    accentText: '#022c22',
+    accentBadge: 'rgba(16, 185, 129, 0.22)',
+    gridStyle: 'rgba(16, 185, 129, 0.08)',
   },
   // ORIGINAL THEME - KEPT COMPLETELY PRESERVED AND UNCHANGED
   engineering_dark: {

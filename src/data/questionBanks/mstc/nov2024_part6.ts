@@ -53,7 +53,7 @@ export const MSTC_NOV2024_PART6: Question[] = [
     solution: {
       summary: 'Under standard construction safety codes and Rule 1417 (Demolition Safety) of the DOLE Occupational Safety and Health Standards (OSHS), an exclusion buffer zone equal to 1.5 (or 1 1/2) times the height of the building being demolished must be secured and barricaded.',
       formulas: [
-        'Exclusion Zone Buffer = 1.5 × Height of structure',
+        'D_{\\mathrm{zone}} = 1.5 H',
       ],
       steps: [
         'Step 1: During structural demolition, falling debris and wall collapse hazard can scatter beyond the immediate footprint.',
@@ -154,7 +154,8 @@ export const MSTC_NOV2024_PART6: Question[] = [
     solution: {
       summary: 'Windows and doors (fenestrations) have the lowest thermal resistance (R-values) in a building envelope, experiencing the greatest rates of conductive heat loss, air infiltration, and solar radiation heat gain per unit area.',
       formulas: [
-        'Fenestrations (Windows & Doors): Lowest R-value, highest U-factor in building envelope',
+        'U = \\frac{1}{R}',
+        'q = U A \\Delta T',
       ],
       steps: [
         'Step 1: Walls and roofs generally contain thermal insulation and higher mass.',
@@ -187,7 +188,7 @@ export const MSTC_NOV2024_PART6: Question[] = [
       summary: 'Per DPWH Standard Specifications for Highways, Bridges and Airports (Item 200 - Aggregate Subbase Course), the standard minimum compacted layer thickness of an aggregate subbase course is 0.15 m (150 mm).',
       formulas: [
         'DPWH Item 200 (Aggregate Subbase Course):',
-        'Standard minimum compacted layer thickness = 0.15 m (150 mm)',
+        'Standard minimum compacted layer thickness = 0.15 (150)',
       ],
       steps: [
         'Step 1: Under DPWH Item 200 specifications, subbase courses must be spread and compacted to uniform thickness.',

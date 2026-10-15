@@ -25,11 +25,151 @@ type ContentBlock =
   | { type: 'table'; table: ParsedTable };
 
 /**
+ * Normalizes and sanitizes LaTeX input to adhere strictly to KaTeX requirements:
+ * - Fixes escaped prime notation (\' -> ')
+ * - Balances unclosed \left[ ... \right into \left[ ... \right]
+ * - Converts raw Unicode exponents (², ³, ⁴) to proper superscripts (^2, ^3, ^4)
+ * - Converts raw Unicode subscripts (₀, ₁, ₂) to proper subscripts (_0, _1, _2)
+ * - Converts raw Unicode Greek symbols (γ, θ, σ, π, Δ, etc.) to proper LaTeX commands
+ * - Converts raw Unicode operators (·, •, ×, ÷) to \cdot, \times, \div
+ * - Converts raw Unicode root symbol (√) to \sqrt{}
+ * - Escapes unescaped % to \% so equations aren't accidentally cut off as comments
+ * - Escapes bare $ signs in math mode so KaTeX doesn't crash on currency
+ */
+export function sanitizeLatex(input: string, isFormula: boolean = false): string {
+  if (!input) return '';
+  let s = input.trim();
+
+  // If in formula mode, ensure NO words are included
+  if (isFormula) {
+    // Strip prefixes like "Trajectory: ", "Rectangle: ", "Triangle: ", "Step 1: "
+    s = s.replace(/^[A-Za-z0-9\s/]+:\s*/, '');
+    s = s.replace(/\\text\{[A-Za-z0-9\s]+:\s*\}\s*/g, '');
+
+    // Strip qualitative tags: (C), (Compression), (T), (Tension), (governs), (approx)
+    s = s.replace(/\s*\((?:C|Compression|T|Tension|governs|approx|approx\.)\)/gi, '');
+
+    // Replace common English word definitions with mathematical notation
+    s = s.replace(/\\text\{tensile stress\}/g, '\\sigma');
+    s = s.replace(/\\text\{tensile strain\}/g, '\\epsilon');
+    s = s.replace(/\\text\{lateral strain\}/g, '\\epsilon_{\\mathrm{lat}}');
+    s = s.replace(/\\text\{longitudinal strain\}/g, '\\epsilon_{\\mathrm{long}}');
+    s = s.replace(/\\text\{Ductility\}/g, '\\mu');
+    s = s.replace(/\\text\{Safety Factor\}/g, 'FS');
+    s = s.replace(/\\text\{Total Load\}/g, 'P_{\\mathrm{total}}');
+
+    // Strip embedded unit expressions inside \text{...}
+    s = s.replace(/\\text\{\s*(?:mmHg|m\s+of\s+Hg|N\/m\^2|N\/m\^3|kN\/m\^2|kN\/m\^3|kN\/m|kN|kPa|MPa|GPa|N|m\^2|m\^3|mm\^2|mm\^4|mm|m|km|rad\/s|rad|rpm|sec|s|min|hrs|hr|L\/s|L\/hr|L|kg|ft|in|psi|ksi|pcf|psf|g\/cm\^3|hectares|bars?|units?\/worker|units?)\s*\}\^?[0-9]*/gi, '');
+
+    // Strip trailing unit symbols
+    s = s.replace(/\s*(?:kN\/m\^?3|kN\/m\^?2|kN\/m|kN|kPa|MPa|GPa|N\/m\^?2|N\/m\^?3|N|mm\^?2|mm\^?4|mm|m\^?3|m\^?2|m|km|rad\/s|rad|rpm|L\/s|L\/hr|L|kg|ft|in|psi|ksi|pcf|psf|dB)(?=[,\s\)]|$)/gi, '');
+  }
+
+  // 1. Fix escaped apostrophe used for prime symbol
+  s = s.replace(/\\'/g, "'");
+
+  // 2. Fix unclosed \right at the end of formulas
+  if (/\\left\[[^\]]*?\\right\s*$/.test(s)) {
+    s = s.replace(/\\right\s*$/, '\\right]');
+  } else if (/\\left\([^)]*?\\right\s*$/.test(s)) {
+    s = s.replace(/\\right\s*$/, '\\right)');
+  } else if (/\\left\{[^}]*?\\right\s*$/.test(s)) {
+    s = s.replace(/\\right\s*$/, '\\right\\}');
+  } else if (/\\right\s*$/.test(s)) {
+    s = s.replace(/\\right\s*$/, '\\right.');
+  }
+
+  // 3. Fix unescaped percentage signs in math (LaTeX treats % as line comments)
+  s = s.replace(/(?<!\\)%/g, '\\%');
+
+  // 4. Escape bare currency dollar signs in math mode
+  s = s.replace(/(?<!\\)\$(\d)/g, '\\$$1');
+
+  // 5. Replace Unicode exponents and negative superscripts
+  s = s
+    .replace(/⁻¹/g, '^{-1}')
+    .replace(/⁻²/g, '^{-2}')
+    .replace(/⁻³/g, '^{-3}')
+    .replace(/⁻⁴/g, '^{-4}')
+    .replace(/⁻⁵/g, '^{-5}')
+    .replace(/⁻⁶/g, '^{-6}')
+    .replace(/⁻⁷/g, '^{-7}')
+    .replace(/⁻⁸/g, '^{-8}')
+    .replace(/⁻⁹/g, '^{-9}')
+    .replace(/⁻\^(\d+)/g, '^{-$1}')
+    .replace(/⁻(\d+)/g, '^{-$1}')
+    .replace(/¹/g, '^1')
+    .replace(/²/g, '^2')
+    .replace(/³/g, '^3')
+    .replace(/⁴/g, '^4')
+    .replace(/₀/g, '_0')
+    .replace(/₁/g, '_1')
+    .replace(/₂/g, '_2')
+    .replace(/₃/g, '_3')
+    .replace(/₄/g, '_4');
+
+  // 6. Replace Unicode math symbols with LaTeX commands
+  s = s
+    .replace(/[·•]/g, ' \\cdot ')
+    .replace(/×/g, ' \\times ')
+    .replace(/÷/g, ' \\div ')
+    .replace(/≤/g, ' \\le ')
+    .replace(/≥/g, ' \\ge ')
+    .replace(/≠/g, ' \\ne ')
+    .replace(/±/g, ' \\pm ')
+    .replace(/≈/g, ' \\approx ')
+    .replace(/∞/g, ' \\infty ')
+    .replace(/°/g, '^\\circ ')
+    .replace(/=>/g, ' \\implies ')
+    .replace(/<=>/g, ' \\iff ')
+    .replace(/→/g, ' \\to ');
+
+  // 7. Replace Unicode Greek letters with LaTeX commands
+  s = s
+    .replace(/α/g, '\\alpha ')
+    .replace(/β/g, '\\beta ')
+    .replace(/γ/g, '\\gamma ')
+    .replace(/δ/g, '\\delta ')
+    .replace(/Δ/g, '\\Delta ')
+    .replace(/ε/g, '\\epsilon ')
+    .replace(/θ/g, '\\theta ')
+    .replace(/λ/g, '\\lambda ')
+    .replace(/μ/g, '\\mu ')
+    .replace(/ν/g, '\\nu ')
+    .replace(/π/g, '\\pi ')
+    .replace(/ρ/g, '\\rho ')
+    .replace(/σ/g, '\\sigma ')
+    .replace(/Σ/g, '\\Sigma ')
+    .replace(/τ/g, '\\tau ')
+    .replace(/ϕ|φ/g, '\\phi ')
+    .replace(/ω/g, '\\omega ')
+    .replace(/Ω/g, '\\Omega ');
+
+  // 8. Replace Unicode square root symbols
+  s = s
+    .replace(/√\[\s*([^\]]+?)\s*\]/g, '\\sqrt{$1}')
+    .replace(/√\(\s*([^)]+?)\s*\)/g, '\\sqrt{$1}')
+    .replace(/√([a-zA-Z0-9]+)/g, '\\sqrt{$1}');
+
+  // 9. Convert bracket slash fractions [ A ] / [ B ] to \frac{A}{B}
+  s = s.replace(/\[\s*([^\]]+?)\s*\]\s*\/\s*\[\s*([^\]]+?)\s*\]/g, '\\frac{$1}{$2}');
+
+  // 10. Fix double superscripts: ^a^b -> ^{ab}
+  s = s.replace(/\^([0-9])\^([0-9]+)/g, '^{$1$2}');
+
+  // 11. Fix double subscripts: _m_sand -> _{m,sand}
+  s = s.replace(/_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)/g, '_{$1,$2}');
+
+  return s;
+}
+
+/**
  * Safely renders LaTeX string via KaTeX.
  */
-function renderKatex(latex: string, displayMode: boolean = false): string {
+function renderKatex(latex: string, displayMode: boolean = false, isFormula: boolean = false): string {
   try {
-    return katex.renderToString(latex.trim(), {
+    const cleaned = sanitizeLatex(latex, isFormula);
+    return katex.renderToString(cleaned, {
       displayMode,
       throwOnError: false,
       output: 'htmlAndMathml',
@@ -288,7 +428,7 @@ export const MathView: React.FC<MathViewProps> = ({
   if (formula || latex || math) {
     const formulaStr = latex || math || rawInput;
     const isBlock = block || (!inline && formulaStr.includes('\\'));
-    const html = renderKatex(formulaStr, isBlock);
+    const html = renderKatex(formulaStr, isBlock, formula);
 
     if (inline && !block) {
       return (

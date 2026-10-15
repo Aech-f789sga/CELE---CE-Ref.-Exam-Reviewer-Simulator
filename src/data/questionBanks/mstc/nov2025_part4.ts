@@ -61,8 +61,8 @@ export const MSTC_NOV2025_PART4: Question[] = [
         '\\frac{A_1}{A_2} = \\frac{94{,}600}{101{,}250} = 0.93432 \\approx 0.9343',
       ],
       steps: [
-        'Step 1: Net block format area: $A_{\\text{block}} = 440\\text{ mm} \\times 215\\text{ mm} = 94,600\\text{ mm}^2$.',
-        'Step 2: Coordinating block area including mortar joint: $A_{\\text{coordinating}} = 450\\text{ mm} \\times 225\\text{ mm} = 101,250\\text{ mm}^2$.',
+        'Step 1: Net block format area: $A_{\\text{block}} = 440\ \\times 215\ = 94,600\$.',
+        'Step 2: Coordinating block area including mortar joint: $A_{\\text{coordinating}} = 450\ \\times 225\ = 101,250\$.',
         'Step 3: Proportional area: $94,600 / 101,250 = 0.93432 \\approx 0.9343$ (Option C).',
       ],
       finalAnswer: '0.9343 (Option C)',

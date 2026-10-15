@@ -21,9 +21,9 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'For every 2 units increase in US size, EU size increases by 5 units (slope = 5/2 = 2.5). From US size 46 (EU 117) to US size 48 (+2 units), EU size increases by 5 units: 117 + 5 = 122.',
       formulas: [
-        'ΔEU / ΔUS = 5 / 2 = 2.5 EU per US unit',
+        '\\Delta EU / \\Delta US = 5 / 2 = 2.5 EU per US unit',
         'US = 48 is +2 units above US = 46 (EU = 117)',
-        'EU(48) = 117 + 2 · (2.5) = 117 + 5 = 122',
+        'EU(48) = 117 + 2  \\cdot  (2.5) = 117 + 5 = 122',
       ],
       steps: [
         'Step 1: Check pattern: (112 - 107) / (44 - 42) = 5 / 2 = 2.5.',
@@ -57,8 +57,8 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'tan θ = opposite / adjacent = 150 / 2200 => θ = arctan(150 / 2200) = 3.90°.',
       formulas: [
-        'tan θ = 150 / 2200',
-        'θ = tan⁻¹(150 / 2200) = tan⁻¹(0.06818) = 3.90° ≈ 3.9°',
+        '\\tan\\theta = \\frac{y}{x}',
+        '\\theta = \\arctan\\left(\\frac{y}{x}\\right)',
       ],
       steps: [
         'Step 1: The height of the control tower is opposite side = 150 m.',
@@ -103,7 +103,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
         '∠B = 180° - 25° = 155°',
         '∠C = 180° - 155° - 8° = 17°',
         'x / sin 155° = 60 / sin 17°',
-        'x = (60 · sin 155°) / sin 17° = 86.73 ft ≈ 86.7 ft',
+        'x = (60  \\cdot  sin 155°) / sin 17° = 86.73  \\approx  86.7',
       ],
       steps: [
         'Step 1: Interior angle at B: ∠B = 180° - 25° = 155°.',
@@ -136,9 +136,9 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Perimeter P = 2(8 + 6) = 28 m. Diagonal d = √(8² + 6²) = 10 m. Total molding = 28 + 10 = 38 m.',
       formulas: [
-        'Perimeter P = 2(L + W) = 2(8 + 6) = 28 m',
-        'Diagonal d = √(L² + W²) = √(8² + 6²) = √100 = 10 m',
-        'Total length = P + d = 28 + 10 = 38 m',
+        'Perimeter P = 2(L + W) = 2(8 + 6) = 28',
+        'Diagonal d = \\sqrt{L^2 + W^2} = \\sqrt{8^2 + 6^2} = \\sqrt{100} = 10',
+        'Total length = P + d = 28 + 10 = 38',
       ],
       steps: [
         'Step 1: Compute perimeter of the four walls: P = 2(8 + 6) = 28 m.',
@@ -180,8 +180,8 @@ export const MSTC_NOV2024_PART2: Question[] = [
       summary: 'Let border width be x. (40 + 2x)(30 + 2x) - (40)(30) = 296 => 4x² + 140x - 296 = 0 => x² + 35x - 74 = 0 => (x - 2)(x + 37) = 0 => x = 2 ft.',
       formulas: [
         '(40 + 2x)(30 + 2x) - 1200 = 296',
-        '4x² + 140x + 1200 - 1200 = 296 => 4x² + 140x - 296 = 0',
-        'x² + 35x - 74 = 0 => (x - 2)(x + 37) = 0 => x = 2 ft',
+        '4x^2 + 140x + 1200 - 1200 = 296 => 4x^2 + 140x - 296 = 0',
+        'x^2 + 35x - 74 = 0 => (x - 2)(x + 37) = 0 => x = 2',
       ],
       steps: [
         'Step 1: Total outer dimensions with border x: length = 40 + 2x, width = 30 + 2x.',
@@ -215,10 +215,10 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Total yard area = 20(30) = 600 m². Garden area = 600 - 336 = 264 m². Dimensions: (30 - 2x)(20 - 2x) = 264 => x = 4 m. Length = 30 - 2(4) = 22 m, Width = 20 - 2(4) = 12 m.',
       formulas: [
-        'Area_garden = Total Area - Area_grass = 600 - 336 = 264 m²',
+        'Area_garden = Total Area - Area_grass = 600 - 336 = 264^2',
         '(30 - 2x)(20 - 2x) = 264',
-        '4x² - 100x + 336 = 0 => x² - 25x + 84 = 0 => (x - 4)(x - 21) = 0 => x = 4 m',
-        'L = 30 - 2(4) = 22 m; W = 20 - 2(4) = 12 m',
+        '4x^2 - 100x + 336 = 0 => x^2 - 25x + 84 = 0 => (x - 4)(x - 21) = 0 => x = 4',
+        'L = 30 - 2(4) = 22; W = 20 - 2(4) = 12',
       ],
       steps: [
         'Step 1: Total backyard area = 20 m × 30 m = 600 m².',
@@ -252,8 +252,8 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Box dimensions: length = 6r, width = 2r, height = 2r. V_box = (6r)(2r)(2r) = 24r³. Volume of 3 spheres = 3 · (4/3 π r³) = 4π r³. Space = 24r³ - 4π r³ = 4r³(6 - π).',
       formulas: [
-        'Box dimensions: L = 6r, W = 2r, H = 2r',
-        'V_box = 6r · 2r · 2r = 24r³',
+        'Box dimensions: = 6r, W = 2r, H = 2r',
+        'V_box = 6r  \\cdot  2r  \\cdot  2r = 24r^3',
         'V_spheres = 3 · [(4/3)π r³] = 4π r³',
         'V_space = 24r³ - 4π r³ = 4r³(6 - π)',
       ],
@@ -299,11 +299,11 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Slant distance to 757: y = 20,000 / sin 6° = 191,335.44 ft. Slant distance to 737: x = 15,000 / sin 3° = 286,609.84 ft. Angle between sightlines α = 6° - 3° = 3°. By Law of Cosines: d = √(x² + y² - 2xy cos α) = 96,059.98 ft ≈ 96,060 ft.',
       formulas: [
-        'y = 20,000 / sin 6° = 191,335.44 ft',
-        'x = 15,000 / sin 3° = 286,609.84 ft',
-        'α = 6° - 3° = 3°',
-        'd² = x² + y² - 2xy · cos(3°)',
-        'd = 96,059.98 ft ≈ 96,060 ft',
+        'y = 20,000 / sin 6° = 191,335.44',
+        'x = 15,000 / sin 3° = 286,609.84',
+        '\\alpha  = 6° - 3° = 3°',
+        'd^2 = x^2 + y^2 - 2xy  \\cdot  cos(3°)',
+        'd = 96,059.98  \\approx  96,060',
       ],
       steps: [
         'Step 1: Slant range from tower to 757: y = 20,000 / sin(6°) = 191,335.44 ft.',
@@ -345,10 +345,10 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Point P is the intersection of two circles centered at A and B with radii 2000 m and 1500 m. Solving the two circle equations yields (4464.85, 1481.09) or (2523.02, 2272.28).',
       formulas: [
-        'Circle A: (x - 2851.28)² + (y - 299.40)² = 2000²',
-        'Circle B: (x - 3898.72)² + (y - 2870.15)² = 1500²',
-        'Equating and solving: x₁ = 4,464.85 m, y₁ = 1,481.09 m',
-        'x₂ = 2,523.02 m, y₂ = 2,272.28 m',
+        'Circle A: (x - 2851.28)^2 + (y - 299.40)^2 = 2000^2',
+        'Circle B: (x - 3898.72)^2 + (y - 2870.15)^2 = 1500^2',
+        'Equating and solving: x_1 = 4,464.85, y_1 = 1,481.09',
+        'x_2 = 2,523.02, y_2 = 2,272.28',
       ],
       steps: [
         'Step 1: Write equation of Circle A: (x - X_A)² + (y - Y_A)² = R_A².',
@@ -382,7 +382,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       summary: 'Revenue R(x) = 690x. Profit P(x) = R(x) - C(x) = 690x - (0.5x² + 400x + 24,000) = -0.5x² + 290x - 24,000. dP/dx = -x + 290 = 0 => x = 290.',
       formulas: [
         'R(x) = 690x',
-        'P(x) = 690x - (0.5x² + 400x + 24,000) = -0.5x² + 290x - 24,000',
+        'P(x) = 690x - (0.5x^2 + 400x + 24,000) = -0.5x^2 + 290x - 24,000',
         'dP/dx = -x + 290 = 0 => x = 290 units',
       ],
       steps: [
@@ -417,7 +417,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'R(r) = k(r - r²). dR/dr = k(1 - 2r) = 0 => 1 - 2r = 0 => r = 1/2.',
       formulas: [
-        'R(r) = kr - kr²',
+        'R(r) = kr - kr^2',
         'dR/dr = k(1 - 2r) = 0',
         '1 - 2r = 0 => r = 1/2',
       ],
@@ -450,17 +450,17 @@ export const MSTC_NOV2024_PART2: Question[] = [
     ],
     correctAnswer: 'B',
     solution: {
-      summary: 'P\'(t) = -3t² + 12t. P\'\'(t) = -6t + 12 = 0 => t = 2. P(2) = -(2)³ + 6(2)² + 10 = -8 + 24 + 10 = 26 => Point is (2, 26). Beyond t = 2, P\'\'(t) < 0 (concave down), representing the point of diminishing returns.',
+      summary: "P'(t) = -3t² + 12t. P''(t) = -6t + 12 = 0 => t = 2. P(2) = -(2)³ + 6(2)² + 10 = -8 + 24 + 10 = 26 => Point is (2, 26). Beyond t = 2, P''(t) < 0 (concave down), representing the point of diminishing returns.",
       formulas: [
-        'P\'(t) = -3t² + 12t',
-        'P\'\'(t) = -6t + 12',
-        '-6t + 12 = 0 => t = 2',
-        'P(2) = -(2)³ + 6(2)² + 10 = 26 => (2, 26)',
-        'For t > 2, P\'\'(t) < 0 (concave down, diminishing returns)',
+        "P'(t) = -3t^2 + 12t",
+        "P''(t) = -6t + 12",
+        '6t + 12 = 0 => t = 2',
+        'P(2) = -(2)^3 + 6(2)^2 + 10 = 26 => (2, 26)',
+        "For t > 2, P''(t) < 0 (concave down, diminishing returns)",
       ],
       steps: [
-        'Step 1: First derivative: P\'(t) = -3t² + 12t.',
-        'Step 2: Second derivative: P\'\'(t) = -6t + 12.',
+        "Step 1: First derivative: P'(t) = -3t² + 12t.",
+        "Step 2: Second derivative: P''(t) = -6t + 12.",
         'Step 3: Equate second derivative to zero: -6t + 12 = 0 => t = 2.',
         'Step 4: Calculate P(2) = -(8) + 6(4) + 10 = 26. Point of inflection is (2, 26).',
         'Step 5: Since the concavity switches from positive to negative, the point marks the onset of diminishing returns.',

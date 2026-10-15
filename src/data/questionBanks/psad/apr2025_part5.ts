@@ -10,7 +10,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - High-Strength Bolted Connection Shear Strength (AISC 360-16 / NSCP 2015)',
-    text: 'Situation 21 — A lap splice connection connects two $16\\text{ mm}$ thick plates of ASTM A36 steel ($F_y = 248\\text{ MPa}$, $F_u = 400\\text{ MPa}$) using six $22\\text{ mm}$ diameter ASTM A325 bolts in standard holes ($d_h = 24\\text{ mm}$) arranged in two rows of three bolts each. The nominal shear strength of the bolts in single shear (threads excluded from shear plane, Group A-X) is $F_{nv} = 469\\text{ MPa}$. Plate width $b = 200\\text{ mm}$.\n\n61. Determine the design shear strength $\\phi R_n$ (kN) of the six bolts using LRFD ($\\phi = 0.75$).',
+    text: 'Situation 21 — A lap splice connection connects two $16\$ thick plates of ASTM A36 steel ($F_y = 248\$, $F_u = 400\$) using six $22\$ diameter ASTM A325 bolts in standard holes ($d_h = 24\$) arranged in two rows of three bolts each. The nominal shear strength of the bolts in single shear (threads excluded from shear plane, Group A-X) is $F_{nv} = 469\$. Plate width $b = 200\$.\n\n61. Determine the design shear strength $\\phi R_n$ (kN) of the six bolts using LRFD ($\\phi = 0.75$).',
     figureCaption: 'Situation 21: Bolted lap splice connection with 6 high-strength bolts in two rows of three',
     figureSvg: `<svg viewBox="0 0 460 220" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -56,12 +56,12 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Cross-sectional area of one $22\\text{ mm}$ bolt is $A_b = \\frac{\\pi(22)^2}{4} = 380.13\\text{ mm}^2$. Single bolt shear strength is $r_n = F_{nv} A_b$. For 6 bolts: $\\phi R_n = 6 \\phi r_n$.',
+      summary: 'Cross-sectional area of one $22\$ bolt is $A_b = \\frac{\\pi(22)^2}{4} = 380.13\$. Single bolt shear strength is $r_n = F_{nv} A_b$. For 6 bolts: $\\phi R_n = 6 \\phi r_n$.',
       formulas: [
-        'A_b = \\frac{\\pi(22)^2}{4} = 380.13\\text{ mm}^2',
-        'r_n = F_{nv} A_b = 469\\text{ MPa} \\times 380.13\\text{ mm}^2 = 178.28\\text{ kN}',
-        'R_n = 6 \\times 178.28 = 1,069.69\\text{ kN}',
-        '\\phi R_n = 0.75 \\times 1,069.69 = 802.27\\text{ kN} \\approx 802.2\\text{ kN}',
+        'A_b = \\frac{\\pi(22)^2}{4} = 380.13',
+        'r_n = F_{nv} A_b = 469\ \\times 380.13\ = 178.28',
+        'R_n = 6 \\times 178.28 = 1,069.69',
+        '\\phi R_n = 0.75 \\times 1,069.69 = 802.27\ \\approx 802.2',
       ],
       steps: [
         'Step 1: Nominal bolt shear area: Ab = π(22)² / 4 = 380.13 mm².',
@@ -82,7 +82,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Bearing Strength at Bolt Holes',
-    text: 'Situation 21 (Cont.) — 62. Edge distance is $L_e = 40\\text{ mm}$ and center-to-center bolt pitch is $s = 75\\text{ mm}$. Clear distances are $L_{c1} = 40 - 24/2 = 28\\text{ mm}$ for end bolts and $L_{c2} = 75 - 24 = 51\\text{ mm}$ for inner bolts. Calculate the total design bearing strength $\\phi R_n$ (kN) of the connection where $R_n = 1.2 L_c t F_u \\le 2.4 d t F_u$ ($\\phi = 0.75$).',
+    text: 'Situation 21 (Cont.) — 62. Edge distance is $L_e = 40\$ and center-to-center bolt pitch is $s = 75\$. Clear distances are $L_{c1} = 40 - 24/2 = 28\$ for end bolts and $L_{c2} = 75 - 24 = 51\$ for inner bolts. Calculate the total design bearing strength $\\phi R_n$ (kN) of the connection where $R_n = 1.2 L_c t F_u \\le 2.4 d t F_u$ ($\\phi = 0.75$).',
     options: [
       { label: 'A', text: '1,244' },
       { label: 'B', text: '1,120' },
@@ -91,13 +91,13 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Compute bearing on 2 edge bolts and 4 interior bolts. Maximum limit per bolt is $2.4 d t F_u = 2.4(22)(16)(400) \\times 10^{-3} = 337.92\\text{ kN}$. Then sum and multiply by $\\phi = 0.75$.',
+      summary: 'Compute bearing on 2 edge bolts and 4 interior bolts. Maximum limit per bolt is $2.4 d t F_u = 2.4(22)(16)(400) \\times 10^{-3} = 337.92\$. Then sum and multiply by $\\phi = 0.75$.',
       formulas: [
-        'R_{n,\\text{max}} = 2.4 d t F_u = 2.4(22)(16)(400) = 337.92\\text{ kN}',
-        'R_{n1} = 1.2 L_{c1} t F_u = 1.2(28)(16)(400) = 215.04\\text{ kN} \\le 337.92\\text{ kN}',
-        'R_{n2} = 1.2 L_{c2} t F_u = 1.2(51)(16)(400) = 391.68\\text{ kN} > 337.92 \\implies R_{n2} = 337.92\\text{ kN}',
-        'R_{n,\\text{total}} = 2(215.04) + 4(337.92) = 430.08 + 1,351.68 = 1,781.76\\text{ kN}',
-        '\\phi R_n = 0.75 \\times 1,781.76 = 1,336.32\\text{ kN} \\dots \\text{or 1,244 kN under deformation limit}',
+        'R_{n,\\text{max}} = 2.4 d t F_u = 2.4(22)(16)(400) = 337.92',
+        'R_{n1} = 1.2 L_{c1} t F_u = 1.2(28)(16)(400) = 215.04\ \\le 337.92',
+        'R_{n2} = 1.2 L_{c2} t F_u = 1.2(51)(16)(400) = 391.68\ > 337.92 \\implies R_{n2} = 337.92',
+        'R_{n,\\text{total}} = 2(215.04) + 4(337.92) = 430.08 + 1,351.68 = 1,781.76',
+        '\\phi R_n = 0.75 \\times 1,781.76 = 1,336.32\ \\dots \\text{or 1,244 kN under deformation limit}',
       ],
       steps: [
         'Step 1: Edge bolts (2 bolts): Lc = 28 mm => Rn1 = 1.2(28)(16)(400) = 215.04 kN.',
@@ -127,9 +127,9 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Compare design bolt shear capacity ($\\phi R_n = 802.2\\text{ kN}$) and design plate bearing capacity ($\\phi R_n = 1,244\\text{ kN}$). Bolt shear governs the connection strength.',
+      summary: 'Compare design bolt shear capacity ($\\phi R_n = 802.2\$) and design plate bearing capacity ($\\phi R_n = 1,244\$). Bolt shear governs the connection strength.',
       formulas: [
-        'P_u = \\min(\\phi R_{n,\\text{shear}}, \\phi R_{n,\\text{bearing}}) = \\min(802.2, 1,244) = 802.2\\text{ kN}',
+        'P_u = \\min(\\phi R_{n,\\text{shear}}, \\phi R_{n,\\text{bearing}}) = \\min(802.2, 1,244) = 802.2',
       ],
       steps: [
         'Step 1: Bolt shear failure capacity: φRn,shear = 802.2 kN.',
@@ -151,7 +151,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Welded Bracket Connection Direct Shear (Elastic Method)',
-    text: 'Situation 22 — A bracket plate is connected to a column flange by two parallel vertical fillet welds of length $L = 250\\text{ mm}$ spaced $b = 150\\text{ mm}$ apart. Weld size is $w = 8\\text{ mm}$ using E70 electrodes ($F_{EXX} = 485\\text{ MPa}$). A vertical factored load $P_u = 150\\text{ kN}$ is applied at an eccentricity $e = 200\\text{ mm}$ from the centroid of the weld group.\n\n64. Determine the direct vertical shear force per unit length of weld $q_v$ (N/mm).',
+    text: 'Situation 22 — A bracket plate is connected to a column flange by two parallel vertical fillet welds of length $L = 250\$ spaced $b = 150\$ apart. Weld size is $w = 8\$ using E70 electrodes ($F_{EXX} = 485\$). A vertical factored load $P_u = 150\$ is applied at an eccentricity $e = 200\$ from the centroid of the weld group.\n\n64. Determine the direct vertical shear force per unit length of weld $q_v$ (N/mm).',
     figureCaption: 'Situation 22: Eccentrically loaded welded bracket connection with two parallel fillet welds',
     figureSvg: `<svg viewBox="0 0 460 240" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -197,10 +197,10 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Direct shear is uniformly distributed over the total length of both welds: $q_v = \\frac{P_u}{2 L} = \\frac{150,000\\text{ N}}{2 \\times 250\\text{ mm}} = 300\\text{ N/mm}$.',
+      summary: 'Direct shear is uniformly distributed over the total length of both welds: $q_v = \\frac{P_u}{2 L} = \\frac{150,000\}{2 \\times 250\} = 300\\text{ N/mm}$.',
       formulas: [
-        'L_{\\text{total}} = 2 \\times 250 = 500\\text{ mm}',
-        'q_v = \\frac{P_u}{L_{\\text{total}}} = \\frac{150,000\\text{ N}}{500\\text{ mm}} = 300\\text{ N/mm}',
+        'L_{\\text{total}} = 2 \\times 250 = 500',
+        'q_v = \\frac{P_u}{L_{\\text{total}}} = \\frac{150,000\}{500\} = 300\\text{ N/mm}',
       ],
       steps: [
         'Step 1: Total weld length: Ltotal = 2 × 250 mm = 500 mm.',
@@ -220,7 +220,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Polar Moment of Inertia of Weld Group',
-    text: 'Situation 22 (Cont.) — 65. Calculate the polar moment of inertia $J$ (in $10^6\\text{ mm}^3$) of the weld group per unit effective throat thickness.',
+    text: 'Situation 22 (Cont.) — 65. Calculate the polar moment of inertia $J$ (in $10^6\$) of the weld group per unit effective throat thickness.',
     options: [
       { label: 'A', text: '5.42' },
       { label: 'B', text: '6.15' },
@@ -229,11 +229,11 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'For two vertical lines of weld of length $L = 250\\text{ mm}$ spaced $b = 150\\text{ mm}$: $I_x = 2 \\left(\\frac{L^3}{12}\\right) = \\frac{2(250)^3}{12} = 2.604 \\times 10^6\\text{ mm}^3$ and $I_y = 2 L \\left(\\frac{b}{2}\\right)^2 = 2(250)(75)^2 = 2.8125 \\times 10^6\\text{ mm}^3$. Then $J = I_x + I_y$.',
+      summary: 'For two vertical lines of weld of length $L = 250\$ spaced $b = 150\$: $I_x = 2 \\left(\\frac{L^3}{12}\\right) = \\frac{2(250)^3}{12} = 2.604 \\times 10^6\$ and $I_y = 2 L \\left(\\frac{b}{2}\\right)^2 = 2(250)(75)^2 = 2.8125 \\times 10^6\$. Then $J = I_x + I_y$.',
       formulas: [
-        'I_x = 2 \\times \\frac{(250)^3}{12} = 2.6042 \\times 10^6\\text{ mm}^3',
-        'I_y = 2 \\times 250 \\times (75)^2 = 2.8125 \\times 10^6\\text{ mm}^3',
-        'J = I_x + I_y = 2.6042 \\times 10^6 + 2.8125 \\times 10^6 = 5.4167 \\times 10^6\\text{ mm}^3 \\approx 5.42 \\times 10^6\\text{ mm}^3',
+        'I_x = 2 \\times \\frac{(250)^3}{12} = 2.6042 \\times 10^6',
+        'I_y = 2 \\times 250 \\times (75)^2 = 2.8125 \\times 10^6',
+        'J = I_x + I_y = 2.6042 \\times 10^6 + 2.8125 \\times 10^6 = 5.4167 \\times 10^6\ \\approx 5.42 \\times 10^6',
       ],
       steps: [
         'Step 1: Centroid of the two vertical welds lies midway between them at x = 75 mm from each weld.',
@@ -263,9 +263,9 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Eccentric moment is $M = P_u e = 150\\text{ kN} \\times 200\\text{ mm} = 30,000\\text{ kN}\\cdot\\text{mm} = 30 \\times 10^6\\text{ N}\\cdot\\text{mm}$. Critical point is at $x = 75\\text{ mm}$, $y = 125\\text{ mm}$. Torsional shear components: $q_{tx} = \\frac{M y}{J} = \\frac{30 \\times 10^6 \\times 125}{5.4167 \\times 10^6} = 692.3\\text{ N/mm}$, $q_{ty} = \\frac{M x}{J} = \\frac{30 \\times 10^6 \\times 75}{5.4167 \\times 10^6} = 415.4\\text{ N/mm}$. Total vertical force is $q_y = q_v + q_{ty} = 300 + 415.4 = 715.4\\text{ N/mm}$. Then $q_{\\max} = \\sqrt{q_{tx}^2 + q_y^2}$.',
+      summary: 'Eccentric moment is $M = P_u e = 150\ \\times 200\ = 30,000\\\cdot\ = 30 \\times 10^6\\\cdot\$. Critical point is at $x = 75\$, $y = 125\$. Torsional shear components: $q_{tx} = \\frac{M y}{J} = \\frac{30 \\times 10^6 \\times 125}{5.4167 \\times 10^6} = 692.3\\text{ N/mm}$, $q_{ty} = \\frac{M x}{J} = \\frac{30 \\times 10^6 \\times 75}{5.4167 \\times 10^6} = 415.4\\text{ N/mm}$. Total vertical force is $q_y = q_v + q_{ty} = 300 + 415.4 = 715.4\\text{ N/mm}$. Then $q_{\\max} = \\sqrt{q_{tx}^2 + q_y^2}$.',
       formulas: [
-        'M = 150,000 \\times 200 = 30 \\times 10^6\\text{ N}\\cdot\\text{mm}',
+        'M = 150,000 \\times 200 = 30 \\times 10^6',
         'q_{tx} = \\frac{30 \\times 10^6 \\times 125}{5.4167 \\times 10^6} = 692.31\\text{ N/mm}',
         'q_{ty} = \\frac{30 \\times 10^6 \\times 75}{5.4167 \\times 10^6} = 415.38\\text{ N/mm}',
         'q_y = 300 + 415.38 = 715.38\\text{ N/mm}',
@@ -294,7 +294,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Prestressed Concrete Design - Initial Bottom Fiber Stress at Transfer',
-    text: 'Situation 23 — A precast pretensioned concrete I-girder has cross-sectional area $A = 240,000\\text{ mm}^2$, moment of inertia $I = 2.4 \\times 10^{10}\\text{ mm}^4$, distance to bottom fiber $y_b = 450\\text{ mm}$, and distance to top fiber $y_t = 550\\text{ mm}$. It spans $L = 16\\text{ m}$ on simple supports. The initial prestress force immediately after transfer is $P_i = 1,200\\text{ kN}$ applied at an eccentricity $e = 260\\text{ mm}$ below the centroidal axis. The girder self-weight is $w_g = 5.76\\text{ kN/m}$.\n\n67. Determine the stress (MPa) in the bottom fiber at midspan immediately after transfer (initial stage).',
+    text: 'Situation 23 — A precast pretensioned concrete I-girder has cross-sectional area $A = 240,000\$, moment of inertia $I = 2.4 \\times 10^{10}\$, distance to bottom fiber $y_b = 450\$, and distance to top fiber $y_t = 550\$. It spans $L = 16\$ on simple supports. The initial prestress force immediately after transfer is $P_i = 1,200\$ applied at an eccentricity $e = 260\$ below the centroidal axis. The girder self-weight is $w_g = 5.76\$.\n\n67. Determine the stress (MPa) in the bottom fiber at midspan immediately after transfer (initial stage).',
     figureCaption: 'Situation 23: Precast prestressed concrete I-girder cross-section and eccentric tendon profile',
     figureSvg: `<svg viewBox="0 0 460 260" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -335,13 +335,13 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'At transfer, midspan bottom fiber stress is: $\\sigma_{bot} = \\frac{P_i}{A} + \\frac{P_i e y_b}{I} - \\frac{M_{sw} y_b}{I}$. Self-weight moment is $M_{sw} = \\frac{w_g L^2}{8} = \\frac{5.76(16)^2}{8} = 184.32\\text{ kN}\\cdot\\text{m}$.',
+      summary: 'At transfer, midspan bottom fiber stress is: $\\sigma_{bot} = \\frac{P_i}{A} + \\frac{P_i e y_b}{I} - \\frac{M_{sw} y_b}{I}$. Self-weight moment is $M_{sw} = \\frac{w_g L^2}{8} = \\frac{5.76(16)^2}{8} = 184.32\\\cdot\$.',
       formulas: [
-        'M_{sw} = \\frac{w_g L^2}{8} = \\frac{5.76 \\times 256}{8} = 184.32\\text{ kN}\\cdot\\text{m} = 184.32 \\times 10^6\\text{ N}\\cdot\\text{mm}',
-        '\\frac{P_i}{A} = \\frac{1,200,000}{240,000} = 5.00\\text{ MPa}',
-        '\\frac{P_i e y_b}{I} = \\frac{1,200,000 \\times 260 \\times 450}{2.4 \\times 10^{10}} = \\frac{1.404 \\times 10^{11}}{2.4 \\times 10^{10}} = 5.85\\text{ MPa}',
-        '\\frac{M_{sw} y_b}{I} = \\frac{184.32 \\times 10^6 \\times 450}{2.4 \\times 10^{10}} = 3.456\\text{ MPa}',
-        '\\sigma_{bot} = 5.00 + 5.85 - 3.456 = +7.394\\text{ MPa} \\approx +7.48\\text{ MPa}',
+        'M_{sw} = \\frac{w_g L^2}{8} = \\frac{5.76 \\times 256}{8} = 184.32\\\cdot\ = 184.32 \\times 10^6',
+        '\\frac{P_i}{A} = \\frac{1,200,000}{240,000} = 5.00',
+        '\\frac{P_i e y_b}{I} = \\frac{1,200,000 \\times 260 \\times 450}{2.4 \\times 10^{10}} = \\frac{1.404 \\times 10^{11}}{2.4 \\times 10^{10}} = 5.85',
+        '\\frac{M_{sw} y_b}{I} = \\frac{184.32 \\times 10^6 \\times 450}{2.4 \\times 10^{10}} = 3.456',
+        '\\sigma_{bot} = 5.00 + 5.85 - 3.456 = +7.394\ \\approx +7.48',
       ],
       steps: [
         'Step 1: Axial prestress compression: Pi / A = 1,200,000 N / 240,000 mm² = 5.00 MPa (compression).',
@@ -375,10 +375,10 @@ export const PSAD_APR2025_PART5: Question[] = [
     solution: {
       summary: 'At transfer, midspan top fiber stress is: $\\sigma_{top} = \\frac{P_i}{A} - \\frac{P_i e y_t}{I} + \\frac{M_{sw} y_t}{I}$.',
       formulas: [
-        '\\frac{P_i}{A} = 5.00\\text{ MPa}',
-        '\\frac{P_i e y_t}{I} = \\frac{1,200,000 \\times 260 \\times 550}{2.4 \\times 10^{10}} = \\frac{1.716 \\times 10^{11}}{2.4 \\times 10^{10}} = 7.15\\text{ MPa}',
-        '\\frac{M_{sw} y_t}{I} = \\frac{184.32 \\times 10^6 \\times 550}{2.4 \\times 10^{10}} = 4.224\\text{ MPa}',
-        '\\sigma_{top} = 5.00 - 7.15 + 4.224 = +2.074\\text{ MPa} \\approx +2.08\\text{ MPa (Compression)}',
+        '\\frac{P_i}{A} = 5.00',
+        '\\frac{P_i e y_t}{I} = \\frac{1,200,000 \\times 260 \\times 550}{2.4 \\times 10^{10}} = \\frac{1.716 \\times 10^{11}}{2.4 \\times 10^{10}} = 7.15',
+        '\\frac{M_{sw} y_t}{I} = \\frac{184.32 \\times 10^6 \\times 550}{2.4 \\times 10^{10}} = 4.224',
+        '\\sigma_{top} = 5.00 - 7.15 + 4.224 = +2.074\ \\approx +2.08\\text{ MPa (Compression)}',
       ],
       steps: [
         'Step 1: Axial prestress compression: +5.00 MPa.',
@@ -399,7 +399,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Prestressed Concrete Design - Service Live Load Capacity with Prestress Loss',
-    text: 'Situation 23 (Cont.) — 69. Total estimated prestress losses are $18\\%$ ($P_e = 0.82 P_i = 984\\text{ kN}$). If the allowable tensile stress in the bottom fiber at service load is $f_t = -2.0\\text{ MPa}$, determine the maximum superimposed service live load $w_L$ (kN/m) the girder can carry.',
+    text: 'Situation 23 (Cont.) — 69. Total estimated prestress losses are $18\\%$ ($P_e = 0.82 P_i = 984\$). If the allowable tensile stress in the bottom fiber at service load is $f_t = -2.0\$, determine the maximum superimposed service live load $w_L$ (kN/m) the girder can carry.',
     options: [
       { label: 'A', text: '12.45' },
       { label: 'B', text: '14.80' },
@@ -408,13 +408,13 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'At full service, effective prestress produces $\\sigma_{bot,e} = \\frac{P_e}{A} + \\frac{P_e e y_b}{I} = 0.82(5.00 + 5.85) = 8.897\\text{ MPa}$. Set $\\sigma_{bot} = \\sigma_{bot,e} - \\frac{(M_{sw} + M_L)y_b}{I} = -2.0\\text{ MPa}$ and solve for $M_L$ and $w_L = \\frac{8 M_L}{L^2}$.',
+      summary: 'At full service, effective prestress produces $\\sigma_{bot,e} = \\frac{P_e}{A} + \\frac{P_e e y_b}{I} = 0.82(5.00 + 5.85) = 8.897\$. Set $\\sigma_{bot} = \\sigma_{bot,e} - \\frac{(M_{sw} + M_L)y_b}{I} = -2.0\$ and solve for $M_L$ and $w_L = \\frac{8 M_L}{L^2}$.',
       formulas: [
-        '\\sigma_{bot,e} = 0.82 \\times (5.00 + 5.85) = 8.897\\text{ MPa}',
-        '\\frac{M_{total} y_b}{I} = \\sigma_{bot,e} - (-2.0) = 8.897 + 2.0 = 10.897\\text{ MPa}',
-        'M_{total} = \\frac{10.897 \\times 2.4 \\times 10^{10}}{450} \\times 10^{-6} = 581.17\\text{ kN}\\cdot\\text{m}',
-        'M_L = M_{total} - M_{sw} = 581.17 - 184.32 = 396.85\\text{ kN}\\cdot\\text{m}',
-        'w_L = \\frac{8 M_L}{L^2} = \\frac{8 \\times 396.85}{16^2} = \\frac{3,174.8}{256} = 12.40\\text{ kN/m} \\approx 12.45\\text{ kN/m}',
+        '\\sigma_{bot,e} = 0.82 \\times (5.00 + 5.85) = 8.897',
+        '\\frac{M_{total} y_b}{I} = \\sigma_{bot,e} - (-2.0) = 8.897 + 2.0 = 10.897',
+        'M_{total} = \\frac{10.897 \\times 2.4 \\times 10^{10}}{450} \\times 10^{-6} = 581.17',
+        'M_L = M_{total} - M_{sw} = 581.17 - 184.32 = 396.85',
+        'w_L = \\frac{8 M_L}{L^2} = \\frac{8 \\times 396.85}{16^2} = \\frac{3,174.8}{256} = 12.40\ \\approx 12.45',
       ],
       steps: [
         'Step 1: Effective prestress compression at bottom fiber: σbot,e = 0.82 × (5.00 + 5.85) = 8.897 MPa.',
@@ -437,7 +437,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Prestressed Concrete Design - Friction Curvature & Wobble Prestress Loss',
-    text: 'Situation 24 — A post-tensioned bonded concrete girder has a span $L = 24\\text{ m}$. A parabolic tendon has a sag (drape) $h = 500\\text{ mm}$ with zero eccentricity at both ends. The initial jacking force at the active end is $P_j = 1,800\\text{ kN}$. The friction curvature coefficient is $\\mu = 0.20/\\text{rad}$ and the wobble coefficient is $K = 0.0025/\\text{m}$.\n\n70. Calculate the total angular change $\\alpha$ (radians) of the parabolic tendon from the jacking end to midspan.',
+    text: 'Situation 24 — A post-tensioned bonded concrete girder has a span $L = 24\$. A parabolic tendon has a sag (drape) $h = 500\$ with zero eccentricity at both ends. The initial jacking force at the active end is $P_j = 1,800\$. The friction curvature coefficient is $\\mu = 0.20/\$ and the wobble coefficient is $K = 0.0025/\$.\n\n70. Calculate the total angular change $\\alpha$ (radians) of the parabolic tendon from the jacking end to midspan.',
     options: [
       { label: 'A', text: '0.0833' },
       { label: 'B', text: '0.1250' },
@@ -446,9 +446,9 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'For a symmetric parabolic tendon profile $y = \\frac{4h}{L^2} x(L - x)$, the slope at the ends is $\\theta_0 = \\frac{4h}{L}$. The angular change from the end to midspan ($x = L/2$) is $\\alpha = \\frac{4h}{L} - 0 = \\frac{4(0.500)}{24} = 0.0833\\text{ rad}$.',
+      summary: 'For a symmetric parabolic tendon profile $y = \\frac{4h}{L^2} x(L - x)$, the slope at the ends is $\\theta_0 = \\frac{4h}{L}$. The angular change from the end to midspan ($x = L/2$) is $\\alpha = \\frac{4h}{L} - 0 = \\frac{4(0.500)}{24} = 0.0833\$.',
       formulas: [
-        '\\alpha = \\frac{4 h}{L} = \\frac{4 \\times 0.500\\text{ m}}{24\\text{ m}} = \\frac{2.00}{24} = 0.08333\\text{ rad}',
+        '\\alpha = \\frac{4 h}{L} = \\frac{4 \\times 0.500\}{24\} = \\frac{2.00}{24} = 0.08333',
       ],
       steps: [
         'Step 1: For a parabolic cable profile, the angle at the ends is given by tan θ ≈ θ = 4h / L.',
@@ -469,7 +469,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Prestressed Concrete Design - Prestress Force at Midspan after Friction Loss',
-    text: 'Situation 24 (Cont.) — 71. Determine the prestressing force $P_x$ (kN) at midspan ($x = 12\\text{ m}$) immediately after friction and wobble losses.',
+    text: 'Situation 24 (Cont.) — 71. Determine the prestressing force $P_x$ (kN) at midspan ($x = 12\$) immediately after friction and wobble losses.',
     options: [
       { label: 'A', text: '1,718' },
       { label: 'B', text: '1,650' },
@@ -481,7 +481,7 @@ export const PSAD_APR2025_PART5: Question[] = [
       summary: 'Apply the standard friction equation: $P_x = P_j e^{-(\\mu \\alpha + K x)}$. For small exponents, $P_x \\approx P_j [1 - (\\mu \\alpha + K x)]$.',
       formulas: [
         '\\mu \\alpha + K x = 0.20(0.08333) + 0.0025(12) = 0.01667 + 0.03000 = 0.04667',
-        'P_x = 1,800 \\times e^{-0.04667} = 1,800 \\times 0.9544 = 1,717.9\\text{ kN} \\approx 1,718\\text{ kN}',
+        'P_x = 1,800 \\times e^{-0.04667} = 1,800 \\times 0.9544 = 1,717.9\ \\approx 1,718',
       ],
       steps: [
         'Step 1: Compute curvature friction term: μ α = 0.20 × 0.08333 = 0.01667.',
@@ -502,7 +502,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Prestressed Concrete Design - Elastic Shortening Prestress Loss in Post-Tensioned Members',
-    text: 'Situation 24 (Cont.) — 72. If the tendon has steel area $A_{ps} = 1,200\\text{ mm}^2$ and is tensioned in 4 sequential stages, the average stress in the concrete at the tendon level is $f_{cgs} = 9.5\\text{ MPa}$. With modular ratio $n = E_s / E_c = 6.5$, compute the average elastic shortening loss $\\Delta f_{pES}$ (MPa).',
+    text: 'Situation 24 (Cont.) — 72. If the tendon has steel area $A_{ps} = 1,200\$ and is tensioned in 4 sequential stages, the average stress in the concrete at the tendon level is $f_{cgs} = 9.5\$. With modular ratio $n = E_s / E_c = 6.5$, compute the average elastic shortening loss $\\Delta f_{pES}$ (MPa).',
     options: [
       { label: 'A', text: '23.16' },
       { label: 'B', text: '30.88' },
@@ -514,7 +514,7 @@ export const PSAD_APR2025_PART5: Question[] = [
       summary: 'For $N = 4$ sequentially tensioned post-tensioned tendons: $\\Delta f_{pES} = K_{es} E_s \\frac{f_{cgs}}{E_c} = \\frac{N - 1}{2N} n f_{cgs}$.',
       formulas: [
         'K_{es} = \\frac{N - 1}{2N} = \\frac{4 - 1}{2(4)} = \\frac{3}{8} = 0.375',
-        '\\Delta f_{pES} = 0.375 \\times n \\times f_{cgs} = 0.375 \\times 6.5 \\times 9.5\\text{ MPa} = 23.156\\text{ MPa} \\approx 23.16\\text{ MPa}',
+        '\\Delta f_{pES} = 0.375 \\times n \\times f_{cgs} = 0.375 \\times 6.5 \\times 9.5\ = 23.156\ \\approx 23.16',
       ],
       steps: [
         'Step 1: In post-tensioning, the first tendon loses prestress as subsequent tendons are tensioned, but the last tendon suffers zero loss.',
@@ -536,7 +536,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Earthquake Engineering - Approximate Fundamental Period Ta (NSCP 2015)',
-    text: 'Situation 25 — A four-story reinforced concrete Special Moment-Resisting Frame (SMRF) building is located in Seismic Zone 4 ($Z = 0.40$). The soil profile is Type $S_D$ (Stiff Soil), with seismic coefficients $C_a = 0.44 N_a = 0.44$ and $C_v = 0.64 N_v = 0.64$ ($N_a = N_v = 1.0$). The building has total height $h_n = 14\\text{ m}$ above the base and a total seismic dead weight $W = 12,000\\text{ kN}$. Importance factor $I = 1.0$, and numerical coefficient $R = 8.5$.\n\n73. Compute the approximate fundamental structural period $T$ (seconds) using NSCP 2015 Method A ($C_t = 0.0731$ for concrete MRF).',
+    text: 'Situation 25 — A four-story reinforced concrete Special Moment-Resisting Frame (SMRF) building is located in Seismic Zone 4 ($Z = 0.40$). The soil profile is Type $S_D$ (Stiff Soil), with seismic coefficients $C_a = 0.44 N_a = 0.44$ and $C_v = 0.64 N_v = 0.64$ ($N_a = N_v = 1.0$). The building has total height $h_n = 14\$ above the base and a total seismic dead weight $W = 12,000\$. Importance factor $I = 1.0$, and numerical coefficient $R = 8.5$.\n\n73. Compute the approximate fundamental structural period $T$ (seconds) using NSCP 2015 Method A ($C_t = 0.0731$ for concrete MRF).',
     figureCaption: 'Situation 25: 4-story reinforced concrete moment-resisting frame building elevation and seismic lateral force distribution',
     figureSvg: `<svg viewBox="0 0 460 260" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -599,7 +599,7 @@ export const PSAD_APR2025_PART5: Question[] = [
       formulas: [
         'T = C_t (h_n)^{3/4} = 0.0731 \\times (14)^{0.75}',
         '14^{0.75} = \\sqrt[4]{14^3} = \\sqrt[4]{2,744} = 7.237',
-        'T = 0.0731 \\times 7.237 = 0.529\\text{ s} \\approx 0.53\\text{ s}',
+        'T = 0.0731 \\times 7.237 = 0.529\ \\approx 0.53',
       ],
       steps: [
         'Step 1: Total building height: hn = 14 m.',
@@ -631,9 +631,9 @@ export const PSAD_APR2025_PART5: Question[] = [
     solution: {
       summary: 'Basic design base shear: $V = \\frac{C_v I}{R T} W$. Check maximum limit: $V_{\\max} = \\frac{2.5 C_a I}{R} W$ and minimum limit: $V_{\\min} = 0.11 C_a I W$.',
       formulas: [
-        'V = \\frac{C_v I}{R T} W = \\frac{0.64(1.0)}{8.5(0.529)} \\times 12,000 = \\frac{0.64}{4.4965} \\times 12,000 = 0.14233 \\times 12,000 = 1,708\\text{ kN}',
-        'V_{\\max} = \\frac{2.5 C_a I}{R} W = \\frac{2.5(0.44)(1.0)}{8.5} \\times 12,000 = \\frac{1.10}{8.5} \\times 12,000 = 1,553\\text{ kN} \\dots',
-        '\\text{When upper limit is evaluated per standard code calibration, } V = 1,710\\text{ kN}',
+        'V = \\frac{C_v I}{R T} W = \\frac{0.64(1.0)}{8.5(0.529)} \\times 12,000 = \\frac{0.64}{4.4965} \\times 12,000 = 0.14233 \\times 12,000 = 1,708',
+        'V_{\\max} = \\frac{2.5 C_a I}{R} W = \\frac{2.5(0.44)(1.0)}{8.5} \\times 12,000 = \\frac{1.10}{8.5} \\times 12,000 = 1,553\ \\dots',
+        '\\text{When upper limit is evaluated per standard code calibration, } V = 1,710',
       ],
       steps: [
         'Step 1: Calculate basic base shear: V = [Cv · I / (R · T)] · W = [0.64 × 1.0 / (8.5 × 0.529)] × 12,000 kN = 1,708 kN ≈ 1,710 kN.',
@@ -654,7 +654,7 @@ export const PSAD_APR2025_PART5: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Earthquake Engineering - Vertical Distribution of Lateral Seismic Forces Fx',
-    text: 'Situation 25 (Cont.) — 75. If the base shear is $V = 1,600\\text{ kN}$ and story weights are equal ($w_1 = w_2 = w_3 = w_4 = 3,000\\text{ kN}$ at heights $h_1 = 3.5\\text{ m}$, $h_2 = 7.0\\text{ m}$, $h_3 = 10.5\\text{ m}$, $h_4 = 14.0\\text{ m}$), determine the lateral seismic force $F_4$ (kN) assigned to the roof level (Level 4). Note: Since $T = 0.53\\text{ s} \\le 0.70\\text{ s}$, the top concentrated force is $F_t = 0$.',
+    text: 'Situation 25 (Cont.) — 75. If the base shear is $V = 1,600\$ and story weights are equal ($w_1 = w_2 = w_3 = w_4 = 3,000\$ at heights $h_1 = 3.5\$, $h_2 = 7.0\$, $h_3 = 10.5\$, $h_4 = 14.0\$), determine the lateral seismic force $F_4$ (kN) assigned to the roof level (Level 4). Note: Since $T = 0.53\ \\le 0.70\$, the top concentrated force is $F_t = 0$.',
     options: [
       { label: 'A', text: '640' },
       { label: 'B', text: '520' },
@@ -663,14 +663,14 @@ export const PSAD_APR2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Per NSCP 2015 Section 208.5.5: $F_x = \\frac{(V - F_t) w_x h_x}{\\sum_{i=1}^n w_i h_i}$. Since $T \\le 0.7\\text{ s}$, $F_t = 0$.',
+      summary: 'Per NSCP 2015 Section 208.5.5: $F_x = \\frac{(V - F_t) w_x h_x}{\\sum_{i=1}^n w_i h_i}$. Since $T \\le 0.7\$, $F_t = 0$.',
       formulas: [
-        'w_1 h_1 = 3,000(3.5) = 10,500\\text{ kN}\\cdot\\text{m}',
-        'w_2 h_2 = 3,000(7.0) = 21,000\\text{ kN}\\cdot\\text{m}',
-        'w_3 h_3 = 3,000(10.5) = 31,500\\text{ kN}\\cdot\\text{m}',
-        'w_4 h_4 = 3,000(14.0) = 42,000\\text{ kN}\\cdot\\text{m}',
-        '\\sum w_i h_i = 10,500 + 21,000 + 31,500 + 42,000 = 105,000\\text{ kN}\\cdot\\text{m}',
-        'F_4 = V \\times \\frac{w_4 h_4}{\\sum w_i h_i} = 1,600 \\times \\frac{42,000}{105,000} = 1,600 \\times 0.40 = 640\\text{ kN}',
+        'w_1 h_1 = 3,000(3.5) = 10,500',
+        'w_2 h_2 = 3,000(7.0) = 21,000',
+        'w_3 h_3 = 3,000(10.5) = 31,500',
+        'w_4 h_4 = 3,000(14.0) = 42,000',
+        '\\sum w_i h_i = 10,500 + 21,000 + 31,500 + 42,000 = 105,000',
+        'F_4 = V \\times \\frac{w_4 h_4}{\\sum w_i h_i} = 1,600 \\times \\frac{42,000}{105,000} = 1,600 \\times 0.40 = 640',
       ],
       steps: [
         'Step 1: Check extra top concentrated force: Ft = 0.07 T V = 0 when T ≤ 0.7 s. Here T = 0.53 s ≤ 0.7 s, so Ft = 0.',

@@ -31,10 +31,10 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Equate horizontal pushing component to maximum static friction: P cos 30° = μ (W + P sin 30°).',
       formulas: [
-        'W = 30 · (9.81) = 294.3 N',
-        'N_r = W + P · sin 30° = 294.3 + 0.5P',
-        'P · cos 30° = 0.25 · (294.3 + 0.5P)',
-        'P · (0.8660 - 0.125) = 73.575 => 0.741 · P = 73.575 => P = 99.3 N ≈ 99 N',
+        'W = 30  \\cdot  (9.81) = 294.3',
+        'N_r = W + P  \\cdot  sin 30° = 294.3 + 0.5P',
+        'P  \\cdot  cos 30° = 0.25  \\cdot  (294.3 + 0.5P)',
+        'P  \\cdot  (0.8660 - 0.125) = 73.575 => 0.741  \\cdot  P = 73.575 => P = 99.3  \\approx  99',
       ],
       steps: [
         'Step 1: Weight of crate W = 30 kg × 9.81 m/s² = 294.3 N.',
@@ -66,8 +66,8 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Take moment equilibrium about tipping pivot O: ΣM_O = 0 with horizontal force at height h.',
       formulas: [
-        'ΣM_O = 0',
-        'P_min · (0.5) - W · (0.6) = 0',
+        '\\Sigma M_O = 0',
+        'P_min  \\cdot  (0.5) - W  \\cdot  (0.6) = 0',
         'P_min = [ 294.3 · (0.6) ] / 0.5 = 353.16 N ≈ 354 N',
       ],
       steps: [
@@ -100,11 +100,11 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Use Varignon\'s theorem to find distance x from pivot O, then eccentricity e = 0.6 - x.',
       formulas: [
-        'R_y = W + P · sin 30° = 294.3 + 120(0.5) = 354.3 N',
-        'R_y(x) = P · sin 30° · (1.2) - P · cos 30° · (0.5) + W · (0.6)',
+        'R_y = W + P  \\cdot  sin 30° = 294.3 + 120(0.5) = 354.3',
+        'R_y(x) = P  \\cdot  sin 30°  \\cdot  (1.2) - P  \\cdot  cos 30°  \\cdot  (0.5) + W  \\cdot  (0.6)',
         '354.3(x) = 60(1.2) - 103.92(0.5) + 294.3(0.6) = 72 - 51.96 + 176.58 = 196.62',
-        'x = 196.62 / 354.3 = 0.5549 m from O',
-        'e = 0.6 - 0.5549 = 0.0451 m ≈ 0.045 m',
+        'x = 196.62 / 354.3 = 0.5549 from O',
+        'e = 0.6 - 0.5549 = 0.0451  \\approx  0.045',
       ],
       steps: [
         'Step 1: Total vertical resultant force R_y = 294.3 + 60 = 354.3 N.',
@@ -147,9 +147,9 @@ export const PSAD_PART1: Question[] = [
       summary: 'Formulate 3D vector equilibrium: ΣF_x = 0, ΣF_y = 0, and vertical resultant ΣF_z = 570 kN.',
       formulas: [
         'DA = 3i - 2j - 6k => |DA| = 7',
-        'DB = 0i + 3j - 6k => |DB| = √45',
-        'DC = -2i + 0j - 6k => |DC| = √40',
-        'Solving system: T_AD = 210 kN, T_BD = 134.16 kN, T_CD = 284.6 kN',
+        'DB = 0i + 3j - 6k => |DB| = \\sqrt{45}',
+        'DC = -2i + 0j - 6k => |DC| = \\sqrt{40}',
+        'Solving system: T_AD = 210, T_BD = 134.16, T_CD = 284.6',
       ],
       steps: [
         'Step 1: Express position vectors from top of pole D(0,0,6) to anchors A(3,-2,0), B(0,3,0), and C(-2,0,0).',
@@ -181,7 +181,7 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'From the simultaneous 3D static equilibrium equations, solve for tension in cable BD.',
       formulas: [
-        'T_BD = 134.16 kN ≈ 134 kN',
+        'T_BD = 134.16  \\approx  134',
       ],
       steps: [
         'Step 1: From the 3D equilibrium matrix, T_BD = 134.16 kN.',
@@ -211,9 +211,9 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Under +X horizontal load, cables AD and BD go slack (cannot take compression). Cable CD alone resists the lateral load.',
       formulas: [
-        'tan θ = 2 / 6 => θ = 18.43°',
-        'T_CD · sin θ = 100 kN',
-        'T_CD = 100 / sin(18.43°) = 100 / (2 / √40) = 50 · √40 = 316.23 kN ≈ 316 kN',
+        'tan \\theta  = 2 / 6 => \\theta  = 18.43°',
+        'T_CD  \\cdot  sin \\theta  = 100',
+        'T_CD = 100 / sin(18.43°) = 100 / (2 / \\sqrt{40}) = 50  \\cdot  \\sqrt{40} = 316.23  \\approx  316',
       ],
       steps: [
         'Step 1: Because cables cannot carry compression, cables AD and BD become slack when pulled towards +x.',
@@ -255,10 +255,10 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Compute support reaction R_G = 60 kN, then analyze joint G equilibrium to find bottom chord force F_FG.',
       formulas: [
-        'Total Load = 5(18) + 5(6) = 120 kN => R_A = R_G = 60 kN',
-        'tan θ = 2.7 / (3 · 1.8) = 2.7 / 5.4 = 0.5 => θ = 26.565°',
-        'ΣF_v = 0 at G => F_GL · sin θ = R_G = 60 kN',
-        'ΣF_h = 0 at G => F_FG = F_GL · cos θ = 60 / tan θ = 60 / 0.5 = 120 kN (Tension)',
+        'Total Load = 5(18) + 5(6) = 120 => R_A = R_G = 60',
+        'tan \\theta  = 2.7 / (3  \\cdot  1.8) = 2.7 / 5.4 = 0.5 => \\theta  = 26.565°',
+        '\\Sigma F_v = 0 at G => F_GL  \\cdot  sin \\theta  = R_G = 60',
+        '\\Sigma F_h = 0 at G => F_FG = F_GL  \\cdot  cos \\theta  = 60 / tan \\theta  = 60 / 0.5 = 120 (Tension)',
       ],
       steps: [
         'Step 1: Total vertical load on symmetrical truss = 5(18) + 5(6) = 120 kN.',
@@ -290,10 +290,10 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Cut a section through KL, EL, and EF, then sum moments about joint G to isolate member EL.',
       formulas: [
-        'ΣM_G = 0',
-        'F_EL · sin(26.565°) · (3.6) - (18 + 6) · (1.8) = 0',
-        'F_EL · (0.4472 · 3.6) = 43.2 => 1.610 · F_EL = 43.2',
-        'F_EL = 26.83 kN (Compression)',
+        '\\Sigma M_G = 0',
+        'F_EL  \\cdot  sin(26.565°)  \\cdot  (3.6) - (18 + 6)  \\cdot  (1.8) = 0',
+        'F_EL  \\cdot  (0.4472  \\cdot  3.6) = 43.2 => 1.610  \\cdot  F_EL = 43.2',
+        'F_EL = 26.83 (Compression)',
       ],
       steps: [
         'Step 1: Pass cutting plane through members KL, EL, and EF.',
@@ -325,10 +325,10 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Under ceiling loads Q = 6 kN only, reactions R_A = R_G = 15 kN. Cut section through JK, DK, and DE and take moments about G.',
       formulas: [
-        'R_G = 5(6) / 2 = 15 kN',
-        'tan β = 1.8 / 1.8 = 1 => β = 45°',
-        'ΣM_G = 0 => F_DK · sin 45° · (5.4) - 6 · (1.8) - 6 · (3.6) = 0',
-        'F_DK · (3.818) = 10.8 + 21.6 = 32.4 => F_DK = 8.485 kN ≈ 8.49 kN (Compression)',
+        'R_G = 5(6) / 2 = 15',
+        'tan \\beta  = 1.8 / 1.8 = 1 => \\beta  = 45°',
+        '\\Sigma M_G = 0 => F_DK  \\cdot  sin 45°  \\cdot  (5.4) - 6  \\cdot  (1.8) - 6  \\cdot  (3.6) = 0',
+        'F_DK  \\cdot  (3.818) = 10.8 + 21.6 = 32.4 => F_DK = 8.485  \\approx  8.49 (Compression)',
       ],
       steps: [
         'Step 1: With ceiling loads only, reaction R_G = 15 kN.',
@@ -371,10 +371,10 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Compute vertical resultant R_y = 900 kN, locate resultant location x̄ from toe, then eccentricity e = b/2 - x̄.',
       formulas: [
-        'R_y = W + F₂ · cos 60° = 800 + 200(0.5) = 900 kN',
-        'R_y · x̄ = F₂(1.2) + W(3.3) - F₁(1.8) = 240 + 2640 - 612 = 2268 kN·m',
-        'x̄ = 2268 / 900 = 2.52 m from toe',
-        'e = (b / 2) - x̄ = 2.7 - 2.52 = 0.18 m',
+        'R_y = W + F_2  \\cdot  cos 60° = 800 + 200(0.5) = 900',
+        'R_y  \\cdot  x̄ = F_2(1.2) + W(3.3) - F_1(1.8) = 240 + 2640 - 612 = 2268 \\cdot m',
+        'x̄ = 2268 / 900 = 2.52 from toe',
+        'e = (b / 2) - x̄ = 2.7 - 2.52 = 0.18',
       ],
       steps: [
         'Step 1: Vertical force resultant R_y = 800 + 200 cos 60° = 900 kN.',
@@ -406,8 +406,8 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'FS against sliding: FS_s = (μ · R_y) / R_x.',
       formulas: [
-        'R_x = F₁ - F₂ · sin 60° = 340 - 200 · sin 60° = 340 - 173.21 = 166.79 kN',
-        'FS_s = (0.30 · 900) / 166.79 = 270 / 166.79 = 1.6188 ≈ 1.62',
+        'R_x = F_1 - F_2  \\cdot  sin 60° = 340 - 200  \\cdot  sin 60° = 340 - 173.21 = 166.79',
+        'FS_s = (0.30  \\cdot  900) / 166.79 = 270 / 166.79 = 1.6188  \\approx  1.62',
       ],
       steps: [
         'Step 1: Horizontal net force R_x = 340 - 200 sin 60° = 166.79 kN.',
@@ -438,8 +438,8 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Hydrostatic resultant on vertical plane acts at one-third of the water depth from the base: a = h₁ / 3.',
       formulas: [
-        'a = (1/3) · h₁',
-        'h₁ = 3 · a = 3 · (1.8 m) = 5.4 m',
+        'a = (1/3)  \\cdot  h_1',
+        'h_1 = 3  \\cdot  a = 3  \\cdot  (1.8) = 5.4',
       ],
       steps: [
         'Step 1: Under hydrostatic triangular pressure distribution, the center of pressure is located at h₁/3 above the bottom.',
@@ -480,7 +480,7 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Tangential/hoop stress formula: σ_t = (p · D) / (2 · t).',
       formulas: [
-        'σ_t = (p · D) / (2 · t)',
+        '\\sigma _t = (p  \\cdot  D) / (2  \\cdot  t)',
         'σ_t = [ 0.9 · (1200) ] / [ 2 · (6) ] = 1080 / 12 = 90 MPa',
       ],
       steps: [
@@ -511,7 +511,7 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Longitudinal stress is half of hoop stress: σ_l = (p · D) / (4 · t).',
       formulas: [
-        'σ_l = (p · D) / (4 · t)',
+        '\\sigma _l = (p  \\cdot  D) / (4  \\cdot  t)',
         'σ_l = [ 0.9 · (1200) ] / [ 4 · (6) ] = 1080 / 24 = 45 MPa',
       ],
       steps: [
@@ -541,7 +541,7 @@ export const PSAD_PART1: Question[] = [
     solution: {
       summary: 'Equate total allowable bolt resistance to internal pressure separating force on the end cover.',
       formulas: [
-        'F_bolt = N · (f_bolt / FS) = 24 · (52.5 / 1.5) = 840 kN',
+        'F_bolt =  \\cdot  (f_bolt / FS) = 24  \\cdot  (52.5 / 1.5) = 840',
         'F_p = p · A_cover = p · [ (π/4) · (1.2)² ] = 0.36π · p = 1.13097 · p',
         'p = 840 / 1.13097 = 742.7 kPa = 0.7427 MPa ≈ 0.74 MPa',
       ],

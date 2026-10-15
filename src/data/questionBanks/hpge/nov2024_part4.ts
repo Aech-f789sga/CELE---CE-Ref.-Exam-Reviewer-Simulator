@@ -21,7 +21,7 @@ export const HPGE_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Compute in situ dry unit weight in the borrow pit using the phase formula γ_dry = Gs·γw / (1 + e).',
       formulas: [
-        '\\gamma_{\\text{dry,borrow}} = \\frac{G_s \\gamma_w}{1 + e} = \\frac{2.7(9.81)}{1 + 0.69} = \\frac{26.487}{1.69} = 15.673\\text{ kN/m}^3 \\approx 15.67\\text{ kN/m}^3',
+        '\\gamma_{\\text{dry,borrow}} = \\frac{G_s \\gamma_w}{1 + e} = \\frac{2.7(9.81)}{1 + 0.69} = \\frac{26.487}{1.69} = 15.673\ \\approx 15.67',
       ],
       steps: [
         'Step 1: Identify borrow pit properties: Gs = 2.7, void ratio e = 0.69.',
@@ -53,9 +53,9 @@ export const HPGE_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Find the total weight of dry solids needed for the compacted embankment, then compute the required borrow pit volume and divide by truck capacity (10 m³).',
       formulas: [
-        'V_e = 1000 \\times 10 \\times 1.5 = 15,000\\text{ m}^3',
-        'W_s = \\gamma_{\\text{dry,emb}} \\times V_e = 18 \\times 15,000 = 270,000\\text{ kN}',
-        'V_{\\text{borrow}} = \\frac{W_s}{\\gamma_{\\text{dry,borrow}}} = \\frac{270,000}{15.673} = 17,227.32\\text{ m}^3',
+        'V_e = 1000 \\times 10 \\times 1.5 = 15,000',
+        'W_s = \\gamma_{\\text{dry,emb}} \\times V_e = 18 \\times 15,000 = 270,000',
+        'V_{\\text{borrow}} = \\frac{W_s}{\\gamma_{\\text{dry,borrow}}} = \\frac{270,000}{15.673} = 17,227.32',
         'N_{\\text{truck}} = \\frac{17,227.32}{10} = 1722.73 \\approx 1723\\text{ trucks}',
       ],
       steps: [
@@ -122,9 +122,9 @@ export const HPGE_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Before lowering the water table, both sand (15.2 m) and clay (to mid-height = 3.8 m) are fully submerged. Compute total vertical stress p_T, pore water pressure p_w = γw · 19.0, and effective stress p_e = p_T - p_w.',
       formulas: [
-        'p_T = \\gamma_{\\text{sat,sand}}(15.2) + \\gamma_{\\text{sat,clay}}(3.8) = 21.2(15.2) + 18.8(3.8) = 322.24 + 71.44 = 393.68\\text{ kPa}',
-        'p_w = \\gamma_w (15.2 + 3.8) = 9.81(19.0) = 186.39\\text{ kPa}',
-        'p_e = p_T - p_w = 393.68 - 186.39 = 207.29\\text{ kPa}',
+        'p_T = \\gamma_{\\text{sat,sand}}(15.2) + \\gamma_{\\text{sat,clay}}(3.8) = 21.2(15.2) + 18.8(3.8) = 322.24 + 71.44 = 393.68',
+        'p_w = \\gamma_w (15.2 + 3.8) = 9.81(19.0) = 186.39',
+        'p_e = p_T - p_w = 393.68 - 186.39 = 207.29',
       ],
       steps: [
         'Step 1: Total depth to mid-height of clay: 15.2 m + 7.6/2 m = 19.0 m.',
@@ -157,10 +157,10 @@ export const HPGE_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'With the GWT lowered by 7.6 m, the top 7.6 m of sand has degree of saturation S = 20%. The moist unit weight of this layer is γ_m = γ_dry + S(γ_sat - γ_dry) = 18.8 kN/m³. Compute new total stress and pore pressure.',
       formulas: [
-        '\\gamma_{m,\\text{sand}} = 18.2 + 0.20(21.2 - 18.2) = 18.8\\text{ kN/m}^3',
-        'p_T = 18.8(7.6) + 21.2(7.6) + 18.8(3.8) = 142.88 + 161.12 + 71.44 = 375.44\\text{ kPa}',
-        'p_w = 9.81(7.6 + 3.8) = 9.81(11.4) = 111.83\\text{ kPa}',
-        'p_e = p_T - p_w = 375.44 - 111.83 = 263.61\\text{ kPa}',
+        '\\gamma_{m,\\text{sand}} = 18.2 + 0.20(21.2 - 18.2) = 18.8',
+        'p_T = 18.8(7.6) + 21.2(7.6) + 18.8(3.8) = 142.88 + 161.12 + 71.44 = 375.44',
+        'p_w = 9.81(7.6 + 3.8) = 9.81(11.4) = 111.83',
+        'p_e = p_T - p_w = 375.44 - 111.83 = 263.61',
       ],
       steps: [
         'Step 1: Moist unit weight of upper unsaturated sand: γ_m = 18.2 + 0.20(21.2 - 18.2) = 18.8 kN/m³.',
@@ -193,9 +193,9 @@ export const HPGE_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'When the water table drops to the top of the clay layer (depth 15.2 m), the entire 15.2 m sand layer has γ_m = 18.8 kN/m³. Pore water pressure at mid-clay is due only to the 3.8 m submerged clay column.',
       formulas: [
-        'p_T = 18.8(15.2) + 18.8(3.8) = 285.76 + 71.44 = 357.20\\text{ kPa}',
-        'p_w = 9.81(3.8) = 37.278\\text{ kPa}',
-        'p_e = p_T - p_w = 357.20 - 37.278 = 319.922\\text{ kPa} \\approx 319.92\\text{ kPa}',
+        'p_T = 18.8(15.2) + 18.8(3.8) = 285.76 + 71.44 = 357.20',
+        'p_w = 9.81(3.8) = 37.278',
+        'p_e = p_T - p_w = 357.20 - 37.278 = 319.922\ \\approx 319.92',
       ],
       steps: [
         'Step 1: Entire sand layer (15.2 m) is unsaturated with moist unit weight γ_m = 18.8 kN/m³.',

@@ -113,7 +113,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - Pulley Equilibrium & Mechanical Advantage',
-    text: 'Situation 2 — Refer to the system of pulleys shown.\n\n4. For the system of pulleys in Figure 1, if $W_1 = 500\\text{ N}$, what is the value of $W_2$ (N) to maintain equilibrium? Neglect the weight of the pulleys.',
+    text: 'Situation 2 — Refer to the system of pulleys shown.\n\n4. For the system of pulleys in Figure 1, if $W_1 = 500\$, what is the value of $W_2$ (N) to maintain equilibrium? Neglect the weight of the pulleys.',
     figureCaption: 'Situation 2 - Figure 1 & Figure 2: Compound pulley systems in equilibrium',
     figureSvg: `<svg viewBox="0 0 460 300" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -212,7 +212,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - Pulley Equilibrium with Self-Weight',
-    text: 'Situation 2 — 5. For the system of pulleys in Figure 1, $W_1 = 750\\text{ N}$. If each pulley weighs 50 N, what is the tension (N) in the pulley between A and B? The system is in equilibrium.',
+    text: 'Situation 2 — 5. For the system of pulleys in Figure 1, $W_1 = 750\$. If each pulley weighs 50 N, what is the tension (N) in the pulley between A and B? The system is in equilibrium.',
     options: [
       { label: 'A', text: '425' },
       { label: 'B', text: '675' },
@@ -225,8 +225,8 @@ export const PSAD_APR2025_PART1: Question[] = [
       formulas: [
         '2T + T_2 = W_1 + 50 = 800',
         'T_2 = 2T + 50',
-        '800 - 2T = 2T + 50 \\implies 4T = 750 \\implies T = 187.5\\text{ N}',
-        'T_2 = 2(187.5) + 50 = 425\\text{ N}',
+        '800 - 2T = 2T + 50 \\implies 4T = 750 \\implies T = 187.5',
+        'T_2 = 2(187.5) + 50 = 425',
       ],
       steps: [
         'Step 1: Consider the vertical equilibrium of pulley C (weight 50 N) supporting W1 = 750 N: Total downward load = 750 + 50 = 800 N.',
@@ -249,7 +249,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - Pulley Block System Tension',
-    text: 'Situation 2 — 6. For the system of pulleys in Figure 2, if $W = 900\\text{ N}$, what is the tension (N) in rope 4?',
+    text: 'Situation 2 — 6. For the system of pulleys in Figure 2, if $W = 900\$, what is the tension (N) in rope 4?',
     options: [
       { label: 'A', text: '275' },
       { label: 'B', text: '375' },
@@ -260,8 +260,8 @@ export const PSAD_APR2025_PART1: Question[] = [
     solution: {
       summary: 'Pulley B balances weight W = 900 N with two supporting ropes carrying tension T = 450 N. Pulley A divides tension T equally between ropes 3 and 4, giving T4 = T / 2 = 225 N.',
       formulas: [
-        '2T = W = 900 \\implies T = 450\\text{ N}',
-        'T_4 = T_3 = \\frac{T}{2} = \\frac{450}{2} = 225\\text{ N}',
+        '2T = W = 900 \\implies T = 450',
+        'T_4 = T_3 = \\frac{T}{2} = \\frac{450}{2} = 225',
       ],
       steps: [
         'Step 1: Consider movable pulley B: It directly supports suspended weight W = 900 N.',
@@ -283,7 +283,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - Boom Equilibrium & Cable Tension',
-    text: 'Situation 3 — The rigid boom $BCD$ is used to lift a load $W = 60\\text{ kN}$ with the help of flexible cables $AC$ and $AD$, as shown in the figure. Neglect the weight of the boom and the friction in the pulley.\nGiven: $L_1 = L_2 = 4\\text{ m}$, $H = 6\\text{ m}$\n\n7. Determine the tension (kN) in cable $AC$.',
+    text: 'Situation 3 — The rigid boom $BCD$ is used to lift a load $W = 60\$ with the help of flexible cables $AC$ and $AD$, as shown in the figure. Neglect the weight of the boom and the friction in the pulley.\nGiven: $L_1 = L_2 = 4\$, $H = 6\$\n\n7. Determine the tension (kN) in cable $AC$.',
     figureCaption: 'Situation 3: Rigid boom BCD supported by cables AC and AD lifting load W = 60 kN',
     figureSvg: `<svg viewBox="0 0 500 320" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -347,11 +347,11 @@ export const PSAD_APR2025_PART1: Question[] = [
     solution: {
       summary: 'Taking moments about pin B gives horizontal reaction Ah = 80 kN. Geometry gives cable angle β = 36.87°. Horizontal equilibrium at pin A yields TAC = 25 kN.',
       formulas: [
-        'T_{AD} = W = 60\\text{ kN}',
-        '\\sum M_B = 0 \\implies 60(8) - A_h(6) = 0 \\implies A_h = 80\\text{ kN}',
+        'T_{AD} = W = 60',
+        '\\sum M_B = 0 \\implies 60(8) - A_h(6) = 0 \\implies A_h = 80',
         '\\tan\\beta = \\frac{h}{L_1} = \\frac{3}{4} \\implies \\beta = 36.87^\\circ',
         '\\sum F_h(\\text{at } A) = 0 \\implies T_{AD} + T_{AC}\\cos 36.87^\\circ - A_h = 0',
-        '60 + T_{AC}(0.8) - 80 = 0 \\implies T_{AC} = 25\\text{ kN}',
+        '60 + T_{AC}(0.8) - 80 = 0 \\implies T_{AC} = 25',
       ],
       steps: [
         'Step 1: The pulley at D is frictionless, so the horizontal cable AD carries the full suspended load: TAD = W = 60 kN.',
@@ -386,7 +386,7 @@ export const PSAD_APR2025_PART1: Question[] = [
       summary: 'Horizontal equilibrium of the entire structure gives Bh - Ah = 0, so Bh = Ah = 80 kN.',
       formulas: [
         '\\sum F_h = 0 \\implies B_h - A_h = 0',
-        'B_h = A_h = 80\\text{ kN}',
+        'B_h = A_h = 80',
       ],
       steps: [
         'Step 1: From the moment equilibrium about B, the horizontal reaction at support A is Ah = 80 kN (leftward).',
@@ -419,9 +419,9 @@ export const PSAD_APR2025_PART1: Question[] = [
     solution: {
       summary: 'Vertical equilibrium at joint A gives Av = TAC sin β = 15 kN (upward). Global vertical equilibrium gives Bv = W - Av = 60 - 15 = 45 kN.',
       formulas: [
-        'A_v = T_{AC}\\sin\\beta = 25\\sin 36.87^\\circ = 15\\text{ kN}',
+        'A_v = T_{AC}\\sin\\beta = 25\\sin 36.87^\\circ = 15',
         '\\sum F_v = 0 \\implies A_v + B_v - W = 0',
-        '15 + B_v - 60 = 0 \\implies B_v = 45\\text{ kN}',
+        '15 + B_v - 60 = 0 \\implies B_v = 45',
       ],
       steps: [
         'Step 1: Isolate joint A to find its vertical reaction component: ΣFv = Av - TAC sin β = 0.',
@@ -444,7 +444,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - Vehicle Traction & Friction on Inclined Tow',
-    text: 'Situation 4 — The pick-up truck shown has a weight of $28\\text{ kN}$ and a center of mass at $G$, $0.8\\text{ m}$ above the ground. The coefficient of static friction between the wheels and the ground is $\\mu_w = 0.30$ and between the log and the ground, it is $\\mu_l = 0.60$.\nGiven: $a = 1.6\\text{ m}$; $b = 1.2\\text{ m}$; $h_1 = 0.4\\text{ m}$; $h_2 = 0.8\\text{ m}$.\n\n10. Determine the force (kN) in the cable connecting the truck and the log if the truck has a rear wheel drive while the front wheels are free to roll.',
+    text: 'Situation 4 — The pick-up truck shown has a weight of $28\$ and a center of mass at $G$, $0.8\$ above the ground. The coefficient of static friction between the wheels and the ground is $\\mu_w = 0.30$ and between the log and the ground, it is $\\mu_l = 0.60$.\nGiven: $a = 1.6\$; $b = 1.2\$; $h_1 = 0.4\$; $h_2 = 0.8\$.\n\n10. Determine the force (kN) in the cable connecting the truck and the log if the truck has a rear wheel drive while the front wheels are free to roll.',
     figureCaption: 'Situation 4: Pick-up truck pulling log on level ground with rear and four-wheel drive',
     figureSvg: `<svg viewBox="0 0 540 240" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -508,8 +508,8 @@ export const PSAD_APR2025_PART1: Question[] = [
         '\\sum F_h = 0 \\implies F = f_B = 0.30 N_B',
         '\\sum F_v = 0 \\implies N_A + N_B = 28 \\implies N_A = 28 - N_B',
         '\\sum M_B = 0 \\implies 28(1.6) - N_A(2.8) - F(0.4) = 0',
-        '44.8 - (28 - N_B)(2.8) - (0.30 N_B)(0.4) = 0 \\implies N_B = 12.537\\text{ kN}',
-        'F = 0.30(12.537) = 3.761\\text{ kN}',
+        '44.8 - (28 - N_B)(2.8) - (0.30 N_B)(0.4) = 0 \\implies N_B = 12.537',
+        'F = 0.30(12.537) = 3.761',
       ],
       steps: [
         'Step 1: Front wheels are free to roll without traction torque, so friction at A is zero: fA = 0.',
@@ -545,8 +545,8 @@ export const PSAD_APR2025_PART1: Question[] = [
       summary: 'The maximum log weight Wl that can be pulled corresponds to overcoming static friction under the log: F = μl Wl = 0.60 Wl, yielding Wl = 3.761 / 0.60 = 6.27 kN.',
       formulas: [
         'f_l = \\mu_l N_l = \\mu_l W_l = 0.60 W_l',
-        'F = f_l = 3.761\\text{ kN}',
-        'W_l = \\frac{F}{0.60} = \\frac{3.761}{0.60} = 6.268\\text{ kN}',
+        'F = f_l = 3.761',
+        'W_l = \\frac{F}{0.60} = \\frac{3.761}{0.60} = 6.268',
       ],
       steps: [
         'Step 1: The maximum towing force developed by the rear-wheel drive truck is F = 3.761 kN.',
@@ -579,9 +579,9 @@ export const PSAD_APR2025_PART1: Question[] = [
     solution: {
       summary: 'With four-wheel drive, both front and rear axles contribute traction: F = μw(NA + NB) = 0.30(28) = 8.4 kN. Maximum log load is Wl = F / 0.60 = 14 kN.',
       formulas: [
-        'F = f_A + f_B = \\mu_w(N_A + N_B) = 0.30(28) = 8.4\\text{ kN}',
+        'F = f_A + f_B = \\mu_w(N_A + N_B) = 0.30(28) = 8.4',
         'F = f_l = \\mu_l W_l = 0.60 W_l',
-        'W_l = \\frac{8.4}{0.60} = 14\\text{ kN}',
+        'W_l = \\frac{8.4}{0.60} = 14',
       ],
       steps: [
         'Step 1: In four-wheel drive, all wheels develop traction simultaneously up to static friction limits.',
@@ -604,7 +604,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - 3D Force Vectors & Directional Components',
-    text: 'Situation 5 — A force $F$ acts on top of the pole in the direction shown in the figure.\nGiven: $x = 5\\text{ m}$, $y = 4\\text{ m}$, $z = 8\\text{ m}$.\n\n13. If $F = 18\\text{ kN}$, find the $x$-component of $F$ (kN).',
+    text: 'Situation 5 — A force $F$ acts on top of the pole in the direction shown in the figure.\nGiven: $x = 5\$, $y = 4\$, $z = 8\$.\n\n13. If $F = 18\$, find the $x$-component of $F$ (kN).',
     figureCaption: 'Situation 5: 3D force vector F acting from top of vertical pole B along cable BC',
     figureSvg: `<svg viewBox="0 0 460 300" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -659,8 +659,8 @@ export const PSAD_APR2025_PART1: Question[] = [
     solution: {
       summary: 'The true length of cable BC is L = √(x² + y² + z²) = √105 = 10.247 m. The x-component is Fx = F(x / L) = 18(5 / √105) = 8.78 kN.',
       formulas: [
-        'L = \\sqrt{x^2 + y^2 + z^2} = \\sqrt{5^2 + 4^2 + 8^2} = \\sqrt{105} = 10.247\\text{ m}',
-        'F_x = F \\left(\\frac{x}{L}\\right) = 18\\left(\\frac{5}{\\sqrt{105}}\\right) = 8.783\\text{ kN}',
+        'L = \\sqrt{x^2 + y^2 + z^2} = \\sqrt{5^2 + 4^2 + 8^2} = \\sqrt{105} = 10.247',
+        'F_x = F \\left(\\frac{x}{L}\\right) = 18\\left(\\frac{5}{\\sqrt{105}}\\right) = 8.783',
       ],
       steps: [
         'Step 1: Compute total 3D spatial distance from pole apex B to point C: L = √(5² + 4² + 8²) = √(25 + 16 + 64) = √105 ≈ 10.247 m.',
@@ -682,7 +682,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - 3D Force Vectors & Directional Components',
-    text: 'Situation 5 — 14. If the $y$-component of the force $F$ is $20\\text{ kN}$, find the value of $F$ (kN).',
+    text: 'Situation 5 — 14. If the $y$-component of the force $F$ is $20\$, find the value of $F$ (kN).',
     options: [
       { label: 'A', text: '25.62' },
       { label: 'B', text: '41.00' },
@@ -695,7 +695,7 @@ export const PSAD_APR2025_PART1: Question[] = [
       formulas: [
         'F_y = F \\left(\\frac{y}{L}\\right)',
         '20 = F \\left(\\frac{4}{\\sqrt{105}}\\right)',
-        'F = \\frac{20\\sqrt{105}}{4} = 5\\sqrt{105} = 51.235\\text{ kN}',
+        'F = \\frac{20\\sqrt{105}}{4} = 5\\sqrt{105} = 51.235',
       ],
       steps: [
         'Step 1: Given spatial dimensions: x = 5 m, y = 4 m, z = 8 m => L = √105 m.',
@@ -717,7 +717,7 @@ export const PSAD_APR2025_PART1: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Engineering Mechanics - 3D Force Vectors & Geometry Reconstruction',
-    text: 'Situation 5 — 15. Given: $F_x = 24\\text{ kN}$; $F_y = 18\\text{ kN}$; $F_z = 16\\text{ kN}$; Length of cable $= 6.8\\text{ m}$.\nDetermine the height (m) of the pole.',
+    text: 'Situation 5 — 15. Given: $F_x = 24\$; $F_y = 18\$; $F_z = 16\$; Length of cable $= 6.8\$.\nDetermine the height (m) of the pole.',
     options: [
       { label: 'A', text: '4.8' },
       { label: 'B', text: '3.6' },
@@ -728,8 +728,8 @@ export const PSAD_APR2025_PART1: Question[] = [
     solution: {
       summary: 'Compute resultant force F = √(24² + 18² + 16²) = 34 kN. The vertical dimension z (pole height) is z = (Fz / F) × L = (16 / 34) × 6.8 = 3.2 m.',
       formulas: [
-        'F = \\sqrt{F_x^2 + F_y^2 + F_z^2} = \\sqrt{24^2 + 18^2 + 16^2} = \\sqrt{1156} = 34\\text{ kN}',
-        'z = \\left(\\frac{F_z}{F}\\right) L = \\left(\\frac{16}{34}\\right)(6.8) = 3.2\\text{ m}',
+        'F = \\sqrt{F_x^2 + F_y^2 + F_z^2} = \\sqrt{24^2 + 18^2 + 16^2} = \\sqrt{1156} = 34',
+        'z = \\left(\\frac{F_z}{F}\\right) L = \\left(\\frac{16}{34}\\right)(6.8) = 3.2',
       ],
       steps: [
         'Step 1: Compute total vector magnitude of force F: F = √(24² + 18² + 16²) = √(576 + 324 + 256) = √1156 = 34 kN.',

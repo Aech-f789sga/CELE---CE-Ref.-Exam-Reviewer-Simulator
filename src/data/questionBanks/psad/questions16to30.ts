@@ -31,8 +31,8 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Torque T = P(a + b). Equate torsional shearing stress to allowable value τ_all = 16T / (π d³).',
       formulas: [
-        'T = P · (a + b) = P · (400 + 250) = 650P N·mm',
-        'τ = (16 · T) / (π · d³) <= 87 MPa',
+        'T = P  \\cdot  (a + b) = P  \\cdot  (400 + 250) = 650P \\cdot mm',
+        '\\tau  = (16  \\cdot  T) / (\\pi   \\cdot  d^3) <= 87',
         '[ 16 · (650P) ] / [ π · (20)³ ] <= 87 => P = 210.245 N ≈ 210 N',
       ],
       steps: [
@@ -65,7 +65,7 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Compute polar moment of inertia J = π/32 (D₀⁴ - D_i⁴), then solve for P from angle of twist θ = TL / (JG).',
       formulas: [
-        'D_i = 50 - 2(6) = 38 mm',
+        'D_i = 50 - 2(6) = 38',
         'J = (π / 32) · [ (50)⁴ - (38)⁴ ] = 408,887 mm⁴',
         'θ = (T · L) / (J · G) = [ 650P · (100) ] / [ 408,887 · 79,000 ] <= 0.5° · (π / 180)',
         'P = 4,336.75 N ≈ 4336 N',
@@ -143,7 +143,7 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'The center of Mohr\'s circle C represents the average normal stress σ_avg = (σ_x + σ_y)/2. Distance from origin O is OC.',
       formulas: [
-        'σ_avg = (σ_x + σ_y) / 2 = OC',
+        '\\sigma _avg = (\\sigma _x + \\sigma _y) / 2 = OC',
       ],
       steps: [
         'Step 1: In Mohr\'s circle, the abscissa of the center C is the average normal stress.',
@@ -173,7 +173,7 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Point D represents the stress state on the y-face. Its shear stress coordinate is the vertical distance FD.',
       formulas: [
-        'τ_y = FD',
+        '\\tau _y = FD',
       ],
       steps: [
         'Step 1: Point D represents the y-face of the stress element.',
@@ -203,7 +203,7 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Point E represents the x-face stress state. Its normal stress is the horizontal coordinate from origin O to G: OG.',
       formulas: [
-        'σ_x = OG',
+        '\\sigma _x = OG',
       ],
       steps: [
         'Step 1: Point E represents the stress state on the x-face.',
@@ -244,7 +244,7 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'A vertical jump in the shear diagram indicates a concentrated load: ΔV = a - b = 17 - 12 = 5 kN.',
       formulas: [
-        'P_B = a - b = 17 - 12 = 5 kN',
+        'P_B = a - b = 17 - 12 = 5',
       ],
       steps: [
         'Step 1: Shear immediately to the left of B is a = 17 kN.',
@@ -306,9 +306,9 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Maximum moment equals the total area under the shear diagram from support to zero shear.',
       formulas: [
-        'Area_AB = 17 · 2 = 34 kN·m',
-        'Area_(B to zero) = (1/2) · 12 · 2 = 12 kN·m',
-        'M_max = 34 + 12 = 46 kN·m',
+        'Area_AB = 17  \\cdot  2 = 34 \\cdot m',
+        'Area_(B to zero) = (1/2)  \\cdot  12  \\cdot  2 = 12 \\cdot m',
+        'M_max = 34 + 12 = 46 \\cdot m',
       ],
       steps: [
         'Step 1: Area under shear from A to B = 17 kN × 2 m = 34 kN·m.',
@@ -350,8 +350,8 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Calculate maximum shear force V_max = wL/2 = 63 kN, then compute shear stress at neutral axis: f_vmax = VQ / (I tw).',
       formulas: [
-        'V_max = (w · L) / 2 = (21 · 6) / 2 = 63 kN = 63,000 N',
-        'Q = 102 · (10.8) · (150.6) + 6.6 · (145.2) · (72.6) = 235,475 mm³',
+        'V_max = (w  \\cdot ) / 2 = (21  \\cdot  6) / 2 = 63 = 63,000',
+        'Q = 102  \\cdot  (10.8)  \\cdot  (150.6) + 6.6  \\cdot  (145.2)  \\cdot  (72.6) = 235,475^3',
         'f_vmax = [ 63,000 · (235,475) ] / [ 64.932 · 10⁶ · (6.6) ] = 34.617 MPa ≈ 34.6 MPa',
       ],
       steps: [
@@ -462,8 +462,8 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Decompose gravity load perpendicular to roof w_n = w cos 30°, then f_bx = M_x c / I_x.',
       formulas: [
-        'w = (1.44 + 1.0) · 3 = 7.32 kN/m',
-        'w_n = 7.32 · cos 30° = 6.339 kN/m',
+        'w = (1.44 + 1.0)  \\cdot  3 = 7.32/m',
+        'w_n = 7.32  \\cdot  cos 30° = 6.339/m',
         'M_x = [ 6.339 · (8)² ] / 8 = 50.712 kN·m',
         'f_bx = [ 50.712 · 10⁶ · (155) ] / [ 1.97 · 10⁸ ] = 39.89 MPa ≈ 39.9 MPa',
       ],
@@ -497,7 +497,7 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Decompose gravity load parallel to roof w_t = w sin 30°, then f_by = M_y c / I_y.',
       formulas: [
-        'w_t = 7.32 · sin 30° = 3.66 kN/m',
+        'w_t = 7.32  \\cdot  sin 30° = 3.66/m',
         'M_y = [ 3.66 · (8)² ] / 8 = 29.28 kN·m',
         'f_by = [ 29.28 · 10⁶ · (125) ] / [ 2.0 · 10⁷ ] = 183.0 MPa',
       ],
@@ -531,9 +531,9 @@ export const PSAD_PART2: Question[] = [
     solution: {
       summary: 'Maximum shear stress on web from normal shear: f_vmax = V_max Q / (I_x tw).',
       formulas: [
-        'V_max = (w_n · L) / 2 = (6.339 · 8) / 2 = 25.356 kN',
-        'Q = 250 · (16) · (147) + 13.5 · (139) · (69.5) = 718.42 · 10³ mm³',
-        'f_vmax = [ 25,356 · (718.42 · 10³) ] / [ 1.97 · 10⁸ · (13.5) ] = 6.85 MPa',
+        'V_{\\max} = \\frac{w_n L}{2}',
+        'Q = \\sum A_i \\bar{y}_i',
+        'f_{v,\\max} = \\frac{V_{\\max} Q}{I_x t_w}',
       ],
       steps: [
         'Step 1: Shear force produced by normal component: V = 6.339 × 8 / 2 = 25.356 kN.',

@@ -92,8 +92,8 @@ export const MSTC_NOV2024_PART1: Question[] = [
       summary: 'Here x = 1 + r. Evaluating choices: for r = 0.10 (10%), x = 1.10 => T(1.1) = $81.58, which yields a realistic and expected rate of return on the total investment of $66.',
       formulas: [
         'x = 1 + r',
-        'Total investment = 6 + 18 + 24 + 18 = $66',
-        'For r = 0.1 (10%): x = 1.1 => T(1.1) = 6(1.1)⁴ + 18(1.1)³ + 24(1.1)² + 18(1.1) = $81.58',
+        'Total investment = 6 + 18 + 24 + 18 = 66',
+        'For r = 0.1 (10\\%): x = 1.1 => T(1.1) = 6(1.1)^4 + 18(1.1)^3 + 24(1.1)^2 + 18(1.1) = 81.58',
       ],
       steps: [
         'Step 1: Total initial investment = $6 + $18 + $24 + $18 = $66.',
@@ -127,9 +127,9 @@ export const MSTC_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'For maximum volume constraint, each small package is up to 3 ft³ (3x) and each large package is up to 5 ft³ (5y). Total volume cannot exceed capacity 480 ft³.',
       formulas: [
-        'Volume_small ≤ 3x',
-        'Volume_large ≤ 5y',
-        'Total Volume ≤ 480 ft³ => 3x + 5y ≤ 480',
+        'Volume_small  \\le  3x',
+        'Volume_large  \\le  5y',
+        'Total Volume  \\le  480^3 => 3x + 5y  \\le  480',
       ],
       steps: [
         'Step 1: Small package volume: no more than 3 ft³, represented by 3x.',
@@ -162,9 +162,9 @@ export const MSTC_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Tolerance = 2 mils = 2/1000 in = 1/500 in. Inequality format: |Target - Actual| ≤ Tolerance.',
       formulas: [
-        'Tolerance = 2 × (1/1000) = 2/1000 = 1/500 in',
-        '|Target - Actual| ≤ Tolerance',
-        '|8 - x| ≤ 1/500 and |4 1/4 - y| ≤ 1/500',
+        'Tolerance = 2  \\times  (1/1000) = 2/1000 = 1/500',
+        '|Target - Actual|  \\le  Tolerance',
+        '|8 - x|  \\le  1/500 and |4 1/4 - y|  \\le  1/500',
       ],
       steps: [
         'Step 1: 2 mils = 2/1000 = 1/500 inch.',
@@ -197,11 +197,11 @@ export const MSTC_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'At 600°C, strength is 280(0.50) = 140 MPa. Decreases by 35% every 5°C, so remaining strength is 65% (factor 0.65). 140(0.65)ⁿ = 38 => n ≈ 3.02 periods => 3.02(5) = 15.1°C => T = 615.1°C ≈ 615°C.',
       formulas: [
-        'Strength at 600°C = 280(0.50) = 140 MPa',
+        'Strength at 600°C = 280(0.50) = 140',
         'Remaining fraction = 1 - 0.35 = 0.65',
-        '140 · (0.65)ⁿ = 38 => (0.65)ⁿ = 38 / 140 = 0.2714',
+        '140  \\cdot  (0.65)ⁿ = 38 => (0.65)ⁿ = 38 / 140 = 0.2714',
         'n = log(0.2714) / log(0.65) = 3.02',
-        'ΔT = 3.02 · 5°C = 15.1°C => T = 600 + 15.1 = 615.1°C',
+        '\\Delta T = 3.02  \\cdot  5°C = 15.1°C => T = 600 + 15.1 = 615.1°C',
       ],
       steps: [
         'Step 1: Tensile strength at 600°C = 280 × 0.50 = 140 MPa.',
@@ -236,8 +236,7 @@ export const MSTC_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Substitute I = 0.15 W/m² and I₀ = 10⁻¹² W/m² into sound intensity level formula β = 10 log(I / I₀).',
       formulas: [
-        'β = 10 · log(I / I₀)',
-        'β = 10 · log(0.15 / 10⁻¹²) = 10 · log(1.5 · 10¹¹) = 10 · (11.176) = 111.76 dB ≈ 112 dB',
+        '\\beta = 10 \\log_{10}\\left(\\frac{I}{I_0}\\right)',
       ],
       steps: [
         'Step 1: Given sound intensity I = 0.15 W/m² and reference I₀ = 10⁻¹² W/m².',
@@ -270,10 +269,8 @@ export const MSTC_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Set I(x) = I₀ / 2 => e⁻¹·⁴ˣ = 0.5 => -1.4x = ln(0.5) => x = -0.69315 / -1.4 = 0.495 m.',
       formulas: [
-        'I(x) = I₀ / 2',
-        'I₀ · e⁻¹·⁴ˣ = I₀ / 2 => e⁻¹·⁴ˣ = 0.5',
-        '-1.4x = ln(0.5) = -0.69315',
-        'x = 0.69315 / 1.4 = 0.495 m',
+        'I(x) = I_0 e^{-k x}',
+        'x = -\\frac{\\ln(0.5)}{k}',
       ],
       steps: [
         'Step 1: The condition is I(x) = 0.5 I₀.',
@@ -316,9 +313,9 @@ export const MSTC_NOV2024_PART1: Question[] = [
       summary: 'The nut corresponds to fret 0 (x = 0). d = (21.9)(2)^(20/12) = 21.9 · 2^(1.6667) = 21.9 · 3.1748 = 69.53 cm ≈ 69.5 cm.',
       formulas: [
         'Nut position corresponds to x = 0',
-        'd = (21.9) · (2)^((20 - 0) / 12) = (21.9) · 2^(5/3)',
+        'd = (21.9)  \\cdot  (2)^((20 - 0) / 12) = (21.9)  \\cdot  2^(5/3)',
         '2^(5/3) = 3.1748',
-        'd = 21.9 · 3.1748 = 69.53 cm ≈ 69.5 cm',
+        'd = 21.9  \\cdot  3.1748 = 69.53  \\approx  69.5',
       ],
       steps: [
         'Step 1: Understand that the nut is essentially "fret 0", so substitute x = 0.',
@@ -351,7 +348,7 @@ export const MSTC_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Radius R = 250 / 2 = 125 ft. People initially board at bottom (0, -125). Rotating 90° counterclockwise moves the car to (125, 0).',
       formulas: [
-        'R = 250 / 2 = 125 ft',
+        'R = 250 / 2 = 125',
         'Initial boarding position at bottom: (0, -125)',
         'After 90° CCW rotation: x = 125, y = 0 => (125, 0)',
       ],

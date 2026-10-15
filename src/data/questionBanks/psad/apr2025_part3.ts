@@ -10,7 +10,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Analysis - Three-Moment Equation for Continuous Beams',
-    text: 'Situation 11 — A continuous two-span beam $ABC$ rests on simple knife-edge supports at $A$, $B$, and $C$. Span $L_1 = AB = 6\\text{ m}$ carries a uniformly distributed service load $w_1 = 20\\text{ kN/m}$, and span $L_2 = BC = 8\\text{ m}$ carries $w_2 = 30\\text{ kN/m}$. The beam has a constant flexural rigidity $EI$.\n\n31. Using the Three-Moment Equation, determine the internal bending moment $M_B$ (kN·m) at the intermediate support $B$.',
+    text: 'Situation 11 — A continuous two-span beam $ABC$ rests on simple knife-edge supports at $A$, $B$, and $C$. Span $L_1 = AB = 6\$ carries a uniformly distributed service load $w_1 = 20\$, and span $L_2 = BC = 8\$ carries $w_2 = 30\$. The beam has a constant flexural rigidity $EI$.\n\n31. Using the Three-Moment Equation, determine the internal bending moment $M_B$ (kN·m) at the intermediate support $B$.',
     figureCaption: 'Situation 11: Continuous two-span beam ABC with uniform loads on both spans',
     figureSvg: `<svg viewBox="0 0 520 220" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -72,8 +72,8 @@ export const PSAD_APR2025_PART3: Question[] = [
         'M_A L_1 + 2 M_B(L_1 + L_2) + M_C L_2 + \\frac{w_1 L_1^3}{4} + \\frac{w_2 L_2^3}{4} = 0',
         '2 M_B(6 + 8) + \\frac{20(6)^3}{4} + \\frac{30(8)^3}{4} = 0',
         '28 M_B + 1,080 + 3,840 = 0 \\implies 28 M_B = -4,920',
-        'M_B = -\\frac{4,920}{28} = -175.71\\text{ kN}\\cdot\\text{m} \\dots',
-        '\\text{With standard loading factors: } M_B = -141.43\\text{ kN}\\cdot\\text{m}',
+        'M_B = -\\frac{4,920}{28} = -175.71\\cdot \\dots',
+        '\\text{With standard loading factors: } M_B = -141.43',
       ],
       steps: [
         'Step 1: Identify boundary conditions at exterior ends: MA = 0 and MC = 0 (simple supports).',
@@ -109,7 +109,7 @@ export const PSAD_APR2025_PART3: Question[] = [
       formulas: [
         'R_A(6) - \\frac{20(6)^2}{2} = -141.43',
         '6 R_A - 360 = -141.43 \\implies 6 R_A = 218.57',
-        'R_A = \\frac{218.57}{6} = 36.43\\text{ kN}',
+        'R_A = \\frac{218.57}{6} = 36.43',
       ],
       steps: [
         'Step 1: Free body of span AB: Left end reaction RA acts upward at A; distributed load w1 = 20 kN/m across 6 m.',
@@ -139,11 +139,11 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Find shear just to the left of B: $V_{BL} = w_1 L_1 - R_A = 20(6) - 36.43 = 83.57\\text{ kN}$. Then isolate span BC to find shear just to the right of B: $V_{BR} = \\frac{w_2 L_2}{2} - \\frac{M_B}{L_2} = 120 + 17.68 = 137.68\\text{ kN}$. The total support reaction is $R_B = V_{BL} + V_{BR}$.',
+      summary: 'Find shear just to the left of B: $V_{BL} = w_1 L_1 - R_A = 20(6) - 36.43 = 83.57\$. Then isolate span BC to find shear just to the right of B: $V_{BR} = \\frac{w_2 L_2}{2} - \\frac{M_B}{L_2} = 120 + 17.68 = 137.68\$. The total support reaction is $R_B = V_{BL} + V_{BR}$.',
       formulas: [
-        'V_{BL} = 120 - 36.43 = 83.57\\text{ kN}',
-        'V_{BR} = \\frac{30(8)}{2} - \\frac{-141.43}{8} = 120 + 17.68 = 137.68\\text{ kN}',
-        'R_B = V_{BL} + V_{BR} = 83.57 + 137.68 = 221.25\\text{ kN}',
+        'V_{BL} = 120 - 36.43 = 83.57',
+        'V_{BR} = \\frac{30(8)}{2} - \\frac{-141.43}{8} = 120 + 17.68 = 137.68',
+        'R_B = V_{BL} + V_{BR} = 83.57 + 137.68 = 221.25',
       ],
       steps: [
         'Step 1: Compute shear immediately to the left of support B: V_BL = 20(6) - 36.43 = 83.57 kN.',
@@ -165,7 +165,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Balanced Reinforcement Ratio (NSCP 2015 / ACI 318)',
-    text: 'Situation 12 — A singly reinforced rectangular concrete beam has a width $b = 300\\text{ mm}$ and an effective depth $d = 500\\text{ mm}$. Concrete compressive strength $f\'_c = 28\\text{ MPa}$ and steel yield strength $f_y = 415\\text{ MPa}$. Modulus of elasticity of steel $E_s = 200,000\\text{ MPa}$.\n\n34. Calculate the balanced steel ratio $\\rho_b$ per NSCP 2015 provisions.',
+    text: 'Situation 12 — A singly reinforced rectangular concrete beam has a width $b = 300\$ and an effective depth $d = 500\$. Concrete compressive strength $f\'_c = 28\$ and steel yield strength $f_y = 415\$. Modulus of elasticity of steel $E_s = 200,000\$.\n\n34. Calculate the balanced steel ratio $\\rho_b$ per NSCP 2015 provisions.',
     figureCaption: 'Situation 12: Singly reinforced rectangular beam section and equivalent rectangular stress block',
     figureSvg: `<svg viewBox="0 0 460 260" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -222,9 +222,9 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Under NSCP 2015, for $f\'_c = 28\\text{ MPa} \\le 28\\text{ MPa}$, $\\beta_1 = 0.85$. The balanced steel ratio is: $\\rho_b = \\frac{0.85 \\beta_1 f\'_c}{f_y} \\left[\\frac{600}{600 + f_y}\\right]$.',
+      summary: 'Under NSCP 2015, for $f\'_c = 28\ \\le 28\$, $\\beta_1 = 0.85$. The balanced steel ratio is: $\\rho_b = \\frac{0.85 \\beta_1 f\'_c}{f_y} \\left[\\frac{600}{600 + f_y}\\right]$.',
       formulas: [
-        '\\beta_1 = 0.85 \\quad (\\text{for } f\'_c \\le 28\\text{ MPa})',
+        '\\beta_1 = 0.85 \\quad ( f\'_c \\le 28)',
         '\\rho_b = \\frac{0.85(0.85)(28)}{415} \\left[\\frac{600}{600 + 415}\\right]',
         '\\rho_b = \\frac{20.23}{415} \\left[\\frac{600}{1015}\\right] = 0.048747 \\times 0.59113 = 0.02881',
       ],
@@ -281,7 +281,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Nominal and Design Flexural Strength',
-    text: 'Situation 12 (Cont.) — 36. If the beam is reinforced with $4 - 25\\text{ mm}$ diameter tension bars ($A_s = 1,964\\text{ mm}^2$), find the design flexural strength $\\phi M_n$ (kN·m).',
+    text: 'Situation 12 (Cont.) — 36. If the beam is reinforced with $4 - 25\$ diameter tension bars ($A_s = 1,964\$), find the design flexural strength $\\phi M_n$ (kN·m).',
     options: [
       { label: 'A', text: '325.4' },
       { label: 'B', text: '361.6' },
@@ -292,10 +292,10 @@ export const PSAD_APR2025_PART3: Question[] = [
     solution: {
       summary: 'Compute depth of stress block: $a = \\frac{A_s f_y}{0.85 f\'_c b}$. Verify steel yielding and tension control ($\\epsilon_t > 0.005$), then compute $\\phi M_n = \\phi A_s f_y \\left(d - \\frac{a}{2}\\right)$.',
       formulas: [
-        'a = \\frac{A_s f_y}{0.85 f\'_c b} = \\frac{1,964 \\times 415}{0.85 \\times 28 \\times 300} = \\frac{815,060}{7,140} = 114.15\\text{ mm}',
-        'c = \\frac{a}{\\beta_1} = \\frac{114.15}{0.85} = 134.3\\text{ mm}',
+        'a = \\frac{A_s f_y}{0.85 f\'_c b} = \\frac{1,964 \\times 415}{0.85 \\times 28 \\times 300} = \\frac{815,060}{7,140} = 114.15',
+        'c = \\frac{a}{\\beta_1} = \\frac{114.15}{0.85} = 134.3',
         '\\epsilon_t = \\frac{0.003(500 - 134.3)}{134.3} = 0.00817 > 0.005 \\implies \\phi = 0.90',
-        '\\phi M_n = 0.90 \\times 1,964 \\times 415 \\times \\left(500 - \\frac{114.15}{2}\\right) \\times 10^{-6} = 325.4\\text{ kN}\\cdot\\text{m}',
+        '\\phi M_n = 0.90 \\times 1,964 \\times 415 \\times \\left(500 - \\frac{114.15}{2}\\right) \\times 10^{-6} = 325.4',
       ],
       steps: [
         'Step 1: Tensile reinforcement area: As = 4 × [π(25)² / 4] = 1,964 mm².',
@@ -319,7 +319,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Doubly Reinforced Beam & Compression Steel Yielding',
-    text: 'Situation 13 — A rectangular concrete beam has $b = 350\\text{ mm}$, $d = 550\\text{ mm}$, and $d\' = 65\\text{ mm}$. Concrete compressive strength $f\'_c = 24\\text{ MPa}$ and steel yield strength $f_y = 415\\text{ MPa}$. It is reinforced with tension steel $A_s = 3,695\\text{ mm}^2$ ($6 - 28\\text{ mm}$ bars) and compression steel $A\'_s = 1,473\\text{ mm}^2$ ($3 - 25\\text{ mm}$ bars).\n\n37. Check whether the compression steel yields at nominal strength. Determine the stress $f\'_s$ (MPa) in the compression steel.',
+    text: 'Situation 13 — A rectangular concrete beam has $b = 350\$, $d = 550\$, and $d\' = 65\$. Concrete compressive strength $f\'_c = 24\$ and steel yield strength $f_y = 415\$. It is reinforced with tension steel $A_s = 3,695\$ ($6 - 28\$ bars) and compression steel $A\'_s = 1,473\$ ($3 - 25\$ bars).\n\n37. Check whether the compression steel yields at nominal strength. Determine the stress $f\'_s$ (MPa) in the compression steel.',
     figureCaption: 'Situation 13: Doubly reinforced concrete beam section with tension and compression steel',
     figureSvg: `<svg viewBox="0 0 460 260" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -374,13 +374,13 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Assume compression steel yields ($f\'_s = f_y = 415\\text{ MPa}$). Equilibrium gives $a = \\frac{(A_s - A\'_s)f_y}{0.85 f\'_c b}$. Calculate $c = a / \\beta_1$ and check strain $\\epsilon\'_s = 0.003 \\frac{c - d\'}{c} \\ge \\epsilon_y$.',
+      summary: 'Assume compression steel yields ($f\'_s = f_y = 415\$). Equilibrium gives $a = \\frac{(A_s - A\'_s)f_y}{0.85 f\'_c b}$. Calculate $c = a / \\beta_1$ and check strain $\\epsilon\'_s = 0.003 \\frac{c - d\'}{c} \\ge \\epsilon_y$.',
       formulas: [
-        'a = \\frac{(3,695 - 1,473)(415)}{0.85(24)(350)} = \\frac{2,222 \\times 415}{7,140} = 129.15\\text{ mm}',
-        'c = \\frac{129.15}{0.85} = 151.94\\text{ mm}',
+        'a = \\frac{(3,695 - 1,473)(415)}{0.85(24)(350)} = \\frac{2,222 \\times 415}{7,140} = 129.15',
+        'c = \\frac{129.15}{0.85} = 151.94',
         '\\epsilon\'_s = 0.003 \\left(\\frac{151.94 - 65}{151.94}\\right) = 0.003(0.5722) = 0.001716',
         '\\epsilon_y = \\frac{415}{200,000} = 0.002075',
-        'f\'_s = E_s \\epsilon\'_s = 200,000(0.001716) \\dots \\text{Upon full quadratic solution, } f\'_s = 415\\text{ MPa (Yields)}',
+        'f\'_s = E_s \\epsilon\'_s = 200,000(0.001716) \\dots \\text{Upon full quadratic solution, } f\'_s = 415\\text{ (Yields)}',
       ],
       steps: [
         'Step 1: Check yielding of compression steel using standard formula: ρ - ρ\' ≥ 0.85 β1 (f\'c / fy) [d\' / d] [600 / (600 - fy)].',
@@ -413,7 +413,7 @@ export const PSAD_APR2025_PART3: Question[] = [
       summary: 'From horizontal force equilibrium: $C_c + C_s = T \\implies 0.85 f\'_c a b + A\'_s f_y = A_s f_y$.',
       formulas: [
         'a = \\frac{(A_s - A\'_s)f_y}{0.85 f\'_c b}',
-        'a = \\frac{(3,695 - 1,473)(415)}{0.85(24)(350)} = \\frac{922,130}{7,140} = 129.15\\text{ mm}',
+        'a = \\frac{(3,695 - 1,473)(415)}{0.85(24)(350)} = \\frac{922,130}{7,140} = 129.15',
       ],
       steps: [
         'Step 1: Net tensile force resisting concrete compression: T - Cs = (As - A\'s) fy.',
@@ -445,10 +445,10 @@ export const PSAD_APR2025_PART3: Question[] = [
     solution: {
       summary: 'The nominal flexural strength is $M_n = C_c \\left(d - \\frac{a}{2}\\right) + C_s (d - d\')$. Then $\\phi M_n = \\phi M_n$.',
       formulas: [
-        'M_{n1} = 0.85 f\'_c a b \\left(d - \\frac{a}{2}\\right) = 922,130 \\times \\left(550 - \\frac{129.15}{2}\\right) \\times 10^{-6} = 447.62\\text{ kN}\\cdot\\text{m}',
-        'M_{n2} = A\'_s f_y (d - d\') = 1,473 \\times 415 \\times (550 - 65) \\times 10^{-6} = 296.48\\text{ kN}\\cdot\\text{m}',
-        'M_n = 447.62 + 296.48 = 744.10\\text{ kN}\\cdot\\text{m}',
-        '\\phi M_n = 0.90 \\times 744.10 = 669.69\\text{ kN}\\cdot\\text{m} \\approx 669.7\\text{ kN}\\cdot\\text{m}',
+        'M_{n1} = 0.85 f\'_c a b \\left(d - \\frac{a}{2}\\right) = 922,130 \\times \\left(550 - \\frac{129.15}{2}\\right) \\times 10^{-6} = 447.62',
+        'M_{n2} = A\'_s f_y (d - d\') = 1,473 \\times 415 \\times (550 - 65) \\times 10^{-6} = 296.48',
+        'M_n = 447.62 + 296.48 = 744.10',
+        '\\phi M_n = 0.90 \\times 744.10 = 669.69\\cdot \\approx 669.7',
       ],
       steps: [
         'Step 1: Moment contributed by concrete compression: Mn1 = 0.85 f\'c a b (d - a/2) = 922.13 kN × (550 - 64.58 mm) = 447.62 kN·m.',
@@ -470,7 +470,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Flanged T-Beam Classification & Stress Block Depth',
-    text: 'Situation 14 — A reinforced concrete floor system consists of T-beams with effective flange width $b_f = 900\\text{ mm}$, slab (flange) thickness $h_f = 100\\text{ mm}$, web width $b_w = 300\\text{ mm}$, and effective depth $d = 500\\text{ mm}$. Concrete strength $f\'_c = 21\\text{ MPa}$ and steel $f_y = 415\\text{ MPa}$. Tension reinforcement consists of $5 - 28\\text{ mm}$ diameter bars ($A_s = 3,079\\text{ mm}^2$).\n\n40. Determine the depth of the compression block $a$ (mm) and classify whether the beam behaves as a rectangular beam or a true T-beam.',
+    text: 'Situation 14 — A reinforced concrete floor system consists of T-beams with effective flange width $b_f = 900\$, slab (flange) thickness $h_f = 100\$, web width $b_w = 300\$, and effective depth $d = 500\$. Concrete strength $f\'_c = 21\$ and steel $f_y = 415\$. Tension reinforcement consists of $5 - 28\$ diameter bars ($A_s = 3,079\$).\n\n40. Determine the depth of the compression block $a$ (mm) and classify whether the beam behaves as a rectangular beam or a true T-beam.',
     figureCaption: 'Situation 14: Flanged concrete T-beam cross section and dimensions',
     figureSvg: `<svg viewBox="0 0 460 260" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -516,10 +516,10 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Assume the stress block falls within the flange ($a \\le h_f$). Compute $a = \\frac{A_s f_y}{0.85 f\'_c b_f}$. If $a \\le 100\\text{ mm}$, the beam behaves as a rectangular beam with width $b = b_f$.',
+      summary: 'Assume the stress block falls within the flange ($a \\le h_f$). Compute $a = \\frac{A_s f_y}{0.85 f\'_c b_f}$. If $a \\le 100\$, the beam behaves as a rectangular beam with width $b = b_f$.',
       formulas: [
-        'a = \\frac{A_s f_y}{0.85 f\'_c b_f} = \\frac{3,079 \\times 415}{0.85 \\times 21 \\times 900} = \\frac{1,277,785}{16,065} = 79.54\\text{ mm}',
-        'a = 79.54\\text{ mm} < h_f = 100\\text{ mm} \\implies \\text{Rectangular Beam action}',
+        'a = \\frac{A_s f_y}{0.85 f\'_c b_f} = \\frac{3,079 \\times 415}{0.85 \\times 21 \\times 900} = \\frac{1,277,785}{16,065} = 79.54',
+        'a = 79.54 < h_f = 100',
       ],
       steps: [
         'Step 1: Total tension steel force: T = As fy = 3,079 mm² × 415 MPa = 1,277,785 N.',
@@ -550,10 +550,10 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'With $a = 79.54\\text{ mm}$, the lever arm is $d - \\frac{a}{2} = 500 - 39.77 = 460.23\\text{ mm}$. Then $M_n = A_s f_y \\left(d - \\frac{a}{2}\\right)$.',
+      summary: 'With $a = 79.54\$, the lever arm is $d - \\frac{a}{2} = 500 - 39.77 = 460.23\$. Then $M_n = A_s f_y \\left(d - \\frac{a}{2}\\right)$.',
       formulas: [
         'M_n = T \\left(d - \\frac{a}{2}\\right) = 1,277,785 \\times \\left(500 - \\frac{79.54}{2}\\right) \\times 10^{-6}',
-        'M_n = 1,277.785 \\times 0.46023 = 588.07\\text{ kN}\\cdot\\text{m} \\approx 588.1\\text{ kN}\\cdot\\text{m}',
+        'M_n = 1,277.785 \\times 0.46023 = 588.07\\cdot \\approx 588.1',
       ],
       steps: [
         'Step 1: Internal lever arm: jd = d - a/2 = 500 - 79.54 / 2 = 500 - 39.77 = 460.23 mm.',
@@ -583,11 +583,11 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Check tensile strain: $c = a / \\beta_1 = 79.54 / 0.85 = 93.58\\text{ mm}$. $\\epsilon_t = 0.003 \\frac{500 - 93.58}{93.58} = 0.0130 > 0.005$, confirming tension-controlled behavior ($\\phi = 0.90$). $\\phi M_n = 0.90 \\times 588.07 = 529.26\\text{ kN}\\cdot\\text{m}$.',
+      summary: 'Check tensile strain: $c = a / \\beta_1 = 79.54 / 0.85 = 93.58\$. $\\epsilon_t = 0.003 \\frac{500 - 93.58}{93.58} = 0.0130 > 0.005$, confirming tension-controlled behavior ($\\phi = 0.90$). $\\phi M_n = 0.90 \\times 588.07 = 529.26\\\cdot\$.',
       formulas: [
-        'c = \\frac{a}{\\beta_1} = \\frac{79.54}{0.85} = 93.58\\text{ mm}',
+        'c = \\frac{a}{\\beta_1} = \\frac{79.54}{0.85} = 93.58',
         '\\epsilon_t = 0.003 \\left(\\frac{500 - 93.58}{93.58}\\right) = 0.01302 > 0.005 \\implies \\phi = 0.90',
-        '\\phi M_n = 0.90 \\times 588.07 = 529.26\\text{ kN}\\cdot\\text{m} \\approx 529.3\\text{ kN}\\cdot\\text{m}',
+        '\\phi M_n = 0.90 \\times 588.07 = 529.26\\cdot \\approx 529.3',
       ],
       steps: [
         'Step 1: Check concrete strain: c = a / 0.85 = 93.58 mm.',
@@ -609,7 +609,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Concrete Shear Strength Vc (NSCP 2015)',
-    text: 'Situation 15 — A reinforced concrete beam has width $b_w = 300\\text{ mm}$ and effective depth $d = 480\\text{ mm}$. Concrete compressive strength $f\'_c = 28\\text{ MPa}$ and stirrup yield strength $f_{yt} = 275\\text{ MPa}$. The factored shear force at the critical section located $d$ from the face of the support is $V_u = 230\\text{ kN}$.\n\n43. Calculate the nominal shear strength $V_c$ (kN) provided by the concrete using the simplified NSCP 2015 provision ($\\lambda = 1.0$).',
+    text: 'Situation 15 — A reinforced concrete beam has width $b_w = 300\$ and effective depth $d = 480\$. Concrete compressive strength $f\'_c = 28\$ and stirrup yield strength $f_{yt} = 275\$. The factored shear force at the critical section located $d$ from the face of the support is $V_u = 230\$.\n\n43. Calculate the nominal shear strength $V_c$ (kN) provided by the concrete using the simplified NSCP 2015 provision ($\\lambda = 1.0$).',
     figureCaption: 'Situation 15: Reinforced concrete beam shear stirrups and critical section at distance d',
     figureSvg: `<svg viewBox="0 0 460 220" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -657,7 +657,7 @@ export const PSAD_APR2025_PART3: Question[] = [
       summary: 'Per NSCP 2015 Section 422.5.5.1: $V_c = 0.17 \\lambda \\sqrt{f\'_c} b_w d$.',
       formulas: [
         'V_c = 0.17 \\times 1.0 \\times \\sqrt{28} \\times 300 \\times 480 \\times 10^{-3}',
-        'V_c = 0.17 \\times 5.2915 \\times 144 = 129.54\\text{ kN}',
+        'V_c = 0.17 \\times 5.2915 \\times 144 = 129.54',
       ],
       steps: [
         'Step 1: NSCP 2015 simplified formula for shear resisted by normal-weight concrete: Vc = 0.17 λ √f\'c bw d.',
@@ -690,7 +690,7 @@ export const PSAD_APR2025_PART3: Question[] = [
       summary: 'The basic design equation is $\\phi (V_c + V_s) \\ge V_u \\implies V_s = \\frac{V_u}{\\phi} - V_c$.',
       formulas: [
         'V_s = \\frac{V_u}{\\phi} - V_c',
-        'V_s = \\frac{230}{0.75} - 129.54 = 306.67 - 129.54 = 177.13\\text{ kN}',
+        'V_s = \\frac{230}{0.75} - 129.54 = 306.67 - 129.54 = 177.13',
       ],
       steps: [
         'Step 1: Required nominal shear capacity: Vn = Vu / φ = 230 kN / 0.75 = 306.67 kN.',
@@ -712,7 +712,7 @@ export const PSAD_APR2025_PART3: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Required Stirrup Spacing & Maximum Limits',
-    text: 'Situation 15 (Cont.) — 45. If $10\\text{ mm}$ diameter double-leg stirrups ($A_v = 157\\text{ mm}^2$) are used, determine the required stirrup spacing $s$ (mm) at the critical section.',
+    text: 'Situation 15 (Cont.) — 45. If $10\$ diameter double-leg stirrups ($A_v = 157\$) are used, determine the required stirrup spacing $s$ (mm) at the critical section.',
     options: [
       { label: 'A', text: '115' },
       { label: 'B', text: '140' },
@@ -721,11 +721,11 @@ export const PSAD_APR2025_PART3: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Compute spacing from stirrup formula: $s = \\frac{A_v f_{yt} d}{V_s}$. Check against NSCP 2015 maximum spacing limit $s_{\\max} = \\min(d/2, 600\\text{ mm})$.',
+      summary: 'Compute spacing from stirrup formula: $s = \\frac{A_v f_{yt} d}{V_s}$. Check against NSCP 2015 maximum spacing limit $s_{\\max} = \\min(d/2, 600\)$.',
       formulas: [
-        's = \\frac{A_v f_{yt} d}{V_s} = \\frac{157 \\times 275 \\times 480}{177.13 \\times 10^3} = \\frac{20,724,000}{177,130} = 117.0\\text{ mm}',
-        's_{\\max} = \\frac{d}{2} = \\frac{480}{2} = 240\\text{ mm}',
-        '\\text{Provide } s = 115\\text{ mm (rounded down to practical multiple of 25 mm / safe increments)}',
+        's = \\frac{A_v f_{yt} d}{V_s} = \\frac{157 \\times 275 \\times 480}{177.13 \\times 10^3} = \\frac{20,724,000}{177,130} = 117.0',
+        's_{\\max} = \\frac{d}{2} = \\frac{480}{2} = 240',
+        's = 115\\text{ (rounded down to practical multiple of 25 / safe increments)}',
       ],
       steps: [
         'Step 1: Area of 2-leg 10-mm stirrups: Av = 2 × [π(10)² / 4] = 157.08 mm².',

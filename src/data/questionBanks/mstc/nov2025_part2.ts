@@ -207,7 +207,7 @@ export const MSTC_NOV2025_PART2: Question[] = [
       summary: 'Separate variables in dy/dx = 0.1(500 - y) to obtain y = 500 - A·e^(-0.1x), evaluate constant A using x = 3, y = 100, and solve for y when x = 5.',
       formulas: [
         '\\frac{1}{500 - y} dy = 0.1 dx',
-        '-\\ln|500 - y| = 0.1x + C',
+        '\\ln|500 - y| = 0.1x + C',
         'y = 500 - A e^{-0.1x}',
         '100 = 500 - A e^{-0.1(3)} \\implies A = 539.94',
         'y(5) = 500 - 539.94 e^{-0.1(5)} = 172.51 \\approx 173',
@@ -234,7 +234,7 @@ export const MSTC_NOV2025_PART2: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Differential Equations - Second Order Initial Value Problem',
-    text: 'Given the differential equation y\'\' = 4x - 2. If y = 1 and y\' = 1 at x = 0, what is the original equation?\nA. (2/3)x³ - x² + x + 1\nB. (2/3)x³ - x² - x - 1\nC. (2/3)x³ - x² + x - 1\nD. (2/3)x³ - x² - x + 1',
+    text: "Given the differential equation y'' = 4x - 2. If y = 1 and y' = 1 at x = 0, what is the original equation?\\nA. (2/3)x³ - x² + x + 1\\nB. (2/3)x³ - x² - x - 1\\nC. (2/3)x³ - x² + x - 1\\nD. (2/3)x³ - x² - x + 1",
     options: [
       { label: 'A', text: '(2/3)x³ - x² + x + 1' },
       { label: 'B', text: '(2/3)x³ - x² - x - 1' },
@@ -245,7 +245,7 @@ export const MSTC_NOV2025_PART2: Question[] = [
     solution: {
       summary: 'Integrate twice successively and determine constants of integration using initial conditions y\'(0) = 1 and y(0) = 1.',
       formulas: [
-        'y\'\' = 4x - 2',
+        "y'' = 4x - 2",
         'y\' = 2x^2 - 2x + C_1',
         'y\'(0) = 1 \\implies C_1 = 1',
         'y = \\frac{2}{3}x^3 - x^2 + x + C_2',
@@ -368,7 +368,7 @@ export const MSTC_NOV2025_PART2: Question[] = [
       summary: 'Effort force is inversely proportional to mechanical advantage: F = W / MA. System (a) has the lowest MA (2 supporting segments), so it requires the greatest effort force.',
       formulas: [
         'F = \\frac{W}{MA}',
-        'MA = \\text{Number of supporting rope segments}',
+        'MA =',
       ],
       steps: [
         'Step 1: Mechanical advantage (MA) is the ratio of load lifted to effort applied: F = W / MA.',

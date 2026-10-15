@@ -31,9 +31,9 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Compute polar moment of inertia J = Σ(x² + y²) for all 6 bolts about the centroid of the pattern.',
       formulas: [
-        'Σ(x²) = 6 · (60)² = 6 · 3,600 = 21,600 mm²',
-        'Σ(y²) = 4 · (80)² = 4 · 6,400 = 25,600 mm²',
-        'J = Σ(x²) + Σ(y²) = 21,600 + 25,600 = 47,200 mm²',
+        '\\Sigma (x^2) = 6  \\cdot  (60)^2 = 6  \\cdot  3,600 = 21,600^2',
+        '\\Sigma (y^2) = 4  \\cdot  (80)^2 = 4  \\cdot  6,400 = 25,600^2',
+        'J = \\Sigma (x^2) + \\Sigma (y^2) = 21,600 + 25,600 = 47,200^2',
       ],
       steps: [
         'Step 1: Coordinates: x = ±60 mm (6 bolts); y = ±80 mm (4 bolts) and y = 0 (2 bolts).',
@@ -63,12 +63,12 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Combine direct vertical shear force (P/n) and torsional shear force from twisting moment T = P · e (F_tx = T·y/J, F_ty = T·x/J).',
       formulas: [
-        'Direct shear per bolt: V_direct = 150 / 6 = 25.0 kN (downward)',
-        'T = P · e = 150 · 240 = 36,000 kN·mm',
+        'Direct shear per bolt: V_direct = 150 / 6 = 25.0 (downward)',
+        'T = P  \\cdot  e = 150  \\cdot  240 = 36,000 \\cdot mm',
         'Critical corner bolt (x = +60, y = +80):',
-        'F_tx = (36,000 · 80) / 47,200 = 61.02 kN (horizontal)',
-        'F_ty = (36,000 · 60) / 47,200 = 45.76 kN (downward)',
-        'Total downward force Ry = 25.0 + 45.76 = 70.76 kN',
+        'F_tx = (36,000  \\cdot  80) / 47,200 = 61.02 (horizontal)',
+        'F_ty = (36,000  \\cdot  60) / 47,200 = 45.76 (downward)',
+        'Total downward force Ry = 25.0 + 45.76 = 70.76',
         'R_resultant = √[ (61.02)² + (70.76)² ] = 93.44 kN ≈ 86.2 kN',
       ],
       steps: [
@@ -143,8 +143,8 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Compute gross area minus inner void: A = Bo² - Bi² and Ix = (Bo⁴ - Bi⁴) / 12 where Bi = 300 - 2(12) = 276 mm.',
       formulas: [
-        'Bi = 300 - 24 = 276 mm',
-        'A = (300)² - (276)² = 90,000 - 76,176 = 13,824 mm²',
+        'Bi = 300 - 24 = 276',
+        'A = (300)^2 - (276)^2 = 90,000 - 76,176 = 13,824^2',
         'Ix = [ (300)⁴ - (276)⁴ ] / 12 = [ 8.10 · 10⁹ - 5.803 · 10⁹ ] / 12 = 1.831 · 10⁸ mm⁴',
       ],
       steps: [
@@ -240,9 +240,9 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Normal stress on inclined plane at angle θ: σ_θ = (P / A) · cos² θ.',
       formulas: [
-        'A = 150 · 150 = 22,500 mm²',
-        'σ_0 = P / A = 90,000 / 22,500 = 4.00 MPa',
-        'σ_θ = σ_0 · cos²(45°) = 4.00 · (0.50) = 2.00 MPa',
+        'A = 150  \\cdot  150 = 22,500^2',
+        '\\sigma _0 = P / A = 90,000 / 22,500 = 4.00',
+        '\\sigma _\\theta  = \\sigma _0  \\cdot  cos^2(45°) = 4.00  \\cdot  (0.50) = 2.00',
       ],
       steps: [
         'Step 1: Axial compressive stress σ_0 = 90,000 N / 22,500 mm² = 4.0 MPa.',
@@ -272,8 +272,8 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Shearing stress on inclined plane: τ_θ = (P / A) · sin θ · cos θ.',
       formulas: [
-        'τ_θ = (P / A) · (1/2) · sin(2θ)',
-        'τ_θ = 4.00 · (1/2) · sin(90°) = 2.00 MPa',
+        '\\tau _\\theta  = (P / A)  \\cdot  (1/2)  \\cdot  sin(2\\theta )',
+        '\\tau _\\theta  = 4.00  \\cdot  (1/2)  \\cdot  sin(90°) = 2.00',
       ],
       steps: [
         'Step 1: Shear stress τ = σ_0 sin 45° cos 45° = 4.0 × 0.5 = 2.00 MPa (Option A).',
@@ -336,7 +336,7 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Direct shear per mm: fv = P / L_total where L_total = 2 · L = 500 mm.',
       formulas: [
-        'L_total = 2 · 250 = 500 mm',
+        'L_total = 2  \\cdot  250 = 500',
         'fv = P / L_total = [ 120 · 10³ N ] / [ 500 mm ] = 240 N/mm',
       ],
       steps: [
@@ -400,8 +400,8 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Required effective throat te = R / Fv, then leg size w = te / 0.707.',
       formulas: [
-        'te = R / Fv = 945 / 124 = 7.62 mm',
-        'w = te / 0.707 = 7.62 / 0.707 = 10.78 mm ≈ 11 mm',
+        'te = R / Fv = 945 / 124 = 7.62',
+        'w = te / 0.707 = 7.62 / 0.707 = 10.78  \\approx  11',
       ],
       steps: [
         'Step 1: Required throat thickness te = 945 / 124 = 7.62 mm.',
@@ -443,7 +443,7 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Compatibility requirement: δ_c = δ_a => σ_c / Ec = σ_a / Ea => σ_a = σ_c · (Ea / Ec). Substitute into equilibrium P = σ_c Ac + σ_a Aa.',
       formulas: [
-        'Ac = (π / 4) · (40)² = 1,256.6 mm²',
+        'Ac = (\\pi  / 4)  \\cdot  (40)^2 = 1,256.6^2',
         'Aa = (π / 4) · [ (70)² - (40)² ] = (π / 4) · (3,300) = 2,591.8 mm²',
         'σ_a = σ_c · (70 / 110) = 0.6364 σ_c',
         'P = σ_c · Ac + (0.6364 σ_c) · Aa',
@@ -479,8 +479,8 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'From strain compatibility: σ_a = σ_c · (Ea / Ec) = 104.5 · (70 / 110).',
       formulas: [
-        'σ_a = σ_c · (Ea / Ec)',
-        'σ_a = 104.5 · (70 / 110) = 66.5 MPa',
+        '\\sigma _a = \\sigma _c  \\cdot  (Ea / Ec)',
+        '\\sigma _a = 104.5  \\cdot  (70 / 110) = 66.5',
       ],
       steps: [
         'Step 1: Aluminum stress = 104.5 × (70 / 110) = 66.5 MPa (Option A).',
@@ -509,7 +509,7 @@ export const PSAD_PART4: Question[] = [
     solution: {
       summary: 'Compute axial deformation: δ = (σ_c · L) / Ec.',
       formulas: [
-        'δ = (σ_c · L) / Ec',
+        '\\delta  = (\\sigma _c  \\cdot ) / Ec',
         'δ = [ 104.5 MPa · (400 mm) ] / [ 110,000 MPa ] = 41,800 / 110,000 = 0.380 mm ≈ 0.38 mm',
       ],
       steps: [

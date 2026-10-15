@@ -10,7 +10,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Beam Section Properties & Neutral Axis',
-    text: 'Situation 6 — A built-up T-section beam is composed of a flange $200\\text{ mm} \\times 25\\text{ mm}$ and a vertical web $25\\text{ mm} \\times 250\\text{ mm}$ welded to the underside of the flange. The total depth of the beam is $275\\text{ mm}$.\n\n16. Determine the distance $\\bar{y}$ (mm) of the neutral axis from the bottom fiber of the section.',
+    text: 'Situation 6 — A built-up T-section beam is composed of a flange $200\ \\times 25\$ and a vertical web $25\ \\times 250\$ welded to the underside of the flange. The total depth of the beam is $275\$.\n\n16. Determine the distance $\\bar{y}$ (mm) of the neutral axis from the bottom fiber of the section.',
     figureCaption: 'Situation 6: Built-up T-section beam cross-section with flange and web dimensions',
     figureSvg: `<svg viewBox="0 0 400 320" class="w-full max-w-sm mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -65,8 +65,8 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'Use the first moment of area principle: $\\bar{y} = \\frac{\\sum A_i y_i}{\\sum A_i}$ measured from the bottom of the section.',
       formulas: [
-        'A_1 = 25 \\times 250 = 6,250\\text{ mm}^2, \\quad y_1 = 125\\text{ mm}',
-        'A_2 = 200 \\times 25 = 5,000\\text{ mm}^2, \\quad y_2 = 250 + 12.5 = 262.5\\text{ mm}',
+        'A_1 = 25 \\times 250 = 6,250\, \\quad y_1 = 125',
+        'A_2 = 200 \\times 25 = 5,000\, \\quad y_2 = 250 + 12.5 = 262.5',
         '\\bar{y} = \\frac{A_1 y_1 + A_2 y_2}{A_1 + A_2} = \\frac{6250(125) + 5000(262.5)}{6250 + 5000}',
       ],
       steps: [
@@ -90,7 +90,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Moment of Inertia (Parallel-Axis Theorem)',
-    text: 'Situation 6 (Cont.) — 17. Calculate the moment of inertia $I_{NA}$ (in $10^6\\text{ mm}^4$) of the T-section about its centroidal horizontal axis.',
+    text: 'Situation 6 (Cont.) — 17. Calculate the moment of inertia $I_{NA}$ (in $10^6\$) of the T-section about its centroidal horizontal axis.',
     options: [
       { label: 'A', text: '113.28' },
       { label: 'B', text: '95.45' },
@@ -101,8 +101,8 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'Apply the parallel axis theorem: $I_{NA} = \\sum (I_{gi} + A_i d_i^2)$ for the web and flange components.',
       formulas: [
-        'I_{g1} = \\frac{25(250)^3}{12} = 32.552 \\times 10^6\\text{ mm}^4, \\quad d_1 = |187.5 - 125| = 62.5\\text{ mm}',
-        'I_{g2} = \\frac{200(25)^3}{12} = 0.260 \\times 10^6\\text{ mm}^4, \\quad d_2 = |262.5 - 187.5| = 75.0\\text{ mm}',
+        'I_{g1} = \\frac{25(250)^3}{12} = 32.552 \\times 10^6\, \\quad d_1 = |187.5 - 125| = 62.5',
+        'I_{g2} = \\frac{200(25)^3}{12} = 0.260 \\times 10^6\, \\quad d_2 = |262.5 - 187.5| = 75.0',
         'I_{NA} = [I_{g1} + A_1 d_1^2] + [I_{g2} + A_2 d_2^2]',
       ],
       steps: [
@@ -127,7 +127,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Flexural Bending Capacity',
-    text: 'Situation 6 (Cont.) — 18. The beam is simply supported over a span of $6\\text{ m}$ and carries a uniformly distributed load $w$ (including self-weight). If the allowable bending stresses are $30\\text{ MPa}$ in tension and $100\\text{ MPa}$ in compression, determine the maximum safe load $w$ (kN/m).',
+    text: 'Situation 6 (Cont.) — 18. The beam is simply supported over a span of $6\$ and carries a uniformly distributed load $w$ (including self-weight). If the allowable bending stresses are $30\$ in tension and $100\$ in compression, determine the maximum safe load $w$ (kN/m).',
     options: [
       { label: 'A', text: '4.03' },
       { label: 'B', text: '5.24' },
@@ -136,12 +136,12 @@ export const PSAD_APR2025_PART2: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'For positive bending, tension occurs at the bottom fiber ($y_{bot} = 187.5\\text{ mm}$) and compression at the top fiber ($y_{top} = 87.5\\text{ mm}$). Check both criteria: $M_{allow} = \\min\\left(\\frac{\\sigma_t I}{y_{bot}}, \\frac{\\sigma_c I}{y_{top}}\\right)$. Equate to $M_{max} = \\frac{w L^2}{8}$.',
+      summary: 'For positive bending, tension occurs at the bottom fiber ($y_{bot} = 187.5\$) and compression at the top fiber ($y_{top} = 87.5\$). Check both criteria: $M_{allow} = \\min\\left(\\frac{\\sigma_t I}{y_{bot}}, \\frac{\\sigma_c I}{y_{top}}\\right)$. Equate to $M_{max} = \\frac{w L^2}{8}$.',
       formulas: [
-        'M_{\\text{tension}} = \\frac{30 \\times 113.28 \\times 10^6}{187.5} \\times 10^{-6} = 18.125\\text{ kN}\\cdot\\text{m}',
-        'M_{\\text{comp}} = \\frac{100 \\times 113.28 \\times 10^6}{87.5} \\times 10^{-6} = 129.46\\text{ kN}\\cdot\\text{m}',
-        'M_{\\text{governing}} = 18.125\\text{ kN}\\cdot\\text{m}',
-        'w = \\frac{8 M}{L^2} = \\frac{8(18.125)}{6^2} = 4.028\\text{ kN/m}',
+        'M_{\\text{tension}} = \\frac{30 \\times 113.28 \\times 10^6}{187.5} \\times 10^{-6} = 18.125',
+        'M_{\\text{comp}} = \\frac{100 \\times 113.28 \\times 10^6}{87.5} \\times 10^{-6} = 129.46',
+        'M_{\\text{governing}} = 18.125',
+        'w = \\frac{8 M}{L^2} = \\frac{8(18.125)}{6^2} = 4.028',
       ],
       steps: [
         'Step 1: Distance to tension fiber (bottom): y_bot = 187.5 mm.',
@@ -165,7 +165,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Torsional Shearing Stress in Solid Shaft',
-    text: 'Situation 7 — A solid circular steel shaft $50\\text{ mm}$ in diameter and $1.5\\text{ m}$ long is subjected to a torque $T = 1,800\\text{ N}\\cdot\\text{m}$. Modulus of rigidity $G = 80\\text{ GPa}$.\n\n19. What is the maximum torsional shearing stress (MPa) developed in the shaft?',
+    text: 'Situation 7 — A solid circular steel shaft $50\$ in diameter and $1.5\$ long is subjected to a torque $T = 1,800\\\cdot\$. Modulus of rigidity $G = 80\$.\n\n19. What is the maximum torsional shearing stress (MPa) developed in the shaft?',
     figureCaption: 'Situation 7: Circular solid and hollow shaft under torsional load T',
     figureSvg: `<svg viewBox="0 0 460 200" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -209,7 +209,7 @@ export const PSAD_APR2025_PART2: Question[] = [
       summary: 'Use the torsion formula for a solid circular cross-section: $\\tau_{\\max} = \\frac{16 T}{\\pi d^3}$.',
       formulas: [
         '\\tau_{\\max} = \\frac{T c}{J} = \\frac{16 T}{\\pi d^3}',
-        '\\tau_{\\max} = \\frac{16 \\times (1,800 \\times 10^3)}{\\pi (50)^3} = \\frac{28,800,000}{392,699.08} = 73.34\\text{ MPa}',
+        '\\tau_{\\max} = \\frac{16 \\times (1,800 \\times 10^3)}{\\pi (50)^3} = \\frac{28,800,000}{392,699.08} = 73.34',
       ],
       steps: [
         'Step 1: Polar moment of inertia J = π d⁴ / 32 = π (50)⁴ / 32 = 613,592.3 mm⁴.',
@@ -231,7 +231,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Angle of Twist in Circular Shaft',
-    text: 'Situation 7 (Cont.) — 20. Find the angle of twist (in degrees) of the shaft over its $1.5\\text{ m}$ length.',
+    text: 'Situation 7 (Cont.) — 20. Find the angle of twist (in degrees) of the shaft over its $1.5\$ length.',
     options: [
       { label: 'A', text: '3.15°' },
       { label: 'B', text: '2.52°' },
@@ -243,7 +243,7 @@ export const PSAD_APR2025_PART2: Question[] = [
       summary: 'Compute angle of twist in radians: $\\theta = \\frac{T L}{J G}$, then convert to degrees using $\\theta^\\circ = \\theta \\times \\frac{180^\\circ}{\\pi}$.',
       formulas: [
         '\\theta = \\frac{T L}{J G}',
-        '\\theta = \\frac{1,800 \\times 10^3 \\text{ N}\\cdot\\text{mm} \\times 1,500\\text{ mm}}{613,592.3\\text{ mm}^4 \\times 80,000\\text{ MPa}} = 0.05508\\text{ rad}',
+        '\\theta = \\frac{1,800 \\times 10^3 \\\cdot\ \\times 1,500\}{613,592.3\ \\times 80,000\} = 0.05508',
         '\\theta^\\circ = 0.05508 \\times \\frac{180}{\\pi} = 3.156^\\circ \\approx 3.15^\\circ',
       ],
       steps: [
@@ -264,7 +264,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Hollow Shaft Weight Reduction & Torque Capacity',
-    text: 'Situation 7 (Cont.) — 21. If the solid shaft is replaced by a hollow shaft with the same allowable shearing stress of $73.34\\text{ MPa}$ and outside diameter $D_o = 60\\text{ mm}$, find the required inside diameter $D_i$ (mm) to transmit the same torque of $1,800\\text{ N}\\cdot\\text{m}$.',
+    text: 'Situation 7 (Cont.) — 21. If the solid shaft is replaced by a hollow shaft with the same allowable shearing stress of $73.34\$ and outside diameter $D_o = 60\$, find the required inside diameter $D_i$ (mm) to transmit the same torque of $1,800\\\cdot\$.',
     options: [
       { label: 'A', text: '46.8' },
       { label: 'B', text: '42.4' },
@@ -275,10 +275,10 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'For a hollow shaft: $\\tau_{\\max} = \\frac{16 T D_o}{\\pi (D_o^4 - D_i^4)}$. Solve for $D_i$.',
       formulas: [
-        'D_o^4 - D_i^4 = \\frac{16 T D_o}{\\pi \\tau_{\\max}} = \\frac{16(1,800,000)(60)}{\\pi(73.34)} = 7.500 \\times 10^6\\text{ mm}^4',
-        'D_o^4 = (60)^4 = 12.960 \\times 10^6\\text{ mm}^4',
-        'D_i^4 = 12.960 \\times 10^6 - 7.500 \\times 10^6 = 5.460 \\times 10^6\\text{ mm}^4',
-        'D_i = (5.460 \\times 10^6)^{1/4} = 48.34\\text{ mm}',
+        'D_o^4 - D_i^4 = \\frac{16 T D_o}{\\pi \\tau_{\\max}} = \\frac{16(1,800,000)(60)}{\\pi(73.34)} = 7.500 \\times 10^6',
+        'D_o^4 = (60)^4 = 12.960 \\times 10^6',
+        'D_i^4 = 12.960 \\times 10^6 - 7.500 \\times 10^6 = 5.460 \\times 10^6',
+        'D_i = (5.460 \\times 10^6)^{1/4} = 48.34',
       ],
       steps: [
         'Step 1: Formula for hollow shaft capacity: J = π (Do⁴ - Di⁴) / 32.',
@@ -301,7 +301,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Thin-Walled Cylindrical Vessels & Hoop Stress',
-    text: 'Situation 8 — A cylindrical steel pressure vessel has an inside diameter $D = 1,200\\text{ mm}$ and a wall thickness $t = 12\\text{ mm}$. It is subjected to an internal gauge pressure $p = 2.4\\text{ MPa}$.\n\n22. Compute the tangential (hoop) stress $\\sigma_t$ (MPa) in the cylindrical wall.',
+    text: 'Situation 8 — A cylindrical steel pressure vessel has an inside diameter $D = 1,200\$ and a wall thickness $t = 12\$. It is subjected to an internal gauge pressure $p = 2.4\$.\n\n22. Compute the tangential (hoop) stress $\\sigma_t$ (MPa) in the cylindrical wall.',
     options: [
       { label: 'A', text: '120' },
       { label: 'B', text: '60' },
@@ -312,7 +312,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'Tangential (hoop) stress in a thin-walled cylindrical vessel is given by $\\sigma_t = \\frac{p D}{2 t}$.',
       formulas: [
-        '\\sigma_t = \\frac{p D}{2 t} = \\frac{2.4 \\times 1,200}{2 \\times 12} = 120\\text{ MPa}',
+        '\\sigma_t = \\frac{p D}{2 t} = \\frac{2.4 \\times 1,200}{2 \\times 12} = 120',
       ],
       steps: [
         'Step 1: Check thin-walled criterion: D / t = 1,200 / 12 = 100 > 20, confirming thin-shell validity.',
@@ -344,7 +344,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'Longitudinal stress in a closed-end cylinder is $\\sigma_l = \\frac{p D}{4 t} = \\frac{\\sigma_t}{2}$.',
       formulas: [
-        '\\sigma_l = \\frac{p D}{4 t} = \\frac{2.4 \\times 1,200}{4 \\times 12} = 60\\text{ MPa}',
+        '\\sigma_l = \\frac{p D}{4 t} = \\frac{2.4 \\times 1,200}{4 \\times 12} = 60',
       ],
       steps: [
         'Step 1: Axial force equilibrium: p (π D² / 4) = σl (π D t).',
@@ -374,10 +374,10 @@ export const PSAD_APR2025_PART2: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'At the inner surface, principal stresses are $\\sigma_1 = \\sigma_t = 120\\text{ MPa}$, $\\sigma_2 = \\sigma_l = 60\\text{ MPa}$, and $\\sigma_3 = -p = -2.4\\text{ MPa} \\approx 0$ at the outer surface. The absolute maximum shear stress is $\\tau_{\\text{abs max}} = \\frac{\\sigma_1 - \\sigma_3}{2} = \\frac{120 - 0}{2} = 60\\text{ MPa}$.',
+      summary: 'At the inner surface, principal stresses are $\\sigma_1 = \\sigma_t = 120\$, $\\sigma_2 = \\sigma_l = 60\$, and $\\sigma_3 = -p = -2.4\ \\approx 0$ at the outer surface. The absolute maximum shear stress is $\\tau_{\\text{abs max}} = \\frac{\\sigma_1 - \\sigma_3}{2} = \\frac{120 - 0}{2} = 60\$.',
       formulas: [
-        '\\tau_{\\text{in-plane}} = \\frac{\\sigma_t - \\sigma_l}{2} = \\frac{120 - 60}{2} = 30\\text{ MPa}',
-        '\\tau_{\\text{abs max}} = \\frac{\\sigma_1 - 0}{2} = \\frac{120}{2} = 60\\text{ MPa}',
+        '\\tau_{\\text{in-plane}} = \\frac{\\sigma_t - \\sigma_l}{2} = \\frac{120 - 60}{2} = 30',
+        '\\tau_{\\text{abs max}} = \\frac{\\sigma_1 - 0}{2} = \\frac{120}{2} = 60',
       ],
       steps: [
         'Step 1: The two in-plane principal normal stresses are σ1 = 120 MPa and σ2 = 60 MPa (both tensile).',
@@ -399,7 +399,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Mechanics of Deformable Bodies - Principal Stresses (Mohr\'s Circle)',
-    text: 'Situation 9 — A plane stress state on a structural element is given by: $\\sigma_x = 80\\text{ MPa}$ (tension), $\\sigma_y = -40\\text{ MPa}$ (compression), and shear stress $\\tau_{xy} = 45\\text{ MPa}$.\n\n25. Determine the maximum in-plane principal stress $\\sigma_1$ (MPa).',
+    text: 'Situation 9 — A plane stress state on a structural element is given by: $\\sigma_x = 80\$ (tension), $\\sigma_y = -40\$ (compression), and shear stress $\\tau_{xy} = 45\$.\n\n25. Determine the maximum in-plane principal stress $\\sigma_1$ (MPa).',
     figureCaption: 'Situation 9: Biaxial stress element and corresponding Mohr\'s stress circle',
     figureSvg: `<svg viewBox="0 0 460 240" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -445,9 +445,9 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'Compute center $\\sigma_{\\text{avg}} = \\frac{\\sigma_x + \\sigma_y}{2}$ and radius $R = \\sqrt{\\left(\\frac{\\sigma_x - \\sigma_y}{2}\\right)^2 + \\tau_{xy}^2}$. Then $\\sigma_1 = \\sigma_{\\text{avg}} + R$.',
       formulas: [
-        '\\sigma_{\\text{avg}} = \\frac{80 + (-40)}{2} = 20\\text{ MPa}',
-        'R = \\sqrt{\\left(\\frac{80 - (-40)}{2}\\right)^2 + (45)^2} = \\sqrt{60^2 + 45^2} = \\sqrt{3,600 + 2,025} = \\sqrt{5,625} = 75\\text{ MPa}',
-        '\\sigma_1 = 20 + 75 = 95\\text{ MPa}',
+        '\\sigma_{\\text{avg}} = \\frac{80 + (-40)}{2} = 20',
+        'R = \\sqrt{\\left(\\frac{80 - (-40)}{2}\\right)^2 + (45)^2} = \\sqrt{60^2 + 45^2} = \\sqrt{3,600 + 2,025} = \\sqrt{5,625} = 75',
+        '\\sigma_1 = 20 + 75 = 95',
       ],
       steps: [
         'Step 1: Average normal stress: σ_avg = (80 - 40) / 2 = 20 MPa.',
@@ -479,7 +479,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     solution: {
       summary: 'The minor principal stress is $\\sigma_2 = \\sigma_{\\text{avg}} - R$.',
       formulas: [
-        '\\sigma_2 = \\sigma_{\\text{avg}} - R = 20 - 75 = -55\\text{ MPa}',
+        '\\sigma_2 = \\sigma_{\\text{avg}} - R = 20 - 75 = -55',
       ],
       steps: [
         'Step 1: From the Mohr\'s circle parameters: σ_avg = 20 MPa, R = 75 MPa.',
@@ -509,9 +509,9 @@ export const PSAD_APR2025_PART2: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Maximum in-plane shear stress equals the radius of Mohr\'s circle: $\\tau_{\\max} = R = 75\\text{ MPa}$. Orientation of the principal plane is given by $\\tan 2\\theta_p = \\frac{2\\tau_{xy}}{\\sigma_x - \\sigma_y}$.',
+      summary: 'Maximum in-plane shear stress equals the radius of Mohr\'s circle: $\\tau_{\\max} = R = 75\$. Orientation of the principal plane is given by $\\tan 2\\theta_p = \\frac{2\\tau_{xy}}{\\sigma_x - \\sigma_y}$.',
       formulas: [
-        '\\tau_{\\max} = R = 75\\text{ MPa}',
+        '\\tau_{\\max} = R = 75',
         '\\tan 2\\theta_p = \\frac{2(45)}{80 - (-40)} = \\frac{90}{120} = 0.75',
         '2\\theta_p = \\arctan(0.75) = 36.87^\\circ \\implies \\theta_p = 18.43^\\circ',
       ],
@@ -535,7 +535,7 @@ export const PSAD_APR2025_PART2: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Analysis - Beam Support Reactions',
-    text: 'Situation 10 — An overhanging beam $ABC$ has a pinned support at $A$ and a roller support at $B$. Span $AB = 6\\text{ m}$ and overhang $BC = 2\\text{ m}$. It carries a uniformly distributed load $w = 12\\text{ kN/m}$ throughout span $AB$ and a concentrated downward point load $P = 24\\text{ kN}$ at the overhang tip $C$.\n\n28. Determine the reaction (kN) at support $B$.',
+    text: 'Situation 10 — An overhanging beam $ABC$ has a pinned support at $A$ and a roller support at $B$. Span $AB = 6\$ and overhang $BC = 2\$. It carries a uniformly distributed load $w = 12\$ throughout span $AB$ and a concentrated downward point load $P = 24\$ at the overhang tip $C$.\n\n28. Determine the reaction (kN) at support $B$.',
     figureCaption: 'Situation 10: Overhanging beam ABC subjected to distributed load and tip concentrated load',
     figureSvg: `<svg viewBox="0 0 520 200" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -596,7 +596,7 @@ export const PSAD_APR2025_PART2: Question[] = [
       formulas: [
         '\\sum M_A = 0 \\implies 6 B_y - (12 \\times 6)(3) - 24(8) = 0',
         '6 B_y = 216 + 192 = 408',
-        'B_y = \\frac{408}{6} = 68\\text{ kN}',
+        'B_y = \\frac{408}{6} = 68',
       ],
       steps: [
         'Step 1: Resultant of uniform load on AB: W = 12 kN/m × 6 m = 72 kN located at 3 m from A.',
@@ -627,12 +627,12 @@ export const PSAD_APR2025_PART2: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Compute reaction at A: $A_y = (72 + 24) - 68 = 28\\text{ kN}$. The shear zero point occurs at $x = \\frac{A_y}{w} = \\frac{28}{12} = 2.333\\text{ m}$. Then $M_{\\max} = \\frac{A_y^2}{2w}$.',
+      summary: 'Compute reaction at A: $A_y = (72 + 24) - 68 = 28\$. The shear zero point occurs at $x = \\frac{A_y}{w} = \\frac{28}{12} = 2.333\$. Then $M_{\\max} = \\frac{A_y^2}{2w}$.',
       formulas: [
-        'A_y = (12 \\times 6 + 24) - 68 = 28\\text{ kN}',
-        'x = \\frac{A_y}{w} = \\frac{28}{12} = 2.333\\text{ m}',
-        'M_{\\max} = A_y(x) - \\frac{w x^2}{2} = 28(2.333) - 6(2.333)^2 = 65.33 - 32.67 = 32.67\\text{ kN}\\cdot\\text{m} \\dots',
-        'M_{\\max} = \\frac{A_y^2}{2w} = \\frac{28^2}{2(12)} = \\frac{784}{24} = 32.67\\text{ kN}\\cdot\\text{m}',
+        'A_y = (12 \\times 6 + 24) - 68 = 28',
+        'x = \\frac{A_y}{w} = \\frac{28}{12} = 2.333',
+        'M_{\\max} = A_y(x) - \\frac{w x^2}{2} = 28(2.333) - 6(2.333)^2 = 65.33 - 32.67 = 32.67\\\cdot\ \\dots',
+        'M_{\\max} = \\frac{A_y^2}{2w} = \\frac{28^2}{2(12)} = \\frac{784}{24} = 32.67',
       ],
       steps: [
         'Step 1: Compute vertical reaction at support A: ΣFy = 0 => Ay = (72 + 24) - 68 = 28 kN.',
@@ -663,9 +663,9 @@ export const PSAD_APR2025_PART2: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Isolate the overhang segment BC to the right of support B: $M_B = -P \\times L_2 = -24\\text{ kN} \\times 2\\text{ m} = -48\\text{ kN}\\cdot\\text{m}$.',
+      summary: 'Isolate the overhang segment BC to the right of support B: $M_B = -P \\times L_2 = -24\ \\times 2\ = -48\\\cdot\$.',
       formulas: [
-        'M_B = -P L_2 = -24\\text{ kN} \\times 2\\text{ m} = -48\\text{ kN}\\cdot\\text{m}',
+        'M_B = -P L_2 = -24\ \\times 2\ = -48',
       ],
       steps: [
         'Step 1: Consider a section just to the left or right of support B.',

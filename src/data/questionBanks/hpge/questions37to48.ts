@@ -21,11 +21,11 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'Compute major principal stress σ₁ = σ₃ + Δσ = 600 kPa. Mohr circle radius R = 175 kPa, center OC = 425 kPa. sin φ = R / OC.',
       formulas: [
-        'σ₃ = 250 kPa, Δσ = 350 kPa => σ₁ = 250 + 350 = 600 kPa',
-        'R = Δσ / 2 = 350 / 2 = 175 kPa',
-        'OC = σ₃ + R = 250 + 175 = 425 kPa',
-        'sin φ = R / OC = 175 / 425 = 0.41176',
-        'φ = arcsin(0.41176) = 24.316° ≈ 24.31°',
+        '\\sigma _3 = 250, \\Delta \\sigma  = 350 => \\sigma _1 = 250 + 350 = 600',
+        'R = \\Delta \\sigma  / 2 = 350 / 2 = 175',
+        'OC = \\sigma _3 + R = 250 + 175 = 425',
+        'sin \\phi  = R / OC = 175 / 425 = 0.41176',
+        '\\phi  = arcsin(0.41176) = 24.316°  \\approx  24.31°',
       ],
       steps: [
         'Step 1: Major principal stress at failure: σ₁ = 250 + 350 = 600 kPa.',
@@ -59,8 +59,8 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'In the right triangle FEC, shear stress on failure plane is: τ_f = R · cos φ.',
       formulas: [
-        'τ_f = R · cos φ',
-        'τ_f = 175 · cos(24.316°) = 175 · (0.9113) = 159.48 kPa ≈ 159 kPa',
+        '\\tau _f = R  \\cdot  cos \\phi',
+        '\\tau _f = 175  \\cdot  cos(24.316°) = 175  \\cdot  (0.9113) = 159.48  \\approx  159',
       ],
       steps: [
         'Step 1: Radius of Mohr circle R = 175 kPa.',
@@ -92,8 +92,8 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'The plane of maximum shear corresponds to the top apex of Mohr\'s circle, where normal stress equals the center abscissa OC.',
       formulas: [
-        'σ_D = OC = (σ₁ + σ₃) / 2',
-        'σ_D = (600 + 250) / 2 = 425 kPa',
+        '\\sigma _D = OC = (\\sigma _1 + \\sigma _3) / 2',
+        '\\sigma _D = (600 + 250) / 2 = 425',
       ],
       steps: [
         'Step 1: The peak of Mohr\'s circle occurs directly above the circle\'s center.',
@@ -125,9 +125,9 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'Before lowering, GWT is at surface. Compute p_eff = γ\'_sand · (15.2) + γ\'_clay · (4.3).',
       formulas: [
-        'γ\'_sand = γ_sat - γ_w = 21.2 - 9.81 = 11.39 kN/m³',
-        'γ\'_clay = 18.8 - 9.81 = 8.99 kN/m³',
-        'p_eff = 11.39 · (15.2) + 8.99 · (4.3) = 173.128 + 38.657 = 211.785 kPa ≈ 212 kPa',
+        '\\gamma \'_sand = \\gamma _sat - \\gamma _w = 21.2 - 9.81 = 11.39/m^3',
+        '\\gamma \'_clay = 18.8 - 9.81 = 8.99/m^3',
+        'p_eff = 11.39  \\cdot  (15.2) + 8.99  \\cdot  (4.3) = 173.128 + 38.657 = 211.785  \\approx  212',
       ],
       steps: [
         'Step 1: Submerged unit weight of sand = 21.2 - 9.81 = 11.39 kN/m³.',
@@ -160,9 +160,9 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'Moist unit weight of upper 7.6 m sand is γ_m = γ_d + S · (γ_sat - γ_d) = 19.1 kN/m³. Lower 7.6 m sand and 4.3 m clay remain submerged.',
       formulas: [
-        'γ_m = 18.2 + 0.30 · (21.2 - 18.2) = 18.2 + 0.9 = 19.1 kN/m³',
-        'p_eff = γ_m · (7.6) + γ\'_sand · (7.6) + γ\'_clay · (4.3)',
-        'p_eff = 19.1 · (7.6) + (11.39) · (7.6) + (8.99) · (4.3) = 145.16 + 86.564 + 38.657 = 270.38 kPa ≈ 270 kPa',
+        '\\gamma _m = 18.2 + 0.30  \\cdot  (21.2 - 18.2) = 18.2 + 0.9 = 19.1/m^3',
+        'p_eff = \\gamma _m  \\cdot  (7.6) + \\gamma \'_sand  \\cdot  (7.6) + \\gamma \'_clay  \\cdot  (4.3)',
+        'p_eff = 19.1  \\cdot  (7.6) + (11.39)  \\cdot  (7.6) + (8.99)  \\cdot  (4.3) = 145.16 + 86.564 + 38.657 = 270.38  \\approx  270',
       ],
       steps: [
         'Step 1: Compute moist unit weight of upper 7.6 m sand: γ_m = 18.2 + 0.30(3.0) = 19.1 kN/m³.',
@@ -196,8 +196,8 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'All 15.2 m sand is above water table with γ_m = 19.1 kN/m³. Clay (4.3 m) is submerged: p_eff = γ_m · (15.2) + γ\'_clay · (4.3).',
       formulas: [
-        'p_eff = γ_m_sand · (15.2) + γ\'_clay · (4.3)',
-        'p_eff = 19.1 · (15.2) + (18.8 - 9.81) · (4.3) = 290.32 + 38.657 = 328.98 kPa ≈ 329 kPa',
+        '\\sigma\' = \\sum \\gamma_i h_i - u',
+        '\\gamma\' = \\gamma_{\\mathrm{sat}} - \\gamma_w',
       ],
       steps: [
         'Step 1: The entire 15.2 m of sand has moist unit weight γ_m = 19.1 kN/m³.',
@@ -232,7 +232,7 @@ export const HPGE_PART4: Question[] = [
       formulas: [
         'M_w = 1600 - 1000 = 600 g',
         'M_s = 1000 g',
-        'MC = (600 / 1000) · 100% = 60%',
+        'MC = (600 / 1000)  \\cdot  100\\% = 60\\%',
       ],
       steps: [
         'Step 1: Mass of evaporated water M_w = 1600 g - 1000 g = 600 g.',
@@ -264,8 +264,8 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'For fully saturated soil S = 1.0, so e = Gs · MC.',
       formulas: [
-        'G_s · MC = S · e',
-        '2.67 · (0.60) = 1 · e => e = 1.602 ≈ 1.60',
+        'G_s  \\cdot  MC = S  \\cdot  e',
+        '2.67  \\cdot  (0.60) = 1  \\cdot  e => e = 1.602  \\approx  1.60',
       ],
       steps: [
         'Step 1: Fully saturated soil has degree of saturation S = 1.0.',
@@ -330,9 +330,9 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'Centroid depth h̄ = 2 + 0.4 = 2.4 m. Area A = π · r² = 0.16π m². Compute F = γ_w · h̄ · A.',
       formulas: [
-        'h̄ = 2.0 + 0.4 = 2.4 m',
-        'A = π · (0.4)² = 0.16π m²',
-        'F = γ_w · h̄ · A = 9.81 · (2.4) · (0.16π) = 11.835 kN ≈ 11.8 kN',
+        'h̄ = 2.0 + 0.4 = 2.4',
+        'A = \\pi   \\cdot  (0.4)^2 = 0.16\\pi ^2',
+        'F = \\gamma _w  \\cdot  h̄  \\cdot  A = 9.81  \\cdot  (2.4)  \\cdot  (0.16\\pi ) = 11.835  \\approx  11.8',
       ],
       steps: [
         'Step 1: Top edge is at 2.0 m depth, so centroid is at h̄ = 2.0 + 0.4 = 2.4 m.',
@@ -364,7 +364,7 @@ export const HPGE_PART4: Question[] = [
     solution: {
       summary: 'Eccentricity between cg and cp: e = I_g / (A · h̄) = [ (π/4) r⁴ ] / [ (π r²) · h̄ ] = r² / (4 h̄).',
       formulas: [
-        'I_g = (π/4) · (0.4)⁴ = 0.0064π m⁴',
+        'I_g = (\\pi /4)  \\cdot  (0.4)^4 = 0.0064\\pi ^4',
         'e = I_g / (A · h̄) = (0.0064π) / [ (0.16π) · (2.4) ] = 0.0064 / 0.384 = 0.01667 m = 16.67 mm ≈ 16.7 mm',
       ],
       steps: [
@@ -398,7 +398,7 @@ export const HPGE_PART4: Question[] = [
       summary: 'Depth to center of pressure: y_cp = h̄ + e = 2.4 + 0.01667 = 2.4167 m ≈ 2.42 m.',
       formulas: [
         'y_cp = h̄ + e',
-        'y_cp = 2.4 + 0.01667 = 2.4167 m ≈ 2.42 m',
+        'y_cp = 2.4 + 0.01667 = 2.4167  \\approx  2.42',
       ],
       steps: [
         'Step 1: Depth of centroid from water surface h̄ = 2.4 m.',

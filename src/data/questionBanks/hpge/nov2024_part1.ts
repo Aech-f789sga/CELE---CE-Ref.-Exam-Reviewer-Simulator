@@ -21,10 +21,10 @@ export const HPGE_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'The difference in mercury barometer readings between the base and mountain top corresponds to the weight of the intervening column of air: ΔP = γ_air · h.',
       formulas: [
-        '\\Delta h_{Hg} = 700\\text{ mmHg} - 538\\text{ mmHg} = 162\\text{ mmHg} = 0.162\\text{ m of Hg}',
-        '\\Delta P = \\gamma_{Hg} \\times \\Delta h_{Hg} = 9810(13.6)\\text{ N/m}^3 \\times 0.162\\text{ m} = 21,613\\text{ N/m}^2',
+        '\\Delta h_{Hg} = 700\ - 538\ = 162\ = 0.162',
+        '\\Delta P = \\gamma_{Hg} \\times \\Delta h_{Hg} = 9810(13.6)\\text{ N/m}^3 \\times 0.162\ = 21,613\\text{ N/m}^2',
         '\\Delta P = \\gamma_{air} \\times h \\implies 21,613 = 12 \\times h',
-        'h = \\frac{21,613}{12} = 1,801\\text{ m} \\approx 1.8\\text{ km}',
+        'h = \\frac{21,613}{12} = 1,801\ \\approx 1.8',
       ],
       steps: [
         'Step 1: Compute the difference in mercury barometer readings: Δh_Hg = 700 mmHg - 538 mmHg = 162 mmHg = 0.162 m Hg.',
@@ -58,7 +58,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       summary: 'Dry unit weight is obtained directly using the standard fundamental phase relationship γ_dry = γ_m / (1 + w).',
       formulas: [
         '\\gamma_{dry} = \\frac{\\gamma_m}{1 + w}',
-        '\\gamma_{dry} = \\frac{18}{1 + 0.15} = \\frac{18}{1.15} = 15.652\\text{ kN/m}^3',
+        '\\gamma_{dry} = \\frac{18}{1 + 0.15} = \\frac{18}{1.15} = 15.652',
       ],
       steps: [
         'Step 1: Identify given parameters: moist unit weight γ_m = 18 kN/m³, moisture content w = 15% = 0.15.',
@@ -92,7 +92,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       formulas: [
         'P = \\int_0^H \\gamma(h)\\,dh',
         'P = \\int_0^2 (12 + 0.5h)\\,dh = \\left[ 12h + 0.25h^2 \\right]_0^2',
-        'P = 12(2) + 0.25(2)^2 = 24 + 1 = 25\\text{ kPa}',
+        'P = 12(2) + 0.25(2)^2 = 24 + 1 = 25',
       ],
       steps: [
         'Step 1: Set up the integral for hydrostatic pressure: P = ∫₀ᴴ γ(h) dh.',
@@ -126,12 +126,12 @@ export const HPGE_NOV2024_PART1: Question[] = [
       summary: 'Divide the trapezoidal gate into a rectangular area (1.5 m × 2.4 m) and a right-triangular area (1.5 m × 0.6 m). Compute hydrostatic forces and center of pressures, then sum moments about the top hinge.',
       formulas: [
         'F_H = \\gamma \\bar{h} A,\\quad e = \\frac{I_g}{A \\bar{h}}',
-        '\\text{Rectangle: } A_1 = 1.5(2.4) = 3.6\\text{ m}^2,\\; \\bar{h}_1 = 1.2\\text{ m},\\; F_{H1} = 9.81(1.2)(3.6) = 42.3792\\text{ kN}',
-        'e_1 = \\frac{1.5(2.4)^3 / 12}{3.6(1.2)} = 0.4\\text{ m} \\implies r_1 = 1.2 + 0.4 = 1.6\\text{ m}',
-        '\\text{Triangle: } A_2 = 0.5(1.5)(0.6) = 0.45\\text{ m}^2,\\; \\bar{h}_2 = 2.4 + \\frac{0.6}{3} = 2.6\\text{ m},\\; F_{H2} = 9.81(2.6)(0.45) = 11.477\\text{ kN}',
-        'e_2 = \\frac{1.5(0.6)^3 / 36}{0.45(2.6)} = 0.0167\\text{ m} \\implies r_2 = 2.6 + 0.0167 = 2.6167\\text{ m}',
+        '\A_1 = 1.5(2.4) = 3.6\,\\; \\bar{h}_1 = 1.2\,\\; F_{H1} = 9.81(1.2)(3.6) = 42.3792',
+        'e_1 = \\frac{1.5(2.4)^3 / 12}{3.6(1.2)} = 0.4\ \\implies r_1 = 1.2 + 0.4 = 1.6',
+        '\A_2 = 0.5(1.5)(0.6) = 0.45\,\\; \\bar{h}_2 = 2.4 + \\frac{0.6}{3} = 2.6\,\\; F_{H2} = 9.81(2.6)(0.45) = 11.477',
+        'e_2 = \\frac{1.5(0.6)^3 / 36}{0.45(2.6)} = 0.0167\ \\implies r_2 = 2.6 + 0.0167 = 2.6167',
         '\\sum M_{\\text{hinge}} = 0 \\implies 42.3792(1.6) + 11.477(2.6167) = P \\left(\\frac{2.4 + 3.0}{2}\\right) = 2.7P',
-        '97.838 = 2.7P \\implies P = 36.24\\text{ kN} \\approx 36.2\\text{ kN}',
+        '97.838 = 2.7P \\implies P = 36.24\ \\approx 36.2',
       ],
       steps: [
         'Step 1: Divide trapezoidal gate into rectangle (1.5 m × 2.4 m) and triangle (1.5 m base × 0.6 m height).',
@@ -166,7 +166,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       summary: 'When moving at constant velocity, vertical acceleration is zero (a = 0). Hydrostatic pressure depends solely on static fluid depth.',
       formulas: [
         'P = \\gamma h \\left(1 \\pm \\frac{a}{g}\\right)',
-        'a = 0 \\implies P = \\gamma h = 9.81(0.60) = 5.886\\text{ kPa} \\approx 5.9\\text{ kPa}',
+        'a = 0 \\implies P = \\gamma h = 9.81(0.60) = 5.886\ \\approx 5.9',
       ],
       steps: [
         'Step 1: Check acceleration: Since the elevator travels upward at constant velocity (v = 2 m/s), acceleration a = 0.',
@@ -198,11 +198,11 @@ export const HPGE_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Compute angular velocity ω, height of the paraboloid of revolution y, verify that the vortex vertex remains within the vessel, then compute spilled volume as the difference between final air volume and initial air volume.',
       formulas: [
-        '\\omega = 90\\text{ rpm} \\times \\frac{\\pi}{30} = 3\\pi\\text{ rad/s} = 9.4248\\text{ rad/s}',
-        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(3\\pi)^2 (0.65)^2}{2(9.81)} = 1.913\\text{ m} < 2.1\\text{ m}',
-        'V_{\\text{air,final}} = \\frac{1}{2} \\pi r^2 y = \\frac{1}{2}\\pi(0.65)^2(1.913) = 1.269\\text{ m}^3',
-        'V_{\\text{air,initial}} = \\pi r^2 (2.1 - 1.4) = \\pi(0.65)^2(0.70) = 0.929\\text{ m}^3',
-        'V_{\\text{spilled}} = V_{\\text{air,final}} - V_{\\text{air,initial}} = 1.269 - 0.929 = 0.3403\\text{ m}^3 = 340.3\\text{ L}',
+        '\\omega = 90\ \\times \\frac{\\pi}{30} = 3\\pi\ = 9.4248',
+        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(3\\pi)^2 (0.65)^2}{2(9.81)} = 1.913\ < 2.1',
+        'V_{\\text{air,final}} = \\frac{1}{2} \\pi r^2 y = \\frac{1}{2}\\pi(0.65)^2(1.913) = 1.269',
+        'V_{\\text{air,initial}} = \\pi r^2 (2.1 - 1.4) = \\pi(0.65)^2(0.70) = 0.929',
+        'V_{\\text{spilled}} = V_{\\text{air,final}} - V_{\\text{air,initial}} = 1.269 - 0.929 = 0.3403\ = 340.3',
       ],
       steps: [
         'Step 1: Compute angular velocity: ω = 90(π/30) = 3π rad/s.',
@@ -237,9 +237,9 @@ export const HPGE_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'To prevent spillage, the water surface climbing the wall must reach at most the tank rim. Because the rise above the static level equals y/2, the maximum initial depth is h = H - y/2.',
       formulas: [
-        '\\omega = 240\\text{ rpm} \\times \\frac{\\pi}{30} = 8\\pi\\text{ rad/s} = 25.1327\\text{ rad/s}',
-        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(8\\pi)^2 (0.20)^2}{2(9.81)} = 1.288\\text{ m} < 1.5\\text{ m}',
-        'h_{\\text{max}} = H - \\frac{y}{2} = 1.5 - \\frac{1.288}{2} = 1.5 - 0.644 = 0.856\\text{ m}',
+        '\\omega = 240\ \\times \\frac{\\pi}{30} = 8\\pi\ = 25.1327',
+        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(8\\pi)^2 (0.20)^2}{2(9.81)} = 1.288\ < 1.5',
+        'h_{\\text{max}} = H - \\frac{y}{2} = 1.5 - \\frac{1.288}{2} = 1.5 - 0.644 = 0.856',
       ],
       steps: [
         'Step 1: Compute angular speed: ω = 240(π/30) = 8π rad/s.',
@@ -273,9 +273,9 @@ export const HPGE_NOV2024_PART1: Question[] = [
     solution: {
       summary: "By Archimedes' Principle, the buoyant force equals the weight loss of the body in water, which equals the weight of displaced water.",
       formulas: [
-        'BF = W_{\\text{air}} - W_{\\text{water}} = 300 - 230 = 70\\text{ N}',
+        'BF = W_{\\text{air}} - W_{\\text{water}} = 300 - 230 = 70',
         'BF = \\gamma_{\\text{water}} \\times V_{\\text{stone}} \\implies 70 = 9810 \\times V_{\\text{stone}}',
-        'V_{\\text{stone}} = \\frac{70}{9810} = 0.007136\\text{ m}^3 = 7.136\\text{ L} \\approx 7.14\\text{ L}',
+        'V_{\\text{stone}} = \\frac{70}{9810} = 0.007136\ = 7.136\ \\approx 7.14',
       ],
       steps: [
         'Step 1: Calculate buoyant force: BF = W_air - W_water = 300 - 230 = 70 N.',
@@ -308,10 +308,10 @@ export const HPGE_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'For vertical equilibrium of the submerged sphere: BF = W_sphere + T. Compute displaced volume, buoyant force from seawater, deduce sphere weight, and evaluate specific gravity / unit weight ratio.',
       formulas: [
-        'V_{\\text{sphere}} = \\frac{4}{3}\\pi r^3 = \\frac{4}{3}\\pi (0.375)^3 = 0.22089\\text{ m}^3',
-        'BF = \\gamma_{\\text{sw}} V = 1.026(9810)(0.22089) = 2223.3\\text{ N}',
-        'W_{\\text{sphere}} = BF - T = 2223.3 - 270 = 1953.3\\text{ N}',
-        '\\gamma_{\\text{sphere}} = \\frac{1953.3}{0.22089} = 8842.75\\text{ N/m}^3 = 8.84\\text{ kN/m}^3',
+        'V_{\\text{sphere}} = \\frac{4}{3}\\pi r^3 = \\frac{4}{3}\\pi (0.375)^3 = 0.22089',
+        'BF = \\gamma_{\\text{sw}} V = 1.026(9810)(0.22089) = 2223.3',
+        'W_{\\text{sphere}} = BF - T = 2223.3 - 270 = 1953.3',
+        '\\gamma_{\\text{sphere}} = \\frac{1953.3}{0.22089} = 8842.75\\text{ N/m}^3 = 8.84',
         'SG_{\\text{sphere}} = \\frac{8842.75}{9810} = 0.901',
       ],
       steps: [
@@ -345,12 +345,12 @@ export const HPGE_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Compute the displacement volume in ocean water versus fresh water for the total 90,000 metric ton mass. The additional volume required in fresh water divided by the waterline area yields the change in draft Δd.',
       formulas: [
-        'M_{\\text{total}} = 70,000 + 20,000 = 90,000\\text{ metric tons} = 90 \\times 10^6\\text{ kg}',
-        'V_{\\text{ocean}} = \\frac{90 \\times 10^6}{1.03 \\times 1000} = 87,378.64\\text{ m}^3',
-        'V_{\\text{fresh}} = \\frac{90 \\times 10^6}{1000} = 90,000\\text{ m}^3',
-        '\\Delta V = V_{\\text{fresh}} - V_{\\text{ocean}} = 90,000 - 87,378.64 = 2,621.36\\text{ m}^3',
-        '\\Delta d = \\frac{\\Delta V}{A_{\\text{wl}}} = \\frac{2,621.36}{10,000} = 0.2621\\text{ m}',
-        'd_{\\text{fresh}} = 10.37 + 0.2621 = 10.632\\text{ m} \\approx 10.63\\text{ m}',
+        'M_{\\text{total}} = 70,000 + 20,000 = 90,000\\text{ metric tons} = 90 \\times 10^6',
+        'V_{\\text{ocean}} = \\frac{90 \\times 10^6}{1.03 \\times 1000} = 87,378.64',
+        'V_{\\text{fresh}} = \\frac{90 \\times 10^6}{1000} = 90,000',
+        '\\Delta V = V_{\\text{fresh}} - V_{\\text{ocean}} = 90,000 - 87,378.64 = 2,621.36',
+        '\\Delta d = \\frac{\\Delta V}{A_{\\text{wl}}} = \\frac{2,621.36}{10,000} = 0.2621',
+        'd_{\\text{fresh}} = 10.37 + 0.2621 = 10.632\ \\approx 10.63',
       ],
       steps: [
         'Step 1: Total displacement mass M = 70,000 + 20,000 = 90,000 tons = 90 × 10⁶ kg.',
@@ -386,7 +386,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       summary: 'The maximum theoretical unit weight of a soil mass occurs when there are no voids (e = 0), representing the solid particles alone.',
       formulas: [
         '\\gamma_{\\text{max}} = G_s \\gamma_w \\quad (\\text{at } e = 0)',
-        '\\gamma_{\\text{max}} = 2.10 \\times 9.81 = 20.601\\text{ kN/m}^3 \\approx 20.6\\text{ kN/m}^3',
+        '\\gamma_{\\text{max}} = 2.10 \\times 9.81 = 20.601\ \\approx 20.6',
       ],
       steps: [
         'Step 1: The general soil unit weight relation is γ = [(Gs + Se)/(1 + e)] · γ_w.',

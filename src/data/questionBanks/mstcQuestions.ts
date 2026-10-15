@@ -23,7 +23,7 @@ export const MSTC_QUESTIONS: Question[] = [
       formulas: [
         'p = x + 0.175x = 1.175x',
         'x = p / 1.175',
-        'v(p) = 0.175x = 0.175 · (p / 1.175)',
+        'v(p) = 0.175x = 0.175  \\cdot  (p / 1.175)',
         '0.175 / 1.175 = 175 / 1175 = 7 / 47',
         'v(p) = 7p / 47',
       ],
@@ -59,8 +59,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute tax for income under $16,000 using the base 3% bracket rate.',
       formulas: [
-        'Tax = 0.03 × Income (for Income ≤ $16,000)',
-        'Tax = 0.03 × $15,000 = $450',
+        'Tax = 0.03  \\times  Income (for Income  \\le  16,000)',
+        'Tax = 0.03  \\times  15,000 = 450',
       ],
       steps: [
         'Step 1: Taxable income is $15,000, which is less than $16,000.',
@@ -91,8 +91,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Calculate ratio of annual passenger volumes between Tokyo and Toronto subways.',
       formulas: [
-        'Ratio = V_Tokyo / V_Toronto = (2.82 × 10⁹) / (4.44 × 10⁸)',
-        'Ratio = 28.2 / 4.44 ≈ 6.351',
+        'Ratio = V_Tokyo / V_Toronto = (2.82  \\times  10⁹) / (4.44  \\times  10⁸)',
+        'Ratio = 28.2 / 4.44  \\approx  6.351',
       ],
       steps: [
         'Step 1: Divide Tokyo annual volume by Toronto annual volume: (2.82 × 10⁹) / (4.44 × 10⁸).',
@@ -124,10 +124,10 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Compute total project durations under unconstrained schedule vs leveled crew of 3 carpenters.',
       formulas: [
         'Number of segments = 250 / 25 = 10 segments',
-        'Ideal duration per segment = 2 + 1 + 1 = 4 days => Total ideal = 10 × 4 = 40 days',
+        'Ideal duration per segment = 2 + 1 + 1 = 4 days => Total ideal = 10  \\times  4 = 40 days',
         'Stripping with 3 carpenters instead of 4: requires 4/3 = 1.333 days',
         'Leveled duration per segment = 2 + 1 + 1.333 = 4.333 days => Total leveled = 43.33 days',
-        'Additional days = 43.33 - 40 = 3.33 ≈ 4 days',
+        'Additional days = 43.33 - 40 = 3.33  \\approx  4 days',
       ],
       steps: [
         'Step 1: Total segments = 250 ft / 25 ft = 10 segments.',
@@ -162,7 +162,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Formulate Cost C(x), Revenue R(x), and Profit P(x) = R(x) - C(x).',
       formulas: [
         'C(x) = Fixed Cost + Variable Cost = 447,917 + 209.03x',
-        'R(x) = Unit Price × x = 266.67x',
+        'R(x) = Unit Price  \\times  x = 266.67x',
         'P(x) = R(x) - C(x) = 266.67x - (209.03x + 447,917) = 57.64x - 447,917',
       ],
       steps: [
@@ -194,10 +194,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Find the sum of 30 terms of a geometric sequence with a₁ = 1 and r = 2.',
       formulas: [
-        'S_n = a · (rⁿ - 1) / (r - 1)',
-        'S_30 = 1 · (2³⁰ - 1) / (2 - 1) = 2³⁰ - 1',
-        '2³⁰ = 1,073,741,824 cents',
-        'Total = 1,073,741,823 cents = $10,737,418.23 (matched to B in book options $10,773,481.23)',
+        'S_n = a  \\cdot  (rⁿ - 1) / (r - 1)',
+        'S_30 = 1  \\cdot  (2^3⁰ - 1) / (2 - 1) = 2^3⁰ - 1',
+        '2^3⁰ = 1,073,741,824 cents',
+        'Total = 1,073,741,823 cents = 10,737,418.23 (matched to B book options 10,773,481.23)',
       ],
       steps: [
         'Step 1: First term a = 1 cent, common ratio r = 2, number of days n = 30.',
@@ -229,9 +229,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Formulate the maximum cargo weight linear constraint for the delivery truck.',
       formulas: [
-        'Small package weight ≤ 25 lb => Total = 25x',
-        'Large package weight ≤ 50 lb => Total = 50y',
-        'Total Weight Constraint: 25x + 50y ≤ 4200',
+        'Small package weight  \\le  25 => Total = 25x',
+        'Large package weight  \\le  50 => Total = 50y',
+        'Total Weight Constraint: 25x + 50y  \\le  4200',
       ],
       steps: [
         'Step 1: The truck can carry at most 4200 pounds.',
@@ -264,11 +264,11 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Determine time needed using combined generation rate after the first 4 months.',
       formulas: [
         'Generator 1 Rate = 17 / 12 MWh/month',
-        'Energy in first 4 months = 4 × (17/12) = 17/3 = 5.67 MWh',
+        'Energy first 4 months = 4  \\times  (17/12) = 17/3 = 5.67 MWh',
         'Remaining energy needed = 25 - 17/3 = 58/3 = 19.33 MWh',
         'Generator 2 Rate = 11 / 5 = 2.2 MWh/month',
-        'Combined Rate = 17/12 + 11/5 = 217/60 ≈ 3.62 MWh/month',
-        't = (58/3) / (217/60) = 5.35 months ≈ 5.3',
+        'Combined Rate = 17/12 + 11/5 = 217/60  \\approx  3.62 MWh/month',
+        't = (58/3) / (217/60) = 5.35 months  \\approx  5.3',
       ],
       steps: [
         'Step 1: Generator 1 produces 17 MWh/12 months = 1.417 MWh/month.',
@@ -303,9 +303,9 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Arrange from the most general polygon to the most specific geometric figure.',
       formulas: [
         'Quadrilateral (any 4-sided figure)',
-        '→ Parallelogram (opposite sides parallel)',
-        '→ Rectangle (parallelogram with right angles)',
-        '→ Square (rectangle with equal sides)',
+        '\\to  Parallelogram (opposite sides parallel)',
+        '\\to  Rectangle (parallelogram with right angles)',
+        '\\to  Square (rectangle with equal sides)',
       ],
       steps: [
         'Step 1: A Quadrilateral is any closed four-sided polygon (most general, I).',
@@ -338,8 +338,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute total floor area and divide by coverage per package, rounding up.',
       formulas: [
-        'Area = 18 ft × 21 ft = 378 ft²',
-        'Coverage per package = 24 ft²',
+        'Area = 18  \\times  21 = 378^2',
+        'Coverage per package = 24^2',
         'Packages = 378 / 24 = 15.75 => 16 packages',
       ],
       steps: [
@@ -375,8 +375,8 @@ export const MSTC_QUESTIONS: Question[] = [
       formulas: [
         'Pool Length = 70 - 2x, Pool Width = 50 - 2x',
         'Area = (70 - 2x)(50 - 2x) = 2400',
-        '3500 - 240x + 4x² = 2400 => 4x² - 240x + 1100 = 0',
-        'x² - 60x + 275 = 0 => (x - 5)(x - 55) = 0',
+        '3500 - 240x + 4x^2 = 2400 => 4x^2 - 240x + 1100 = 0',
+        'x^2 - 60x + 275 = 0 => (x - 5)(x - 55) = 0',
       ],
       steps: [
         'Step 1: Length of pool = 70 - 2x; Width of pool = 50 - 2x.',
@@ -410,10 +410,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Energy transmitted is proportional to the square of frequency f, and frequency is inversely proportional to wavelength λ.',
       formulas: [
-        'v = f · λ  =>  f = v / λ  =>  f ∝ 1 / λ',
-        'E ∝ f²',
-        'λ_shorter = λ / 2  =>  f_shorter = 2f',
-        'E_shorter = (2f)² = 4f² => 4 times the energy',
+        'v = f  \\cdot  \\lambda   =>  f = v / \\lambda   =>  f ∝ 1 / \\lambda',
+        'E ∝ f^2',
+        '\\lambda _shorter = \\lambda  / 2  =>  f_shorter = 2f',
+        'E_shorter = (2f)^2 = 4f^2 => 4 times the energy',
       ],
       steps: [
         'Step 1: From wave speed formula v = fλ, frequency is inversely proportional to wavelength (f ∝ 1/λ).',
@@ -446,8 +446,8 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Find the vertex of the feasible region that minimizes total staffing salary.',
       formulas: [
         'Let x = nurses, y = aides',
-        'Constraints: 20 ≤ x + y ≤ 50; y ≥ 12; x ≥ 2y',
-        'Minimum aides y = 12 => x ≥ 2(12) = 24',
+        'Constraints: 20  \\le  x + y  \\le  50; y  \\ge  12; x  \\ge  2y',
+        'Minimum aides y = 12 => x  \\ge  2(12) = 24',
         'Total staff = 24 + 12 = 36 (within 20 to 50 range)',
       ],
       steps: [
@@ -482,9 +482,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Use the volume of a square pyramid V = (1/3) · Base Area · Height.',
       formulas: [
-        'Base Area A_b = L²',
-        'Height h = L - 9',
-        'V = (1/3) L² (L - 9) = L³/3 - 3L²',
+        'Base Area A_b =^2',
+        'Height h = - 9',
+        'V = (1/3)^2 (L - 9) =^3/3 - 3L^2',
       ],
       steps: [
         'Step 1: The base is a square of length L, so base area is L².',
@@ -516,8 +516,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Evaluate the limit of the logistic growth function as t approaches infinity.',
       formulas: [
-        'lim_(t→∞) e^(-0.0217 t) = 0',
-        'lim_(t→∞) C(t) = 3.754 / (1 + 9.981(0)) = 3.754 / 1 = 3.754',
+        'lim_(t \\to  \\infty ) e^(-0.0217 t) = 0',
+        'lim_(t \\to  \\infty ) C(t) = 3.754 / (1 + 9.981(0)) = 3.754 / 1 = 3.754',
       ],
       steps: [
         'Step 1: As t → ∞, the exponential term e^(-0.0217 t) approaches 0.',
@@ -621,7 +621,7 @@ export const MSTC_QUESTIONS: Question[] = [
         'In triangle ABC: A = 90° - 63° = 27°',
         'B = 90° - 55° = 35°',
         'C = 180° - (27° + 35°) = 118°',
-        'a / sin A = c / sin C  =>  a = 13 × sin(27°) / sin(118°)',
+        'a / sin A = c / sin C  =>  a = 13  \\times  sin(27°) / sin(118°)',
       ],
       steps: [
         'Step 1: Calculate angle A = 90° - 63° = 27°.',
@@ -688,11 +688,11 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Calculate total exterior wall area, paint liters for 1st and 2nd coats, and multiply by cost per liter.',
       formulas: [
-        'A_wall = Perimeter × Height = 2(20 + 15) × 6 = 70 × 6 = 420 m²',
-        'First coat liters = 420 / 10 = 42 L',
-        'Second coat liters = 420 / 15 = 28 L',
-        'Total Liters = 42 + 28 = 70 L',
-        'Total Cost = 70 L × $3.50/L = $245',
+        'A_wall = Perimeter  \\times  Height = 2(20 + 15)  \\times  6 = 70  \\times  6 = 420^2',
+        'First coat liters = 420 / 10 = 42',
+        'Second coat liters = 420 / 15 = 28',
+        'Total Liters = 42 + 28 = 70',
+        'Total Cost = 70  \\times  3.50/L = 245',
       ],
       steps: [
         'Step 1: Wall perimeter = 2(20 + 15) = 70 m.',
@@ -727,7 +727,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Sum all frequencies (y-values) across the frequency polygon data points.',
       formulas: [
-        'Total = Σ f_i = 2 + 3 + 7 + 4 + 3 + 8 + 6 + 3 = 36',
+        'Total = \\Sigma  f_i = 2 + 3 + 7 + 4 + 3 + 8 + 6 + 3 = 36',
       ],
       steps: [
         'Step 1: Read the frequency corresponding to each number of messages: 2, 3, 7, 4, 3, 8, 6, 3.',
@@ -758,9 +758,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Solve the exponential decay equation (0.80)ⁿ = 0.42 for the number of strokes n.',
       formulas: [
-        'Fraction remaining after n strokes = (1 - 0.20)ⁿ = (0.80)ⁿ',
+        'Fraction remaining after strokes = (1 - 0.20)ⁿ = (0.80)ⁿ',
         '(0.80)ⁿ = 0.42',
-        'n = log(0.42) / log(0.80) = -0.37675 / -0.09691 ≈ 3.89 strokes => say 4 strokes',
+        'n = log(0.42) / log(0.80) = -0.37675 / -0.09691  \\approx  3.89 strokes => say 4 strokes',
       ],
       steps: [
         'Step 1: Since 20% is removed each stroke, 80% remains (multiplier = 0.80).',
@@ -792,8 +792,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'At the pipe wall r = R, fluid adheres due to the no-slip boundary condition, giving velocity = 0.',
       formulas: [
-        'As r → R = 0.5:',
-        'v(r) = k(R² - r²) = 0.65(0.5² - 0.5²) = 0.65(0) = 0',
+        'As r  \\to  R = 0.5:',
+        'v(r) = k(R^2 - r^2) = 0.65(0.5^2 - 0.5^2) = 0.65(0) = 0',
       ],
       steps: [
         'Step 1: Near the wall, r approaches R = 0.5 inches.',
@@ -824,7 +824,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Calculate fourth unit time using Wright\'s learning curve model Y = AX^B.',
       formulas: [
         'B = log(0.88) / log(2) = -0.055517 / 0.30103 = -0.1844',
-        'Y_4 = 6 × (4)^(-0.1844) = 6 × 0.7744 = 4.65 weeks',
+        'Y_4 = 6  \\times  (4)^(-0.1844) = 6  \\times  0.7744 = 4.65 weeks',
       ],
       steps: [
         'Step 1: Calculate slope parameter B = log(0.88) / log(2) = -0.1844.',
@@ -855,8 +855,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Area under a parabolic arch is Area = (2/3) × base × height, or integrate y = 630 - x²/157.5 from x = -315 to 315.',
       formulas: [
-        'Area = (2/3) · b · h',
-        'Area = (2/3) · (630 ft) · (630 ft) = 264,600 sq ft',
+        'Area = (2/3)  \\cdot  b  \\cdot  h',
+        'Area = (2/3)  \\cdot  (630)  \\cdot  (630) = 264,600 sq',
         'Or Area = 2 ∫₀³¹⁵ (630 - x²/157.5) dx = 2 [ 630(315) - 315³ / (3 × 157.5) ] = 264,600 sq ft',
       ],
       steps: [
@@ -891,8 +891,8 @@ export const MSTC_QUESTIONS: Question[] = [
         'Center (h, k) = (-2, -3)',
         'Vertex (-2, 1) => vertical ellipse with a = 1 - (-3) = 4',
         'Focus halfway => c = a / 2 = 2',
-        'b² = a² - c² = 4² - 2² = 16 - 4 = 12',
-        'Equation: (x - h)²/b² + (y - k)²/a² = 1 => (x + 2)²/12 + (y + 3)²/16 = 1',
+        'b^2 = a^2 - c^2 = 4^2 - 2^2 = 16 - 4 = 12',
+        'Equation: (x - h)^2/b^2 + (y - k)^2/a^2 = 1 => (x + 2)^2/12 + (y + 3)^2/16 = 1',
       ],
       steps: [
         'Step 1: Center is (h, k) = (-2, -3).',
@@ -925,9 +925,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Find normal vector via cross product of direction vectors, form plane equation, and solve for z.',
       formulas: [
-        'v₁ = P₂ - P₁ = (2, -3, 1)',
-        'v₂ = P₃ - P₁ = (0, 2, -4)',
-        'n = v₁ × v₂ = (10, 8, 4)',
+        'v_1 = P_2 - P_1 = (2, -3, 1)',
+        'v_2 = P_3 - P_1 = (0, 2, -4)',
+        'n = v_1  \\times  v_2 = (10, 8, 4)',
         'Plane: 10(x - 2) + 8(y - 1) + 4(z + 4) = 0 => 10x + 8y + 4z - 12 = 0',
         '4z = 12 - 10x - 8y => z = 3 - 2.5x - 2y',
       ],
@@ -992,8 +992,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Differentiate the volume V(x) = x(24 - 2x)(18 - 2x) and find the critical point.',
       formulas: [
-        'V(x) = (24 - 2x)(18 - 2x)x = (432 - 84x + 4x²)x = 4x³ - 84x² + 432x',
-        'V\'(x) = 12x² - 168x + 432 = 0 => x² - 14x + 36 = 0',
+        'V(x) = (24 - 2x)(18 - 2x)x = (432 - 84x + 4x^2)x = 4x^3 - 84x^2 + 432x',
+        'V\'(x) = 12x^2 - 168x + 432 = 0 => x^2 - 14x + 36 = 0',
         'x = [14 ± √(196 - 144)] / 2 = [14 ± √52] / 2 = 7 ± 3.6055',
         'x = 3.394 ≈ 3.4 in (since x = 10.61 > 9 is infeasible)',
       ],
@@ -1028,9 +1028,9 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Maximize A(x) = x(3000 - 2x) where x is the side perpendicular to the building.',
       formulas: [
         '2x + y = 3000  =>  y = 3000 - 2x',
-        'A = x · y = x(3000 - 2x) = 3000x - 2x²',
-        'dA/dx = 3000 - 4x = 0  =>  x = 750 ft',
-        'y = 3000 - 2(750) = 1500 ft',
+        'A = x  \\cdot  y = x(3000 - 2x) = 3000x - 2x^2',
+        'dA/dx = 3000 - 4x = 0  =>  x = 750',
+        'y = 3000 - 2(750) = 1500',
       ],
       steps: [
         'Step 1: Total fence 2x + y = 3000 => y = 3000 - 2x.',
@@ -1063,10 +1063,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Maximize profit P(x) = R(x) - C(x) and minimize AC(x) = C(x)/x.',
       formulas: [
-        'P(x) = (-3x² + 970x) - (2x² + 500) = -5x² + 970x - 500',
+        'P(x) = (-3x^2 + 970x) - (2x^2 + 500) = -5x^2 + 970x - 500',
         'dP/dx = -10x + 970 = 0 => x = 97',
-        'P_max = -5(97)² + 970(97) - 500 = $46,545',
-        'AC(x) = 2x + 500/x => d(AC)/dx = 2 - 500/x² = 0 => x = √250 ≈ 15.811',
+        'P_max = -5(97)^2 + 970(97) - 500 = 46,545',
+        'AC(x) = 2x + 500/x => d(AC)/dx = 2 - 500/x^2 = 0 => x = \\sqrt{250}  \\approx  15.811',
         'AC_min = 2(15.811) + 500/15.811 = 63.25',
       ],
       steps: [
@@ -1099,15 +1099,15 @@ export const MSTC_QUESTIONS: Question[] = [
     ],
     correctAnswer: 'B',
     solution: {
-      summary: 'Find the inflection point where C\'\'(x) = 0.',
+      summary: "Find the inflection point where C''(x) = 0.",
       formulas: [
-        'C\'(x) = 0.667 - 0.00934x + 0.000453x²',
-        'C\'\'(x) = -0.00934 + 0.000906x = 0',
-        'x = 0.00934 / 0.000906 ≈ 10.309052',
+        "C'(x) = 0.667 - 0.00934x + 0.000453x^2",
+        "C''(x) = -0.00934 + 0.000906x = 0",
+        'x = 0.00934 / 0.000906  \\approx  10.309052',
       ],
       steps: [
-        'Step 1: Compute marginal cost: C\'(x) = 0.667 - 0.00934x + 0.000453x².',
-        'Step 2: Differentiate marginal cost: C\'\'(x) = -0.00934 + 0.000906x.',
+        "Step 1: Compute marginal cost: C'(x) = 0.667 - 0.00934x + 0.000453x².",
+        "Step 2: Differentiate marginal cost: C''(x) = -0.00934 + 0.000906x.",
         'Step 3: Set to zero: 0.000906x = 0.00934 => x = 10.309052.',
       ],
       finalAnswer: '10.309052 (Option B)',
@@ -1214,7 +1214,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Rotate about y-axis using disk method with radius x = √y.',
       formulas: [
-        'dV = π · x² dy = π · y dy',
+        'dV = \\pi   \\cdot  x^2 dy = \\pi   \\cdot  y dy',
         'V = ∫₁⁴ π y dy = π [ y² / 2 ]₁⁴ = π [ 16/2 - 1/2 ] = 15π / 2',
       ],
       steps: [
@@ -1246,8 +1246,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Find the monochromatic triangle minimum in a two-colored complete graph K_9.',
       formulas: [
-        'Total pairs in K_9 = C(9, 2) = 36 edges',
-        'Minimum monochromatic triangles in K_9 is 12 (or 14 per Goodman formula / official key D)',
+        'Total pairs K_9 = C(9, 2) = 36 edges',
+        'Minimum monochromatic triangles K_9 is 12 (or 14 per Goodman formula / official key D)',
       ],
       steps: [
         'Step 1: Goodman\'s formula gives the number of monochromatic triangles.',
@@ -1310,7 +1310,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute total unique key patterns and divide total cars by unique patterns.',
       formulas: [
-        'Unique key patterns = 5⁵ = 3,125',
+        'Unique key patterns = 5^5 = 3,125',
         'Cars opened by each key = 400,000 / 3,125 = 128',
       ],
       steps: [
@@ -1343,9 +1343,9 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Compute favorable combinations over total combinations C(20, 6).',
       formulas: [
         'Total rocks = 5 + 7 + 8 = 20',
-        'N_f = C(5, 2) × C(7, 1) × C(8, 3) = 10 × 7 × 56 = 3,920',
+        'N_f = C(5, 2)  \\times  C(7, 1)  \\times  C(8, 3) = 10  \\times  7  \\times  56 = 3,920',
         'N_t = C(20, 6) = 38,760',
-        'P = 3,920 / 38,760 ≈ 0.1011',
+        'P = 3,920 / 38,760  \\approx  0.1011',
       ],
       steps: [
         'Step 1: Favorable selections = C(5,2) × C(7,1) × C(8,3) = 10 × 7 × 56 = 3,920.',
@@ -1392,7 +1392,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute total combinations 3 × 3 = 9. Favorable outcome is 1.',
       formulas: [
-        'Total combinations = 3 × 3 = 9',
+        'Total combinations = 3  \\times  3 = 9',
         'Probability = 1 / 9',
       ],
       steps: [
@@ -1424,10 +1424,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Calculate surface overflow rate v₀ = v_s / η and compute area A = Q / v₀.',
       formulas: [
-        'Q = 432 m³/h = 432 / 3600 = 0.12 m³/s',
-        'v_s = 0.12 cm/s = 0.0012 m/s',
-        'η = v_s / v₀ = 0.90 => v₀ = 0.0012 / 0.90 = 0.001333 m/s',
-        'A = Q / v₀ = 0.12 / 0.001333 = 90 m²',
+        'Q = 432^3/h = 432 / 3600 = 0.12^3/s',
+        'v_s = 0.12/s = 0.0012/s',
+        'η = v_s / v_0 = 0.90 => v_0 = 0.0012 / 0.90 = 0.001333/s',
+        'A = Q / v_0 = 0.12 / 0.001333 = 90^2',
       ],
       steps: [
         'Step 1: Convert Q to m³/s: 432 / 3600 = 0.12 m³/s.',
@@ -1460,7 +1460,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Apply the wind gauge height correction factor u_7 / u_10 = 1.10 to the sea-land corrected wind velocity.',
       formulas: [
         'u_10 = u_7 / 1.10',
-        'u_10 = 35.7 / 1.10 = 32.4545 m/s ≈ 32.45 m/s',
+        'u_10 = 35.7 / 1.10 = 32.4545/s  \\approx  32.45/s',
       ],
       steps: [
         'Step 1: The corrected wind velocity provided in hint is 35.7 m/s.',
@@ -1492,8 +1492,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'In a normal distribution, the 5th percentile corresponds to Z = -1.645.',
       formulas: [
-        'f_ck = f_m - k · S',
-        'For 5% defective, k = 1.645',
+        'f_ck = f_m - k  \\cdot  S',
+        'For 5\\% defective, k = 1.645',
         'f_ck = f_m - 1.645 S',
       ],
       steps: [
@@ -1595,8 +1595,8 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Solve equilibrium using law of sines on cable force triangles.',
       formulas: [
         'W = 3 tons = 6,000 lbs',
-        'In triangle C: T_BC = 6000 · sin(26.568°) / sin(81.87°) = 2,710.52 lbs',
-        'In triangle B: W_B = 2,710.52 · sin(26.565°) / sin(45°) = 1,714.29 lbs ≈ 1,715 lbs',
+        'In triangle C: T_BC = 6000  \\cdot  sin(26.568°) / sin(81.87°) = 2,710.52 lbs',
+        'In triangle B: W_B = 2,710.52  \\cdot  sin(26.565°) / sin(45°) = 1,714.29 lbs  \\approx  1,715 lbs',
       ],
       steps: [
         'Step 1: Convert load: 3 tons = 6,000 lbs.',
@@ -1627,8 +1627,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Apply Newton\'s second law impulse-momentum equation F = m Δv / Δt.',
       formulas: [
-        'm = 0.046 kg, Δv = 76 m/s, Δt = 1/25 = 0.04 s',
-        'F = (0.046 × 76) / 0.04 = 3.496 / 0.04 = 87.4 N',
+        'm = 0.046, \\Delta v = 76/s, \\Delta t = 1/25 = 0.04 s',
+        'F = (0.046  \\times  76) / 0.04 = 3.496 / 0.04 = 87.4',
       ],
       steps: [
         'Step 1: m = 0.046 kg, Δv = 76 m/s, Δt = 0.04 s.',
@@ -1658,7 +1658,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Use the projectile range formula R = v₀² sin(2θ) / g.',
       formulas: [
-        'R = v₀² · sin(2θ) / g',
+        'R = v_0^2  \\cdot  sin(2\\theta ) / g',
         'v₀ = √[ R · g / sin(2θ) ]',
         'v₀ = √[ 7.80 × 9.81 / sin(56°) ] = √[ 76.518 / 0.829038 ] = √92.30 = 9.607 m/s',
       ],
@@ -1691,8 +1691,8 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'At apparent weightlessness, normal force N = 0, so mg = m v² / R => v = √(gR).',
       formulas: [
-        'v = √(g · R)',
-        'v = √(9.81 × 12.0) = √117.72 = 10.85 m/s ≈ 10.8 m/s',
+        'v = \\sqrt{g  \\cdot  R}',
+        'v = \\sqrt{9.81  \\times  12.0} = \\sqrt{117}.72 = 10.85/s  \\approx  10.8/s',
       ],
       steps: [
         'Step 1: Weightlessness occurs when centrifugal acceleration balances gravity: v²/R = g.',
@@ -1722,7 +1722,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Factor out common displacement d from the work difference W_n = W_p - W_f.',
       formulas: [
-        'W_n = W_p - W_f = F_p · d - F_f · d',
+        'W_n = W_p - W_f = F_p  \\cdot  d - F_f  \\cdot  d',
         'W_n = d(F_p - F_f)',
       ],
       steps: [
@@ -1820,7 +1820,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Express total cost as C(x) = Fixed Cost + (Variable Cost) · x for each material.',
       formulas: [
-        'C(x) = FC + VC · x',
+        'C(x) = FC + VC  \\cdot  x',
       ],
       steps: [
         'Step 1: Steel: 260,000 + 5.26x.',
@@ -1852,10 +1852,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute discount dollar amount D, discounted purchase price P, then actual annualized simple interest rate r.',
       formulas: [
-        'D = F · d · (t / 360) = 4,000 · (0.0434) · (180 / 360) = $86.80',
-        'P = F - D = 4,000 - 86.80 = $3,913.20',
-        'I = P · r · (t / 360)  =>  86.80 = 3,913.20 · r · (180 / 360)',
-        'r = 86.80 / (3,913.20 × 0.5) = 0.04436 ≈ 0.0444',
+        'D = F  \\cdot  d  \\cdot  (t / 360) = 4,000  \\cdot  (0.0434)  \\cdot  (180 / 360) = 86.80',
+        'P = F - D = 4,000 - 86.80 = 3,913.20',
+        'I = P  \\cdot  r  \\cdot  (t / 360)  =>  86.80 = 3,913.20  \\cdot  r  \\cdot  (180 / 360)',
+        'r = 86.80 / (3,913.20  \\times  0.5) = 0.04436  \\approx  0.0444',
       ],
       steps: [
         'Step 1: Compute discount amount D = 4000 × 0.0434 × (180/360) = $86.80.',
@@ -1923,10 +1923,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute Present Worth of savings in maintenance and salvage value, divided by initial repair cost.',
       formulas: [
-        'Annual savings Y1-15: $10k - $3k = $7,000/yr',
-        'Annual savings Y16-25: $14k - $4k = $10,000/yr',
-        'Salvage difference: $20k - $5k = $15,000 at yr 25',
-        'PW_total = PW(A₁) + PW(A₂) + PW(Salvage) = $59,916.35 + $21,152.98 + $2,190.27 = $83,259.60',
+        'Annual savings Y1-15: 10k - 3k = 7,000/yr',
+        'Annual savings Y16-25: 14k - 4k = 10,000/yr',
+        'Salvage difference: 20k - 5k = 15,000 at 25',
+        'PW_total = PW(A_1) + PW(A_2) + PW(Salvage) = 59,916.35 + 21,152.98 + 2,190.27 = 83,259.60',
         'BCR = 83,259.60 / 75,000 = 1.11',
       ],
       steps: [
@@ -1958,12 +1958,12 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute cost depletion and percentage depletion (subject to 50% taxable income ceiling). Claim the higher amount.',
       formulas: [
-        'Net Cost Basis = $800,000 - $50,000 = $750,000',
-        'Unit Depletion Rate = $750,000 / 500,000 = $1.50 / ton',
-        'Cost Depletion = 40,000 × $1.50 = $60,000',
-        'Percentage Depletion = 15% × $1.8M = $270,000',
-        'Ceiling = 50% × ($1.8M - $1.6M) = 50% × $200,000 = $100,000',
-        'Allowable Percentage Depletion = $100,000',
+        'Net Cost Basis = 800,000 - 50,000 = 750,000',
+        'Unit Depletion Rate = 750,000 / 500,000 = 1.50 /',
+        'Cost Depletion = 40,000  \\times  1.50 = 60,000',
+        'Percentage Depletion = 15\\%  \\times  1.8M = 270,000',
+        'Ceiling = 50\\%  \\times  (1.8M - 1.6M) = 50\\%  \\times  200,000 = 100,000',
+        'Allowable Percentage Depletion = 100,000',
       ],
       steps: [
         'Step 1: Cost depletion = ($750,000 / 500,000 tons) × 40,000 tons = $60,000.',
@@ -2169,11 +2169,11 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Calculate ΔDeparture and ΔLatitude between points B and E and determine bearing angle.',
       formulas: [
-        'ΔDep = 463.9 - 290.6 = +173.3 m (East)',
-        'ΔLat = -311.7 - 407.5 = -719.2 m (South)',
-        'tan θ = |ΔDep| / |ΔLat| = 173.3 / 719.2 = 0.24096',
-        'θ = arctan(0.24096) = 13°33\'',
-        'Bearing = S 13°33\' E',
+        '\\Delta Dep = 463.9 - 290.6 = +173.3 (East)',
+        '\\Delta Lat = -311.7 - 407.5 = -719.2 (South)',
+        'tan \\theta  = |\\Delta Dep| / |\\Delta Lat| = 173.3 / 719.2 = 0.24096',
+        '\\theta  = arctan(0.24096) = 13°33',
+        '\'Bearing = S 13°33\' E',
       ],
       steps: [
         'Step 1: Compute ΔDeparture = 463.9 - 290.6 = 173.3 (East).',
@@ -2206,9 +2206,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute external distance E = R [sec(I/2) - 1] and middle ordinate m = R [1 - cos(I/2)].',
       formulas: [
-        'I / 2 = 8°24\' / 2 = 4°12\'',
-        'E = R · [ sec(4°12\') - 1 ] = 2864.79 · [ (1 / cos 4°12\') - 1 ] = 7.71 ft',
-        'm = R · [ 1 - cos(4°12\') ] = 2864.79 · [ 1 - 0.997316 ] = 7.69 ft',
+        '\\frac{I}{2} = 4^\\circ 12',
+        '\'E = R \\left(\\sec\\frac{I}{2} - 1\\right)',
+        'M = R \\left(1 - \\cos\\frac{I}{2}\\right)',
       ],
       steps: [
         'Step 1: Half-angle I/2 = 4°12\' = 4.20°.',
@@ -2286,8 +2286,8 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Solve the compound curve vertex triangle BCD to determine angle θ₁ for curve 1, find arc length L_c1, and add to Sta PC.',
       formulas: [
         'Total I = 115.635°',
-        'Using sine law in triangle BCD, θ₁ = 32.356°',
-        'L_c1 = R₁ · θ_rad = 1800 · (32.356° × π / 180°) = 1,016.494 ft',
+        'Using sine law triangle BCD, \\theta _1 = 32.356°',
+        'L_c1 = R_1  \\cdot  \\theta _rad = 1800  \\cdot  (32.356°  \\times  \\pi  / 180°) = 1,016.494',
         'Sta PCC = Sta PC + L_c1 = (138+34.12) + 1016.49 = 148+50.61',
       ],
       steps: [
@@ -2321,9 +2321,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Compute the 50% probable error of the mean E_mean = 0.6745 s / √n.',
       formulas: [
-        'E_mean = 0.6745 · s / √n',
-        's = 0.31 ft, n = 12',
-        'E_mean = (0.6745 × 0.31) / √12 = 0.2091 / 3.4641 = 0.06037 ≈ 0.06 ft',
+        'E_mean = 0.6745  \\cdot  s / \\sqrt{n}',
+        's = 0.31, = 12',
+        'E_mean = (0.6745  \\times  0.31) / \\sqrt{12} = 0.2091 / 3.4641 = 0.06037  \\approx  0.06',
       ],
       steps: [
         'Step 1: s = 0.31 ft, n = 12.',
@@ -2354,7 +2354,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Compute the full Stopping Sight Distance SSD = vt + v² / [ 254(f - G) ] on a downhill grade.',
       formulas: [
         'v = 80 km/h, t = 2.0 s, f = 0.35, G = -0.015 (downhill)',
-        'd_r = (80 / 3.6) · 2.0 = 44.44 m',
+        'd_r = (80 / 3.6)  \\cdot  2.0 = 44.44',
         'd_b = (80)² / [ 254 · (0.35 - 0.015) ] = 6400 / [ 254 × 0.335 ] = 6400 / 85.09 = 75.21 m',
         'SSD = 44.44 + 75.21 = 119.66 m ≈ 120 m',
       ],
@@ -2448,10 +2448,10 @@ export const MSTC_QUESTIONS: Question[] = [
       formulas: [
         'C = 250 / 60 cycles/min',
         'S = 1.00 (swing-depth factor)',
-        'V = 0.57 m³',
+        'V = 0.57^3',
         'B = 0.95 (fill factor)',
-        'E = 50 min/hr',
-        'Production = (250 / 60) × 1.00 × 0.57 × 0.95 × 50 = 112.8 LCM/h ≈ 113',
+        'E = 50/hr',
+        'Production = (250 / 60)  \\times  1.00  \\times  0.57  \\times  0.95  \\times  50 = 112.8 LCM/h  \\approx  113',
       ],
       steps: [
         'Step 1: C = 250 / 60; S = 1.00; V = 0.57; B = 0.95; E = 50.',
@@ -2482,12 +2482,12 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Verify all mix properties against Superpave specifications for 19mm nominal maximum size.',
       formulas: [
-        'Air voids = 4.0% (standard design target: 4.0%)',
-        'VMA = 13.2% ≥ 13.0% minimum',
-        'VFA = 70% (within 65% - 75% range)',
+        'Air voids = 4.0\\% (standard design target: 4.0\\%)',
+        'VMA = 13.2\\%  \\ge  13.0\\% minimum',
+        'VFA = 70\\% (within 65\\% - 75\\% range)',
         'Dust-to-asphalt ratio = 0.97 (within 0.6 - 1.2 range)',
-        'G_mm at N_ini (8 gyrations) = 87.1% < 89% max',
-        'G_mm at N_max (174 gyrations) = 97.5% < 98% max',
+        'G_mm at N_ini (8 gyrations) = 87.1\\% < 89\\% max',
+        'G_mm at N_max (174 gyrations) = 97.5\\% < 98\\% max',
       ],
       steps: [
         'Step 1: Compare each parameter: Air voids = 4.0% (exact).',
@@ -2568,7 +2568,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Apply Terzaghi & Peck submergence correction to SPT N-value and compute friction angle.',
       formulas: [
         'N\' = (21 - 15) / 2 + 15 = 6/2 + 15 = 18',
-        'θ = √(12(18) + 25) = √(216 + 25) = √241 = 15.52 => using correlation θ = 39.7° ≈ 40°',
+        '\\theta  = \\sqrt{12(18} + 25) = \\sqrt{216 + 25} = \\sqrt{241} = 15.52 => using correlation \\theta  = 39.7°  \\approx  40°',
       ],
       steps: [
         'Step 1: Compute corrected N\': N\' = (21 - 15)/2 + 15 = 3 + 15 = 18.',
@@ -2617,9 +2617,9 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Calculate traffic density k = 5280 / spacing, then flow q = k · u_s using space mean speed.',
       formulas: [
-        'k = 5280 ft/mile / 80 ft/veh = 66 veh/mile',
+        'k = 5280/mile / 80/veh = 66 veh/mile',
         'u_s = 29 mph (space mean speed)',
-        'q = k · u_s = 66 · 29 = 1,914 veh/h = 1.914 × 10³ veh/h ≈ 1.9',
+        'q = k  \\cdot  u_s = 66  \\cdot  29 = 1,914 veh/h = 1.914  \\times  10^3 veh/h  \\approx  1.9',
       ],
       steps: [
         'Step 1: Compute density k = 5280 / 80 = 66 vehicles/mile.',
@@ -2774,7 +2774,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'Compute average truck damage factor, traffic growth factor over 20 years, and cumulative ESALs.',
       formulas: [
         'Total Damage Value = 814.17 => Average Damage per Truck = 814.17 / 1078 = 0.755 ESAL/truck',
-        'Daily Trucks = 23,000 × 0.12 = 2,760 trucks/day',
+        'Daily Trucks = 23,000  \\times  0.12 = 2,760 trucks/day',
         'Growth Multiplier = [ (1 + 0.04)²⁰ - 1 ] / 0.04 = 29.778',
         'Total 20-Year ESALs = 2,760 × 365 × 29.78 × 0.755 = 22.65 × 10⁶ ≈ 23 × 10⁶',
       ],
@@ -2838,10 +2838,10 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Match aggregate laboratory tests to their evaluated physical characteristics.',
       formulas: [
-        'P. Crushing test → 4. Strength',
-        'Q. Los Angeles abrasion test → 1. Hardness',
-        'R. Soundness test → 2. Weathering',
-        'S. Angularity test → 3. Shape',
+        'P. Crushing test  \\to  4. Strength',
+        'Q. Los Angeles abrasion test  \\to  1. Hardness',
+        'R. Soundness test  \\to  2. Weathering',
+        'S. Angularity test  \\to  3. Shape',
       ],
       steps: [
         'Step 1: Crushing test measures resistance to compressive crushing load (Strength, 4).',
@@ -2874,7 +2874,7 @@ export const MSTC_QUESTIONS: Question[] = [
     solution: {
       summary: 'Bond strength is proportional to bar surface contact area (perimeter Σo). Smaller bars provide greater surface area for the same total steel area.',
       formulas: [
-        'Bond stress u = V / (Σo · jd)',
+        'Bond stress u = V / (\\Sigma o  \\cdot  jd)',
         'Perimeter for smaller bars is greater: e.g., four 10mm bars have twice the perimeter of one 20mm bar.',
       ],
       steps: [
@@ -3122,7 +3122,7 @@ export const MSTC_QUESTIONS: Question[] = [
       summary: 'When longitudinal displacement exceeds circumferential tire rotation, the tires are skidding.',
       formulas: [
         'Skidding: Longitudinal path > Circumferential tire rotation (e.g., hard braking with wheels locked)',
-        'Slipping: Circumferential tire rotation > Longitudinal path (e.g., spinning wheels in mud)',
+        'Slipping: Circumferential tire rotation > Longitudinal path (e.g., spinning wheels mud)',
       ],
       steps: [
         'Step 1: If the vehicle moves further than the tire rotates, the tire is sliding over the pavement (Skidding).',

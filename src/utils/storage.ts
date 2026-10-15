@@ -252,6 +252,9 @@ export function savePausedSession(session: PausedExamSession): void {
     const key = getSessionKey(session.subject, session.year, session.month);
     sessions[key] = session;
     localStorage.setItem(PAUSED_SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ce_board_paused_sessions_updated'));
+    }
   } catch (e) {
     console.error('Failed to save paused exam session', e);
   }
@@ -264,10 +267,33 @@ export function deletePausedSession(
 ): void {
   try {
     const sessions = getStoredPausedSessions();
-    const key = getSessionKey(subject, year, month);
-    if (sessions[key]) {
-      delete sessions[key];
+    const targetKey = getSessionKey(subject, year, month);
+    let modified = false;
+
+    if (sessions[targetKey]) {
+      delete sessions[targetKey];
+      modified = true;
+    }
+
+    // Safety: also scan and remove any session matching subject, year, month (handles string vs number comparisons)
+    for (const k of Object.keys(sessions)) {
+      const s = sessions[k];
+      if (
+        s &&
+        s.subject === subject &&
+        Number(s.year) === Number(year) &&
+        s.month === month
+      ) {
+        delete sessions[k];
+        modified = true;
+      }
+    }
+
+    if (modified) {
       localStorage.setItem(PAUSED_SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ce_board_paused_sessions_updated'));
     }
   } catch (e) {
     console.error('Failed to delete paused exam session', e);
@@ -277,6 +303,9 @@ export function deletePausedSession(
 export function clearAllPausedSessions(): void {
   try {
     localStorage.removeItem(PAUSED_SESSIONS_STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ce_board_paused_sessions_updated'));
+    }
   } catch (e) {
     console.error('Failed to clear all paused exam sessions', e);
   }

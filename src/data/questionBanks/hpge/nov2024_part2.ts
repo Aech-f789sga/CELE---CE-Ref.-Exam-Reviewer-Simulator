@@ -91,7 +91,7 @@ export const HPGE_NOV2024_PART2: Question[] = [
       formulas: [
         '\\Delta H = \\frac{C_c H}{1 + e_0} \\log_{10} \\left( \\frac{\\sigma_0\' + \\Delta p}{\\sigma_0\'} \\right)',
         '\\Delta H = \\frac{0.35(7.6)}{1 + 1.132} \\log_{10} \\left( \\frac{200 + 120}{200} \\right)',
-        '\\Delta H = \\frac{2.66}{2.132} \\log_{10}(1.6) = 1.24765 \\times 0.20412 = 0.2547\\text{ m} \\approx 0.255\\text{ m}',
+        '\\Delta H = \\frac{2.66}{2.132} \\log_{10}(1.6) = 1.24765 \\times 0.20412 = 0.2547\ \\approx 0.255',
       ],
       steps: [
         'Step 1: Identify given parameters: H = 7.6 m, e₀ = 1.132, Cc = 0.35, σ₀\' = 200 kPa, Δp = 120 kPa.',
@@ -127,7 +127,7 @@ export const HPGE_NOV2024_PART2: Question[] = [
       formulas: [
         '\\Delta H = \\frac{C_c H}{1 + e_0} \\log_{10} \\left( \\frac{\\sigma_0\' + \\Delta p}{\\sigma_0\'} \\right)',
         '\\Delta H = \\frac{0.274(3)}{1 + 0.84} \\log_{10} \\left( \\frac{125 + 55}{125} \\right)',
-        '\\Delta H = \\frac{0.822}{1.84} \\log_{10}(1.44) = 0.44674 \\times 0.15836 = 0.07075\\text{ m} = 70.75\\text{ mm} \\approx 70.7\\text{ mm}',
+        '\\Delta H = \\frac{0.822}{1.84} \\log_{10}(1.44) = 0.44674 \\times 0.15836 = 0.07075\ = 70.75\ \\approx 70.7',
       ],
       steps: [
         'Step 1: Identify given parameters: H = 3 m, e₀ = 0.84, Cc = 0.274, σ₀\' = 125 kPa, Δp = 55 kPa.',
@@ -161,8 +161,8 @@ export const HPGE_NOV2024_PART2: Question[] = [
       summary: 'The 2:1 stress distribution method (1H:2V slope) assumes the footing load disperses over an expanded area (B + z) × (L + z) at depth z.',
       formulas: [
         '\\Delta p = \\frac{P}{(B + z)(L + z)}',
-        'B = 1.5\\text{ m},\\; L = 2.5\\text{ m},\\; z = 2.7\\text{ m},\\; P = 450\\text{ kN}',
-        '\\Delta p = \\frac{450}{(1.5 + 2.7)(2.5 + 2.7)} = \\frac{450}{4.2 \\times 5.2} = \\frac{450}{21.84} = 20.604\\text{ kPa} \\approx 20.6\\text{ kPa}',
+        'B = 1.5\,\\; L = 2.5\,\\; z = 2.7\,\\; P = 450',
+        '\\Delta p = \\frac{450}{(1.5 + 2.7)(2.5 + 2.7)} = \\frac{450}{4.2 \\times 5.2} = \\frac{450}{21.84} = 20.604\ \\approx 20.6',
       ],
       steps: [
         'Step 1: Identify footing dimensions: B = 1.5 m, L = 2.5 m, P = 450 kN.',
@@ -231,8 +231,8 @@ export const HPGE_NOV2024_PART2: Question[] = [
     solution: {
       summary: "For cohesionless soil (c = 0), the failure envelope passes through the origin. From Mohr's circle geometry: sin φ = R / (σ₃ + R) = (σ₁ - σ₃) / (σ₁ + σ₃).",
       formulas: [
-        '\\sigma_3 = 12\\text{ kPa},\\; \\sigma_1 = 34\\text{ kPa}',
-        'R = \\frac{\\sigma_1 - \\sigma_3}{2} = \\frac{34 - 12}{2} = 11\\text{ kPa}',
+        '\\sigma_3 = 12\,\\; \\sigma_1 = 34',
+        'R = \\frac{\\sigma_1 - \\sigma_3}{2} = \\frac{34 - 12}{2} = 11',
         '\\sin\\phi = \\frac{R}{\\sigma_3 + R} = \\frac{11}{12 + 11} = \\frac{11}{23}',
         '\\phi = \\sin^{-1}\\left(\\frac{11}{23}\\right) = 28.57^{\\circ}',
       ],
@@ -268,8 +268,8 @@ export const HPGE_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'The additional axial stress is the deviator stress Δσ = 60 kPa. The circle radius is R = 30 kPa with center at 40 + 30 = 70 kPa.',
       formulas: [
-        '\\sigma_3 = 40\\text{ kPa},\\quad \\sigma_d = 60\\text{ kPa}',
-        'R = \\frac{\\sigma_d}{2} = \\frac{60}{2} = 30\\text{ kPa}',
+        '\\sigma_3 = 40\,\\quad \\sigma_d = 60',
+        'R = \\frac{\\sigma_d}{2} = \\frac{60}{2} = 30',
         '\\sin\\phi = \\frac{R}{\\sigma_3 + R} = \\frac{30}{40 + 30} = \\frac{30}{70} = \\frac{3}{7}',
         '\\phi = \\sin^{-1}\\left(\\frac{3}{7}\\right) = 25.38^{\\circ}',
       ],
@@ -307,11 +307,11 @@ export const HPGE_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Compute initial effective vertical stress p₀ at the mid-depth of the 4.2 m clay stratum (z = 9.3 m). Calculate vertical stress increase Δp using the 2:1 method, then evaluate primary consolidation settlement ΔH.',
       formulas: [
-        'z_{\\text{mid}} = 1.8 + 5.4 + \\frac{4.2}{2} = 9.3\\text{ m}',
-        'p_0 = 18.2(1.8) + (19.9 - 9.81)(5.4) + (19.2 - 9.81)(2.1) = 32.76 + 54.486 + 19.719 = 106.965\\text{ kPa}',
-        '\\Delta p = \\frac{Q}{(B + z)^2} = \\frac{800}{(2.4 + 9.3)^2} = \\frac{800}{(11.7)^2} = 5.844\\text{ kPa}',
+        'z_{\\text{mid}} = 1.8 + 5.4 + \\frac{4.2}{2} = 9.3',
+        'p_0 = 18.2(1.8) + (19.9 - 9.81)(5.4) + (19.2 - 9.81)(2.1) = 32.76 + 54.486 + 19.719 = 106.965',
+        '\\Delta p = \\frac{Q}{(B + z)^2} = \\frac{800}{(2.4 + 9.3)^2} = \\frac{800}{(11.7)^2} = 5.844',
         '\\Delta H = \\frac{C_c H}{1 + e_0} \\log_{10} \\left( \\frac{p_0 + \\Delta p}{p_0} \\right)',
-        '\\Delta H = \\frac{0.247(4.2)}{1 + 0.84} \\log_{10} \\left( \\frac{106.965 + 5.844}{106.965} \\right) = 0.5638 \\log_{10}(1.0546) = 0.0130\\text{ m}',
+        '\\Delta H = \\frac{0.247(4.2)}{1 + 0.84} \\log_{10} \\left( \\frac{106.965 + 5.844}{106.965} \\right) = 0.5638 \\log_{10}(1.0546) = 0.0130',
       ],
       steps: [
         'Step 1: Mid-depth of clay layer below ground surface: z = 1.8 + 5.4 + 4.2/2 = 9.3 m.',
@@ -381,14 +381,14 @@ export const HPGE_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Compute soil bulk unit weight γ from phase relationships, determine foundation surcharge q = γ·Df, evaluate rectangular shape factors Kc, Kq, Kγ for B/L = 3/4 = 0.75, solve for ultimate bearing capacity qu, allowable pressure q_all = qu / 3, and allowable footing load Q_all = q_all · (B·L).',
       formulas: [
-        '\\gamma = \\frac{G_s + S e}{1 + e} \\gamma_w = \\frac{2.7 + 0.40(0.40)}{1 + 0.40}(9.81) = 20.04\\text{ kN/m}^3',
-        'q = \\gamma D_f = 20.04(1.2) = 24.05\\text{ kPa}',
+        '\\gamma = \\frac{G_s + S e}{1 + e} \\gamma_w = \\frac{2.7 + 0.40(0.40)}{1 + 0.40}(9.81) = 20.04',
+        'q = \\gamma D_f = 20.04(1.2) = 24.05',
         'K_c = 1 + 0.3\\left(\\frac{3}{4}\\right) = 1.225,\\; K_q = 1.00,\\; K_\\gamma = \\frac{1}{2}\\left(1 - 0.2\\frac{3}{4}\\right) = 0.425',
         'q_u = K_c c N_c + K_q q N_q + K_\\gamma \\gamma B N_\\gamma',
         'q_u = 1.225(10)(37.2) + 1.00(24.05)(22.5) + 0.425(20.04)(3)(19.10)',
-        'q_u = 455.70 + 541.13 + 487.82 = 1484.65\\text{ kPa}',
-        'q_{\\text{all}} = \\frac{q_u}{\\text{FS}} = \\frac{1484.65}{3} = 494.88\\text{ kPa}',
-        'Q_{\\text{all}} = q_{\\text{all}} \\times \\text{Area} = 494.88 \\times (3 \\times 4) = 5938.6\\text{ kN} \\approx 5939\\text{ kN}',
+        'q_u = 455.70 + 541.13 + 487.82 = 1484.65',
+        'q_{\\text{all}} = \\frac{q_u}{\\text{FS}} = \\frac{1484.65}{3} = 494.88',
+        'Q_{\\text{all}} = q_{\\text{all}} \\times \\text{Area} = 494.88 \\times (3 \\times 4) = 5938.6\ \\approx 5939',
       ],
       steps: [
         'Step 1: Calculate unit weight of soil: γ = [(2.7 + 0.40 × 0.40)/(1 + 0.40)] × 9.81 = (2.86 / 1.40) × 9.81 = 20.04 kN/m³.',
@@ -424,7 +424,7 @@ export const HPGE_NOV2024_PART2: Question[] = [
       summary: 'The failure plane angle is θ = 45° + φ/2. With θ = 45°, internal friction angle φ = 0°. For saturated clay with φ = 0, unconfined compressive strength qu = 2c, yielding cohesion c = qu / 2 = 50 kPa.',
       formulas: [
         '\\theta = 45^{\\circ} + \\frac{\\phi}{2} \\implies 45^{\\circ} = 45^{\\circ} + \\frac{\\phi}{2} \\implies \\phi = 0^{\\circ}',
-        'q_u = 2c \\implies c = \\frac{q_u}{2} = \\frac{100}{2} = 50\\text{ kPa}',
+        'q_u = 2c \\implies c = \\frac{q_u}{2} = \\frac{100}{2} = 50',
       ],
       steps: [
         'Step 1: Failure plane angle relationship: θ = 45° + φ/2.',

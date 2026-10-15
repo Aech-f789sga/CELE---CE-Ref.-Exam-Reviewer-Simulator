@@ -21,10 +21,10 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Calculate Mohr circle parameters: confining pressure σ₃ = 250 kPa, deviator stress σ_d = 450 kPa, major stress σ₁ = 700 kPa, radius R = 225 kPa. Tangent envelope gives sin φ = R / (σ₃ + R). Normal stress on failure plane is σ_f = σ₃ + R - R sin φ.',
       formulas: [
-        '\\sigma_3 = 250\\text{ kPa},\\; \\sigma_d = 450\\text{ kPa} \\implies R = 225\\text{ kPa}',
+        '\\sigma_3 = 250\,\\; \\sigma_d = 450\ \\implies R = 225',
         '\\sin\\phi = \\frac{R}{\\sigma_3 + R} = \\frac{225}{250 + 225} = \\frac{225}{475} = 0.47368 \\implies \\phi = 28.274^{\\circ}',
-        'x = R \\sin\\phi = 225 \\sin(28.274^{\\circ}) = 106.58\\text{ kPa}',
-        '\\sigma_f = \\sigma_3 + R - x = 250 + 225 - 106.58 = 368.42\\text{ kPa} \\approx 368\\text{ kPa}',
+        'x = R \\sin\\phi = 225 \\sin(28.274^{\\circ}) = 106.58',
+        '\\sigma_f = \\sigma_3 + R - x = 250 + 225 - 106.58 = 368.42\ \\approx 368',
       ],
       steps: [
         'Step 1: Circle center = σ₃ + R = 250 + 225 = 475 kPa.',
@@ -91,10 +91,10 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'With water level at the top, centroid depth h̄ = 1.5 m and gate area A = 4.5 m². Total hydrostatic force F_H = 66.22 kN acts at 2/3 depth (2.0 m from top hinge). Take moments about the top hinge.',
       formulas: [
-        'F_H = \\gamma \\bar{h} A = 9.81(1.5)(4.5) = 66.22\\text{ kN}',
-        'h_{cp} = \\frac{2}{3}(3) = 2\\text{ m}',
+        'F_H = \\gamma \\bar{h} A = 9.81(1.5)(4.5) = 66.22',
+        'h_{cp} = \\frac{2}{3}(3) = 2',
         '\\sum M_{\\text{hinge}} = 0 \\implies F_H(2) = P_x(3) = (P \\sin 45^{\\circ})(3)',
-        '66.22(2) = P(3 \\sin 45^{\\circ}) \\implies 132.44 = 2.1213 P \\implies P = 62.43\\text{ kN}',
+        '66.22(2) = P(3 \\sin 45^{\\circ}) \\implies 132.44 = 2.1213 P \\implies P = 62.43',
       ],
       steps: [
         'Step 1: Water height on gate = 3 m. Centroid depth h̄ = 1.5 m, area A = 3 × 1.5 = 4.5 m².',
@@ -128,12 +128,12 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Centroid depth h̄ = 0.9 + 1.5 = 2.4 m. F_H = 105.948 kN. Eccentricity e = I_g / (A·h̄) = 0.3125 m, placing the force at 1.8125 m below the hinge.',
       formulas: [
-        '\\bar{h} = 0.9 + 1.5 = 2.4\\text{ m},\\quad A = 3(1.5) = 4.5\\text{ m}^2',
-        'F_H = \\gamma \\bar{h} A = 9.81(2.4)(4.5) = 105.948\\text{ kN}',
-        'e = \\frac{1.5(3)^3 / 12}{4.5(2.4)} = 0.3125\\text{ m} \\implies h_{cp} = 2.4 + 0.3125 = 2.7125\\text{ m}',
-        '\\text{Arm from hinge} = h_{cp} - 0.9 = 1.8125\\text{ m}',
+        '\\bar{h} = 0.9 + 1.5 = 2.4\,\\quad A = 3(1.5) = 4.5',
+        'F_H = \\gamma \\bar{h} A = 9.81(2.4)(4.5) = 105.948',
+        'e = \\frac{1.5(3)^3 / 12}{4.5(2.4)} = 0.3125\ \\implies h_{cp} = 2.4 + 0.3125 = 2.7125',
+        '\\text{Arm from hinge} = h_{cp} - 0.9 = 1.8125',
         '\\sum M_{\\text{hinge}} = 0 \\implies 105.948(1.8125) = P(3 \\sin 45^{\\circ})',
-        '192.03 = 2.1213 P \\implies P = 90.52\\text{ kN}',
+        '192.03 = 2.1213 P \\implies P = 90.52',
       ],
       steps: [
         'Step 1: Centroid depth below water surface: h̄ = 0.9 + 3/2 = 2.4 m.',
@@ -167,12 +167,12 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'The wetted height of the gate is 3 - 0.9 = 2.1 m. Submerged area A = 2.1 × 1.5 = 3.15 m². Centroid depth h̄ = 1.05 m. F_H = 32.447 kN acts at (2/3)(2.1) = 1.4 m below the water line (2.3 m below hinge).',
       formulas: [
-        '\\text{Wetted height} = 3 - 0.9 = 2.1\\text{ m},\\quad A = 2.1(1.5) = 3.15\\text{ m}^2',
-        '\\bar{h} = \\frac{2.1}{2} = 1.05\\text{ m},\\quad F_H = 9.81(1.05)(3.15) = 32.447\\text{ kN}',
+        '\\text{Wetted height} = 3 - 0.9 = 2.1\,\\quad A = 2.1(1.5) = 3.15',
+        '\\bar{h} = \\frac{2.1}{2} = 1.05\,\\quad F_H = 9.81(1.05)(3.15) = 32.447',
         'h_{cp} = \\frac{2}{3}(2.1) = 1.4\\text{ m below water surface}',
-        '\\text{Arm from hinge} = 0.9 + 1.4 = 2.3\\text{ m}',
+        '\\text{Arm from hinge} = 0.9 + 1.4 = 2.3',
         '\\sum M_{\\text{hinge}} = 0 \\implies 32.447(2.3) = P(3 \\sin 45^{\\circ})',
-        '74.628 = 2.1213 P \\implies P = 35.18\\text{ kN}',
+        '74.628 = 2.1213 P \\implies P = 35.18',
       ],
       steps: [
         'Step 1: Wetted height of gate = 3 - 0.9 = 2.1 m; submerged area A = 2.1 × 1.5 = 3.15 m².',
@@ -206,9 +206,9 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Compute vertical depth to centroid h̄ = 2 + (2/3)(0.9) sin 60° = 2.52 m. Gate area A = 0.5(1.2)(0.9) = 0.54 m². Hydrostatic force F_H = γ·h̄·A.',
       formulas: [
-        'A = \\frac{1}{2}(1.2)(0.9) = 0.54\\text{ m}^2',
-        '\\bar{h} = 2 + \\frac{2}{3}(0.9)\\sin 60^{\\circ} = 2 + 0.6(0.8660) = 2.5196\\text{ m} \\approx 2.52\\text{ m}',
-        'F_H = \\gamma \\bar{h} A = 9.81(2.52)(0.54) = 13.35\\text{ kN}',
+        'A = \\frac{1}{2}(1.2)(0.9) = 0.54',
+        '\\bar{h} = 2 + \\frac{2}{3}(0.9)\\sin 60^{\\circ} = 2 + 0.6(0.8660) = 2.5196\ \\approx 2.52',
+        'F_H = \\gamma \\bar{h} A = 9.81(2.52)(0.54) = 13.35',
       ],
       steps: [
         'Step 1: Gate area A = 0.5 × 1.2 × 0.9 = 0.54 m².',
@@ -242,7 +242,7 @@ export const HPGE_NOV2024_PART3: Question[] = [
       summary: 'The distance along the gate face from the centroid to the center of pressure is eccentricity e = I_g / (A · ȳ), where ȳ = h̄ / sin 60°.',
       formulas: [
         'e = \\frac{I_g}{A \\bar{y}} = \\frac{b h^3 / 36}{(0.5 b h)( \\bar{h} / \\sin 60^{\\circ} )} = \\frac{h^2 \\sin 60^{\\circ}}{18 \\bar{h}}',
-        'e = \\frac{(0.9)^2 \\sin 60^{\\circ}}{18(2.52)} = \\frac{0.81(0.8660)}{45.36} = 0.01546\\text{ m} \\approx 0.015\\text{ m}',
+        'e = \\frac{(0.9)^2 \\sin 60^{\\circ}}{18(2.52)} = \\frac{0.81(0.8660)}{45.36} = 0.01546\ \\approx 0.015',
       ],
       steps: [
         'Step 1: Moment of inertia of triangle about centroidal axis parallel to base: I_g = bh³ / 36.',
@@ -274,9 +274,9 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'With the hinge at the base (bottom), distance to the centroid is (1/3)(0.9) = 0.30 m. Center of pressure is closer to the base by eccentricity e = 0.015 m (lever arm x = 0.30 - 0.015 = 0.285 m). Equate moments about the hinge to find normal force P at the vertex (arm = 0.9 m).',
       formulas: [
-        'x = \\frac{1}{3}(0.9) - e = 0.30 - 0.015 = 0.285\\text{ m}',
+        'x = \\frac{1}{3}(0.9) - e = 0.30 - 0.015 = 0.285',
         '\\sum M_{\\text{hinge}} = 0 \\implies F_H(x) = P(0.9)',
-        '13.35(0.285) = P(0.9) \\implies 3.80475 = 0.9P \\implies P = 4.227\\text{ kN} \\approx 4.22\\text{ kN}',
+        '13.35(0.285) = P(0.9) \\implies 3.80475 = 0.9P \\implies P = 4.227\ \\approx 4.22',
       ],
       steps: [
         'Step 1: Distance from hinge (base) to centroid = 0.9 / 3 = 0.30 m.',
@@ -310,9 +310,9 @@ export const HPGE_NOV2024_PART3: Question[] = [
     solution: {
       summary: 'Hydraulic radius R is defined as the cross-sectional flow area A divided by the wetted perimeter P.',
       formulas: [
-        'A = b \\times y = 0.90 \\times 0.60 = 0.54\\text{ m}^2',
-        'P = b + 2y = 0.90 + 2(0.60) = 2.10\\text{ m}',
-        'R = \\frac{A}{P} = \\frac{0.54}{2.10} = 0.2571\\text{ m} \\approx 0.257\\text{ m}',
+        'A = b \\times y = 0.90 \\times 0.60 = 0.54',
+        'P = b + 2y = 0.90 + 2(0.60) = 2.10',
+        'R = \\frac{A}{P} = \\frac{0.54}{2.10} = 0.2571\ \\approx 0.257',
       ],
       steps: [
         'Step 1: Flow area A = 0.90 × 0.60 = 0.54 m².',

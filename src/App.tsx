@@ -30,6 +30,7 @@ import { AuthModal } from './components/AuthModal';
 import { useTheme } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
+import { TerrariumOrb3D } from './components/TerrariumOrb3D';
 import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './services/firebase';
 
 function MainApp() {
@@ -221,6 +222,8 @@ function MainApp() {
     timerMode === 'exam_timer' ? customMinutes * 60 : 0;
 
   const isAurora = themeConfig.id === 'aurora_glass';
+  const isTerrarium = themeConfig.id === 'terrarium_orb';
+  const is3DTheme = isAurora || isTerrarium;
 
   return (
     <>
@@ -229,10 +232,15 @@ function MainApp() {
           <Scene3D variant="background" accent={themeConfig.accent} />
         </div>
       )}
+      {isTerrarium && (
+        <div className="scene-layer opacity-50 pointer-events-none">
+          <TerrariumOrb3D mode="background" accent={themeConfig.accent} interactive={false} />
+        </div>
+      )}
       <div
-        className={`min-h-screen flex flex-col transition-colors duration-250 ${isAurora ? 'app-above-scene' : ''}`}
+        className={`min-h-screen flex flex-col transition-colors duration-250 ${is3DTheme ? 'app-above-scene' : ''}`}
         style={{
-          backgroundColor: isAurora ? 'transparent' : themeConfig.bgPage,
+          backgroundColor: is3DTheme ? 'transparent' : themeConfig.bgPage,
           color: themeConfig.textPrimary,
         }}
       >

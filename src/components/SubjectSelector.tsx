@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SubjectArea,
   ExamMonth,
@@ -39,6 +39,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
+import { TerrariumOrb3D } from './TerrariumOrb3D';
 import { Tilt3D } from './Tilt3D';
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -82,17 +83,33 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onResumeExam,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
-  const [, setSessionRefreshTrigger] = useState(0);
+  const [pausedSessionsList, setPausedSessionsList] = useState<PausedExamSession[]>(() => getAllPausedSessions());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setPausedSessionsList(getAllPausedSessions());
+    };
+    window.addEventListener('ce_board_paused_sessions_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('ce_board_paused_sessions_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
   const [sessionToDiscard, setSessionToDiscard] = useState<PausedExamSession | 'ALL' | null>(null);
   const { themeConfig } = useTheme();
   const isAurora = themeConfig.id === 'aurora_glass';
+  const isTerrarium = themeConfig.id === 'terrarium_orb';
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
   const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
 
-  const currentPausedSession = getPausedSession(selectedSubject, selectedYear, selectedMonth);
-  const allPausedSessions = getAllPausedSessions();
+  const currentPausedSession = pausedSessionsList.find(
+    (s) => s.subject === selectedSubject && Number(s.year) === Number(selectedYear) && s.month === selectedMonth
+  ) || null;
+  const allPausedSessions = pausedSessionsList;
   const otherPausedSessions = allPausedSessions.filter(
-    (s) => !(s.subject === selectedSubject && s.year === selectedYear && s.month === selectedMonth)
+    (s) => !(s.subject === selectedSubject && Number(s.year) === Number(selectedYear) && s.month === selectedMonth)
   );
 
   const formatTime = (secs: number) => {
@@ -113,7 +130,12 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <Scene3D variant="hero" accent={themeConfig.accent} />
           </div>
         )}
-        <div className="relative z-10 space-y-3 sm:max-w-[60%]">
+        {isTerrarium && (
+          <div className="absolute inset-y-0 right-0 w-full sm:w-1/2 md:w-3/5 opacity-90 sm:opacity-100 pointer-events-auto">
+            <TerrariumOrb3D mode="hero" interactive={true} accent={themeConfig.accent} />
+          </div>
+        )}
+        <div className="relative z-10 space-y-3 sm:max-w-[55%]">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>PRC Board Exam Questions • 2024 &amp; 2025 Official Question Sets</span>
@@ -747,7 +769,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 type="button"
                 onClick={() => {
                   deletePausedSession(selectedSubject, selectedYear, selectedMonth);
-                  setSessionRefreshTrigger((p) => p + 1);
+                  setPausedSessionsList(getAllPausedSessions());
                   onStartExam();
                 }}
                 className="flex-1 sm:flex-none px-5 py-3.5 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md transition-all font-arnie tracking-wider bg-amber-600/30 hover:bg-amber-600/50 text-slate-950 border border-amber-600/40 cursor-pointer"
@@ -818,8 +840,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                   } else {
                     deletePausedSession(sessionToDiscard.subject, sessionToDiscard.year, sessionToDiscard.month);
                   }
+                  setPausedSessionsList(getAllPausedSessions());
                   setSessionToDiscard(null);
-                  setSessionRefreshTrigger((p) => p + 1);
                 }}
                 className="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs flex items-center space-x-1.5 transition-colors cursor-pointer shadow-md shadow-rose-500/20"
               >

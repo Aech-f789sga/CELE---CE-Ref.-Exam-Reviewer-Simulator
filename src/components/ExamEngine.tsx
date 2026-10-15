@@ -126,9 +126,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   };
 
   const handleDiscardAndExit = () => {
-    if (isPauseEligible) {
-      deletePausedSession(subject, year, month);
-    }
+    deletePausedSession(subject, year, month);
     onExit();
   };
 

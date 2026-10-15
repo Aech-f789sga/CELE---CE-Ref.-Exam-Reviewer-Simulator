@@ -128,12 +128,12 @@ export const PSAD_NOV2024_PART1: Question[] = [
       formulas: [
         '\\tan\\beta = \\frac{c}{a} = \\frac{6}{1.5} = 4 \\implies \\beta = 75.96^{\\circ}',
         '\\tan\\alpha = \\frac{c}{b + a} = \\frac{6}{5.5} = 1.0909 \\implies \\alpha = 47.49^{\\circ}',
-        '\\text{Joint D: } \\sum F_v = 0 \\implies F_{BD}\\sin 75.96^{\\circ} - 10 = 0 \\implies F_{BD} = 10.308\\text{ kN (C)}',
-        '\\sum F_h = 0 \\implies F_{CD} - 6 - 10.308\\cos 75.96^{\\circ} = 0 \\implies F_{CD} = 8.5\\text{ kN (C)}',
-        '\\text{Joint C: } \\sum F_h = 0 \\implies F_{BC}\\cos 47.49^{\\circ} + F_{AC}\\cos 75.96^{\\circ} - 8.5 = 0',
+        '\\\sum F_v = 0 \\implies F_{BD}\\sin 75.96^{\\circ} - 10 = 0 \\implies F_{BD} = 10.308',
+        '\\sum F_h = 0 \\implies F_{CD} - 6 - 10.308\\cos 75.96^{\\circ} = 0 \\implies F_{CD} = 8.5',
+        '\\\sum F_h = 0 \\implies F_{BC}\\cos 47.49^{\\circ} + F_{AC}\\cos 75.96^{\\circ} - 8.5 = 0',
         '\\sum F_v = 0 \\implies F_{AC}\\sin 75.96^{\\circ} - 10 - F_{BC}\\sin 47.49^{\\circ} = 0',
-        'F_{AC} = 15.61\\text{ kN (C)}',
-        'A_v = F_{AC}\\sin 75.96^{\\circ} = 15.61\\sin 75.96^{\\circ} = 15.14\\text{ kN}',
+        'F_{AC} = 15.61',
+        'A_v = F_{AC}\\sin 75.96^{\\circ} = 15.61\\sin 75.96^{\\circ} = 15.14',
       ],
       steps: [
         'Step 1: Geometry: Angle of member BD with horizontal: tan β = 6 / 1.5 = 4 => β = 75.96°. Angle of diagonal cable BC: tan α = 6 / (4 + 1.5) = 6 / 5.5 => α = 47.49°.',
@@ -202,7 +202,7 @@ export const PSAD_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Summing vertical forces at joint D directly gives the compressive axial force in member BD.',
       formulas: [
-        '\\sum F_v = 0 \\implies F_{BD}\\sin 75.96^{\\circ} - 10 = 0 \\implies F_{BD} = \\frac{10}{\\sin 75.96^{\\circ}} = 10.308\\text{ kN (C)}',
+        '\\sum F_v = 0 \\implies F_{BD}\\sin 75.96^{\\circ} - 10 = 0 \\implies F_{BD} = \\frac{10}{\\sin 75.96^{\\circ}} = 10.308',
       ],
       steps: [
         'Step 1: Isolate Joint D.',
@@ -237,9 +237,9 @@ export const PSAD_NOV2024_PART1: Question[] = [
       summary: 'The lateral load P = 5 kN at top height G produces a overturning moment. Equilibrium about base hinge E shows cable AF carries the entire resisting moment. Solve for tension T in AF, then compute normal stress f_t = T / A.',
       formulas: [
         '\\sum M_E = 0 \\implies P(h) - T\\sin 45^{\\circ}(a) = 0 \\implies 5(20) - T\\sin 45^{\\circ}(12) = 0',
-        'T = \\frac{100}{12\\sin 45^{\\circ}} = 11.785\\text{ kN}',
-        'A = \\frac{\\pi}{4}(12)^2 = 113.097\\text{ mm}^2',
-        'f_t = \\frac{T}{A} = \\frac{11,785\\text{ N}}{113.097\\text{ mm}^2} = 104.2\\text{ MPa}',
+        'T = \\frac{100}{12\\sin 45^{\\circ}} = 11.785',
+        'A = \\frac{\\pi}{4}(12)^2 = 113.097',
+        'f_t = \\frac{T}{A} = \\frac{11,785\}{113.097\} = 104.2',
       ],
       steps: [
         'Step 1: Pole height h = 20 m, anchor distance a = 12 m. Guy cable AF connects to the pole at height 12 m at angle 45°.',
@@ -274,8 +274,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Compute the initial length of cable AF from geometry: L_AF = √(12² + 12²) = 16.97 m. Use Hooke’s law δ = σ L / E.',
       formulas: [
-        'L_{AF} = \\sqrt{12^2 + 12^2} = 16.97056\\text{ m} = 16,970.56\\text{ mm}',
-        '\\delta = \\frac{\\sigma L}{E} = \\frac{220(16,970.56)}{200,000} = 18.668\\text{ mm} \\approx 18.7\\text{ mm}',
+        'L_{AF} = \\sqrt{12^2 + 12^2} = 16.97056\ = 16,970.56',
+        '\\delta = \\frac{\\sigma L}{E} = \\frac{220(16,970.56)}{200,000} = 18.668\ \\approx 18.7',
       ],
       steps: [
         'Step 1: Length of cable AF: L = √(12² + 12²) = 16.971 m = 16,970.56 mm.',
@@ -309,9 +309,9 @@ export const PSAD_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Apply small deformation kinematics: cable elongation δ_AF = 22 mm relates to horizontal displacement at attachment point F (height 12 m) via x_F = δ_AF / cos 45° = 31.11 mm. By proportional triangles along the 20 m rigid pole, displacement at top G is δ_Gh = (20 / 12) × 31.11 = 51.87 mm.',
       formulas: [
-        'x_F = \\frac{\\delta_{AF}}{\\cos 45^{\\circ}} = \\frac{22}{\\cos 45^{\\circ}} = 31.113\\text{ mm}',
+        'x_F = \\frac{\\delta_{AF}}{\\cos 45^{\\circ}} = \\frac{22}{\\cos 45^{\\circ}} = 31.113',
         '\\frac{\\delta_{Gh}}{h} = \\frac{x_F}{h_F} \\implies \\frac{\\delta_{Gh}}{20} = \\frac{31.113}{12}',
-        '\\delta_{Gh} = 31.113 \\times \\frac{20}{12} = 51.855\\text{ mm} \\approx 51.9\\text{ mm}',
+        '\\delta_{Gh} = 31.113 \\times \\frac{20}{12} = 51.855\ \\approx 51.9',
       ],
       steps: [
         'Step 1: Horizontal displacement at cable attachment point F: x_F = 22 / cos 45° = 31.113 mm.',
@@ -423,7 +423,7 @@ export const PSAD_NOV2024_PART1: Question[] = [
         '\\phi = \\tan^{-1}(0.015) = 0.859^{\\circ}',
         '\\text{Counterclockwise: } \\alpha = 59.15^{\\circ}',
         '\\text{Clockwise: } \\alpha = 62.34^{\\circ}',
-        '\\alpha_{\\text{min}} = 59.15^{\\circ}',
+        '\\alpha_{\} = 59.15^{\\circ}',
       ],
       steps: [
         'Step 1: Compute angle of friction: φ = arctan(0.015) = 0.859°.',
@@ -457,7 +457,7 @@ export const PSAD_NOV2024_PART1: Question[] = [
       summary: 'Vertical equilibrium of the bob gives T cos θ = W.',
       formulas: [
         'T\\cos\\theta = W \\implies T = \\frac{W}{\\cos\\theta}',
-        'T = \\frac{600}{\\cos 30^{\\circ}} = 692.82\\text{ N}',
+        'T = \\frac{600}{\\cos 30^{\\circ}} = 692.82',
       ],
       steps: [
         'Step 1: Identify vertical force equilibrium: T cos θ - W = 0.',
@@ -488,7 +488,7 @@ export const PSAD_NOV2024_PART1: Question[] = [
     solution: {
       summary: 'Using vertical equilibrium W = T cos θ with allowable tension T_all = 1250 N.',
       formulas: [
-        'W = T\\cos\\theta = 1250\\cos 30^{\\circ} = 1082.53\\text{ N}',
+        'W = T\\cos\\theta = 1250\\cos 30^{\\circ} = 1082.53',
       ],
       steps: [
         'Step 1: Vertical component of allowable tension balances weight: W = T cos θ.',
@@ -521,8 +521,8 @@ export const PSAD_NOV2024_PART1: Question[] = [
       formulas: [
         '\\tan\\theta = \\frac{v^2}{g R} = \\frac{v^2}{g L\\sin\\theta} \\implies \\sin\\theta\\tan\\theta = \\frac{v^2}{g L}',
         '\\sin\\theta\\tan\\theta = \\frac{2.5^2}{9.81(0.45)} = 1.4158 \\implies \\theta = 58.85^{\\circ}',
-        'R = L\\sin\\theta = 0.45\\sin(58.85^{\\circ}) = 0.385\\text{ m}',
-        'CF = \\frac{W v^2}{g R} = \\frac{600(2.5)^2}{9.81(0.385)} = 992.6\\text{ N}',
+        'R = L\\sin\\theta = 0.45\\sin(58.85^{\\circ}) = 0.385',
+        'CF = \\frac{W v^2}{g R} = \\frac{600(2.5)^2}{9.81(0.385)} = 992.6',
       ],
       steps: [
         'Step 1: Centripetal force balance: tan θ = v² / (g · R), where R = L sin θ = 0.45 sin θ.',

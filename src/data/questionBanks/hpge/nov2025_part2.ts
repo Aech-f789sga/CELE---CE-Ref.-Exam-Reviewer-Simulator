@@ -377,7 +377,7 @@ export const HPGE_NOV2025_PART2: Question[] = [
       summary: 'Compute vertical geostatic overburden stress σv = γ · z, then calculate total downward force F = σv · A.',
       formulas: [
         '\\sigma_v = \\gamma z',
-        '\\sigma_v = 19(4.0) = 76\\text{ kPa}',
+        '\\sigma_v = 19(4.0) = 76',
         'F = \\sigma_v A = 76(2.0) = 152',
       ],
       steps: [

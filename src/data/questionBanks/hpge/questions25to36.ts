@@ -21,8 +21,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Compute dry density using relationship: ρ_d = ρ_m / (1 + w).',
       formulas: [
-        'ρ_d = ρ_m / (1 + w)',
-        'ρ_d = 2.3 / (1 + 0.15) = 2.3 / 1.15 = 2.0 g/cm³',
+        '\\rho _d = \\rho _m / (1 + w)',
+        '\\rho _d = 2.3 / (1 + 0.15) = 2.3 / 1.15 = 2.0 g/cm^3',
       ],
       steps: [
         'Step 1: Given moist bulk density ρ_m = 2.3 g/cm³ and moisture content w = 0.15.',
@@ -53,8 +53,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Moist unit weight is given by: γ_m = γ_d · (1 + w).',
       formulas: [
-        'γ_m = γ_d · (1 + w)',
-        'γ_m = 15 · (1 + 0.25) = 18.75 kN/m³',
+        '\\gamma _m = \\gamma _d  \\cdot  (1 + w)',
+        '\\gamma _m = 15  \\cdot  (1 + 0.25) = 18.75/m^3',
       ],
       steps: [
         'Step 1: Given dry unit weight γ_d = 15 kN/m³ and target water content w = 0.25.',
@@ -85,8 +85,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: '1D settlement equation: ΔH = H₀ · [ Δe / (1 + e₀) ].',
       formulas: [
-        'H₀ = 7 m, e₀ = 1.2',
-        'Δe = (1/3) · e₀ = 1.2 / 3 = 0.4',
+        'H_0 = 7, e_0 = 1.2',
+        '\\Delta e = (1/3)  \\cdot  e_0 = 1.2 / 3 = 0.4',
         'ΔH = H₀ · [ Δe / (1 + e₀) ] = 7 · [ 0.4 / (1 + 1.2) ] = 2.8 / 2.2 = 1.273 m ≈ 1.27 m',
       ],
       steps: [
@@ -119,8 +119,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Compute settlement: ΔH = H₀ · [ Δe / (1 + e₀) ].',
       formulas: [
-        'H₀ = 9 m, e₀ = 1.2',
-        'Δe = (1/4) · e₀ = 1.2 / 4 = 0.3',
+        'H_0 = 9, e_0 = 1.2',
+        '\\Delta e = (1/4)  \\cdot  e_0 = 1.2 / 4 = 0.3',
         'ΔH = H₀ · [ Δe / (1 + e₀) ] = 9 · [ 0.3 / (1 + 1.2) ] = 2.7 / 2.2 = 1.227 m ≈ 1.23 m',
       ],
       steps: [
@@ -188,12 +188,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Compute equivalent vertical permeability k_v = H / Σ(h_i / k_i), then Q = k_v · i · A.',
       formulas: [
-        'k₁ = 1 · 10⁻⁶ m/s, k₂ = 3.2 · 10⁻⁴ m/s, k₃ = 4.1 · 10⁻⁷ m/s',
-        'H = 3 + 4 + 6 = 13 m',
-        'Σ(h/k) = [ 3 / (1 · 10⁻⁶) ] + [ 4 / (3.2 · 10⁻⁴) ] + [ 6 / (4.1 · 10⁻⁷) ] = 3,000,000 + 12,500 + 14,634,146 = 17,646,646 s',
-        'k_v = 13 / 17,646,646 = 7.367 · 10⁻⁷ m/s',
-        'Q = k_v · i · A = (7.367 · 10⁻⁷) · (0.50) · (1.0 m²) = 3.6835 · 10⁻⁷ m³/s',
-        'Q (L/hr) = 3.6835 · 10⁻⁷ m³/s · 1000 L/m³ · 3600 s/hr = 1.326 L/hr ≈ 1.325 L/hr',
+        'k_v = \\frac{H}{\\sum \\frac{h_i}{k_i}}',
+        'Q = k_v i A',
       ],
       steps: [
         'Step 1: Convert permeabilities to m/s: k₁ = 1×10⁻⁶ m/s, k₂ = 3.2×10⁻⁴ m/s, k₃ = 4.1×10⁻⁷ m/s.',
@@ -227,8 +223,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'With 2V:1H slope, dimensions expand by z in each direction: σ_z = Q / [ (B + z)(L + z) ].',
       formulas: [
-        'B_z = B + z = 1.5 + 2.7 = 4.2 m',
-        'L_z = L + z = 2.5 + 2.7 = 5.2 m',
+        'B_z = B + z = 1.5 + 2.7 = 4.2',
+        'L_z = + z = 2.5 + 2.7 = 5.2',
         'σ_z = Q / [ (B + z)(L + z) ] = 550 / (4.2 · 5.2) = 550 / 21.84 = 25.183 kPa ≈ 25.18 kPa',
       ],
       steps: [
@@ -297,11 +293,11 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'For square footing on sand (c = 0): q_u = q · Nq + 0.4 · γ · B · Nγ. Then P_allow = (q_u / FS) · B².',
       formulas: [
-        'q = γ · D_f = 16 · 1.0 = 16 kPa',
-        'q_u = 1.3 c Nc + q Nq + 0.4 γ B Nγ = 0 + 16(12.70) + 0.4(16)(2.0)(8.34)',
-        'q_u = 203.20 + 106.752 = 309.952 kPa',
-        'q_allow = q_u / FS = 309.952 / 3.0 = 103.317 kPa',
-        'P_allow = q_allow · B² = 103.317 · (2.0)² = 413.27 kN ≈ 413.28 kN',
+        'q = \\gamma   \\cdot  D_f = 16  \\cdot  1.0 = 16',
+        'q_u = 1.3 c Nc + q Nq + 0.4 \\gamma  B\\gamma  = 0 + 16(12.70) + 0.4(16)(2.0)(8.34)',
+        'q_u = 203.20 + 106.752 = 309.952',
+        'q_allow = q_u / FS = 309.952 / 3.0 = 103.317',
+        'P_allow = q_allow  \\cdot  B^2 = 103.317  \\cdot  (2.0)^2 = 413.27  \\approx  413.28',
       ],
       steps: [
         'Step 1: Surcharge at foundation depth: q = 16 kN/m³ × 1.0 m = 16 kPa.',
@@ -334,8 +330,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Directly below load (r = 0), N = 1.0. Compute p = 0.477 · Q / z².',
       formulas: [
-        'Q = 2.5 MN = 2,500 kN, z = 3 m, r = 0 => N = 1.0',
-        'q = 0.477 · (2500) / (3)² = 1,192.5 / 9 = 132.5 kPa',
+        'Q = 2.5 MN = 2,500, z = 3, r = 0 => = 1.0',
+        'q = 0.477  \\cdot  (2500) / (3)^2 = 1,192.5 / 9 = 132.5',
       ],
       steps: [
         'Step 1: Point load Q = 2,500 kN.',
@@ -367,8 +363,8 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Directly below load (r = 0) at z = 6 m: p = 0.477 · Q / z².',
       formulas: [
-        'Q = 2,500 kN, z = 6 m, r = 0 => N = 1.0',
-        'q = 0.477 · (2500) / (6)² = 1,192.5 / 36 = 33.125 kPa ≈ 33.1 kPa',
+        'Q = 2,500, z = 6, r = 0 => = 1.0',
+        'q = 0.477  \\cdot  (2500) / (6)^2 = 1,192.5 / 36 = 33.125  \\approx  33.1',
       ],
       steps: [
         'Step 1: Depth z = 6 m, r = 0.',
@@ -399,7 +395,7 @@ export const HPGE_PART3: Question[] = [
     solution: {
       summary: 'Compute Boussinesq influence factor N for r/z = 3/6 = 0.5: N = 1 / [1 + (0.5)²]^2.5 = 0.5724.',
       formulas: [
-        'r = 3 m, z = 6 m => r/z = 0.5',
+        'r = 3, z = 6 => r/z = 0.5',
         'N = 1 / [ 1 + (0.5)² ]^(2.5) = 1 / (1.25)^(2.5) = 1 / 1.7469 = 0.5724',
         'q = [ 0.477 · (2500) / 6² ] · 0.5724 = 33.125 · 0.5724 = 18.96 kPa ≈ 19.0 kPa',
       ],

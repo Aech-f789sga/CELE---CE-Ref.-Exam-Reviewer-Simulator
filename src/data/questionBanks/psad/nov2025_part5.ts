@@ -10,7 +10,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Required Overall Beam Depth at Balanced Condition',
-    text: 'Situation 21 — A rectangular reinforced concrete beam is subjected to flexure and shear.\nGiven:\nConcrete compressive strength, $f\'_c = 30\\text{ MPa}$\nYield strength of longitudinal reinforcement, $f_y = 413\\text{ MPa}$\nYield strength of transverse reinforcement, $f_{yt} = 275\\text{ MPa}$\nConcrete cover to the centroid of longitudinal bars, $d\' = 80\\text{ mm}$\nBalanced steel ratio, $\\rho_b = 0.029$\n\n61. If the beam has a width of $250\\text{ mm}$, determine the required overall depth (mm) at balanced condition if it is subjected to a factored moment $M_u = 320\\text{ kN}\\cdot\\text{m}$.',
+    text: 'Situation 21 — A rectangular reinforced concrete beam is subjected to flexure and shear.\nGiven:\nConcrete compressive strength, $f\'_c = 30\$\nYield strength of longitudinal reinforcement, $f_y = 413\$\nYield strength of transverse reinforcement, $f_{yt} = 275\$\nConcrete cover to the centroid of longitudinal bars, $d\' = 80\$\nBalanced steel ratio, $\\rho_b = 0.029$\n\n61. If the beam has a width of $250\$, determine the required overall depth (mm) at balanced condition if it is subjected to a factored moment $M_u = 320\\\cdot\$.',
     options: [
       { label: 'A', text: '480' },
       { label: 'B', text: '400' },
@@ -19,13 +19,12 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'At balanced condition, $\\rho = \\rho_b = 0.029$ and $\\phi = 0.65$. Reinforcement index $\\omega = \\frac{0.029(413)}{30} = 0.3992$. Resistance factor $R_n = f\'_c \\omega (1 - 0.59\\omega) = 9.155\\text{ MPa}$. Solve $\\phi R_n b d^2 \\ge M_u$ for $d_{\\min} = 463.8\\text{ mm}$. Overall depth $h = d_{\\min} + d\' = 463.8 + 80 = 543.8\\text{ mm}$, so choose $h = 550\\text{ mm}$.',
+      summary: 'At balanced condition, $\\rho = \\rho_b = 0.029$ and $\\phi = 0.65$. Reinforcement index $\\omega = \\frac{0.029(413)}{30} = 0.3992$. Resistance factor $R_n = f\'_c \\omega (1 - 0.59\\omega) = 9.155\$. Solve $\\phi R_n b d^2 \\ge M_u$ for $d_{\\min} = 463.8\$. Overall depth $h = d_{\\min} + d\' = 463.8 + 80 = 543.8\$, so choose $h = 550\$.',
       formulas: [
-        '\\omega = \\frac{\\rho_b f_y}{f\'_c} = \\frac{0.029 \\times 413}{30} = 0.3992',
-        'R_n = f\'_c \\omega (1 - 0.59 \\omega) = 30(0.3992)[1 - 0.59(0.3992)] = 9.155\\text{ MPa}',
-        '\\phi R_n b d^2 \\ge M_u \\implies 0.65(9.155)(250) d^2 \\ge 320 \\times 10^6',
-        '1,487.69 d^2 \\ge 320 \\times 10^6 \\implies d_{\\min} = \\sqrt{\\frac{320 \\times 10^6}{1,487.69}} = 463.8\\text{ mm}',
-        'h_{\\min} = d_{\\min} + d\' = 463.8 + 80 = 543.8\\text{ mm} \\implies \\text{Choose } h = 550\\text{ mm}',
+        '\\omega = \\frac{\\rho_b f_y}{f\'_c}',
+        'R_n = f\'_c \\omega (1 - 0.59 \\omega)',
+        'd = \\sqrt{\\frac{M_u}{\\phi R_n b}}',
+        "h = d + d'",
       ],
       steps: [
         'Step 1: Compute balanced reinforcement parameter: ω = ρb fy / f\'c = 0.029(413) / 30 = 0.3992.',
@@ -48,7 +47,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Required Number of Tension Bars for Given Moment',
-    text: 'Situation 21 (Cont.) — 62. If the beam has a width of $300\\text{ mm}$ and an overall depth of $600\\text{ mm}$, determine the required number of $25\\text{-mm}$-diameter tension bars if it is subjected to a factored moment $M_u = 320\\text{ kN}\\cdot\\text{m}$.',
+    text: 'Situation 21 (Cont.) — 62. If the beam has a width of $300\$ and an overall depth of $600\$, determine the required number of $25\\text{-mm}$-diameter tension bars if it is subjected to a factored moment $M_u = 320\\\cdot\$.',
     options: [
       { label: 'A', text: '3' },
       { label: 'B', text: '5' },
@@ -57,14 +56,13 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Effective depth $d = 600 - 80 = 520\\text{ mm}$. Set $\\phi M_n = \\phi 0.85 f\'_c a b \\left(d - \\frac{a}{2}\\right) = M_u$ with $\\phi = 0.90$. Solving gives $a = 98.76\\text{ mm}$. Tension steel required is $A_s = \\frac{0.85 f\'_c a b}{f_y} = \\frac{0.85(30)(98.76)(300)}{413} = 1,829\\text{ mm}^2$. Number of $25\\text{ mm}$ bars: $N = \\frac{1,829}{\\frac{\\pi}{4}(25)^2} = 3.73 \\implies 4\\text{ bars}$.',
+      summary: 'Effective depth $d = 600 - 80 = 520\$. Set $\\phi M_n = \\phi 0.85 f\'_c a b \\left(d - \\frac{a}{2}\\right) = M_u$ with $\\phi = 0.90$. Solving gives $a = 98.76\$. Tension steel required is $A_s = \\frac{0.85 f\'_c a b}{f_y} = \\frac{0.85(30)(98.76)(300)}{413} = 1,829\$. Number of $25\$ bars: $N = \\frac{1,829}{\\frac{\\pi}{4}(25)^2} = 3.73 \\implies 4\$.',
       formulas: [
-        'd = 600 - 80 = 520\\text{ mm}',
-        '0.90(0.85)(30) a (300)\\left(520 - \\frac{a}{2}\\right) = 320 \\times 10^6',
-        '6,885 a \\left(520 - \\frac{a}{2}\\right) = 320 \\times 10^6 \\implies 3,580,200 a - 3,442.5 a^2 = 320 \\times 10^6',
-        'a = 98.76\\text{ mm}, \\quad c = \\frac{98.76}{0.836} = 118.13\\text{ mm}',
-        'A_s = \\frac{0.85(30)(98.76)(300)}{413} = 1,829\\text{ mm}^2',
-        'N = \\frac{1,829}{\\frac{\\pi}{4}(25)^2} = \\frac{1,829}{490.87} = 3.73 \\implies \\text{Say 4 bars}',
+        'M_u = \\phi 0.85 f\'_c a b \\left(d - \\frac{a}{2}\\right)',
+        'a = \\beta_1 c',
+        'A_s = \\frac{0.85 f\'_c a b}{f_y}',
+        'n = \\frac{A_s}{A_b}',
+      
       ],
       steps: [
         'Step 1: Effective depth: d = h - d\' = 600 - 80 = 520 mm.',
@@ -88,7 +86,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Required Web Width for Factored Shear',
-    text: 'Situation 21 (Cont.) — 63. If the beam has an effective depth of $450\\text{ mm}$ with three legs of $12\\text{-mm}$-diameter transverse reinforcement spaced at $80\\text{ mm}$ on centers, determine the required beam width (mm) if it is subjected to a factored shear $V_u = 480\\text{ kN}$.',
+    text: 'Situation 21 (Cont.) — 63. If the beam has an effective depth of $450\$ with three legs of $12\\text{-mm}$-diameter transverse reinforcement spaced at $80\$ on centers, determine the required beam width (mm) if it is subjected to a factored shear $V_u = 480\$.',
     options: [
       { label: 'A', text: '280' },
       { label: 'B', text: '270' },
@@ -97,14 +95,13 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'Stirrup area with 3 legs of $12\\text{ mm}$: $A_v = 3\\left(\\frac{\\pi(12)^2}{4}\\right) = 108\\pi = 339.29\\text{ mm}^2$. Shear strength from stirrups: $V_s = \\frac{A_v f_{yt} d}{s} = \\frac{108\\pi(275)(450)}{80} = 524,842\\text{ N}$. Concrete shear: $V_c = 0.17(1)\\sqrt{30} b_w (450) = 419.01 b_w$. Set $\\phi (V_c + V_s) \\ge V_u$ with $\\phi = 0.75$: $0.75(419.01 b_w + 524,842) \\ge 480,000$. Solving gives $b_w \\ge 274.8\\text{ mm} \\implies \\text{Say } 275\\text{ mm}$.',
+      summary: 'Stirrup area with 3 legs of $12\$: $A_v = 3\\left(\\frac{\\pi(12)^2}{4}\\right) = 108\\pi = 339.29\$. Shear strength from stirrups: $V_s = \\frac{A_v f_{yt} d}{s} = \\frac{108\\pi(275)(450)}{80} = 524,842\$. Concrete shear: $V_c = 0.17(1)\\sqrt{30} b_w (450) = 419.01 b_w$. Set $\\phi (V_c + V_s) \\ge V_u$ with $\\phi = 0.75$: $0.75(419.01 b_w + 524,842) \\ge 480,000$. Solving gives $b_w \\ge 274.8\ \\implies \\text{Say } 275\$.',
       formulas: [
-        'A_v = 3 \\times \\frac{\\pi}{4}(12)^2 = 108\\pi = 339.29\\text{ mm}^2',
-        'V_s = \\frac{A_v f_{yt} d}{s} = \\frac{108\\pi(275)(450)}{80} = 524,842\\text{ N}',
-        'V_c = 0.17 \\lambda \\sqrt{f\'_c} b_w d = 0.17(1)\\sqrt{30}(b_w)(450) = 419.01 b_w',
-        '\\phi (V_c + V_s) \\ge V_u \\implies 0.75(419.01 b_w + 524,842) \\ge 480,000',
-        '419.01 b_w + 524,842 \\ge 640,000 \\implies 419.01 b_w \\ge 115,158',
-        'b_{w\\min} = 274.8\\text{ mm} \\implies \\text{Say } b = 275\\text{ mm}',
+        'V_s = \\frac{A_v f_{yt} d}{s}',
+        'V_c = 0.17 \\lambda \\sqrt{f\'_c} b_w d',
+        '\\phi (V_c + V_s) \\ge V_u',
+        'b_w \\ge \\frac{\\frac{V_u}{\\phi} - V_s}{0.17 \\lambda \\sqrt{f\'_c} d}',
+      
       ],
       steps: [
         'Step 1: Area of 3 legs of 12-mm stirrups: Av = 3 × [π(12)² / 4] = 339.29 mm².',
@@ -128,7 +125,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Prestressed Concrete Design - Compressive Stress at Transfer without Eccentricity',
-    text: 'Situation 22 — Refer to the figure shown.\nAn AASHTO Type V prestressed concrete girder is used as a simply supported bridge girder. The girder contains $41$ prestressing strands with a total prestressing force of $7,287\\text{ kN}$. Assume $10\\%$ prestress loss at transfer and $15\\%$ prestress loss at service.\nGiven:\n$A = 7 \\times 10^5\\text{ mm}^2$\n$I = 3.05 \\times 10^{11}\\text{ mm}^4$\n$H = 1,829\\text{ mm}$\n$\\bar{y} = 924\\text{ mm}$ (from bottom)\n$d = 50\\text{ mm}$; $L = 21\\text{ m}$; $w_{DL} = 16.8\\text{ kN/m}$.\n\n64. If the eccentricity at the supports is zero, determine the compressive stress (MPa) at transfer.',
+    text: 'Situation 22 — Refer to the figure shown.\nAn AASHTO Type V prestressed concrete girder is used as a simply supported bridge girder. The girder contains $41$ prestressing strands with a total prestressing force of $7,287\$. Assume $10\\%$ prestress loss at transfer and $15\\%$ prestress loss at service.\nGiven:\n$A = 7 \\times 10^5\$\n$I = 3.05 \\times 10^{11}\$\n$H = 1,829\$\n$\\bar{y} = 924\$ (from bottom)\n$d = 50\$; $L = 21\$; $w_{DL} = 16.8\$.\n\n64. If the eccentricity at the supports is zero, determine the compressive stress (MPa) at transfer.',
     figureCaption: 'Figure: AASHTO Type V prestressed concrete bridge girder cross section and strand pattern',
     options: [
       { label: 'A', text: '10.41' },
@@ -138,10 +135,11 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'With $10\\%$ prestress loss at transfer: $P_{\\text{transfer}} = 7,287(1 - 0.10) = 6,558.3\\text{ kN}$. With eccentricity $e = 0$, uniform compressive stress is $f_c = -\\frac{P_{\\text{transfer}}}{A} = -\\frac{6,558.3 \\times 10^3}{7 \\times 10^5} = -9.37\\text{ MPa}$.',
+      summary: 'With $10\\%$ prestress loss at transfer: $P_{\\text{transfer}} = 7,287(1 - 0.10) = 6,558.3\$. With eccentricity $e = 0$, uniform compressive stress is $f_c = -\\frac{P_{\\text{transfer}}}{A} = -\\frac{6,558.3 \\times 10^3}{7 \\times 10^5} = -9.37\$.',
       formulas: [
-        'P_{\\text{transfer}} = 7,287(1 - 0.10) = 6,558.3\\text{ kN}',
-        'f_c = -\\frac{P_{\\text{transfer}}}{A} = -\\frac{6,558.3 \\times 10^3\\text{ N}}{7 \\times 10^5\\text{ mm}^2} = -9.369\\text{ MPa} \\approx 9.37\\text{ MPa (Compression)}',
+        'P_t = P_0 (1 - L_t)',
+        'f_c = -\\frac{P_t}{A}',
+      
       ],
       steps: [
         'Step 1: Compute prestressing force immediately after transfer: P_transfer = 7,287 kN × (1 - 0.10) = 6,558.3 kN.',
@@ -171,13 +169,12 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'At service (with $15\\%$ loss), $P_{\\text{svc}} = 7,287(0.85) = 6,193.95\\text{ kN}$. Midspan moment: $M_{\\text{mid}} = \\frac{16.8(21)^2}{8} = 926.1\\text{ kN}\\cdot\\text{m}$. Centroid of 41 strands gives eccentricity $e = 924 - 126.83 = 797.17\\text{ mm}$. Net stress at the top fiber: $f_{\\text{top}} = -\\frac{P}{A} + \\frac{P e y_{\\text{top}}}{I} - \\frac{M y_{\\text{top}}}{I} = -8.85 + 14.65 - 2.75 = +3.05\\text{ MPa}$ (tension). To eliminate this tensile stress, an additional flexural stress of $3.05\\text{ MPa}$ is needed.',
+      summary: 'At service (with $15\\%$ loss), $P_{\\text{svc}} = 7,287(0.85) = 6,193.95\$. Midspan moment: $M_{\\text{mid}} = \\frac{16.8(21)^2}{8} = 926.1\\\cdot\$. Centroid of 41 strands gives eccentricity $e = 924 - 126.83 = 797.17\$. Net stress at the top fiber: $f_{\\text{top}} = -\\frac{P}{A} + \\frac{P e y_{\\text{top}}}{I} - \\frac{M y_{\\text{top}}}{I} = -8.85 + 14.65 - 2.75 = +3.05\$ (tension). To eliminate this tensile stress, an additional flexural stress of $3.05\$ is needed.',
       formulas: [
-        'P_{\\text{svc}} = 7,287(1 - 0.15) = 6,193.95\\text{ kN}',
-        'M_{\\text{mid}} = \\frac{w L^2}{8} = \\frac{16.8(21)^2}{8} = 926.1\\text{ kN}\\cdot\\text{m}',
-        'y_1 = \\frac{11(50) + 11(100) + 9(150) + 6(200) + 4(250)}{41} = \\frac{5,200}{41} = 126.83\\text{ mm}',
-        'e = 924 - 126.83 = 797.17\\text{ mm}',
-        'f_{\\text{top}} = -\\frac{6,193.95 \\times 10^3}{7 \\times 10^5} + \\frac{6,193.95 \\times 10^3(797.17)(905)}{3.05 \\times 10^{11}} - \\frac{926.1 \\times 10^6(905)}{3.05 \\times 10^{11}} = 3.05\\text{ MPa}',
+        'P_s = P_0 (1 - L_s)',
+        'M = \\frac{w L^2}{8}',
+        'f = -\\frac{P_s}{A} + \\frac{P_s e c}{I} - \\frac{M c}{I}',
+      
       ],
       steps: [
         'Step 1: Compute service prestressing force: P_svc = 7,287 × 0.85 = 6,193.95 kN.',
@@ -201,7 +198,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Prestressed Concrete Design - Tendon Eccentricity from Specified End Stresses',
-    text: 'Situation 22 (Cont.) — 66. If the stresses at the supports are $f_t = -15.47\\text{ MPa}$ and $f_b = -5.25\\text{ MPa}$, determine the eccentricity (mm) considering no losses.',
+    text: 'Situation 22 (Cont.) — 66. If the stresses at the supports are $f_t = -15.47\$ and $f_b = -5.25\$, determine the eccentricity (mm) considering no losses.',
     options: [
       { label: 'A', text: '234 above' },
       { label: 'B', text: '229 above' },
@@ -210,12 +207,11 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'With no losses: $P = 7,287\\text{ kN}$. At support, external moment is zero. Stress at top: $f_{\\text{top}} = -\\frac{P}{A} + \\frac{P e y_{\\text{top}}}{I} \\implies -15.47 = -\\frac{7,287 \\times 10^3}{7 \\times 10^5} + \\frac{7,287 \\times 10^3 e (905)}{3.05 \\times 10^{11}} \\implies -15.47 = -10.41 + 0.02162 e \\implies e = -234.0\\text{ mm}$. A negative eccentricity indicates the tendon is located $234\\text{ mm}$ above the neutral axis.',
+      summary: 'With no losses: $P = 7,287\$. At support, external moment is zero. Stress at top: $f_{\\text{top}} = -\\frac{P}{A} + \\frac{P e y_{\\text{top}}}{I} \\implies -15.47 = -\\frac{7,287 \\times 10^3}{7 \\times 10^5} + \\frac{7,287 \\times 10^3 e (905)}{3.05 \\times 10^{11}} \\implies -15.47 = -10.41 + 0.02162 e \\implies e = -234.0\$. A negative eccentricity indicates the tendon is located $234\$ above the neutral axis.',
       formulas: [
-        'f_t = -\\frac{P}{A} + \\frac{P e y_{\\text{top}}}{I}',
-        '-15.47 = -\\frac{7,287 \\times 10^3}{7 \\times 10^5} + \\frac{7,287 \\times 10^3 e (905)}{3.05 \\times 10^{11}}',
-        '-15.47 = -10.41 + 0.021624 e \\implies 0.021624 e = -5.06',
-        'e = -\\frac{5.06}{0.021624} = -234.0\\text{ mm} \\implies 234\\text{ mm above N.A.}',
+        'f_t = -\\frac{P}{A} + \\frac{P e y_t}{I}',
+        'e = \\frac{\\left(f_t + \\frac{P}{A}\\right) I}{P y_t}',
+      
       ],
       steps: [
         'Step 1: Axial prestress stress with zero loss: P / A = 7,287,000 / 700,000 = 10.41 MPa (compression, -10.41 MPa).',
@@ -239,7 +235,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Short Tied Column Maximum Nominal Strength Pn,max',
-    text: 'Situation 23 — Refer to the figure shown.\nGiven: $B \\times H = 400\\text{ mm} \\times 600\\text{ mm}$\n$A_{st} = 8 - 28\\text{ mm}$-diameter bars\nConcrete, $f\'_c = 28\\text{ MPa}$\nYield strength of $28\\text{ mm}$ main bars, $f_y = 415\\text{ MPa}$\nYield strength of $12\\text{ mm}$ transverse reinforcements, $f_{yv} = 275\\text{ MPa}$\nClear cover to the ties $= 40\\text{ mm}$\nReduction factor for shear, $\\phi_v = 0.75$\n\n67. Determine the maximum nominal axial strength (kN) of the column, $P_{n\\max}$.',
+    text: 'Situation 23 — Refer to the figure shown.\nGiven: $B \\times H = 400\ \\times 600\$\n$A_{st} = 8 - 28\$-diameter bars\nConcrete, $f\'_c = 28\$\nYield strength of $28\$ main bars, $f_y = 415\$\nYield strength of $12\$ transverse reinforcements, $f_{yv} = 275\$\nClear cover to the ties $= 40\$\nReduction factor for shear, $\\phi_v = 0.75$\n\n67. Determine the maximum nominal axial strength (kN) of the column, $P_{n\\max}$.',
     figureCaption: 'Figure: Rectangular RC column 400x600 mm cross section with 8-28 mm longitudinal bars and tie ties',
     options: [
       { label: 'A', text: '5729' },
@@ -249,13 +245,12 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Gross area $A_g = 400 \\times 600 = 240,000\\text{ mm}^2$. Longitudinal steel area $A_{st} = 8\\left(\\frac{\\pi(28)^2}{4}\\right) = 1,568\\pi = 4,926.0\\text{ mm}^2$. Maximum nominal axial capacity for tied column per NSCP 2015: $P_{n\\max} = 0.80 [0.85 f\'_c (A_g - A_{st}) + A_{st} f_y] = 0.80 [5,594,762 + 2,044,290] = 6,111,246\\text{ N} \\approx 6,111\\text{ kN}$.',
+      summary: 'Gross area $A_g = 400 \\times 600 = 240,000\$. Longitudinal steel area $A_{st} = 8\\left(\\frac{\\pi(28)^2}{4}\\right) = 1,568\\pi = 4,926.0\$. Maximum nominal axial capacity for tied column per NSCP 2015: $P_{n\\max} = 0.80 [0.85 f\'_c (A_g - A_{st}) + A_{st} f_y] = 0.80 [5,594,762 + 2,044,290] = 6,111,246\ \\approx 6,111\$.',
       formulas: [
-        'A_g = 400 \\times 600 = 240,000\\text{ mm}^2',
-        'A_{st} = 8 \\times \\frac{\\pi}{4}(28)^2 = 1,568\\pi = 4,926.02\\text{ mm}^2',
-        'P_{n\\max} = 0.80 [0.85 f\'_c (A_g - A_{st}) + A_{st} f_y]',
-        'P_{n\\max} = 0.80 [0.85(28)(240,000 - 4,926.02) + 4,926.02(415)]',
-        'P_{n\\max} = 0.80 [5,594,762 + 2,044,298] = 0.80(7,639,060) = 6,111,248\\text{ N} \\approx 6,111\\text{ kN}',
+        'A_g = b h',
+        'A_{st} = n \\left(\\frac{\\pi d_b^2}{4}\\right)',
+        'P_{n,\\max} = 0.80 [0.85 f\'_c (A_g - A_{st}) + f_y A_{st}]',
+        '\\phi P_n = 0.65 P_{n,\\max}',
       ],
       steps: [
         'Step 1: Gross cross-sectional area: Ag = 400 mm × 600 mm = 240,000 mm².',
@@ -277,7 +272,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Ultimate Shear Strength of Column along Strong Axis',
-    text: 'Situation 23 (Cont.) — 68. If $V_s = 375\\text{ kN}$, determine the ultimate shear strength (kN) of the column along the $x$-axis, $V_{ux}$.',
+    text: 'Situation 23 (Cont.) — 68. If $V_s = 375\$, determine the ultimate shear strength (kN) of the column along the $x$-axis, $V_{ux}$.',
     options: [
       { label: 'A', text: '567' },
       { label: 'B', text: '555' },
@@ -286,12 +281,13 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'For shear along the $x$-axis, $b_w = B = 400\\text{ mm}$ and effective depth $d_1 = 600 - (40 + 12 + 28/2) = 534\\text{ mm}$. Concrete shear capacity is $V_c = 0.17(1)\\sqrt{28}(400)(534) = 192.15\\text{ kN}$. Nominal shear: $V_n = V_c + V_s = 192.15 + 375 = 567.15\\text{ kN}$. Design shear strength: $V_{ux} = \\phi_v V_n = 0.75(567.15) = 425.36\\text{ kN} \\approx 425\\text{ kN}$.',
+      summary: 'For shear along the $x$-axis, $b_w = B = 400\$ and effective depth $d_1 = 600 - (40 + 12 + 28/2) = 534\$. Concrete shear capacity is $V_c = 0.17(1)\\sqrt{28}(400)(534) = 192.15\$. Nominal shear: $V_n = V_c + V_s = 192.15 + 375 = 567.15\$. Design shear strength: $V_{ux} = \\phi_v V_n = 0.75(567.15) = 425.36\ \\approx 425\$.',
       formulas: [
-        'd\' = 40 + 12 + \\frac{28}{2} = 66\\text{ mm}, \\quad d_1 = 600 - 66 = 534\\text{ mm}',
-        'V_c = 0.17 \\lambda \\sqrt{f\'_c} b_w d_1 = 0.17(1)\\sqrt{28}(400)(534) = 192,145\\text{ N} = 192.15\\text{ kN}',
-        'V_n = V_c + V_s = 192.15 + 375 = 567.15\\text{ kN}',
-        'V_{ux} = \\phi_v V_n = 0.75 \\times 567.15 = 425.36\\text{ kN} \\approx 425\\text{ kN}',
+        'd_1 = h - d',
+        '\'V_c = 0.17 \\lambda \\sqrt{f\'_c} b_w d_1',
+        'V_n = V_c + V_s',
+        'V_u = \\phi_v V_n',
+      
       ],
       steps: [
         'Step 1: Along the x-axis, the column depth is H = 600 mm and width bw = B = 400 mm.',
@@ -313,7 +309,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Ultimate Shear Strength of Column along Weak Axis',
-    text: 'Situation 23 (Cont.) — 69. If the transverse reinforcements are spaced $110\\text{ mm}$, determine the ultimate shear strength (kN) of the column along the $y$-axis, $V_{uy}$.',
+    text: 'Situation 23 (Cont.) — 69. If the transverse reinforcements are spaced $110\$, determine the ultimate shear strength (kN) of the column along the $y$-axis, $V_{uy}$.',
     options: [
       { label: 'A', text: '463' },
       { label: 'B', text: '483' },
@@ -322,14 +318,14 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'For shear along the $y$-axis, $b_w = H = 600\\text{ mm}$ and $d_2 = 400 - 66 = 334\\text{ mm}$. Concrete shear: $V_c = 0.17(1)\\sqrt{28}(600)(334) = 180.27\\text{ kN}$. There are 3 legs of $12\\text{ mm}$ transverse ties resisting $y$-axis shear: $A_v = 3\\left(\\frac{\\pi(12)^2}{4}\\right) = 339.29\\text{ mm}^2$. Stirrup shear: $V_s = \\frac{A_v f_{yv} d_2}{s} = \\frac{339.29(275)(334)}{110} = 283.31\\text{ kN}$. Nominal shear: $V_n = 180.27 + 283.31 = 463.58\\text{ kN}$. Ultimate strength: $V_{uy} = 0.75(463.58) = 347.69\\text{ kN} \\approx 347\\text{ kN}$.',
+      summary: 'For shear along the $y$-axis, $b_w = H = 600\$ and $d_2 = 400 - 66 = 334\$. Concrete shear: $V_c = 0.17(1)\\sqrt{28}(600)(334) = 180.27\$. There are 3 legs of $12\$ transverse ties resisting $y$-axis shear: $A_v = 3\\left(\\frac{\\pi(12)^2}{4}\\right) = 339.29\$. Stirrup shear: $V_s = \\frac{A_v f_{yv} d_2}{s} = \\frac{339.29(275)(334)}{110} = 283.31\$. Nominal shear: $V_n = 180.27 + 283.31 = 463.58\$. Ultimate strength: $V_{uy} = 0.75(463.58) = 347.69\ \\approx 347\$.',
       formulas: [
-        'd_2 = 400 - 66 = 334\\text{ mm}, \\quad b_w = 600\\text{ mm}',
-        'V_c = 0.17(1)\\sqrt{28}(600)(334) = 180,270\\text{ N} = 180.27\\text{ kN}',
-        'A_v = 3 \\times \\frac{\\pi}{4}(12)^2 = 339.29\\text{ mm}^2',
-        'V_s = \\frac{A_v f_{yv} d_2}{s} = \\frac{339.29(275)(334)}{110} = 283,309\\text{ N} = 283.31\\text{ kN}',
-        'V_n = 180.27 + 283.31 = 463.58\\text{ kN}',
-        'V_{uy} = \\phi_v V_n = 0.75 \\times 463.58 = 347.69\\text{ kN} \\approx 347\\text{ kN}',
+        'd_2 = b - d',
+        '\'V_c = 0.17 \\lambda \\sqrt{f\'_c} h d_2',
+        'V_s = \\frac{A_v f_{yv} d_2}{s}',
+        'V_n = V_c + V_s',
+        'V_u = \\phi_v V_n',
+      
       ],
       steps: [
         'Step 1: Along the y-axis, the column depth is B = 400 mm and width bw = H = 600 mm.',
@@ -354,7 +350,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Reinforced Concrete Design - Spiral Column Main Reinforcement Sizing',
-    text: 'Situation 24 — Refer to the column interaction diagram shown.\nGiven:\nColumn diameter $= 450\\text{ mm}$\n$K_n = 0.4$; $R_n = 0.18$; $\\rho = 0.03$\nClear cover $= 40\\text{ mm}$\nSpiral bar diameter, $d = 12\\text{ mm}$\nReduction factor, $\\phi = 0.75$\n\n70. Based on the layout of the column ($12$ bars arranged circumferentially), compute the required diameter (mm) of the main bars.',
+    text: 'Situation 24 — Refer to the column interaction diagram shown.\nGiven:\nColumn diameter $= 450\$\n$K_n = 0.4$; $R_n = 0.18$; $\\rho = 0.03$\nClear cover $= 40\$\nSpiral bar diameter, $d = 12\$\nReduction factor, $\\phi = 0.75$\n\n70. Based on the layout of the column ($12$ bars arranged circumferentially), compute the required diameter (mm) of the main bars.',
     figureCaption: 'Figure: Circular spiral column interaction diagram C4-60.9 and 12-bar circular layout',
     options: [
       { label: 'A', text: '25' },
@@ -364,12 +360,12 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Gross column area is $A_g = \\frac{\\pi(450)^2}{4} = 50,625\\pi = 159,043\\text{ mm}^2$. Required longitudinal steel: $A_{st} = \\rho A_g = 0.03(159,043) = 4,771.29\\text{ mm}^2$. For $n = 12$ bars: $12 \\left(\\frac{\\pi d^2}{4}\\right) = 4,771.29 \\implies d = 22.5\\text{ mm}$. Choose standard bar diameter $d = 25\\text{ mm}$.',
+      summary: 'Gross column area is $A_g = \\frac{\\pi(450)^2}{4} = 50,625\\pi = 159,043\$. Required longitudinal steel: $A_{st} = \\rho A_g = 0.03(159,043) = 4,771.29\$. For $n = 12$ bars: $12 \\left(\\frac{\\pi d^2}{4}\\right) = 4,771.29 \\implies d = 22.5\$. Choose standard bar diameter $d = 25\$.',
       formulas: [
-        'A_g = \\frac{\\pi}{4}(450)^2 = 50,625\\pi = 159,043\\text{ mm}^2',
-        'A_{st} = \\rho A_g = 0.03 \\times 159,043 = 4,771.29\\text{ mm}^2',
-        'n \\left(\\frac{\\pi d^2}{4}\\right) = A_{st} \\implies 12 \\left(\\frac{\\pi d^2}{4}\\right) = 4,771.29',
-        'd^2 = \\frac{4,771.29 \\times 4}{12 \\pi} = 506.25 \\implies d = 22.5\\text{ mm} \\implies \\text{Use } 25\\text{ mm}',
+        'A_g = \\frac{\\pi D^2}{4}',
+        'A_{st} = \\rho A_g',
+        'd_b = \\sqrt{\\frac{4 A_{st}}{n \\pi}}',
+      
       ],
       steps: [
         'Step 1: Gross area of circular column: Ag = (π/4)(450)² = 159,043 mm².',
@@ -401,11 +397,13 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'Dimensionless axial load ratio $K_n = \\frac{P_n}{f\'_c A_g} = 0.4$ and moment ratio $R_n = \\frac{P_n e}{f\'_c A_g h} = 0.18$. Taking the ratio gives $\\frac{R_n}{K_n} = \\frac{e}{h} \\implies \\frac{0.18}{0.40} = \\frac{e}{450} \\implies e = 202.5\\text{ mm}$.',
+      summary: 'Dimensionless axial load ratio $K_n = \\frac{P_n}{f\'_c A_g} = 0.4$ and moment ratio $R_n = \\frac{P_n e}{f\'_c A_g h} = 0.18$. Taking the ratio gives $\\frac{R_n}{K_n} = \\frac{e}{h} \\implies \\frac{0.18}{0.40} = \\frac{e}{450} \\implies e = 202.5\$.',
       formulas: [
-        'K_n = \\frac{P_n}{f\'_c A_g}, \\quad R_n = \\frac{P_n e}{f\'_c A_g h}',
-        '\\frac{R_n}{K_n} = \\frac{e}{h} \\implies \\frac{0.18}{0.40} = \\frac{e}{450}',
-        'e = 450 \\times \\frac{0.18}{0.40} = 202.5\\text{ mm}',
+        'K_n = \\frac{P_n}{f\'_c A_g}',
+        'R_n = \\frac{P_n e}{f\'_c A_g h}',
+        '\\frac{R_n}{K_n} = \\frac{e}{h}',
+        'e = h \\left(\\frac{R_n}{K_n}\\right)',
+      
       ],
       steps: [
         'Step 1: Identify column interaction diagram coordinate parameters: Kn = Pn / (f\'c Ag) = 0.40; Rn = Pn e / (f\'c Ag h) = 0.18.',
@@ -435,12 +433,12 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'D',
     solution: {
-      summary: 'Diameter of core: $D_c = D - 2 c_c = 450 - 2(40) = 370\\text{ mm}$. Area of spiral bar: $a_s = \\frac{\\pi(12)^2}{4} = 36\\pi = 113.1\\text{ mm}^2$. Spiral reinforcement ratio: $\\rho_s = \\frac{4 a_s (D_c - d_s)}{s D_c^2} \\implies 0.0221 = \\frac{4(36\\pi)(370 - 12)}{s (370)^2}$. Solving gives $s = 53.5\\text{ mm}$. Check clear spacing: $c = s - d_s = 53.5 - 12 = 41.5\\text{ mm}$ ($25\\text{ mm} \\le c \\le 75\\text{ mm}$ OK). Round down to choose $s = 50\\text{ mm}$.',
+      summary: 'Diameter of core: $D_c = D - 2 c_c = 450 - 2(40) = 370\$. Area of spiral bar: $a_s = \\frac{\\pi(12)^2}{4} = 36\\pi = 113.1\$. Spiral reinforcement ratio: $\\rho_s = \\frac{4 a_s (D_c - d_s)}{s D_c^2} \\implies 0.0221 = \\frac{4(36\\pi)(370 - 12)}{s (370)^2}$. Solving gives $s = 53.5\$. Check clear spacing: $c = s - d_s = 53.5 - 12 = 41.5\$ ($25\ \\le c \\le 75\$ OK). Round down to choose $s = 50\$.',
       formulas: [
-        'D_c = D - 2 c_c = 450 - 40(2) = 370\\text{ mm}',
-        'a_s = \\frac{\\pi}{4}(12)^2 = 36\\pi\\text{ mm}^2',
-        '\\rho_s = \\frac{4 a_s (D_c - d_s)}{s D_c^2} \\implies 0.0221 = \\frac{4(36\\pi)(370 - 12)}{s (370)^2}',
-        's = \\frac{4(36\\pi)(358)}{0.0221(136,900)} = \\frac{161,959}{3,025.49} = 53.53\\text{ mm} \\implies \\text{Choose } 50\\text{ mm}',
+        '\\rho_s = \\frac{4 a_s (D_c - d_s)}{s D_c^2}',
+        '\\rho_{s,\\min} = 0.45 \\left(\\frac{A_g}{A_c} - 1\\right) \\frac{f\'_c}{f_y}',
+        's = \\frac{4 a_s (D_c - d_s)}{\\rho_s D_c^2}',
+      
       ],
       steps: [
         'Step 1: Core diameter out-to-out of spirals: Dc = D - 2(clear cover) = 450 - 2(40) = 370 mm.',
@@ -465,7 +463,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Foundation Engineering - Combined Footing Length for Uniform Soil Bearing Pressure',
-    text: 'Situation 25 — Refer to the figure shown.\nA combined footing supports two columns, $A$ and $B$, as shown in the figure.\nDimensions:\n$a = 0.4\\text{ m}$; $b = 0.4\\text{ m}$; $c = 3.5\\text{ m}$; $d = 3\\text{ m}$ (footing width)\nConcrete cover to the centroid of longitudinal bars, $d\' = 80\\text{ mm}$\nColumn Loads:\nColumn A: $DL = 262\\text{ kN}$; $LL = 397\\text{ kN}$\nColumn B: $DL = 312\\text{ kN}$; $LL = 731\\text{ kN}$\nStrength reduction factor for shear, $\\phi_v = 0.75$\n\n73. Determine the required length (m) of the combined footing to produce a uniform soil pressure.',
+    text: 'Situation 25 — Refer to the figure shown.\nA combined footing supports two columns, $A$ and $B$, as shown in the figure.\nDimensions:\n$a = 0.4\$; $b = 0.4\$; $c = 3.5\$; $d = 3\$ (footing width)\nConcrete cover to the centroid of longitudinal bars, $d\' = 80\$\nColumn Loads:\nColumn A: $DL = 262\$; $LL = 397\$\nColumn B: $DL = 312\$; $LL = 731\$\nStrength reduction factor for shear, $\\phi_v = 0.75$\n\n73. Determine the required length (m) of the combined footing to produce a uniform soil pressure.',
     figureCaption: 'Figure: Combined rectangular footing supporting two interior columns A and B',
     options: [
       { label: 'A', text: '6.0' },
@@ -475,14 +473,12 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'For uniform soil bearing pressure, the resultant of column service loads must coincide with the geometric centroid of the footing ($L/2$). Service loads: $P_A = 262 + 397 = 659\\text{ kN}$, $P_B = 312 + 731 = 1,043\\text{ kN}$. Total $P_T = 1,702\\text{ kN}$. Distances from left edge: $x_A = 0.4 + 0.2 = 0.6\\text{ m}$, $x_B = 0.6 + 0.2 + 3.5 + 0.2 = 4.5\\text{ m}$. Moment about left edge: $1,702\\left(\\frac{L}{2}\\right) = 659(0.6) + 1,043(4.5) = 5,088.9\\text{ kN}\\cdot\\text{m} \\implies L = 5.98\\text{ m} \\approx 6.0\\text{ m}$.',
+      summary: 'For uniform soil bearing pressure, the resultant of column service loads must coincide with the geometric centroid of the footing ($L/2$). Service loads: $P_A = 262 + 397 = 659\$, $P_B = 312 + 731 = 1,043\$. Total $P_T = 1,702\$. Distances from left edge: $x_A = 0.4 + 0.2 = 0.6\$, $x_B = 0.6 + 0.2 + 3.5 + 0.2 = 4.5\$. Moment about left edge: $1,702\\left(\\frac{L}{2}\\right) = 659(0.6) + 1,043(4.5) = 5,088.9\\\cdot\ \\implies L = 5.98\ \\approx 6.0\$.',
       formulas: [
-        'P_A = 262 + 397 = 659\\text{ kN}, \\quad P_B = 312 + 731 = 1,043\\text{ kN}',
-        'P_T = 659 + 1,043 = 1,702\\text{ kN}',
-        'x_A = 0.4 + \\frac{0.4}{2} = 0.6\\text{ m}, \\quad x_B = 0.6 + \\frac{0.4}{2} + 3.5 + \\frac{0.4}{2} = 4.5\\text{ m}',
-        '\\sum M_{\\text{left edge}} = 0 \\implies P_T \\left(\\frac{L}{2}\\right) = P_A x_A + P_B x_B',
-        '1,702 \\left(\\frac{L}{2}\\right) = 659(0.6) + 1,043(4.5) = 395.4 + 4,693.5 = 5,088.9',
-        'L = \\frac{2 \\times 5,088.9}{1,702} = 5.98\\text{ m} \\approx 6.0\\text{ m}',
+        'P_T = \\sum P_i',
+        '\\bar{x} = \\frac{\\sum P_i x_i}{P_T}',
+        'L = 2 \\bar{x}',
+      
       ],
       steps: [
         'Step 1: Compute total service loads on each column: PA = 262 + 397 = 659 kN; PB = 312 + 731 = 1,043 kN.',
@@ -506,7 +502,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Foundation Engineering - Footing Thickness based on Two-Way Punching Shear',
-    text: 'Situation 25 (Cont.) — 74. Given: uniform factored soil pressure, $q_u = 196\\text{ kPa}$.\nDetermine the required thickness (m) of the combined footing based on punching shear stress, $v_{cp} = 0.88\\text{ MPa}$.',
+    text: 'Situation 25 (Cont.) — 74. Given: uniform factored soil pressure, $q_u = 196\$.\nDetermine the required thickness (m) of the combined footing based on punching shear stress, $v_{cp} = 0.88\$.',
     options: [
       { label: 'A', text: '0.60' },
       { label: 'B', text: '0.65' },
@@ -515,14 +511,14 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'B',
     solution: {
-      summary: 'Column B carries the larger factored load: $P_{uB} = 1.2(312) + 1.6(731) = 1,544\\text{ kN}$, governing punching shear. Net punching shear: $V_u = 1,544 - 196(0.4 + d)^2\\text{ kN}$. Perimeter $b_o = 4(0.4 + d)$. Set $v_n = \\frac{V_u}{\\phi b_o d} \\le 0.88\\text{ MPa}$. Solving gives $d = 0.5472\\text{ m} = 547.2\\text{ mm}$. Required thickness $h = d + d\' = 547.2 + 80 = 627.2\\text{ mm} \\implies \\text{Choose } h = 0.65\\text{ m}$.',
+      summary: 'Column B carries the larger factored load: $P_{uB} = 1.2(312) + 1.6(731) = 1,544\$, governing punching shear. Net punching shear: $V_u = 1,544 - 196(0.4 + d)^2\$. Perimeter $b_o = 4(0.4 + d)$. Set $v_n = \\frac{V_u}{\\phi b_o d} \\le 0.88\$. Solving gives $d = 0.5472\ = 547.2\$. Required thickness $h = d + d\' = 547.2 + 80 = 627.2\ \\implies \\text{Choose } h = 0.65\$.',
       formulas: [
-        'P_{uB} = 1.2(312) + 1.6(731) = 374.4 + 1,169.6 = 1,544\\text{ kN}',
-        'V_u = P_{uB} - q_u (0.4 + d)^2 = 1,544 - 196(0.4 + d)^2\\text{ kN}',
-        'b_o = 4(0.4 + d)\\text{ m}',
-        'v_n = \\frac{V_u}{\\phi b_o d} = \\frac{[1,544 - 196(0.4 + d)^2] \\times 10^3}{0.75(4)(0.4 + d)(d) \\times 10^6} \\le 0.88',
-        'd = 0.5472\\text{ m} = 547.2\\text{ mm}',
-        'h = d + d\' = 547.2 + 80 = 627.2\\text{ mm} \\implies \\text{Choose } h = 650\\text{ mm} = 0.65\\text{ m}',
+        'P_u = 1.2 P_D + 1.6 P_L',
+        'V_u = P_u - q_u (c + d)^2',
+        'b_o = 4(c + d)',
+        'v_n = \\frac{V_u}{\\phi b_o d}',
+        'v_n \\le v_{cp}',
+        "h = d + d'",
       ],
       steps: [
         'Step 1: Compute ultimate factored load for both columns: PuA = 1.2(262) + 1.6(397) = 949.6 kN; PuB = 1.2(312) + 1.6(731) = 1,544 kN. Column B carries significantly higher load and governs punching shear.',
@@ -545,7 +541,7 @@ export const PSAD_NOV2025_PART5: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Foundation Engineering - Footing Thickness based on Wide Beam Shear',
-    text: 'Situation 25 (Cont.) — 75. Given: uniform factored soil pressure, $q_u = 196\\text{ kPa}$, factored shear force at face of column $B$, $V_u = 1,200\\text{ kN}$.\nDetermine the required thickness (m) of the combined footing based on wide beam shear stress, $v_{cw} = 0.72\\text{ MPa}$.',
+    text: 'Situation 25 (Cont.) — 75. Given: uniform factored soil pressure, $q_u = 196\$, factored shear force at face of column $B$, $V_u = 1,200\$.\nDetermine the required thickness (m) of the combined footing based on wide beam shear stress, $v_{cw} = 0.72\$.',
     options: [
       { label: 'A', text: '0.60' },
       { label: 'B', text: '0.65' },
@@ -554,14 +550,13 @@ export const PSAD_NOV2025_PART5: Question[] = [
     ],
     correctAnswer: 'B',
     solution: {
-      summary: 'Upward factored line load across width $d = 3\\text{ m}$: $w_u = q_u(3) = 196(3) = 588\\text{ kN/m}$. Factored shear at critical section at distance $d$ from column face: $V_{u\\text{crit}} = V_u - w_u d = 1,200 - 588 d\\text{ kN}$. Set $v_n = \\frac{V_{u\\text{crit}}}{\\phi b_w d} \\le 0.72\\text{ MPa}$ with $\\phi = 0.75$ and $b_w = 3,000\\text{ mm}$. Solving gives $d = 0.543\\text{ m} = 543\\text{ mm}$. Footing thickness $h = d + d\' = 543 + 80 = 623\\text{ mm} \\implies \\text{Choose } h = 0.65\\text{ m}$.',
+      summary: 'Upward factored line load across width $d = 3\$: $w_u = q_u(3) = 196(3) = 588\$. Factored shear at critical section at distance $d$ from column face: $V_{u\\text{crit}} = V_u - w_u d = 1,200 - 588 d\$. Set $v_n = \\frac{V_{u\\text{crit}}}{\\phi b_w d} \\le 0.72\$ with $\\phi = 0.75$ and $b_w = 3,000\$. Solving gives $d = 0.543\ = 543\$. Footing thickness $h = d + d\' = 543 + 80 = 623\ \\implies \\text{Choose } h = 0.65\$.',
       formulas: [
-        'w_u = q_u \\times 3 = 196 \\times 3 = 588\\text{ kN/m}',
-        'V_{u\\text{crit}} = V_u - w_u d = 1,200 - 588 d\\text{ kN}',
-        'v_n = \\frac{V_{u\\text{crit}}}{\\phi b_w d} = \\frac{[1,200 - 588 d] \\times 10^3}{0.75(3,000)(d \\times 1,000)} \\le 0.72',
-        '0.72(2,250) d = 1,200 - 588 d \\implies 1,620 d + 588 d = 1,200 \\implies 2,208 d = 1,200',
-        'd = \\frac{1,200}{2,208} = 0.5435\\text{ m} = 543.5\\text{ mm}',
-        'h = d + d\' = 543.5 + 80 = 623.5\\text{ mm} \\implies \\text{Choose } h = 650\\text{ mm} = 0.65\\text{ m}',
+        'w_u = q_u B',
+        'V_{u,d} = V_u - w_u d',
+        'v_n = \\frac{V_{u,d}}{\\phi b_w d}',
+        'v_n \\le v_{cw}',
+        "h = d + d'",
       ],
       steps: [
         'Step 1: Compute uniform upward line load on footing: wu = qu × footing width = 196 kPa × 3.0 m = 588 kN/m.',

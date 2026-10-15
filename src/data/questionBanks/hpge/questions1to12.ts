@@ -21,8 +21,8 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Compute pressure difference between base and top: ΔP = γ_liq · Δh = γ_air · h_mountain.',
       formulas: [
-        'S_liq = 0.80 · 13.6 = 10.88',
-        'Δh = 950 - 600 = 350 mm = 0.35 m',
+        'S_liq = 0.80  \\cdot  13.6 = 10.88',
+        '\\Delta h = 950 - 600 = 350 = 0.35',
         'h_m = Δh · (γ_liq / γ_air) = 0.35 · [ 9810 · (10.88) / 12 ] = 3,113 m = 3.113 km',
       ],
       steps: [
@@ -56,7 +56,7 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Integrate the variable unit weight function over depth: p = ∫₀ʰ γ(h) dh.',
       formulas: [
-        'p = ∫₀³ (12 + 0.5h) dh',
+        'p = ∫_0^3 (12 + 0.5h) dh',
         'p = [ 12h + 0.25h² ]₀³',
         'p = 12(3) + 0.25(3)² = 36 + 2.25 = 38.25 kPa',
       ],
@@ -91,9 +91,9 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Calculate dynamic water head rise at rear: tan θ = a/g, y = L tan θ, h̄ = y + D/2, F = γ h̄ A.',
       formulas: [
-        'tan θ = a / g = 3.5 / 9.81 => θ = 19.635°',
-        'y = L tan θ = 4 · tan(19.635°) = 1.427 m',
-        'h̄ = y + 0.75 = 1.427 + 0.75 = 2.177 m',
+        'tan \\theta  = a / g = 3.5 / 9.81 => \\theta  = 19.635°',
+        'y = tan \\theta  = 4  \\cdot  tan(19.635°) = 1.427',
+        'h̄ = y + 0.75 = 1.427 + 0.75 = 2.177',
         'F = γ · h̄ · A = 9.81 · (2.177) · [ (π/4) · (1.5)² ] = 37.74 kN',
       ],
       steps: [
@@ -128,7 +128,7 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Compute height of paraboloid y = ω²r²/(2g). Compare initial freeboard to y/2 to determine spilled volume.',
       formulas: [
-        'ω = 87 · (π/30) = 9.111 rad/s',
+        '\\omega  = 87  \\cdot  (\\pi /30) = 9.111',
         'y = (ω² · r²) / (2g) = [ (9.111)² · (0.65)² ] / [ 2 · 9.81 ] = 1.788 m',
         'Initial water depth h = (2/3) · 2.1 = 1.4 m; Freeboard = 2.1 - 1.4 = 0.7 m',
         'Δh = (y/2) - freeboard = (1.788/2) - 0.7 = 0.194 m',
@@ -214,9 +214,9 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Horizontal force equals the hydrostatic force on the vertical projection of the curved surface: F_h = γ · (h/2) · (h · L).',
       formulas: [
-        'h = R · sin θ = 6 · sin 60° = 5.196 m ≈ 5.2 m',
-        'A_proj = h · L = 5.196 · 10 = 51.96 m²',
-        'F_h = γ · h̄ · A = 9.81 · (5.196 / 2) · 51.96 = 1,324.35 kN ≈ 1,324 kN',
+        'h = R  \\cdot  sin \\theta  = 6  \\cdot  sin 60° = 5.196  \\approx  5.2',
+        'A_proj = h  \\cdot  = 5.196  \\cdot  10 = 51.96^2',
+        'F_h = \\gamma   \\cdot  h̄  \\cdot  A = 9.81  \\cdot  (5.196 / 2)  \\cdot  51.96 = 1,324.35  \\approx  1,324',
       ],
       steps: [
         'Step 1: Vertical projection height of arc AB: h = R sin 60° = 6 × 0.8660 = 5.196 m.',
@@ -249,9 +249,9 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Compute pressure at centroid of lower plate section: p_cg = γ_oil · h_oil + γ_w · h_w_cg, then F = p_cg · A_lower.',
       formulas: [
-        'p_cg = (9.81 · 0.84 · 1.0) + (9.81 · 0.5) = 8.2404 + 4.905 = 13.145 kPa',
-        'A_lower = 1.5 · 1.0 = 1.5 m²',
-        'F = p_cg · A_lower = 13.145 · 1.5 = 19.718 kN ≈ 19.7 kN',
+        'p_cg = (9.81  \\cdot  0.84  \\cdot  1.0) + (9.81  \\cdot  0.5) = 8.2404 + 4.905 = 13.145',
+        'A_lower = 1.5  \\cdot  1.0 = 1.5^2',
+        'F = p_cg  \\cdot  A_lower = 13.145  \\cdot  1.5 = 19.718  \\approx  19.7',
       ],
       steps: [
         'Step 1: Top 1.0 m is oil (s = 0.84). Pressure at oil-water interface = 9.81 × 0.84 × 1.0 = 8.24 kPa.',
@@ -284,8 +284,8 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Take moments about bottom hinge: ΣM_hinge = F₁ · (h₁/3) - F₂ · (h₂/3) - P · h_gate = 0.',
       formulas: [
-        'F₁ = γ · (3/2) · (3 · 1.5) = 9.81 · 1.5 · 4.5 = 66.2175 kN (at 1 m from hinge)',
-        'F₂ = γ · (1/2) · (1 · 1.5) = 9.81 · 0.5 · 1.5 = 7.358 kN (at 1/3 m from hinge)',
+        'F_1 = \\gamma   \\cdot  (3/2)  \\cdot  (3  \\cdot  1.5) = 9.81  \\cdot  1.5  \\cdot  4.5 = 66.2175 (at 1 from hinge)',
+        'F_2 = \\gamma   \\cdot  (1/2)  \\cdot  (1  \\cdot  1.5) = 9.81  \\cdot  0.5  \\cdot  1.5 = 7.358 (at 1/3 from hinge)',
         'P = [ 66.2175 · (1) - 7.358 · (1/3) ] / 3 = [ 66.2175 - 2.4527 ] / 3 = 21.255 kN ≈ 21.26 kN',
       ],
       steps: [
@@ -319,9 +319,9 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'For a floating body, total weight equals buoyant force: W = BF = γ_w · V_submerged.',
       formulas: [
-        'h_submerged = 1.5 - 0.50 = 1.0 m',
-        'V_D = (0.05 m) · (0.10 m) · (1.0 m) = 0.005 m³',
-        'W = BF = 9810 N/m³ · 0.005 m³ = 49.05 N',
+        'h_submerged = 1.5 - 0.50 = 1.0',
+        'V_D = (0.05)  \\cdot  (0.10)  \\cdot  (1.0) = 0.005^3',
+        'W = BF = 9810/m^3  \\cdot  0.005^3 = 49.05',
       ],
       steps: [
         'Step 1: Submerged depth = 1.5 m - 0.50 m = 1.0 m.',
@@ -353,10 +353,10 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Equilibrium: BF - T - W_sphere = 0, then γ_sphere = W_sphere / V_sphere.',
       formulas: [
-        'V_s = (4/3) · π · (0.4)³ = 0.26808 m³',
-        'BF = (9810 · 1.026) · (0.26808) = 2,698.3 N',
-        'W_s = BF - T = 2,698.3 - 800 = 1,898.3 N = 1.8983 kN',
-        'γ_sphere = W_s / V_s = 1.8983 / 0.26808 = 7.081 kN/m³',
+        'V_s = (4/3)  \\cdot  \\pi   \\cdot  (0.4)^3 = 0.26808^3',
+        'BF = (9810  \\cdot  1.026)  \\cdot  (0.26808) = 2,698.3',
+        'W_s = BF - T = 2,698.3 - 800 = 1,898.3 = 1.8983',
+        '\\gamma _sphere = W_s / V_s = 1.8983 / 0.26808 = 7.081/m^3',
       ],
       steps: [
         'Step 1: Volume of sphere V = 4/3 π (0.4)³ = 0.26808 m³.',
@@ -389,7 +389,7 @@ export const HPGE_PART1: Question[] = [
     solution: {
       summary: 'Find waterline area A_s from draft change during cargo discharge, then find fresh water draft from volume displacement.',
       formulas: [
-        'W₂ = 40 - 2 = 38 MN = 38,000 kN',
+        'W_2 = 40 - 2 = 38 MN = 38,000',
         'Δd = 6.7 - 6.4 = 0.3 m => A_s = ΔW / (γ_sw · Δd) = 2,000 / [ 9.81(1.026) · 0.3 ] = 662.37 m²',
         'V_Dfw = 38,000 / 9.81 = 3,873.6 m³; V_Dsw = 38,000 / [ 9.81(1.026) ] = 3,775.4 m³',
         'd_fw = 6.4 + (V_Dfw - V_Dsw) / A_s = 6.4 + (98.2 / 662.37) = 6.4 + 0.148 = 6.548 m ≈ 6.55 m',

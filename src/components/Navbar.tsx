@@ -40,13 +40,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { themeConfig, fontId } = useTheme();
   const { user, profile, isAdmin, openAuthModal, signOut, loading: authLoading } = useAuth();
   const isAurora = themeConfig.id === 'aurora_glass';
+  const isTerrarium = themeConfig.id === 'terrarium_orb';
   const activeUser = profile || user;
 
   return (
     <header
       className="border-b sticky top-0 z-40 transition-colors backdrop-blur-md"
       style={{
-        backgroundColor: isAurora ? 'rgba(15, 23, 42, 0.75)' : themeConfig.bgCard,
+        backgroundColor: isAurora
+          ? 'rgba(15, 23, 42, 0.75)'
+          : isTerrarium
+          ? 'rgba(11, 24, 21, 0.82)'
+          : themeConfig.bgCard,
         borderColor: themeConfig.border,
       }}
     >

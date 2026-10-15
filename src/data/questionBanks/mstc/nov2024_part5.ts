@@ -59,9 +59,9 @@ export const MSTC_NOV2024_PART5: Question[] = [
       summary: 'Total Recordable Cases N = 13 + 18 = 31 cases. Total Employee Hours Worked EH = 400 × 1970 = 788,000 hrs. TRC Rate = (N × 200,000) / EH = (31 × 200,000) / 788,000 = 7.868 ≈ 7.87.',
       formulas: [
         'N = 13 + 18 = 31 cases',
-        'EH = 400 employees · 1,970 hrs = 788,000 hrs',
-        'TRC Rate = (N · 200,000) / EH',
-        'TRC Rate = (31 · 200,000) / 788,000 = 7.87',
+        'EH = 400 employees  \\cdot  1,970 hrs = 788,000 hrs',
+        'TRC Rate = (N  \\cdot  200,000) / EH',
+        'TRC Rate = (31  \\cdot  200,000) / 788,000 = 7.87',
       ],
       steps: [
         'Step 1: Total recordable cases N = cases with days away (13) + other recordable cases (18) = 31 cases.',
@@ -103,9 +103,9 @@ export const MSTC_NOV2024_PART5: Question[] = [
     solution: {
       summary: 'From Nurse-Saul maturity graph at compressive strength 3,400 psi, TTF = 1,800 °F·hr. Maturity M = (T - T₀) · Δt => 1,800 = (70 - 30) · Δt => 40 · Δt = 1,800 => Δt = 45 hours.',
       formulas: [
-        'At 3,400 psi: TTF = 1,800 °F·hr',
-        'TTF = (T - T₀) · Δt',
-        'Δt = TTF / (T - T₀) = 1,800 / (70 - 30) = 1,800 / 40 = 45 hrs',
+        'At 3,400: TTF = 1,800 °F \\cdot hr',
+        'TTF = (T - T_0)  \\cdot  \\Delta t',
+        '\\Delta t = TTF / (T - T_0) = 1,800 / (70 - 30) = 1,800 / 40 = 45 hrs',
       ],
       steps: [
         'Step 1: From the maturity curve, locate compressive strength 3,400 psi on vertical axis.',
@@ -147,11 +147,11 @@ export const MSTC_NOV2024_PART5: Question[] = [
     solution: {
       summary: 'Static head H_s = 12.2 + 3.1 = 15.3 m. Total equivalent pipe length = 103.7 + 10.1 + 7.6 + 21.4 = 142.8 m. Pipe friction = 142.8 × (5.4 / 100) = 7.71 m. Hose friction = 6.1 × (4.3 / 100) = 0.26 m ≈ 0.3 m. Total head = 15.3 + 7.7 + 0.3 = 23.3 m.',
       formulas: [
-        'Static Head = 12.2 + 3.1 = 15.3 m',
-        'L_eq,pipe = 103.7 + 3(3.4) + 7.6 + 21.4 = 142.8 m',
-        'h_f,pipe = 142.8 · (5.4 / 100) = 7.71 m',
-        'h_f,hose = 6.1 · (4.3 / 100) = 0.26 m',
-        'Total Head = 15.3 + 7.71 + 0.26 = 23.27 m ≈ 23.3 m',
+        'Static Head = 12.2 + 3.1 = 15.3',
+        'L_eq,pipe = 103.7 + 3(3.4) + 7.6 + 21.4 = 142.8',
+        'h_f,pipe = 142.8  \\cdot  (5.4 / 100) = 7.71',
+        'h_f,hose = 6.1  \\cdot  (4.3 / 100) = 0.26',
+        'Total Head = 15.3 + 7.71 + 0.26 = 23.27  \\approx  23.3',
       ],
       steps: [
         'Step 1: Total static lift = suction lift (3.1 m) + discharge elevation (12.2 m) = 15.3 m.',
@@ -185,7 +185,7 @@ export const MSTC_NOV2024_PART5: Question[] = [
     solution: {
       summary: 'In fillet weld geometry, the theoretical throat is defined as the perpendicular distance from the root of the weld to the hypotenuse of the largest right triangle that can be inscribed within the fillet weld cross-section.',
       formulas: [
-        'Theoretical Throat t_e = s · sin 45° = 0.707 s',
+        'Theoretical Throat t_e = s  \\cdot  sin 45° = 0.707 s',
         't_e = perpendicular distance from root to hypotenuse',
       ],
       steps: [
@@ -321,7 +321,7 @@ export const MSTC_NOV2024_PART5: Question[] = [
       summary: 'Calcium lignosulphonate is a plasticizer and set-retarding admixture derived from paper wood pulp that slows down the hydration rate of tricalcium aluminate (C₃A) and silicate phases, prolonging setting time.',
       formulas: [
         'Calcium lignosulphonate: Retarder and water-reducing plasticizer',
-        'Calcium chloride (CaCl₂): Classic accelerator',
+        'Calcium chloride (CaCl_2): Classic accelerator',
         'Aluminum powder: Gas-forming / air-entraining agent',
       ],
       steps: [
@@ -355,7 +355,7 @@ export const MSTC_NOV2024_PART5: Question[] = [
       summary: 'Aluminium sulphate [Al₂(SO₄)₃] acts as a powerful setting accelerator used specifically in quick-setting and shotcrete cements to trigger fast stiffening. (Note: Gypsum is added as a retarder to prevent flash set; zinc sulphate retards hydration).',
       formulas: [
         'Aluminium sulphate: Quick-setting accelerator',
-        'Gypsum (CaSO₄·2H₂O): Retarder to prevent flash set',
+        'Gypsum (CaSO_4 \\cdot 2H_2O): Retarder to prevent flash set',
         'Zinc sulphate: Retarder',
       ],
       steps: [
@@ -422,8 +422,8 @@ export const MSTC_NOV2024_PART5: Question[] = [
     solution: {
       summary: 'The problem explicitly states that the underlying population of damages is normally distributed. Student\'s t-distribution is strictly exact and valid for any sample size (even n = 3) when sampling from a normal population. For n = 3, df = 2, t₀.₀₂₅,₂ = 4.303. Therefore, the confidence interval is completely valid.',
       formulas: [
-        'Population is normally distributed => t-distribution is valid for any n ≥ 2',
-        'Degrees of freedom df = n - 1 = 3 - 1 = 2',
+        'Population is normally distributed => t-distribution is valid for any  \\ge  2',
+        'Degrees of freedom df = - 1 = 3 - 1 = 2',
         't_{0.025, 2} = 4.303',
         'CI is valid',
       ],

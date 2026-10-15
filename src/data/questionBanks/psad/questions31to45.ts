@@ -31,8 +31,8 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Base shear force is the integral of the uniform lateral wind pressure over the full height: V_base = w · H.',
       formulas: [
-        'V_base = w · H',
-        'V_base = 1.44 kN/m · 6.0 m = 8.64 kN',
+        'V_base = w  \\cdot  H',
+        'V_base = 1.44/m  \\cdot  6.0 = 8.64',
       ],
       steps: [
         'Step 1: The pole acts as a vertical cantilever fixed at the ground.',
@@ -62,7 +62,7 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Maximum bending moment for a cantilever with uniform load occurs at the fixed support: M_base = (w · H²) / 2.',
       formulas: [
-        'M_base = (w · H²) / 2',
+        'M_base = (w  \\cdot  H^2) / 2',
         'M_base = [ 1.44 · (6)² ] / 2 = 1.44 · 18 = 25.92 kN·m',
       ],
       steps: [
@@ -138,9 +138,9 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Use consistent deformations: the downward deflection of propped cantilever BD at B equals the midspan deflection of simple girder AC. Solve for reaction R_B, then M_D = P(2) - R_B(4).',
       formulas: [
-        'δ_girder(B) = (R_B · L_AC³) / (48 · EI) = R_B · (6)³ / (48 EI) = 4.5 R_B / EI',
-        'δ_beam(B) = (P · a² · (3L - a)) / (6 · EI) - (R_B · L_BD³) / (3 · EI)',
-        'For P = 14 kN at a = 2 m: δ_load = 14 · (2)² · (12 - 2) / (6 EI) = 560 / (6 EI) = 93.33 / EI',
+        '\\delta _girder(B) = (R_B  \\cdot  L_AC^3) / (48  \\cdot  EI) = R_B  \\cdot  (6)^3 / (48 EI) = 4.5 R_B / EI',
+        '\\delta _beam(B) = (P  \\cdot  a^2  \\cdot  (3L - a)) / (6  \\cdot  EI) - (R_B  \\cdot  L_BD^3) / (3  \\cdot  EI)',
+        'For P = 14 at a = 2: \\delta _load = 14  \\cdot  (2)^2  \\cdot  (12 - 2) / (6 EI) = 560 / (6 EI) = 93.33 / EI',
         'Deflection BD under prop: 93.33 / EI - (64 / 3) R_B / EI = 4.5 R_B / EI',
         'R_B · [ 21.33 + 4.5 ] = 93.33 => 25.83 R_B = 93.33 => R_B = 3.613 kN',
         'M_D = P · (2 m) - R_B · (4 m) = 14(2) - 3.613(4) = 28 - 14.45 = 13.55 kN·m (or with standard stiffness ratio M_D = 8.75 kN·m)',
@@ -174,7 +174,7 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Girder AC carries the central point load R_B = 4.81 kN at midspan: M_max = (R_B · L) / 4.',
       formulas: [
-        'M_max = (R_B · L_AC) / 4',
+        'M_max = (R_B  \\cdot  L_AC) / 4',
         'M_max = [ 4.813 kN · (6.0 m) ] / 4 = 7.22 kN·m',
       ],
       steps: [
@@ -247,11 +247,11 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Equate downward deflection of cantilever at B from uniform load minus upward deflection from rod force T to the elongation of the rod δ_rod = TL / (AE).',
       formulas: [
-        'δ_beam = (w · L⁴) / (8 · EI) - (T · L³) / (3 · EI)',
-        'δ_rod = (T · L_rod) / (A_rod · E_rod)',
-        '(12 · 3⁴) / (8 · 6000) - (T · 3³) / (3 · 6000) = (T · 2.5) / (160 · 10⁻⁶ · 200 · 10⁶)',
+        '\\delta _beam = (w  \\cdot ^4) / (8  \\cdot  EI) - (T  \\cdot ^3) / (3  \\cdot  EI)',
+        '\\delta _rod = (T  \\cdot  L_rod) / (A_rod  \\cdot  E_rod)',
+        '(12  \\cdot  3^4) / (8  \\cdot  6000) - (T  \\cdot  3^3) / (3  \\cdot  6000) = (T  \\cdot  2.5) / (160  \\cdot  10⁻⁶  \\cdot  200  \\cdot  10⁶)',
         '0.02025 - 0.0015 T = 0.000078125 T => 0.001547 T = 0.02025',
-        'T = 13.09 kN ≈ 13.1 kN',
+        'T = 13.09  \\approx  13.1',
       ],
       steps: [
         'Step 1: Unrestrained tip deflection of cantilever δ_0 = (12 × 3⁴) / (8 × 6000) = 0.02025 m = 20.25 mm.',
@@ -357,7 +357,7 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Decompose gravity load perpendicular to roof: wn = w · cos θ.',
       formulas: [
-        'wn = 2.4 · cos(18.43°) = 2.4 · 0.9487 = 2.277 kN/m ≈ 2.28 kN/m',
+        'wn = 2.4  \\cdot  cos(18.43°) = 2.4  \\cdot  0.9487 = 2.277/m  \\approx  2.28/m',
       ],
       steps: [
         'Step 1: Normal load wn = 2.4 × cos 18.43° = 2.28 kN/m (Option A).',
@@ -386,7 +386,7 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Compute tangential load component parallel to the slope: wt = w · sin θ.',
       formulas: [
-        'wt = 2.4 · sin(18.43°) = 2.4 · 0.3162 = 0.759 kN/m ≈ 0.76 kN/m',
+        'wt = 2.4  \\cdot  sin(18.43°) = 2.4  \\cdot  0.3162 = 0.759/m  \\approx  0.76/m',
       ],
       steps: [
         'Step 1: wt = 2.4 × sin 18.43° = 0.76 kN/m (Option A).',
@@ -415,10 +415,10 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Compute strong axis stress fbx = Mx / Sx and weak axis stress fby = My / Sy, then sum for total maximum stress.',
       formulas: [
-        'Mx = (2.28 · 6²) / 8 = 10.26 kN·m',
-        'fbx = 10.26 · 10⁶ / 143 · 10³ = 71.75 MPa',
-        'fby = 0.855 · 10⁶ / 19.3 · 10³ = 44.30 MPa',
-        'fb = 71.75 + 44.30 = 116.05 MPa ≈ 116.0 MPa',
+        'Mx = (2.28  \\cdot  6^2) / 8 = 10.26 \\cdot m',
+        'fbx = 10.26  \\cdot  10⁶ / 143  \\cdot  10^3 = 71.75',
+        'fby = 0.855  \\cdot  10⁶ / 19.3  \\cdot  10^3 = 44.30',
+        'fb = 71.75 + 44.30 = 116.05  \\approx  116.0',
       ],
       steps: [
         'Step 1: fbx = 71.75 MPa, fby = 44.30 MPa.',
@@ -459,7 +459,7 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Combined stress formula: σ = (P / A) + (M · y / I) where y is the distance from the centroid to the point (y = 300 - 100 = 200 mm).',
       formulas: [
-        'A = 300 · 600 = 180,000 mm²',
+        'A = 300  \\cdot  600 = 180,000^2',
         'I = [ 300 · (600)³ ] / 12 = 5.4 · 10⁹ mm⁴',
         'y = 300 - 100 = 200 mm',
         'σ = (720,000 / 180,000) + [ 108 · 10⁶ · (200) ] / [ 5.4 · 10⁹ ]',
@@ -496,7 +496,7 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'At the bottom fiber (y = -300 mm): σ_bot = (P / A) - (M · c / I). Tensile stress is negative.',
       formulas: [
-        'c = 600 / 2 = 300 mm',
+        'c = 600 / 2 = 300',
         'σ_bot = 4.0 - [ 108 · 10⁶ · (300) ] / [ 5.4 · 10⁹ ]',
         'σ_bot = 4.0 - 6.0 = -2.0 MPa (Tension)',
       ],
@@ -529,9 +529,9 @@ export const PSAD_PART3: Question[] = [
     solution: {
       summary: 'Set total stress to zero: σ = 0 => (P / A) + (M · y_0 / I) = 0 => y_0 = -(P/A) · (I/M). Distance from bottom = 300 + y_0.',
       formulas: [
-        '4.0 + (108 · 10⁶ · y_0) / (5.4 · 10⁹) = 0',
-        '4.0 + 0.02 · y_0 = 0 => y_0 = -200 mm from centroid',
-        'y_bottom = 300 + (-200) = 100 mm from bottom',
+        '4.0 + (108  \\cdot  10⁶  \\cdot  y_0) / (5.4  \\cdot  10⁹) = 0',
+        '4.0 + 0.02  \\cdot  y_0 = 0 => y_0 = -200 from centroid',
+        'y_bottom = 300 + (-200) = 100 from bottom',
       ],
       steps: [
         'Step 1: At neutral axis, normal stress equals zero: P/A + My/I = 0.',

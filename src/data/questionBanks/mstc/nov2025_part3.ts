@@ -94,7 +94,7 @@ export const MSTC_NOV2025_PART3: Question[] = [
     solution: {
       summary: 'Apply the Fundamental Counting Principle: m choices for wall color times n choices for trim color gives total outcomes in the sample space.',
       formulas: [
-        'N = m \\times n',
+        'N = \\times',
         'N = 3 \\times 3 = 9',
       ],
       steps: [
@@ -208,8 +208,8 @@ export const MSTC_NOV2025_PART3: Question[] = [
       formulas: [
         'L = \\sum L_i = 30.126 + 29.973 + 30.066 + 22.536 = 112.701',
         'C_p = \\frac{L(P - P_s)}{AE} = \\frac{112.701(15 - 5)(9.80665)}{3(210 \\times 10^3)} = +0.0176',
-        'C_T = \\alpha L(T - T_s) = 0.000011(112.701)(10 - 20) = -0.0124',
-        'C_s = -\\frac{W^2 L}{24 P^2} = -\\frac{1^2(112.701)}{24(15^2)} = -0.0209',
+        'C_T = \\alpha(T - T_s) = 0.000011(112.701)(10 - 20) = -0.0124',
+        'C_s = -\\frac{W^2}{24 P^2} = -\\frac{1^2(112.701)}{24(15^2)} = -0.0209',
         'C_g = -\\sum \\frac{h_i^2}{2 L_i} = -0.0154',
         'L\' = 112.701 + (0.0176 - 0.0124 - 0.0209 - 0.0154) = 112.670',
       ],
@@ -236,9 +236,9 @@ export const MSTC_NOV2025_PART3: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Surveying - Area of Irregular Boundary via Simpson\'s 1/3 Rule',
-    text: 'A boundary and traverse bordering an irregular area are shown. The spacing between successive ordinates is 5 m. Using Simpson\'s 1/3 rule, the total area between the boundary and traverse line is most nearly:\nHint:\n$A = \\frac{w}{3} \\left( h_1 + 2\\sum h_{\\text{odd}} + 4\\sum h_{\\text{even}} + h_n \\right)$\n(Given ordinates: $h_1 = 4.2\\text{ m}$, $h_2 = 8.1\\text{ m}$, $h_3 = 6.7\\text{ m}$, $h_4 = 7.6\\text{ m}$, $h_5 = 8.3\\text{ m}$ with spacing $w = 5\\text{ m}$)',
+    text: 'A boundary and traverse bordering an irregular area are shown. The spacing between successive ordinates is 5 m. Using Simpson\'s 1/3 rule, the total area between the boundary and traverse line is most nearly:\nHint:\n$A = \\frac{w}{3} \\left( h_1 + 2\\sum h_{\\text{odd}} + 4\\sum h_{\\text{even}} + h_n \\right)$\n(Given ordinates: $h_1 = 4.2\$, $h_2 = 8.1\$, $h_3 = 6.7\$, $h_4 = 7.6\$, $h_5 = 8.3\$ with spacing $w = 5\$)',
     figureCaption: 'Figure 39: Irregular boundary and traverse ordinates for Simpson\'s 1/3 Rule (MSTC Nov 2025)',
-    figureSvg: getMstcNov2025FigureHtml(39, 'Figure 39: Irregular boundary and traverse ordinates for Simpson\'s 1/3 Rule'),
+    figureSvg: getMstcNov2025FigureHtml(39, "Figure 39: Irregular boundary and traverse ordinates for Simpson's 1/3 Rule"),
     options: [
       { label: 'A', text: '141 m²' },
       { label: 'B', text: '148 m²' },
@@ -249,18 +249,18 @@ export const MSTC_NOV2025_PART3: Question[] = [
     solution: {
       summary: 'Evaluate parabolic area under irregular boundary using Simpson\'s 1/3 rule across 4 equal intervals with w = 5 m.',
       formulas: [
-        'A = w \\left( \\frac{h_1 + 2\\sum h_{\\text{odd}} + 4\\sum h_{\\text{even}} + h_n}{3} \\right)',
-        '\\sum h_{\\text{odd}} = h_3 = 6.7',
-        '\\sum h_{\\text{even}} = h_2 + h_4 = 8.1 + 7.6 = 15.7',
+        'A = w \\left( \\frac{h_1 + 2\\sum h_{} + 4\\sum h_{} + h_n}{3} \\right)',
+        '\\sum h_{} = h_3 = 6.7',
+        '\\sum h_{} = h_2 + h_4 = 8.1 + 7.6 = 15.7',
         'A = 5 \\left( \\frac{4.2 + 2(6.7) + 4(15.7) + 8.3}{3} \\right) = 5 \\left( \\frac{88.7}{3} \\right) = 147.833 \\approx 148',
       ],
       steps: [
-        'Step 1: Spacing between consecutive offsets: $w = 5\\text{ m}$.',
-        'Step 2: First and last ordinates: $h_1 = 4.2\\text{ m}$, $h_5 = 8.3\\text{ m}$.',
-        'Step 3: Intermediate odd ordinate: $h_3 = 6.7\\text{ m} \\implies 2\\sum h_{\\text{odd}} = 2(6.7) = 13.4\\text{ m}$.',
-        'Step 4: Intermediate even ordinates: $h_2 + h_4 = 8.1 + 7.6 = 15.7\\text{ m} \\implies 4\\sum h_{\\text{even}} = 4(15.7) = 62.8\\text{ m}$.',
-        'Step 5: Bracket sum = $4.2 + 13.4 + 62.8 + 8.3 = 88.7\\text{ m}$.',
-        'Step 6: Total Simpson area: $A = 5 \\times \\left(\\frac{88.7}{3}\\right) = 147.833\\text{ m}^2 \\approx 148\\text{ m}^2$ (Option B).',
+        'Step 1: Spacing between consecutive offsets: $w = 5\$.',
+        'Step 2: First and last ordinates: $h_1 = 4.2\$, $h_5 = 8.3\$.',
+        'Step 3: Intermediate odd ordinate: $h_3 = 6.7\ \\implies 2\\sum h_{\\text{odd}} = 2(6.7) = 13.4\$.',
+        'Step 4: Intermediate even ordinates: $h_2 + h_4 = 8.1 + 7.6 = 15.7\ \\implies 4\\sum h_{\\text{even}} = 4(15.7) = 62.8\$.',
+        'Step 5: Bracket sum = $4.2 + 13.4 + 62.8 + 8.3 = 88.7\$.',
+        'Step 6: Total Simpson area: $A = 5 \\times \\left(\\frac{88.7}{3}\\right) = 147.833\ \\approx 148\$ (Option B).',
       ],
       finalAnswer: '148 m² (Option B)',
       pageNumber: 530,
@@ -400,9 +400,9 @@ export const MSTC_NOV2025_PART3: Question[] = [
       summary: 'In Greenshields\' linear speed-density model, maximum traffic flow occurs at half of free-flow speed (u = uf / 2 = 40 km/h) and half of jam density (k = kj / 2 = 50 veh/km), giving capacity qmax = 2000 veh/h.',
       formulas: [
         'u = u_f \\left(1 - \\frac{k}{k_j}\\right)',
-        'u_{\\text{cap}} = \\frac{1}{2} u_f = \\frac{1}{2}(80) = 40',
-        'k_{\\text{cap}} = \\frac{1}{2} k_j = \\frac{1}{2}(100) = 50',
-        'q_{\\max} = u_{\\text{cap}} k_{\\text{cap}} = 40 \\times 50 = 2000',
+        'u_{} = \\frac{1}{2} u_f = \\frac{1}{2}(80) = 40',
+        'k_{} = \\frac{1}{2} k_j = \\frac{1}{2}(100) = 50',
+        'q_{\\max} = u_{} k_{} = 40 \\times 50 = 2000',
       ],
       steps: [
         'Step 1: Greenshields model states speed varies linearly: u = uf(1 - k/kj).',
@@ -473,11 +473,11 @@ export const MSTC_NOV2025_PART3: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Apply Webster\'s signal timing formula $C_{\\text{opt}} = (1.5L + 5) / (1 - \\sum Y)$ with total lost time $L = 15\\text{ s}$ and sum of flow ratios $\\sum Y = 0.3 + 0.3 = 0.6$.',
+      summary: 'Apply Webster\'s signal timing formula $C_{\\text{opt}} = (1.5L + 5) / (1 - \\sum Y)$ with total lost time $L = 15\$ and sum of flow ratios $\\sum Y = 0.3 + 0.3 = 0.6$.',
       formulas: [
         '\\sum Y_i = Y_1 + Y_2 = 0.30 + 0.30 = 0.60',
-        'C_{\\text{opt}} = \\frac{1.5L + 5}{1.0 - \\sum Y_i}',
-        'C_{\\text{opt}} = \\frac{1.5(15) + 5}{1.0 - 0.60} = \\frac{22.5 + 5}{0.40} = \\frac{27.5}{0.40} = 68.75',
+        'C_{} = \\frac{1.5L + 5}{1.0 - \\sum Y_i}',
+        'C_{} = \\frac{1.5(15) + 5}{1.0 - 0.60} = \\frac{22.5 + 5}{0.40} = \\frac{27.5}{0.40} = 68.75',
       ],
       steps: [
         'Step 1: Sum of critical flow ratios: ΣY = Y1 + Y2 = 0.30 + 0.30 = 0.60.',

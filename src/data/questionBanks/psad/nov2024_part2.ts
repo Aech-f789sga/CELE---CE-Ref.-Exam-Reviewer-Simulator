@@ -36,10 +36,10 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'From joint C equilibrium, the tensile force in bar AC is F_AC = W / sin 30° = 2W. The stress is f_t = F_AC / A_AC = 2W / (6 × 50). Solve for W.',
       formulas: [
-        'A_{AC} = 6 \\times 50 = 300\\text{ mm}^2',
+        'A_{AC} = 6 \\times 50 = 300^2',
         '\\sin 30^{\\circ} = \\frac{W}{F_{AC}} \\implies F_{AC} = 2W',
-        'f_t = \\frac{F_{AC}}{A_{AC}} = \\frac{2W}{300} = 124\\text{ MPa}',
-        '2W = 124(300) = 37,200\\text{ N} \\implies W = 18,600\\text{ N} = 18.6\\text{ kN}',
+        'f_t = \\frac{F_{AC}}{A_{AC}} = \\frac{2W}{300} = 124',
+        '2W = 124(300) = 37,200 \\implies W = 18,600 = 18.6',
       ],
       steps: [
         'Step 1: Cross-sectional area of bar AC: A_AC = 6 mm × 50 mm = 300 mm².',
@@ -75,7 +75,7 @@ export const PSAD_NOV2024_PART2: Question[] = [
       summary: 'Apply Hooke’s law: stress σ = E · ε, then relate force to load W.',
       formulas: [
         '\\epsilon_{AC} = \\frac{F_{AC}}{A_{AC} E} = \\frac{2W}{300(200,000)} = 0.0002',
-        '2W = 0.0002 \\times 300 \\times 200,000 = 12,000\\text{ N} \\implies W = 6,000\\text{ N} = 6\\text{ kN}',
+        '2W = 0.0002 \\times 300 \\times 200,000 = 12,000 \\implies W = 6,000 = 6',
       ],
       steps: [
         'Step 1: Axial strain equation: ε = F_AC / (A_AC · E).',
@@ -109,10 +109,10 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Allowable stress is F_all = F_nominal / FS = 148 / 2 = 74 MPa. Compute cable capacity and solve for maximum W.',
       formulas: [
-        'F_{\\text{all}} = \\frac{F_{\\text{nominal}}}{\\text{FS}} = \\frac{148}{2} = 74\\text{ MPa}',
-        'A = \\frac{\\pi}{4}(12)^2 = 113.1\\text{ mm}^2',
-        'F_{AC} = 74 \\times 113.1 = 8,369\\text{ N} = 8.37\\text{ kN}',
-        '2W \\le 8.37\\text{ kN} \\implies W_{\\text{max}} = \\frac{8.37}{2} = 4.18\\text{ kN} \\approx 4\\text{ kN}',
+        'F_{\\mathrm{all}} = \\frac{F_{}}{} = \\frac{148}{2} = 74',
+        'A = \\frac{\\pi}{4}(12)^2 = 113.1^2',
+        'F_{AC} = 74 \\times 113.1 = 8,369 = 8.37',
+        '2W \\le 8.37 \\implies W_{\\mathrm{max}} = \\frac{8.37}{2} = 4.18 \\approx 4',
       ],
       steps: [
         'Step 1: Allowable tensile stress: F_all = 148 / 2 = 74 MPa.',
@@ -147,10 +147,10 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Taking moments about point B gives the total uplift reaction at A: W(L₂) = 2T(L₁). Compute tensile stress in the two 22-mm anchor bolts.',
       formulas: [
-        '\\sum M_B = 0 \\implies W(L_2) - 2T(L_1) = 0 \\implies 80(2.5) = 2T(1) \\implies 2T = 200\\text{ kN}',
-        'T = 100\\text{ kN per bolt}',
-        'A_{\\text{bolt}} = \\frac{\\pi}{4}(22)^2 = 380.13\\text{ mm}^2',
-        'f_t = \\frac{100,000}{380.13} = 263.07\\text{ MPa} \\approx 263\\text{ MPa}',
+        '\\sum M_B = 0 \\implies W(L_2) - 2T(L_1) = 0 \\implies 80(2.5) = 2T(1) \\implies 2T = 200',
+        'T = 100',
+        'A_{} = \\frac{\\pi}{4}(22)^2 = 380.13^2',
+        'f_t = \\frac{100,000}{380.13} = 263.07 \\approx 263',
       ],
       steps: [
         'Step 1: Moment equilibrium about fulcrum B: 80(2.5) - 2T(1) = 0 => 2T = 200 kN => T = 100 kN per bolt.',
@@ -184,9 +184,9 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Vertical equilibrium gives the downward bearing reaction at plate B: R_B = 2T + W. Divide by plate contact area.',
       formulas: [
-        '\\sum F_v = 0 \\implies R_B = 2T + W = 200 + 80 = 280\\text{ kN}',
-        'A_p = 150 \\times 200 = 30,000\\text{ mm}^2',
-        'f_p = \\frac{R_B}{A_p} = \\frac{280,000}{30,000} = 9.333\\text{ MPa} \\approx 9.33\\text{ MPa}',
+        '\\sum F_v = 0 \\implies R_B = 2T + W = 200 + 80 = 280',
+        'A_p = 150 \\times 200 = 30,000^2',
+        'f_p = \\frac{R_B}{A_p} = \\frac{280,000}{30,000} = 9.333 \\approx 9.33',
       ],
       steps: [
         'Step 1: Reaction at support B: R_B = 2T + W = 200 + 80 = 280 kN.',
@@ -220,9 +220,9 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Set bolt tensile stress equal to 145 MPa and back-calculate maximum permissible load W.',
       formulas: [
-        'T_{\\text{allow}} = F_t A = 145 \\times \\frac{\\pi}{4}(22)^2 = 55,119\\text{ N} = 55.12\\text{ kN}',
+        'T_{\\mathrm{all}} = F_t A = 145 \\times \\frac{\\pi}{4}(22)^2 = 55,119 = 55.12',
         '2T = 1.25W \\implies T = 1.25W \\implies \\frac{1.25W}{A} \\le 145',
-        'W_{\\text{max}} = \\frac{145 \\times 380.13}{1.25} = 44,095\\text{ N} \\approx 44\\text{ kN}',
+        'W_{\\mathrm{max}} = \\frac{145 \\times 380.13}{1.25} = 44,095 \\approx 44',
       ],
       steps: [
         'Step 1: Allowable tension per bolt: T = 145 × (π/4)(22)² = 55,119 N.',
@@ -256,8 +256,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'The torque in rod BD is produced by the eccentric force P: T = P(2a) = 180(400 mm) = 72,000 N·mm = 72 N·m. Compute torsional shear stress τ = 16T / (π d³).',
       formulas: [
-        'T = P(2a) = 180(0.40) = 72\\text{ N}\\cdot\\text{m} = 72,000\\text{ N}\\cdot\\text{mm}',
-        '\\tau_{\\text{max}} = \\frac{16T}{\\pi d^3} = \\frac{16(72,000)}{\\pi(40)^3} = 5.7296\\text{ MPa} \\approx 5.73\\text{ MPa}',
+        'T = P(2a) = 180(0.40) = 72\\cdot = 72,000',
+        '\\tau_{\\mathrm{max}} = \\frac{16T}{\\pi d^3} = \\frac{16(72,000)}{\\pi(40)^3} = 5.7296 \\approx 5.73',
       ],
       steps: [
         'Step 1: Torque in rod BD: T = 180 N × (2 × 0.2 m) = 72 N·m = 72,000 N·mm.',
@@ -291,8 +291,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Angle of twist is given by θ = T L / (J G). Convert radians to degrees.',
       formulas: [
-        '\\theta = \\frac{T L}{J G} = \\frac{72,000(750)}{\\frac{\\pi}{32}(40)^4 (78,000)} = 0.002755\\text{ rad}',
-        '\\theta_{\\text{deg}} = 0.002755 \\times \\frac{180^{\\circ}}{\\pi} = 0.1578^{\\circ} \\approx 0.158^{\\circ}',
+        '\\theta = \\frac{T}{J G} = \\frac{72,000(750)}{\\frac{\\pi}{32}(40)^4 (78,000)} = 0.002755',
+        '\\theta_{} = 0.002755 \\times \\frac{180^{\\circ}}{\\pi} = 0.1578^{\\circ} \\approx 0.158^{\\circ}',
       ],
       steps: [
         'Step 1: Length of twisting section BD = 750 mm; G = 78,000 MPa.',
@@ -326,9 +326,9 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'For hollow circular shaft: outer diameter D = 50 mm, thickness t = 5 mm, inner diameter d = 50 - 2(5) = 40 mm. Compute maximum torsional shear stress at outer fiber.',
       formulas: [
-        'd = D - 2t = 50 - 2(5) = 40\\text{ mm}',
-        '\\tau_{\\text{max}} = \\frac{16 T D}{\\pi(D^4 - d^4)} = \\frac{16(72,000)(50)}{\\pi(50^4 - 40^4)} = \\frac{57,600,000}{\\pi(6,250,000 - 2,560,000)}',
-        '\\tau_{\\text{max}} = \\frac{57,600,000}{\\pi(3,690,000)} = 4.968\\text{ MPa} \\approx 4.97\\text{ MPa}',
+        'd = D - 2t = 50 - 2(5) = 40',
+        '\\tau_{\\mathrm{max}} = \\frac{16 T D}{\\pi(D^4 - d^4)} = \\frac{16(72,000)(50)}{\\pi(50^4 - 40^4)} = \\frac{57,600,000}{\\pi(6,250,000 - 2,560,000)}',
+        '\\tau_{\\mathrm{max}} = \\frac{57,600,000}{\\pi(3,690,000)} = 4.968 \\approx 4.97',
       ],
       steps: [
         'Step 1: Inner diameter d = 50 - 2(5) = 40 mm.',
@@ -360,8 +360,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Ductility measured by percent reduction in area: %RA = [(A₀ - A_f) / A₀] × 100% = [1 - (d_f / d₀)²] × 100%.',
       formulas: [
-        '\\text{Ductility} = \\frac{A_0 - A_f}{A_0} \\times 100\\% = \\left[1 - \\left(\\frac{d_f}{d_0}\\right)^2\\right] \\times 100\\%',
-        '\\text{Ductility} = \\left[1 - \\left(\\frac{11}{12}\\right)^2\\right] \\times 100\\% = \\left[1 - \\frac{121}{144}\\right] \\times 100\\% = 15.972\\%',
+        '\\%RA = \\frac{A_0 - A_f}{A_0} \\times 100\\% = \\left[1 - \\left(\\frac{d_f}{d_0}\\right)^2\\right] \\times 100\\%',
+        '\\%RA = \\left[1 - \\left(\\frac{11}{12}\\right)^2\\right] \\times 100\\% = \\left[1 - \\frac{121}{144}\\right] \\times 100\\% = 15.972\\%',
       ],
       steps: [
         'Step 1: Initial diameter d₀ = 12 mm, final necked diameter at rupture d_f = 11 mm.',
@@ -392,8 +392,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Modulus of elasticity E is computed from proportional limit data: E = P·L / (A · δ).',
       formulas: [
-        'A = \\frac{\\pi}{4}(12)^2 = 113.097\\text{ mm}^2',
-        'E = \\frac{P L}{A \\delta} = \\frac{28,000(50)}{113.097(0.068)} = 182,040\\text{ MPa} \\approx 182\\text{ GPa}',
+        'A = \\frac{\\pi}{4}(12)^2 = 113.097^2',
+        'E = \\frac{P}{A \\delta} = \\frac{28,000(50)}{113.097(0.068)} = 182,040 \\approx 182',
       ],
       steps: [
         'Step 1: Load at proportional limit P = 28,000 N, gauge length L = 50 mm, elongation δ = 0.068 mm.',
@@ -425,7 +425,7 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Ultimate tensile stress is maximum load divided by initial cross-sectional area: σ_ult = P_max / A₀.',
       formulas: [
-        '\\sigma_{\\text{ult}} = \\frac{P_{\\text{max}}}{A_0} = \\frac{65,000}{\\frac{\\pi}{4}(12)^2} = \\frac{65,000}{113.097} = 574.72\\text{ MPa} \\approx 575\\text{ MPa}',
+        '\\sigma_{\\mathrm{ult}} = \\frac{P_{\\mathrm{max}}}{A_0} = \\frac{65,000}{\\frac{\\pi}{4}(12)^2} = \\frac{65,000}{113.097} = 574.72 \\approx 575',
       ],
       steps: [
         'Step 1: Maximum tensile load recorded P_max = 65,000 N.',
@@ -457,9 +457,9 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Allowable shear capacity V_allow = F_vw · d · t_w. Equate to maximum end shear V_max = 6w + 30 and solve for w.',
       formulas: [
-        'V_{\\text{allow}} = F_{vw} d t_w = 88(540)(12.5) = 594,000\\text{ N} = 594\\text{ kN}',
-        'V_{\\text{max}} = \\frac{w L}{2} + P = \\frac{w(12)}{2} + 30 = 6w + 30',
-        '6w + 30 \\le 594 \\implies 6w \\le 564 \\implies w \\le 94\\text{ kN/m}',
+        'V_{\\mathrm{all}} = F_{vw} d t_w = 88(540)(12.5) = 594,000 = 594',
+        'V_{\\mathrm{max}} = \\frac{w}{2} + P = \\frac{w(12)}{2} + 30 = 6w + 30',
+        '6w + 30 \\le 594 \\implies 6w \\le 564 \\implies w \\le 94',
       ],
       steps: [
         'Step 1: Allowable shear force: V_allow = 88 MPa × (540 mm × 12.5 mm) = 594 kN.',
@@ -491,9 +491,9 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Allowable moment capacity M_allow = F_b · S_x. Equate to maximum midspan moment M_max = w L² / 8 + P(3) and solve for w.',
       formulas: [
-        'M_{\\text{allow}} = F_b S_x = 135(3.72 \\times 10^6) = 502.2 \\times 10^6\\text{ N}\\cdot\\text{mm} = 502.2\\text{ kN}\\cdot\\text{m}',
-        'M_{\\text{max}} = \\frac{w(12)^2}{8} + 30(3) = 18w + 90',
-        '18w + 90 \\le 502.2 \\implies 18w \\le 412.2 \\implies w \\le 22.90\\text{ kN/m}',
+        'M_{\\mathrm{all}} = F_b S_x = 135(3.72 \\times 10^6) = 502.2 \\times 10^6\\cdot = 502.2',
+        'M_{\\mathrm{max}} = \\frac{w(12)^2}{8} + 30(3) = 18w + 90',
+        '18w + 90 \\le 502.2 \\implies 18w \\le 412.2 \\implies w \\le 22.90',
       ],
       steps: [
         'Step 1: Allowable bending moment: M_allow = 135 × 3.72 × 10⁶ N·mm = 502.2 kN·m.',
@@ -525,9 +525,8 @@ export const PSAD_NOV2024_PART2: Question[] = [
     solution: {
       summary: 'Calculate midspan deflection caused by two symmetric point loads P = 30 kN at distance a = 3 m on simple span L = 12 m using standard beam formulas or area-moment method: δ_mid = [P a / (24 E I)] · (3 L² - 4 a²).',
       formulas: [
-        'I_x = S_x \\times \\frac{d}{2} = 3.72 \\times 10^6 \\times 270 = 1004.4 \\times 10^6\\text{ mm}^4',
-        '\\delta_{\\text{mid}} = \\frac{P a}{24 E I_x} (3 L^2 - 4 a^2) = \\frac{30,000(3000)}{24(200,000)(1004.4 \\times 10^6)} [3(12,000)^2 - 4(3000)^2]',
-        '\\delta_{\\text{mid}} = \\frac{90 \\times 10^6}{4.82112 \\times 10^{15}} [432 \\times 10^6 - 36 \\times 10^6] = 7.392\\text{ mm} \\approx 7.40\\text{ mm}',
+        'I_x = S_x \\frac{d}{2}',
+        '\\delta = \\frac{P a}{24 E I_x} (3 L^2 - 4 a^2)',
       ],
       steps: [
         'Step 1: Moment of inertia I_x = S_x · (d/2) = 3.72 × 10⁶ × 270 = 1004.4 × 10⁶ mm⁴.',

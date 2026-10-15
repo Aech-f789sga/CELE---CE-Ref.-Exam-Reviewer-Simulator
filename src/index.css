@@ -425,3 +425,54 @@ html[data-theme="aurora_glass"] ::selection { background: #8b7bff; color: #0b072
   .cube3d { animation: none; transform: rotateX(-24deg) rotateY(35deg); }
   .tilt3d { transition: none; }
 }
+
+/* ========================================================
+   TERRARIUM ORB 3D COZY THEME
+   Faceted terrarium planet suspended in glass orb on walnut stand
+   ======================================================== */
+html[data-theme="terrarium_orb"] {
+  background-color: #0b0f0e !important;
+}
+
+html[data-theme="terrarium_orb"] body {
+  background:
+    radial-gradient(45rem 30rem at 50% 12%, rgba(52, 211, 153, 0.08), transparent 70%),
+    radial-gradient(40rem 30rem at 85% 85%, rgba(217, 119, 6, 0.07), transparent 70%),
+    radial-gradient(40rem 30rem at 15% 75%, rgba(45, 26, 14, 0.35), transparent 75%),
+    #0b0f0e !important;
+}
+
+html[data-theme="terrarium_orb"] .hero-aurora {
+  background:
+    radial-gradient(35rem 24rem at 85% 30%, rgba(52, 211, 153, 0.16), transparent 70%),
+    radial-gradient(35rem 24rem at 10% 90%, rgba(217, 119, 6, 0.14), transparent 70%),
+    linear-gradient(135deg, rgba(22, 33, 29, 0.85), rgba(13, 19, 17, 0.9)) !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+  box-shadow: 0 30px 80px -30px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="terrarium_orb"] .hero-aurora h1 {
+  background: linear-gradient(95deg, #ffffff 10%, #a7f3d0 50%, #fde68a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="terrarium_orb"] .bg-amber-500:not(span),
+html[data-theme="terrarium_orb"] button.bg-amber-500 {
+  background-image: linear-gradient(135deg, #34d399, #059669) !important;
+  background-color: #10b981 !important;
+  color: #042f1a !important;
+  box-shadow: 0 10px 28px -8px rgba(16, 185, 129, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+html[data-theme="terrarium_orb"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #10b981, #d97706);
+}
+
+html[data-theme="terrarium_orb"] ::selection {
+  background: #10b981;
+  color: #042f1a;
+}
+

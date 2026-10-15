@@ -21,11 +21,11 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Total initial balance on Nov 12 = $677 + $452 + $139 + $141 = $1399. Interest to Dec 1 (18 days): 1399 × 0.0005163 × 18 = $13. New balance = $1412. After $300 payment on Dec 1, balance = $1112. Interest to Jan 1 (31 days): 1112 × 0.0005163 × 31 = $17.80. Balance before payment = $1129.80. Minimum payment = Interest ($17.80) + 1.5%($1112) = 17.80 + 16.68 = $34.48 ≈ $35.',
       formulas: [
-        'Total charges = 677 + 452 + 139 + 141 = $1399',
-        'Interest_Nov12_Dec1 (18 days) = 1399 · (0.05163%) · 18 = $13',
-        'Balance on Dec 1 = 1399 + 13 - 300 = $1112',
-        'Interest_Dec1_Jan1 (31 days) = 1112 · (0.05163%) · 31 = $17.80',
-        'Min Payment = Interest + 1.5%(Principal) = 17.80 + 1.5%(1129.8) = $34.75 ≈ $35',
+        'Total charges = 677 + 452 + 139 + 141 = 1399',
+        'Interest_Nov12_Dec1 (18 days) = 1399  \\cdot  (0.05163\\%)  \\cdot  18 = 13',
+        'Balance on Dec 1 = 1399 + 13 - 300 = 1112',
+        'Interest_Dec1_Jan1 (31 days) = 1112  \\cdot  (0.05163\\%)  \\cdot  31 = 17.80',
+        'Min Payment = Interest + 1.5\\%(Principal) = 17.80 + 1.5\\%(1129.8) = 34.75  \\approx  35',
       ],
       steps: [
         'Step 1: Total charges on Nov 12 = 677 + 452 + 139 + 141 = $1,399.',
@@ -59,8 +59,8 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'NPV = Present Worth of Savings - Initial Cost = 100,000 / (1 + 0.10)¹ - 50,000 = 90,909.09 - 50,000 = $40,909.09 ≈ $40,909.',
       formulas: [
-        'PW = Savings · (1 + i)⁻ⁿ - FC',
-        'PW = 100,000 · (1 + 0.10)⁻¹ - 50,000 = 90,909.09 - 50,000 = $40,909.09',
+        'PW = S (1 + i)^{-n} - C_0',
+        'PW = \\frac{S}{(1 + i)^n} - C_0',
       ],
       steps: [
         'Step 1: First cost FC = $50,000 at t = 0.',
@@ -93,11 +93,11 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Compute Equivalent Uniform Annual Cost (EUAC) for each service life: Year 1: $104,600; Year 2: $77,292; Year 3: $71,165; Year 4: $71,705; Year 5: $72,608. The minimum EUAC occurs at 3 years ($71,165).',
       formulas: [
-        'EUAC(1) = $104,600',
-        'EUAC(2) = $77,292',
-        'EUAC(3) = $71,165  <-- Minimum',
-        'EUAC(4) = $71,705',
-        'EUAC(5) = $72,608',
+        'EUAC(1) = 104,600',
+        'EUAC(2) = 77,292',
+        'EUAC(3) = 71,165  <-- Minimum',
+        'EUAC(4) = 71,705',
+        'EUAC(5) = 72,608',
       ],
       steps: [
         'Step 1: Calculate PW of capital recovery and maintenance for n = 1, 2, 3, 4, 5 years.',
@@ -181,9 +181,9 @@ export const MSTC_NOV2024_PART4: Question[] = [
       summary: 'I = 8°24\' = 8.4°. R = 900 m. Tangent T = R tan(I/2) = 900 tan(4.2°) = 66.092 m. Sta PC = Sta PI - T = (6 + 427.464) - 66.092 = 6 + 361.372. Curve length L_c = π R I / 180° = π(900)(8.4) / 180 = 131.947 m. Sta PT = Sta PC + L_c = (6 + 361.372) + 131.947 = 6 + 493.319.',
       formulas: [
         'I = 8°24\' = 8.4°',
-        'T = R · tan(I / 2) = 900 · tan(4.2°) = 66.092 m',
+        'T = R  \\cdot  tan(I / 2) = 900  \\cdot  tan(4.2°) = 66.092',
         'Sta PC = Sta PI - T = 6+427.464 - 66.092 = 6+361.372',
-        'L_c = π · (900) · (8.4) / 180 = 131.947 m',
+        'L_c = \\pi   \\cdot  (900)  \\cdot  (8.4) / 180 = 131.947',
         'Sta PT = Sta PC + L_c = 6+361.372 + 131.947 = 6+493.319',
       ],
       steps: [
@@ -217,11 +217,11 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Degree of curve D = 2° => Radius R = 5729.578 / 2 = 2864.789 ft. T = R tan(8.4° / 2) = 2864.789 tan(4.2°) = 210.377 ft. Sta PC = 6427.46 - 210.38 = 6217.08 ft (Sta 62+17.08). Curve length L_c = 100(I / D) = 100(8.4 / 2) = 420 ft. Sta PT = 6217.08 + 420 = 6637.08 ft (Sta 66+37.08).',
       formulas: [
-        'R = 5729.578 / 2 = 2864.789 ft',
-        'T = R · tan(4.2°) = 210.377 ft',
-        'Sta PC = Sta PI - T = 6427.46 - 210.38 = 6217.08 ft = Sta 62+17.08',
-        'L_c = 100 · (8.4 / 2) = 420 ft',
-        'Sta PT = Sta PC + L_c = 6217.08 + 420 = 6637.08 ft = Sta 66+37.08',
+        'R = 5729.578 / 2 = 2864.789',
+        'T = R  \\cdot  tan(4.2°) = 210.377',
+        'Sta PC = Sta PI - T = 6427.46 - 210.38 = 6217.08 = Sta 62+17.08',
+        'L_c = 100  \\cdot  (8.4 / 2) = 420',
+        'Sta PT = Sta PC + L_c = 6217.08 + 420 = 6637.08 = Sta 66+37.08',
       ],
       steps: [
         'Step 1: Radius for a 2° arc curve: R = 5729.58 / 2 = 2,864.789 ft.',
@@ -264,7 +264,7 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Elev PVC₂ = 374.52 - (-0.05)(748.27) = 411.93 ft. Bridge at Sta 45+55 => x = 4555 - 3523.86 = 1031.14 ft. Elev on roadway = 411.9335 - 0.05(1031.14) + [0.09 / (2 × 1496.54)](1031.14)² = 392.35 ft. Clearance C = 405.54 - 392.35 = 13.19 ft. Underpass formula: S = 1056.58 ft. SSD = 1.47 V t + V² / 30(a/g) = 1.47(2)V + V² / 30(11.2/32.2) => V = 87.5 mph.',
       formulas: [
-        'C = Elev_bridge - Elev_roadway = 405.54 - 392.348 = 13.192 ft',
+        'C = Elev_bridge - Elev_roadway = 405.54 - 392.348 = 13.192',
         'L = A · S² / [800(C - (h₁ + h₂)/2)]',
         'S = 1056.576 ft',
         '1056.576 = 1.47(V)(2.5) + V² / [30(11.2 / 32.2)]',
@@ -335,10 +335,10 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'In Greenshields linear model u = u_f (1 - k/k_j), maximum flow occurs at optimal speed u_m = u_f / 2 = 80 / 2 = 40 km/h.',
       formulas: [
-        'u = u_f · (1 - k / k_j)',
-        'q = k · u = k · u_f · (1 - k / k_j)',
+        'u = u_f  \\cdot  (1 - k / k_j)',
+        'q = k  \\cdot  u = k  \\cdot  u_f  \\cdot  (1 - k / k_j)',
         'dq/dk = 0 => k_m = k_j / 2 = 100 / 2 = 50 veh/km',
-        'u_m = u_f · (1 - 1/2) = u_f / 2 = 80 / 2 = 40 km/h',
+        'u_m = u_f  \\cdot  (1 - 1/2) = u_f / 2 = 80 / 2 = 40 km/h',
       ],
       steps: [
         'Step 1: Greenshields model speed equation: u = 80(1 - k/100).',
@@ -370,10 +370,10 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: '10 tons = 20,000 lb. Truck capacity = 20,000 / 125 = 160 ft³ = 160 / 27 = 5.926 yd³ per trip. In 10-hr workday: 600 min / 30 min = 20 trips/day. Volume per truck per day = 20 × 5.926 = 118.52 yd³. In 8 days, 1 truck moves 8 × 118.52 = 948.16 yd³. Trucks required = 4200 / 948.16 = 4.43 => 5 trucks.',
       formulas: [
-        'Truck capacity = 20,000 lb / 125 lb/ft³ = 160 ft³ = 5.926 yd³',
-        'Trips per day = (10 hr · 60 min) / 30 min = 20 trips',
-        'Vol per truck per day = 20 · 5.926 = 118.52 yd³',
-        'Vol per truck in 8 days = 118.52 · 8 = 948.16 yd³',
+        'Truck capacity = 20,000 / 125/ft^3 = 160^3 = 5.926 yd^3',
+        'Trips per day = (10  \\cdot  60) / 30 = 20 trips',
+        'Vol per truck per day = 20  \\cdot  5.926 = 118.52 yd^3',
+        'Vol per truck 8 days = 118.52  \\cdot  8 = 948.16 yd^3',
         'Trucks = 4200 / 948.16 = 4.43 => use 5 trucks',
       ],
       steps: [
@@ -464,12 +464,12 @@ export const MSTC_NOV2024_PART4: Question[] = [
     solution: {
       summary: 'Normal project cost = 3000 + 4000 + 5000 + 5000 + 3000 + 4000 = $24,000. Critical path is AD (11 weeks). Crash D by 2 weeks at $500/wk = +$1,000. Now CF (10 weeks) becomes critical. Crash C by 1 week at $1,500/wk = +$1,500, or total crash cost = $4,000. Total direct cost = $28,000. Bonus for completing 2 weeks early = 2 × $1,000 = $2,000. Net Cost = $24,000 + $4,000 - $2,000 = $26,000.',
       formulas: [
-        'Normal Cost = 3000 + 4000 + 5000 + 5000 + 3000 + 4000 = $24,000',
-        'Crash cost of D = $500/wk (crash 2 wks => $1000)',
-        'Crash cost on CF path = $3000',
-        'Total Crash Cost = $4000',
-        'Bonus = 2 weeks · $1000 = $2000',
-        'Net Cost = $24,000 + $4,000 - $2,000 = $26,000',
+        'Normal Cost = 3000 + 4000 + 5000 + 5000 + 3000 + 4000 = 24,000',
+        'Crash cost of D = 500/wk (crash 2 wks => 1000)',
+        'Crash cost on CF path = 3000',
+        'Total Crash Cost = 4000',
+        'Bonus = 2 weeks  \\cdot  1000 = 2000',
+        'Net Cost = 24,000 + 4,000 - 2,000 = 26,000',
       ],
       steps: [
         'Step 1: Normal duration on critical path AD = 3 + 8 = 11 weeks.',

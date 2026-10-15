@@ -10,7 +10,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Short Tied Column Nominal Axial Capacity P0',
-    text: 'Situation 16 — A short tied square column has dimensions $450\\text{ mm} \\times 450\\text{ mm}$ and is reinforced with $8 - 25\\text{ mm}$ diameter longitudinal bars ($A_{st} = 3,927\\text{ mm}^2$). Material strengths are $f\'_c = 28\\text{ MPa}$ and $f_y = 415\\text{ MPa}$.\n\n46. Compute the nominal axial strength of the column at zero eccentricity $P_0$ (kN).',
+    text: 'Situation 16 — A short tied square column has dimensions $450\ \\times 450\$ and is reinforced with $8 - 25\$ diameter longitudinal bars ($A_{st} = 3,927\$). Material strengths are $f\'_c = 28\$ and $f_y = 415\$.\n\n46. Compute the nominal axial strength of the column at zero eccentricity $P_0$ (kN).',
     figureCaption: 'Situation 16: Cross-section of 450x450 mm tied column with 8-25 mm longitudinal bars and lateral ties',
     figureSvg: `<svg viewBox="0 0 420 280" class="w-full max-w-sm mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -55,10 +55,10 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'Per NSCP 2015 / ACI 318, nominal axial strength at zero eccentricity is: $P_0 = 0.85 f\'_c (A_g - A_{st}) + f_y A_{st}$.',
       formulas: [
-        'A_g = 450 \\times 450 = 202,500\\text{ mm}^2',
-        'A_{st} = 8 \\times \\frac{\\pi(25)^2}{4} = 3,927\\text{ mm}^2',
-        'A_g - A_{st} = 202,500 - 3,927 = 198,573\\text{ mm}^2',
-        'P_0 = 0.85(28)(198,573) + 415(3,927) = 4,726,037 + 1,629,705 = 6,355,742\\text{ N} \\approx 6,345\\text{ kN}',
+        'A_g = 450 \\times 450 = 202,500',
+        'A_{st} = 8 \\times \\frac{\\pi(25)^2}{4} = 3,927',
+        'A_g - A_{st} = 202,500 - 3,927 = 198,573',
+        'P_0 = 0.85(28)(198,573) + 415(3,927) = 4,726,037 + 1,629,705 = 6,355,742\ \\approx 6,345',
       ],
       steps: [
         'Step 1: Gross cross-sectional area: Ag = 450 mm × 450 mm = 202,500 mm².',
@@ -92,8 +92,8 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'Per NSCP 2015 Section 422.4.2.1, for tied columns: $\\phi P_{n,\\max} = 0.80 \\phi P_0$.',
       formulas: [
-        '\\phi P_{n,\\max} = 0.80 \\phi P_0 = 0.80 \\times 0.65 \\times 6,355.7\\text{ kN}',
-        '\\phi P_{n,\\max} = 0.52 \\times 6,355.7 = 3,304.96\\text{ kN} \\approx 3,300\\text{ kN}',
+        '\\phi P_{n,\\max} = 0.80 \\phi P_0 = 0.80 \\times 0.65 \\times 6,355.7',
+        '\\phi P_{n,\\max} = 0.52 \\times 6,355.7 = 3,304.96\ \\approx 3,300',
       ],
       steps: [
         'Step 1: NSCP 2015 sets the maximum axial strength of tied columns to 0.80 P0 to account for accidental load eccentricity.',
@@ -114,7 +114,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Reinforced Concrete Design - Spiral Column Axial Strength & Comparison',
-    text: 'Situation 16 (Cont.) — 48. If the column is replaced by a circular spiral column with diameter $D = 500\\text{ mm}$ having the same longitudinal reinforcement and material strengths, what is its maximum design axial strength $\\phi P_{n,\\max}$ (kN)? Use $\\phi = 0.75$ and eccentricity factor $= 0.85$.',
+    text: 'Situation 16 (Cont.) — 48. If the column is replaced by a circular spiral column with diameter $D = 500\$ having the same longitudinal reinforcement and material strengths, what is its maximum design axial strength $\\phi P_{n,\\max}$ (kN)? Use $\\phi = 0.75$ and eccentricity factor $= 0.85$.',
     options: [
       { label: 'A', text: '3,975' },
       { label: 'B', text: '3,450' },
@@ -123,11 +123,11 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Gross area for $D = 500\\text{ mm}$ is $A_g = \\frac{\\pi(500)^2}{4} = 196,350\\text{ mm}^2$. Then compute $P_0$ and $\\phi P_{n,\\max} = 0.85 \\phi P_0$ with $\\phi = 0.75$.',
+      summary: 'Gross area for $D = 500\$ is $A_g = \\frac{\\pi(500)^2}{4} = 196,350\$. Then compute $P_0$ and $\\phi P_{n,\\max} = 0.85 \\phi P_0$ with $\\phi = 0.75$.',
       formulas: [
-        'A_g = \\frac{\\pi(500)^2}{4} = 196,350\\text{ mm}^2, \\quad A_c = 196,350 - 3,927 = 192,423\\text{ mm}^2',
-        'P_0 = 0.85(28)(192,423) + 415(3,927) = 4,579,667 + 1,629,705 = 6,209.4\\text{ kN}',
-        '\\phi P_{n,\\max} = 0.85 \\times 0.75 \\times 6,209.4 = 0.6375 \\times 6,209.4 = 3,958.5\\text{ kN} \\approx 3,975\\text{ kN}',
+        'A_g = \\frac{\\pi(500)^2}{4} = 196,350\, \\quad A_c = 196,350 - 3,927 = 192,423',
+        'P_0 = 0.85(28)(192,423) + 415(3,927) = 4,579,667 + 1,629,705 = 6,209.4',
+        '\\phi P_{n,\\max} = 0.85 \\times 0.75 \\times 6,209.4 = 0.6375 \\times 6,209.4 = 3,958.5\ \\approx 3,975',
       ],
       steps: [
         'Step 1: Circular gross area: Ag = π(500)² / 4 = 196,350 mm².',
@@ -150,7 +150,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Foundation Engineering - Footing Sizing based on Allowable Soil Pressure',
-    text: 'Situation 17 — An isolated square footing supports a $400\\text{ mm} \\times 400\\text{ mm}$ square reinforced concrete column carrying service loads $D = 800\\text{ kN}$ and $L = 500\\text{ kN}$. The allowable soil bearing pressure is $q_a = 220\\text{ kPa}$. The bottom of the footing is $1.5\\text{ m}$ below the ground surface. Soil unit weight is $\\gamma_s = 18\\text{ kN/m}^3$ and concrete unit weight is $\\gamma_c = 24\\text{ kN/m}^3$. Footing total thickness is $h = 500\\text{ mm}$.\n\n49. Determine the required width $B$ (m) of the square footing based on net allowable soil pressure.',
+    text: 'Situation 17 — An isolated square footing supports a $400\ \\times 400\$ square reinforced concrete column carrying service loads $D = 800\$ and $L = 500\$. The allowable soil bearing pressure is $q_a = 220\$. The bottom of the footing is $1.5\$ below the ground surface. Soil unit weight is $\\gamma_s = 18\$ and concrete unit weight is $\\gamma_c = 24\$. Footing total thickness is $h = 500\$.\n\n49. Determine the required width $B$ (m) of the square footing based on net allowable soil pressure.',
     figureCaption: 'Situation 17: Isolated square spread footing subjected to column axial load',
     figureSvg: `<svg viewBox="0 0 460 260" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -196,12 +196,12 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Compute net soil pressure: $q_{\\text{net}} = q_a - \\gamma_s(D_f - h) - \\gamma_c(h) = 220 - 18(1.0) - 24(0.5) = 190\\text{ kPa}$. Required area $A = \\frac{D + L}{q_{\\text{net}}}$.',
+      summary: 'Compute net soil pressure: $q_{\\text{net}} = q_a - \\gamma_s(D_f - h) - \\gamma_c(h) = 220 - 18(1.0) - 24(0.5) = 190\$. Required area $A = \\frac{D + L}{q_{\\text{net}}}$.',
       formulas: [
-        'q_{\\text{net}} = 220 - 18(1.5 - 0.5) - 24(0.5) = 220 - 18 - 12 = 190\\text{ kPa}',
-        'P_{\\text{service}} = 800 + 500 = 1,300\\text{ kN}',
-        'A_{\\text{req}} = \\frac{1,300}{190} = 6.842\\text{ m}^2',
-        'B = \\sqrt{6.842} = 2.616\\text{ m} \\approx 2.6\\text{ m}',
+        'q_{\\text{net}} = 220 - 18(1.5 - 0.5) - 24(0.5) = 220 - 18 - 12 = 190',
+        'P_{\\text{service}} = 800 + 500 = 1,300',
+        'A_{\\text{req}} = \\frac{1,300}{190} = 6.842',
+        'B = \\sqrt{6.842} = 2.616\ \\approx 2.6',
       ],
       steps: [
         'Step 1: Total service load applied by column: P = D + L = 800 + 500 = 1,300 kN.',
@@ -224,7 +224,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Foundation Engineering - Ultimate Factored Soil Bearing Pressure qu',
-    text: 'Situation 17 (Cont.) — 50. If $B = 2.6\\text{ m}$ is used, calculate the ultimate factored soil pressure $q_u$ (kPa) produced by load combination $U = 1.2D + 1.6L$.',
+    text: 'Situation 17 (Cont.) — 50. If $B = 2.6\$ is used, calculate the ultimate factored soil pressure $q_u$ (kPa) produced by load combination $U = 1.2D + 1.6L$.',
     options: [
       { label: 'A', text: '260.4' },
       { label: 'B', text: '245.0' },
@@ -233,10 +233,10 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Factored axial load is $P_u = 1.2(800) + 1.6(500) = 1,760\\text{ kN}$. Then $q_u = \\frac{P_u}{B^2}$.',
+      summary: 'Factored axial load is $P_u = 1.2(800) + 1.6(500) = 1,760\$. Then $q_u = \\frac{P_u}{B^2}$.',
       formulas: [
-        'P_u = 1.2(800) + 1.6(500) = 960 + 800 = 1,760\\text{ kN}',
-        'q_u = \\frac{P_u}{B^2} = \\frac{1,760}{(2.6)^2} = \\frac{1,760}{6.76} = 260.35\\text{ kPa} \\approx 260.4\\text{ kPa}',
+        'P_u = 1.2(800) + 1.6(500) = 960 + 800 = 1,760',
+        'q_u = \\frac{P_u}{B^2} = \\frac{1,760}{(2.6)^2} = \\frac{1,760}{6.76} = 260.35\ \\approx 260.4',
       ],
       steps: [
         'Step 1: Compute ultimate factored load from column: Pu = 1.2(800 kN) + 1.6(500 kN) = 960 + 800 = 1,760 kN.',
@@ -256,7 +256,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Foundation Engineering - Two-Way Punching Shear Stress in Footing',
-    text: 'Situation 17 (Cont.) — 51. For an effective depth $d = 420\\text{ mm}$, determine the two-way punching shear force $V_{up}$ (kN) acting on the critical perimeter located at distance $d/2$ from the column faces.',
+    text: 'Situation 17 (Cont.) — 51. For an effective depth $d = 420\$, determine the two-way punching shear force $V_{up}$ (kN) acting on the critical perimeter located at distance $d/2$ from the column faces.',
     options: [
       { label: 'A', text: '1,585' },
       { label: 'B', text: '1,420' },
@@ -265,11 +265,11 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Critical punching perimeter dimension is $c + d = 0.40 + 0.42 = 0.82\\text{ m}$. Punching area is $A_p = (0.82)^2 = 0.6724\\text{ m}^2$. The factored punching shear is $V_{up} = q_u (B^2 - A_p)$.',
+      summary: 'Critical punching perimeter dimension is $c + d = 0.40 + 0.42 = 0.82\$. Punching area is $A_p = (0.82)^2 = 0.6724\$. The factored punching shear is $V_{up} = q_u (B^2 - A_p)$.',
       formulas: [
-        'c + d = 400 + 420 = 820\\text{ mm} = 0.82\\text{ m}',
-        'A_p = (0.82)^2 = 0.6724\\text{ m}^2',
-        'V_{up} = q_u (B^2 - A_p) = 260.35 \\times (6.76 - 0.6724) = 260.35 \\times 6.0876 = 1,584.9\\text{ kN} \\approx 1,585\\text{ kN}',
+        'c + d = 400 + 420 = 820\ = 0.82',
+        'A_p = (0.82)^2 = 0.6724',
+        'V_{up} = q_u (B^2 - A_p) = 260.35 \\times (6.76 - 0.6724) = 260.35 \\times 6.0876 = 1,584.9\ \\approx 1,585',
       ],
       steps: [
         'Step 1: Column dimension c = 0.40 m; effective depth d = 0.42 m.',
@@ -291,7 +291,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Tension Member Gross Yielding & Net Area Rupture (AISC 360-16 / NSCP 2015)',
-    text: 'Situation 18 — A single angle $L\\,150\\text{ mm} \\times 100\\text{ mm} \\times 12\\text{ mm}$ with gross area $A_g = 2,880\\text{ mm}^2$ is connected through its longer leg to a gusset plate using four $20\\text{ mm}$ diameter bolts in a single line. Hole diameter is $20 + 2 = 22\\text{ mm}$. The connection length between end bolts is $L = 225\\text{ mm}$, and the distance from the connection plane to the centroid of the angle is $\\bar{x} = 28.2\\text{ mm}$. Steel is ASTM A36 ($F_y = 248\\text{ MPa}$, $F_u = 400\\text{ MPa}$).\n\n52. Compute the design tensile strength $\\phi_t P_n$ (kN) based on yielding of the gross cross-section ($\\phi_t = 0.90$).',
+    text: 'Situation 18 — A single angle $L\\,150\ \\times 100\ \\times 12\$ with gross area $A_g = 2,880\$ is connected through its longer leg to a gusset plate using four $20\$ diameter bolts in a single line. Hole diameter is $20 + 2 = 22\$. The connection length between end bolts is $L = 225\$, and the distance from the connection plane to the centroid of the angle is $\\bar{x} = 28.2\$. Steel is ASTM A36 ($F_y = 248\$, $F_u = 400\$).\n\n52. Compute the design tensile strength $\\phi_t P_n$ (kN) based on yielding of the gross cross-section ($\\phi_t = 0.90$).',
     figureCaption: 'Situation 18: Bolted single angle tension member connected to gusset plate',
     figureSvg: `<svg viewBox="0 0 500 220" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -335,8 +335,8 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'Per AISC 360-16 / NSCP 2015 Section 504.2: Nominal strength for tensile yielding is $P_n = F_y A_g$. The design strength is $\\phi_t P_n = 0.90 F_y A_g$.',
       formulas: [
-        'P_n = F_y A_g = 248\\text{ MPa} \\times 2,880\\text{ mm}^2 = 714,240\\text{ N} = 714.24\\text{ kN}',
-        '\\phi_t P_n = 0.90 \\times 714.24 = 642.82\\text{ kN} \\approx 642.8\\text{ kN}',
+        'P_n = F_y A_g = 248\ \\times 2,880\ = 714,240\ = 714.24',
+        '\\phi_t P_n = 0.90 \\times 714.24 = 642.82\ \\approx 642.8',
       ],
       steps: [
         'Step 1: Gross area: Ag = 2,880 mm²; Yield stress: Fy = 248 MPa.',
@@ -366,11 +366,11 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Per AISC Table D3.1: $U = 1 - \\frac{\\bar{x}}{L}$. Net area is $A_n = A_g - d_h t = 2,880 - (22)(12) = 2,616\\text{ mm}^2$. Then $A_e = U A_n$.',
+      summary: 'Per AISC Table D3.1: $U = 1 - \\frac{\\bar{x}}{L}$. Net area is $A_n = A_g - d_h t = 2,880 - (22)(12) = 2,616\$. Then $A_e = U A_n$.',
       formulas: [
         'U = 1 - \\frac{\\bar{x}}{L} = 1 - \\frac{28.2}{225} = 1 - 0.1253 = 0.8747 \\approx 0.875',
-        'A_n = 2,880 - 22(12) = 2,880 - 264 = 2,616\\text{ mm}^2',
-        'A_e = U A_n = 0.8747 \\times 2,616 = 2,288.2\\text{ mm}^2 \\approx 2,289\\text{ mm}^2',
+        'A_n = 2,880 - 22(12) = 2,880 - 264 = 2,616',
+        'A_e = U A_n = 0.8747 \\times 2,616 = 2,288.2\ \\approx 2,289',
       ],
       steps: [
         'Step 1: Eccentricity from connection plane to centroid: x̄ = 28.2 mm.',
@@ -403,8 +403,8 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'For tensile rupture: $P_n = F_u A_e$. With $\\phi_t = 0.75$: $\\phi_t P_n = 0.75 F_u A_e$.',
       formulas: [
-        'P_n = F_u A_e = 400\\text{ MPa} \\times 2,288.2\\text{ mm}^2 = 915,280\\text{ N} = 915.28\\text{ kN}',
-        '\\phi_t P_n = 0.75 \\times 915.28 = 686.46\\text{ kN} \\approx 686.5\\text{ kN}',
+        'P_n = F_u A_e = 400\ \\times 2,288.2\ = 915,280\ = 915.28',
+        '\\phi_t P_n = 0.75 \\times 915.28 = 686.46\ \\approx 686.5',
       ],
       steps: [
         'Step 1: Tensile strength of steel: Fu = 400 MPa.',
@@ -427,7 +427,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Column Slenderness Ratio & Governing Axis',
-    text: 'Situation 19 — A steel wide-flange column $W\\,14\\text{ mm} \\times 90\\text{ lb/ft}$ ($A_g = 17,100\\text{ mm}^2$, $r_x = 156\\text{ mm}$, $r_y = 94.2\\text{ mm}$) has an unsupported length about the strong axis $L_x = 7.5\\text{ m}$ and about the weak axis $L_y = 4.5\\text{ m}$. Both ends are pinned for buckling about both principal axes ($K_x = K_y = 1.0$). Steel grade is ASTM A992 ($F_y = 345\\text{ MPa}$, $E = 200,000\\text{ MPa}$).\n\n55. Compute the controlling (governing) slenderness ratio $(KL/r)$.',
+    text: 'Situation 19 — A steel wide-flange column $W\\,14\ \\times 90\\text{ lb/ft}$ ($A_g = 17,100\$, $r_x = 156\$, $r_y = 94.2\$) has an unsupported length about the strong axis $L_x = 7.5\$ and about the weak axis $L_y = 4.5\$. Both ends are pinned for buckling about both principal axes ($K_x = K_y = 1.0$). Steel grade is ASTM A992 ($F_y = 345\$, $E = 200,000\$).\n\n55. Compute the controlling (governing) slenderness ratio $(KL/r)$.',
     figureCaption: 'Situation 19: Pinned-ended wide-flange steel column under axial load with weak-axis intermediate support',
     figureSvg: `<svg viewBox="0 0 460 220" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -466,8 +466,8 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'Compute slenderness ratios about both principal axes: $\\left(\\frac{K_x L_x}{r_x}\\right)$ and $\\left(\\frac{K_y L_y}{r_y}\\right)$. The larger value controls column buckling.',
       formulas: [
-        '\\left(\\frac{K L}{r}\\right)_x = \\frac{1.0 \\times 7,500\\text{ mm}}{156\\text{ mm}} = 48.08',
-        '\\left(\\frac{K L}{r}\\right)_y = \\frac{1.0 \\times 4,500\\text{ mm}}{94.2\\text{ mm}} = 47.77',
+        '\\left(\\frac{K L}{r}\\right)_x = \\frac{1.0 \\times 7,500\}{156\} = 48.08',
+        '\\left(\\frac{K L}{r}\\right)_y = \\frac{1.0 \\times 4,500\}{94.2\} = 47.77',
         '\\left(\\frac{K L}{r}\\right)_{\\text{governing}} = \\max(48.08, 47.77) = 48.08',
       ],
       steps: [
@@ -500,7 +500,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'Euler elastic buckling stress is given by $F_e = \\frac{\\pi^2 E}{(KL/r)^2}$.',
       formulas: [
-        'F_e = \\frac{\\pi^2 E}{(KL/r)^2} = \\frac{\\pi^2 (200,000)}{(48.08)^2} = \\frac{1,973,920.88}{2,311.69} = 853.89\\text{ MPa} \\approx 853.8\\text{ MPa}',
+        'F_e = \\frac{\\pi^2 E}{(KL/r)^2} = \\frac{\\pi^2 (200,000)}{(48.08)^2} = \\frac{1,973,920.88}{2,311.69} = 853.89\ \\approx 853.8',
       ],
       steps: [
         'Step 1: Modulus of elasticity: E = 200,000 MPa.',
@@ -534,8 +534,8 @@ export const PSAD_APR2025_PART4: Question[] = [
       formulas: [
         '4.71 \\sqrt{\\frac{E}{F_y}} = 4.71(24.077) = 113.4 \\implies \\text{Inelastic Buckling}',
         '\\frac{F_y}{F_e} = \\frac{345}{853.89} = 0.4040',
-        'F_{cr} = [0.658^{0.4040}] (345) = (0.8443)(345) = 291.29\\text{ MPa} \\approx 293.4\\text{ MPa}',
-        '\\phi_c P_n = 0.90 \\times 293.4 \\times 17,100 \\times 10^{-3} = 4,515.4\\text{ kN} \\approx 4,515\\text{ kN}',
+        'F_{cr} = [0.658^{0.4040}] (345) = (0.8443)(345) = 291.29\ \\approx 293.4',
+        '\\phi_c P_n = 0.90 \\times 293.4 \\times 17,100 \\times 10^{-3} = 4,515.4\ \\approx 4,515',
       ],
       steps: [
         'Step 1: Check buckling regime limit: 4.71 √(E / Fy) = 4.71 √(200,000 / 345) = 113.4.',
@@ -557,7 +557,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Plastic Moment Capacity Mp of Wide-Flange Beam',
-    text: 'Situation 20 — A simply supported steel beam $W\\,18\\text{ mm} \\times 50\\text{ lb/ft}$ ($Z_x = 1,655 \\times 10^3\\text{ mm}^3$, $S_x = 1,457 \\times 10^3\\text{ mm}^3$, $r_y = 41.9\\text{ mm}$) spans $L = 6.0\\text{ m}$. Material is ASTM A992 ($F_y = 345\\text{ MPa}$). Lateral unbraced length limits are $L_p = 1.75\\text{ m}$ and $L_r = 5.20\\text{ m}$.\n\n58. Determine the plastic moment capacity $M_p$ (kN·m) of the cross-section.',
+    text: 'Situation 20 — A simply supported steel beam $W\\,18\ \\times 50\\text{ lb/ft}$ ($Z_x = 1,655 \\times 10^3\$, $S_x = 1,457 \\times 10^3\$, $r_y = 41.9\$) spans $L = 6.0\$. Material is ASTM A992 ($F_y = 345\$). Lateral unbraced length limits are $L_p = 1.75\$ and $L_r = 5.20\$.\n\n58. Determine the plastic moment capacity $M_p$ (kN·m) of the cross-section.',
     figureCaption: 'Situation 20: Simply supported wide-flange beam W18x50 with lateral torsional buckling parameters',
     figureSvg: `<svg viewBox="0 0 460 200" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -597,7 +597,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     solution: {
       summary: 'Plastic moment is the product of yield stress and plastic section modulus: $M_p = F_y Z_x$.',
       formulas: [
-        'M_p = F_y Z_x = 345\\text{ MPa} \\times 1,655 \\times 10^3\\text{ mm}^3 \\times 10^{-6} = 570.975\\text{ kN}\\cdot\\text{m} \\approx 571.0\\text{ kN}\\cdot\\text{m}',
+        'M_p = F_y Z_x = 345\ \\times 1,655 \\times 10^3\ \\times 10^{-6} = 570.975\\\cdot\ \\approx 571.0',
       ],
       steps: [
         'Step 1: Steel yield stress: Fy = 345 MPa.',
@@ -617,7 +617,7 @@ export const PSAD_APR2025_PART4: Question[] = [
     year: 2025,
     month: 'April',
     category: 'Structural Steel Design - Nominal Flexural Strength with Inelastic LTB',
-    text: 'Situation 20 (Cont.) — 59. Lateral bracing is provided at the supports and at midspan ($L_b = 3.0\\text{ m}$). Given $C_b = 1.30$, determine the nominal flexural strength $M_n$ (kN·m).',
+    text: 'Situation 20 (Cont.) — 59. Lateral bracing is provided at the supports and at midspan ($L_b = 3.0\$). Given $C_b = 1.30$, determine the nominal flexural strength $M_n$ (kN·m).',
     options: [
       { label: 'A', text: '571.0' },
       { label: 'B', text: '518.4' },
@@ -626,12 +626,12 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Since $L_p < L_b \\le L_r$ ($1.75\\text{ m} < 3.0\\text{ m} \\le 5.20\\text{ m}$), inelastic lateral-torsional buckling controls. Compute $M_n = C_b \\left[ M_p - (M_p - 0.7 F_y S_x)\\left(\\frac{L_b - L_p}{L_r - L_p}\\right) \\right] \\le M_p$.',
+      summary: 'Since $L_p < L_b \\le L_r$ ($1.75\ < 3.0\ \\le 5.20\$), inelastic lateral-torsional buckling controls. Compute $M_n = C_b \\left[ M_p - (M_p - 0.7 F_y S_x)\\left(\\frac{L_b - L_p}{L_r - L_p}\\right) \\right] \\le M_p$.',
       formulas: [
-        '0.7 F_y S_x = 0.7(345)(1,457 \\times 10^3) \\times 10^{-6} = 351.87\\text{ kN}\\cdot\\text{m}',
+        '0.7 F_y S_x = 0.7(345)(1,457 \\times 10^3) \\times 10^{-6} = 351.87',
         '\\frac{L_b - L_p}{L_r - L_p} = \\frac{3.0 - 1.75}{5.20 - 1.75} = \\frac{1.25}{3.45} = 0.3623',
-        'M_{n0} = 571.0 - (571.0 - 351.87)(0.3623) = 571.0 - 79.38 = 491.62\\text{ kN}\\cdot\\text{m}',
-        'M_n = C_b M_{n0} = 1.30 \\times 491.62 = 639.1\\text{ kN}\\cdot\\text{m} \\le M_p = 571.0\\text{ kN}\\cdot\\text{m}',
+        'M_{n0} = 571.0 - (571.0 - 351.87)(0.3623) = 571.0 - 79.38 = 491.62',
+        'M_n = C_b M_{n0} = 1.30 \\times 491.62 = 639.1\\\cdot\ \\le M_p = 571.0',
       ],
       steps: [
         'Step 1: Check unbraced length regime: Lp = 1.75 m < Lb = 3.0 m < Lr = 5.20 m (Inelastic LTB).',
@@ -662,9 +662,9 @@ export const PSAD_APR2025_PART4: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'The design flexural capacity by LRFD is $\\phi_b M_n = 0.90 M_n = 0.90 \\times 570.98\\text{ kN}\\cdot\\text{m} = 513.88\\text{ kN}\\cdot\\text{m}$.',
+      summary: 'The design flexural capacity by LRFD is $\\phi_b M_n = 0.90 M_n = 0.90 \\times 570.98\\\cdot\ = 513.88\\\cdot\$.',
       formulas: [
-        '\\phi_b M_n = 0.90 \\times 570.975 = 513.88\\text{ kN}\\cdot\\text{m} \\approx 513.9\\text{ kN}\\cdot\\text{m}',
+        '\\phi_b M_n = 0.90 \\times 570.975 = 513.88\\\cdot\ \\approx 513.9',
       ],
       steps: [
         'Step 1: Resistance factor for flexure: φb = 0.90.',

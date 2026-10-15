@@ -227,6 +227,20 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                               ORIGINAL
                             </span>
                           )}
+                          {item.id === 'terrarium_orb' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/20 border-emerald-500/40 text-emerald-300 tracking-wide"
+                            >
+                              3D WORLD
+                            </span>
+                          )}
+                          {item.id === 'aurora_glass' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-indigo-500/20 border-indigo-500/40 text-indigo-300 tracking-wide"
+                            >
+                              3D AURORA
+                            </span>
+                          )}
                           <span
                             className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
                             style={{

@@ -21,9 +21,8 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Apply Darcy-Weisbach head loss equation: HL = [ 8 · f · L · Q² ] / [ π² · g · D⁵ ].',
       formulas: [
-        'Q = 20 L/s = 0.02 m³/s, L = 500 m, D = 0.15 m, f = 0.02',
-        'HL = [ 8 · (0.02) · (500) · (0.02)² ] / [ π² · (9.81) · (0.15)⁵ ]',
-        'HL = 0.032 / [ 96.824 · (7.59375 · 10⁻⁵) ] = 0.032 / 0.007353 = 4.352 m ≈ 4.35 m',
+        'h_L = \\frac{8 f L Q^2}{\\pi^2 g D^5}',
+        'h_L = \\frac{f L v^2}{2 g D}',
       ],
       steps: [
         'Step 1: Convert units: Q = 0.02 m³/s, D = 0.15 m.',
@@ -57,8 +56,8 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Compute flow cross-sectional area A = 0.5 · (b + T) · y, then mean velocity v = Q / A.',
       formulas: [
-        'A = 0.5 · (3 + 5) · (2.4) = 9.6 m²',
-        'v = Q / A = 12 / 9.6 = 1.25 m/s',
+        'A = \\frac{b + T}{2} y',
+        'v = \\frac{Q}{A}',
       ],
       steps: [
         'Step 1: Calculate trapezoid flow area: A = (3 + 5)/2 × 2.4 = 9.6 m².',
@@ -89,10 +88,9 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'For the most efficient rectangular section, b = 2y and R = y/2. Equate flow conveyance A₁ · R₁^(2/3) = A₂ · R₂^(2/3).',
       formulas: [
-        'Given section: A₁ = 5.4 · 1.2 = 6.48 m², P₁ = 5.4 + 2(1.2) = 7.8 m, R₁ = 0.8308 m',
-        'MES condition: b = 2y => A₂ = 2y², R₂ = y/2',
-        'A₁ · R₁^(2/3) = A₂ · R₂^(2/3) => 6.48 · (0.8308)^(2/3) = (2y²) · (y/2)^(2/3) = 1.2599 · y^(8/3)',
-        '5.7265 = 1.2599 · y^(8/3) => y = (4.5453)^(3/8) = 1.764 m ≈ 1.76 m',
+        'A = 2 y^2',
+        'R = \\frac{y}{2}',
+        'Q = \\frac{1}{n} A R^{2/3} S^{1/2}',
       ],
       steps: [
         'Step 1: Compute hydraulic parameters of given section: A₁ = 6.48 m², R₁ = 0.8308 m.',
@@ -125,12 +123,11 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Compute discharge Q using Manning formula, then service area A_service = Q / duty.',
       formulas: [
-        'Top width T = b + 2(1.5d) = 2.5 + 2(1.5 · 0.95) = 5.35 m',
-        'Area A = 0.5 · (2.5 + 5.35) · 0.95 = 3.729 m²',
-        'Wetted perimeter P = 2.5 + 2 · √[ (1.5 · 0.95)² + 0.95² ] = 2.5 + 2(1.713) = 5.926 m',
-        'Hydraulic radius R = 3.729 / 5.926 = 0.629 m',
-        'Q = (1/n) · A · R^(2/3) · S^(1/2) = (1/0.025) · (3.729) · (0.629)^(2/3) · (0.001)^(1/2) = 3.463 m³/s = 3,463 L/s',
-        'A_service = Q / duty = 3,463 / 3.0 = 1,154.3 hectares ≈ 1,155 hectares',
+        'T = b + 2 z y',
+        'A = \\frac{b + T}{2} y',
+        'P = b + 2 y \\sqrt{1 + z^2}',
+        'R = \\frac{A}{P}',
+        'Q = \\frac{1}{n} A R^{2/3} S^{1/2}',
       ],
       steps: [
         'Step 1: Compute flow area A = 3.729 m² and wetted perimeter P = 5.926 m.',
@@ -163,12 +160,9 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Compute initial jet speed v₀ = √(2gH) = 9.905 m/s directed at 45° upward. Solve trajectory equation at ground y = -4.2 m.',
       formulas: [
-        'v₀ = C_v · √(2gH) = 1.0 · √(2 · 9.81 · 5) = 9.905 m/s',
-        'y_A = -(3.0 + 1.2) = -4.2 m',
-        'Trajectory: y = x · tan θ - [ g · x² ] / [ 2 · v₀² · cos² θ ]',
-        '-4.2 = x · tan 45° - [ 9.81 · x² ] / [ 2 · (9.905)² · (cos 45°)² ]',
-        '-4.2 = x - 0.1 · x² => 0.1 · x² - x - 4.2 = 0 => x² - 10x - 42 = 0',
-        'x = [ 10 + √(100 + 168) ] / 2 = 13.185 m ≈ 13.19 m',
+        'v_0 = C_v \\sqrt{2 g H}',
+        'y = x \\tan\\theta - \\frac{g x^2}{2 v_0^2 \\cos^2\\theta}',
+        'x = \\frac{-b \\pm \\sqrt{b^2 - 4 a c}}{2 a}',
       ],
       steps: [
         'Step 1: Orifice velocity v₀ = √(2 × 9.81 × 5) = 9.905 m/s directed at 45° above horizontal.',
@@ -202,9 +196,9 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Compute relative velocity u = v_j - (-v_p) = 8 - (-5) = 13 m/s, then dynamic force F = ρ · A_j · u².',
       formulas: [
-        'u = v_j - (-v_p) = 8 - (-5) = 13 m/s',
-        'A_j = (π/4) · (0.02)² = 3.1416 · 10⁻⁴ m²',
-        'F = ρ · A_j · u² = 1000 · (3.1416 · 10⁻⁴) · (13)² = 53.09 N ≈ 53.1 N',
+        'u = v_j + v_p',
+        'A_j = \\frac{\\pi d^2}{4}',
+        'F = \\rho A_j u^2',
       ],
       steps: [
         'Step 1: Relative impact velocity u = 8 m/s - (-5 m/s) = 13 m/s.',
@@ -236,8 +230,7 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Moisture content is w = (M_w / M_s) × 100%. For organic soils and sensitive clays, water mass can exceed solid mass.',
       formulas: [
-        'w = (M_w / M_s) · 100%',
-        'Since M_w can exceed M_s, w can easily exceed 100% (e.g. peat, quick clay up to 300%+).',
+        'w = \\frac{M_w}{M_s} \\times 100\\%',
       ],
       steps: [
         'Step 1: Moisture content is defined as the mass of water divided by the oven-dry mass of solid soil particles.',
@@ -269,11 +262,7 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'Terzaghi and Peck Standard Penetration Test (SPT) N-value classification for granular soils.',
       formulas: [
-        'N = 0 to 4: Very loose',
-        'N = 4 to 10: Loose',
-        'N = 10 to 30: Medium dense',
-        'N = 30 to 50: Dense',
-        'N > 50: Very dense',
+        '4 \\le N \\le 10',
       ],
       steps: [
         'Step 1: Standard SPT correlation classifies N = 4 to 10 as loose.',
@@ -305,7 +294,6 @@ export const HPGE_PART2: Question[] = [
       summary: 'Coarse non-plastic particles dilute clay minerals, reducing both Liquid Limit (LL) and Plasticity Index (PI).',
       formulas: [
         'PI = LL - PL',
-        'Adding sand/silt decreases specific surface area and water adsorption, lowering both LL and PI.',
       ],
       steps: [
         'Step 1: Fine-grained clay minerals exhibit high plasticity due to active surface charge and adsorbed water.',
@@ -337,7 +325,8 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'According to Darcy\'s law: Q = k · i · A = k · (Δh / L) · A, seepage flow is directly proportional to both k and Δh.',
       formulas: [
-        'Q = k · i · A = k · (Δh / L) · A',
+        'Q = k i A',
+        'i = \\frac{\\Delta h}{L}',
       ],
       steps: [
         'Step 1: Darcy\'s Law states flow rate is proportional to hydraulic gradient i and hydraulic conductivity k.',
@@ -368,8 +357,8 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'For cohesionless soils, c = 0, so Mohr-Coulomb equation simplifies to τ = σ · tan φ.',
       formulas: [
-        'τ = c + σ · tan φ',
-        'When c = 0 => τ = σ · tan φ',
+        '\\tau = c + \\sigma \\tan\\phi',
+        '\\tau = \\sigma \\tan\\phi',
       ],
       steps: [
         'Step 1: In clean cohesionless soil (sand/gravel), cohesion c = 0.',
@@ -401,8 +390,8 @@ export const HPGE_PART2: Question[] = [
     solution: {
       summary: 'At full saturation S = 1, e = w · Gs. Dry density ρ_d = (Gs · ρ_w) / (1 + e).',
       formulas: [
-        'e = w · Gs / S = (0.20 · 2.6) / 1.0 = 0.52',
-        'ρ_d = [ Gs · ρ_w ] / [ 1 + e ] = [ 2.6 · 1.0 ] / [ 1 + 0.52 ] = 1.7105 g/cm³ ≈ 1.71 g/cm³',
+        'e = \\frac{w G_s}{S}',
+        '\\rho_d = \\frac{G_s \\rho_w}{1 + e}',
       ],
       steps: [
         'Step 1: Calculate void ratio: e = 0.20 × 2.6 = 0.52.',

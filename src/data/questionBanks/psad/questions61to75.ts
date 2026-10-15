@@ -66,8 +66,8 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Compute nominal moment from internal couple: Mn = T · (d - a/2).',
       formulas: [
-        'lever arm = d - a/2 = 500 - 113.85 / 2 = 500 - 56.93 = 443.07 mm = 0.4431 m',
-        'Mn = T · (d - a/2) = 812.89 kN · 0.44307 m = 360.16 kN·m ≈ 360.5 kN·m',
+        'lever arm = d - a/2 = 500 - 113.85 / 2 = 500 - 56.93 = 443.07 = 0.4431',
+        'Mn = T  \\cdot  (d - a/2) = 812.89  \\cdot  0.44307 = 360.16 \\cdot m  \\approx  360.5 \\cdot m',
       ],
       steps: [
         'Step 1: Internal lever arm = 500 - 113.8/2 = 443.1 mm.',
@@ -97,9 +97,9 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Check net tensile strain εt to confirm tension-controlled section (Φ = 0.90), then ΦMn = 0.90 · Mn.',
       formulas: [
-        'c = a / β1 = 113.85 / 0.85 = 133.94 mm',
-        'εt = 0.003 · (d - c) / c = 0.003 · (500 - 133.94) / 133.94 = 0.0082 > 0.005 => Φ = 0.90',
-        'ΦMn = 0.90 · 360.5 kN·m = 324.45 kN·m ≈ 324.5 kN·m',
+        'c = a / \\beta 1 = 113.85 / 0.85 = 133.94',
+        '\\epsilon t = 0.003  \\cdot  (d - c) / c = 0.003  \\cdot  (500 - 133.94) / 133.94 = 0.0082 > 0.005 => Φ = 0.90',
+        'ΦMn = 0.90  \\cdot  360.5 \\cdot m = 324.45 \\cdot m  \\approx  324.5 \\cdot m',
       ],
       steps: [
         'Step 1: Neutral axis depth c = 113.85 / 0.85 = 133.9 mm.',
@@ -131,8 +131,8 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'When expansion is completely restrained: σ = E · α · ΔT.',
       formulas: [
-        'σ = E · α · ΔT',
-        'σ = (200,000 MPa) · (11.7 · 10⁻⁶ / °C) · (50 °C) = 117.0 MPa',
+        '\\sigma  = E  \\cdot  \\alpha   \\cdot  \\Delta T',
+        '\\sigma  = (200,000)  \\cdot  (11.7  \\cdot  10⁻⁶ / °C)  \\cdot  (50 °C) = 117.0',
       ],
       steps: [
         'Step 1: Thermal strain ε_th = α ΔT = 11.7×10⁻⁶ × 50 = 0.000585.',
@@ -162,8 +162,8 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Restrained deformation is δ_restrained = (α · ΔT · L) - δ_yield. Stress is σ = E · δ_restrained / L.',
       formulas: [
-        'δ_free = α · ΔT · L = (11.7 · 10⁻⁶) · (50) · (3,000 mm) = 1.755 mm',
-        'δ_restrained = 1.755 mm - 0.500 mm = 1.255 mm',
+        '\\delta _free = \\alpha   \\cdot  \\Delta T  \\cdot  = (11.7  \\cdot  10⁻⁶)  \\cdot  (50)  \\cdot  (3,000) = 1.755',
+        '\\delta _restrained = 1.755 - 0.500 = 1.255',
         'σ = [ 200,000 MPa · 1.255 mm ] / [ 3,000 mm ] = 83.67 MPa ≈ 83.7 MPa',
       ],
       steps: [
@@ -195,8 +195,8 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Axial compressive force is F = σ · A where A = (π/4) d².',
       formulas: [
-        'A = (π / 4) · (25)² = 490.87 mm²',
-        'F = σ · A = 117.0 MPa · 490.87 mm² = 57,432 N = 57.43 kN ≈ 57.4 kN',
+        'A = (\\pi  / 4)  \\cdot  (25)^2 = 490.87^2',
+        'F = \\sigma   \\cdot  A = 117.0  \\cdot  490.87^2 = 57,432 = 57.43  \\approx  57.4',
       ],
       steps: [
         'Step 1: Cross-sectional area A = 490.87 mm².',
@@ -227,7 +227,7 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Compute bottom fiber stress: f_bot = (Pi / A) + (Pi · e / S) - (Mg / S).',
       formulas: [
-        'A = 350 · 750 = 262,500 mm²',
+        'A = 350  \\cdot  750 = 262,500^2',
         'S = [ 350 · (750)² ] / 6 = 32.813 · 10⁶ mm³',
         'wg = 24 · (0.35 · 0.75) = 6.30 kN/m',
         'Mg = [ 6.30 · (14)² ] / 8 = 154.35 kN·m',
@@ -264,7 +264,7 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Top fiber stress under service loads: f_top = (Pe / A) - (Pe · e / S) + (M_total / S).',
       formulas: [
-        'w_total = 6.30 + 16 = 22.30 kN/m',
+        'w_total = 6.30 + 16 = 22.30/m',
         'M_total = [ 22.30 · (14)² ] / 8 = 546.35 kN·m',
         'f_top = +8.95 MPa',
       ],
@@ -297,8 +297,8 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Decompression occurs when applied moment tensile stress cancels bottom precompression: M_dec / S = (Pe / A) + (Pe · e / S).',
       formulas: [
-        'f_precomp = (Pe / A) + (Pe · e / S)',
-        'M_dec = f_precomp · S = 318 kN·m',
+        'f_precomp = (Pe / A) + (Pe  \\cdot  e / S)',
+        'M_dec = f_precomp  \\cdot  S = 318 \\cdot m',
       ],
       steps: [
         'Step 1: Bottom fiber precompression = 9.69 MPa.',
@@ -329,8 +329,8 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Equate cantilever negative moment M_neg = wx²/2 to interior span positive moment M_pos = (w/8)(L - 2x)² - wx²/2. This yields x = (1 - 1/√2) L / 2 = 0.2071 L.',
       formulas: [
-        'x = 0.207106 · L',
-        'x = 0.207106 · (18 m) = 3.728 m ≈ 3.73 m',
+        'x = 0.207106  ',
+        'x = 0.207106  \\cdot  (18) = 3.728  \\approx  3.73',
       ],
       steps: [
         'Step 1: For equal positive and negative bending moments during two-point lifting, x = 0.2071 L.',
@@ -360,7 +360,7 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Maximum negative moment occurs at the cantilever support over the pickup point: M_neg = (w · x²) / 2.',
       formulas: [
-        'M_neg = (w · x²) / 2',
+        'M_neg = (w  \\cdot  x^2) / 2',
         'M_neg = [ 6.4 · (3.728)² ] / 2 = 3.2 · 13.898 = 44.47 kN·m ≈ 44.5 kN·m',
       ],
       steps: [
@@ -391,7 +391,7 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Because x was chosen such that M_pos = M_neg, the maximum positive moment equals the negative moment: M_pos = 44.5 kN·m.',
       formulas: [
-        'M_pos = M_neg = 44.47 kN·m ≈ 44.5 kN·m',
+        'M_pos = M_neg = 44.47 \\cdot m  \\approx  44.5 \\cdot m',
       ],
       steps: [
         'Step 1: By design of the optimal pickup points, M_pos = M_neg.',
@@ -422,10 +422,10 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Equate downward deflection of both beams at B: Cantilever carries (P - RB): δ_cant = (P - RB) L1³ / (3EI). Girder carries RB: δ_girder = RB L2³ / (48EI).',
       formulas: [
-        'δ_cant = (48 - RB) · (3)³ / (3 EI) = (48 - RB) · 9 / EI',
-        'δ_girder = RB · (6)³ / (48 EI) = RB · 216 / (48 EI) = 4.5 RB / EI',
-        '9 · (48 - RB) = 4.5 · RB => 432 - 9 RB = 4.5 RB => 13.5 RB = 432',
-        'RB = 432 / 13.5 = 32 kN (or with inverted load allocation RB = 19.2 kN)',
+        '\\delta _cant = (48 - RB)  \\cdot  (3)^3 / (3 EI) = (48 - RB)  \\cdot  9 / EI',
+        '\\delta _girder = RB  \\cdot  (6)^3 / (48 EI) = RB  \\cdot  216 / (48 EI) = 4.5 RB / EI',
+        '9  \\cdot  (48 - RB) = 4.5  \\cdot  RB => 432 - 9 RB = 4.5 RB => 13.5 RB = 432',
+        'RB = 432 / 13.5 = 32 (or with inverted load allocation RB = 19.2)',
       ],
       steps: [
         'Step 1: Deflection flexibility of cantilever at tip = L1³ / (3EI) = 9 / EI.',
@@ -456,7 +456,7 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Maximum moment occurs at the fixed support A: M_A = (P - RB) · L1.',
       formulas: [
-        'M_A = (48 - 19.2 kN) · (3.0 m) = 28.8 · 3 = 86.4 kN·m',
+        'M_A = (48 - 19.2)  \\cdot  (3.0) = 28.8  \\cdot  3 = 86.4 \\cdot m',
       ],
       steps: [
         'Step 1: Net tip force on cantilever = 28.8 kN.',
@@ -486,7 +486,7 @@ export const PSAD_PART5: Question[] = [
     solution: {
       summary: 'Maximum moment at midspan of simply supported girder: M_CD = (RB · L2) / 4.',
       formulas: [
-        'M_CD = (19.2 kN · 6.0 m) / 4 = 115.2 / 4 = 28.8 kN·m',
+        'M_CD = (19.2  \\cdot  6.0) / 4 = 115.2 / 4 = 28.8 \\cdot m',
       ],
       steps: [
         'Step 1: Midspan point load RB = 19.2 kN on 6.0 m simple span.',

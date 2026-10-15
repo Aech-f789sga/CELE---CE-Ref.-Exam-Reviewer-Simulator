@@ -21,7 +21,9 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: "Poisson's ratio (ν) is defined as the absolute ratio of lateral (transverse) strain to longitudinal (axial) strain of a material subjected to uniaxial stress within the proportional elastic limit.",
       formulas: [
-        '\\nu = -\\frac{\\epsilon_{\\text{transverse}}}{\\epsilon_{\\text{axial}}} = -\\frac{\\epsilon_{\\text{lat}}}{\\epsilon_{\\text{long}}}',
+        '\\nu = -\\frac{\\epsilon_t}{\\epsilon_a}',
+        '\\nu = -\\frac{\\epsilon_{\\mathrm{lat}}}{\\epsilon_{\\mathrm{long}}}',
+      
       ],
       steps: [
         'Step 1: Modulus of elasticity (Young\'s Modulus E) is the ratio of tensile or compressive stress to the corresponding longitudinal strain within the elastic limit.',
@@ -54,7 +56,8 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: "Modulus of Elasticity (Young's Modulus E) is defined as the ratio of tensile or compressive stress to the corresponding strain within the proportional elastic limit of a material, representing its stiffness.",
       formulas: [
-        'E = \\frac{\\sigma}{\\epsilon} = \\frac{\\text{tensile stress}}{\\text{tensile strain}}',
+        'E = \\frac{\\sigma}{\\epsilon}',
+      
       ],
       steps: [
         'Step 1: By Hooke\'s law for uniaxial loading within the linear elastic range, normal stress is directly proportional to normal strain: σ = E ε.',
@@ -86,7 +89,9 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: 'Modulus of Rigidity (also known as the Shear Modulus G) is defined as the ratio of shear stress to shear strain within the elastic limit, quantifying the material resistance to shear deformation.',
       formulas: [
-        'G = \\frac{\\tau}{\\gamma} = \\frac{E}{2(1 + \\nu)}',
+        'G = \\frac{\\tau}{\\gamma}',
+        'G = \\frac{E}{2(1 + \\nu)}',
+      
       ],
       steps: [
         'Step 1: Under pure shear loading within the proportional limit, shear stress τ is related to engineering shear strain γ by Hooke\'s law in shear: τ = G γ.',
@@ -119,7 +124,8 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: 'Creep is the slow, time-dependent progressive deformation (strain) that develops in concrete when subjected to sustained constant compressive or tensile stress over a prolonged duration.',
       formulas: [
-        '\\epsilon_{\\text{total}}(t) = \\epsilon_{\\text{elastic}} + \\epsilon_{\\text{creep}}(t) + \\epsilon_{\\text{shrinkage}}(t)',
+        '\\epsilon(t) = \\epsilon_e + \\epsilon_{cr}(t) + \\epsilon_{sh}(t)',
+      
       ],
       steps: [
         'Step 1: Creep is the continuous increase in strain over time under sustained constant load or stress.',
@@ -152,7 +158,8 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: 'Relaxation is the gradual reduction of internal stress in a material (such as prestressing steel or concrete) when held under a constant sustained strain over time.',
       formulas: [
-        '\\sigma(t) = \\sigma_0 \\cdot R(t), \\quad \\text{where } \\epsilon = \\text{constant}',
+        '\\sigma(t) = \\sigma_0 R(t)',
+      
       ],
       steps: [
         'Step 1: When concrete or prestressing tendons are deformed to a fixed strain and held constant, the internal stresses slowly decay.',
@@ -184,7 +191,8 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: 'Shrinkage is the reduction in volume or linear contraction of hardened concrete caused by the evaporation and loss of adsorbed capillary moisture during drying and chemical hydration processes.',
       formulas: [
-        '\\epsilon_{sh} = \\frac{\\Delta L}{L} \\quad (\\text{moisture-driven volume contraction})',
+        '\\epsilon_{sh} = \\frac{\\Delta L}{L}',
+      
       ],
       steps: [
         'Step 1: Concrete is prepared with excess water for workability. As it cures and dries, unhydrated moisture evaporates through capillary pores.',
@@ -206,7 +214,7 @@ export const PSAD_NOV2025_PART1: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Engineering Mechanics - Equilibrium of Contacting Cylinders in Bin',
-    text: 'Situation 3 — Refer to Figure 3.\nA bin holds three cylinders, each weighing $400\\text{ N}$. The diameter of each cylinder is $500\\text{ mm}$ and the width of the bin is $800\\text{ mm}$.\n\n7. Determine the reaction (N) at point $F$ (bottom contact of the bin).',
+    text: 'Situation 3 — Refer to Figure 3.\nA bin holds three cylinders, each weighing $400\$. The diameter of each cylinder is $500\$ and the width of the bin is $800\$.\n\n7. Determine the reaction (N) at point $F$ (bottom contact of the bin).',
     options: [
       { label: 'A', text: '400' },
       { label: 'B', text: '800' },
@@ -217,8 +225,10 @@ export const PSAD_NOV2025_PART1: Question[] = [
     solution: {
       summary: 'Consider the whole system of three cylinders as a single free-body diagram. Without friction, the only vertical support reaction from the floor of the bin is $N_F = 3 W$.',
       formulas: [
-        '\\sum F_v = 0 \\implies N_F - 3 W = 0',
-        'N_F = 3 \\times 400\\text{ N} = 1,200\\text{ N}',
+        '\\sum F_v = 0',
+        'N_F - 3 W = 0',
+        'N_F = 3 W',
+      
       ],
       steps: [
         'Step 1: Isolate the entire assembly of the three cylinders inside the bin.',
@@ -248,12 +258,12 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'From the bin geometry, center-to-center distance is $2R = 500\\text{ mm}$. The horizontal distance between centers is $800 - 2(250) = 300\\text{ mm}$. Angle $\\theta = \\arccos(300 / 500) = 53.13^\\circ$. Vertical equilibrium of cylinder 1 gives $R_A = \\frac{W}{\\sin\\theta} = \\frac{400}{\\sin 53.13^\\circ} = 500\\text{ N}$.',
+      summary: 'From the bin geometry, center-to-center distance is $2R = 500\$. The horizontal distance between centers is $800 - 2(250) = 300\$. Angle $\\theta = \\arccos(300 / 500) = 53.13^\\circ$. Vertical equilibrium of cylinder 1 gives $R_A = \\frac{W}{\\sin\\theta} = \\frac{400}{\\sin 53.13^\\circ} = 500\$.',
       formulas: [
-        '\\cos\\theta = \\frac{\\text{Horizontal offset}}{\\text{Center-to-center distance}} = \\frac{800 - 2(250)}{250 + 250} = \\frac{300}{500} = 0.60',
-        '\\theta = \\arccos(0.60) = 53.13^\\circ, \\quad \\sin\\theta = 0.80',
+        '\\cos\\theta = \\frac{W - 2r}{2r}',
         '\\sum F_v = 0 \\implies -W + R_A \\sin\\theta = 0',
-        'R_A = \\frac{400}{\\sin 53.13^\\circ} = \\frac{400}{0.80} = 500\\text{ N}',
+        'R_A = \\frac{W}{\\sin\\theta}',
+      
       ],
       steps: [
         'Step 1: Cylinder radius R = 250 mm. Center-to-center distance between Cylinder 1 (top) and Cylinder 2 (middle) is 2R = 500 mm.',
@@ -284,12 +294,12 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Vertical equilibrium of cylinder 2 gives $R_B = 1,000\\text{ N}$. Horizontal equilibrium of cylinder 3 gives $N_E = R_B \\cos\\theta = 1,000(0.60) = 600\\text{ N}$. The maximum static friction force is $f_E = \\mu_s N_E = 0.15(600) = 90\\text{ N}$.',
+      summary: 'Vertical equilibrium of cylinder 2 gives $R_B = 1,000\$. Horizontal equilibrium of cylinder 3 gives $N_E = R_B \\cos\\theta = 1,000(0.60) = 600\$. The maximum static friction force is $f_E = \\mu_s N_E = 0.15(600) = 90\$.',
       formulas: [
-        '\\text{Cylinder 2: } \\sum F_v = 0 \\implies -R_A \\sin\\theta - W + R_B \\sin\\theta = 0',
-        '-500(0.80) - 400 + R_B(0.80) = 0 \\implies 0.80 R_B = 800 \\implies R_B = 1,000\\text{ N}',
-        '\\text{Cylinder 3: } \\sum F_h = 0 \\implies N_E - R_B \\cos\\theta = 0 \\implies N_E = 1,000(0.60) = 600\\text{ N}',
-        'f_E = \\mu_s N_E = 0.15 \\times 600\\text{ N} = 90\\text{ N}',
+        '\\sum F_v = 0 \\implies -R_A \\sin\\theta - W + R_B \\sin\\theta = 0',
+        '\\sum F_h = 0 \\implies N_E - R_B \\cos\\theta = 0',
+        'f_E = \\mu_s N_E',
+      
       ],
       steps: [
         'Step 1: Consider vertical equilibrium of Cylinder 2 (middle cylinder): Downward forces are RA sin θ = 500(0.80) = 400 N and weight W = 400 N.',
@@ -312,7 +322,7 @@ export const PSAD_NOV2025_PART1: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Engineering Mechanics - Mast Reaction & Equilibrium of Rigid Frames',
-    text: 'Situation 4 — Refer to Figure 4.\nThe load $W$ is lifted using the mast hinged at $B$. The mast is of uniform section and weighs $8\\text{ kN}$.\nGiven: $L_1 = 8\\text{ m}$; $L_2 = 4\\text{ m}$; $H = 8\\text{ m}$; $W = 36\\text{ kN}$.\n\n10. Determine the reaction (kN) at $B$. Neglect the weight of the mast.',
+    text: 'Situation 4 — Refer to Figure 4.\nThe load $W$ is lifted using the mast hinged at $B$. The mast is of uniform section and weighs $8\$.\nGiven: $L_1 = 8\$; $L_2 = 4\$; $H = 8\$; $W = 36\$.\n\n10. Determine the reaction (kN) at $B$. Neglect the weight of the mast.',
     options: [
       { label: 'A', text: '60.4' },
       { label: 'B', text: '32.5' },
@@ -321,14 +331,14 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'Take moments about A to find $B_v = 54\\text{ kN}$. Cable angle is $\\theta = \\arctan\\left(\\frac{8}{8+4}\\right) = 33.69^\\circ$. Equilibrium of the system gives $T_{AC} = 32.45\\text{ kN}$ and horizontal reaction $B_h = 27.00\\text{ kN}$. The resultant reaction is $R_B = \\sqrt{27^2 + 54^2} = 60.374\\text{ kN} \\approx 60.4\\text{ kN}$.',
+      summary: 'Take moments about A to find $B_v = 54\$. Cable angle is $\\theta = \\arctan\\left(\\frac{8}{8+4}\\right) = 33.69^\\circ$. Equilibrium of the system gives $T_{AC} = 32.45\$ and horizontal reaction $B_h = 27.00\$. The resultant reaction is $R_B = \\sqrt{27^2 + 54^2} = 60.374\ \\approx 60.4\$.',
       formulas: [
-        '\\theta = \\arctan\\left(\\frac{H}{L_1 + L_2}\\right) = \\arctan\\left(\\frac{8}{12}\\right) = 33.69^\\circ',
-        '\\sum M_A = 0 \\implies -B_v(8) + 36(8 + 4) = 0 \\implies B_v = \\frac{432}{8} = 54\\text{ kN}',
-        '\\sum F_y = 0 \\implies B_v - T_{AC} \\sin\\theta - W = 0 \\implies 54 - T_{AC}\\sin 33.69^\\circ - 36 = 0',
-        'T_{AC} = \\frac{18}{\\sin 33.69^\\circ} = 32.45\\text{ kN}',
-        '\\sum F_x = 0 \\implies B_h - T_{AC} \\cos 33.69^\\circ = 0 \\implies B_h = 32.45 \\cos 33.69^\\circ = 27.00\\text{ kN}',
-        'R_B = \\sqrt{B_h^2 + B_v^2} = \\sqrt{27^2 + 54^2} = \\sqrt{729 + 2916} = \\sqrt{3645} = 60.374\\text{ kN} \\approx 60.4\\text{ kN}',
+        '\\theta = \\arctan\\left(\\frac{H}{L_1 + L_2}\\right)',
+        '\\sum M_A = 0 \\implies -B_v L_1 + W(L_1 + L_2) = 0',
+        '\\sum F_y = 0 \\implies B_v - T_{AC} \\sin\\theta - W = 0',
+        '\\sum F_x = 0 \\implies B_h - T_{AC} \\cos\\theta = 0',
+        'R_B = \\sqrt{B_h^2 + B_v^2}',
+      
       ],
       steps: [
         'Step 1: Geometry of cable AC: Total horizontal run from A to C is L1 + L2 = 8 + 4 = 12 m. Height H = 8 m.',
@@ -360,10 +370,11 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'B',
     solution: {
-      summary: 'From moment equilibrium about hinge B: the vertical component of cable tension balances the applied load moment: $T_{AC} \\sin\\theta (L_1) = W (L_2)$, or from joint C equilibrium: $T_{AC} = 32.45\\text{ kN} \\approx 32.5\\text{ kN}$.',
+      summary: 'From moment equilibrium about hinge B: the vertical component of cable tension balances the applied load moment: $T_{AC} \\sin\\theta (L_1) = W (L_2)$, or from joint C equilibrium: $T_{AC} = 32.45\ \\approx 32.5\$.',
       formulas: [
-        '\\sum M_B = 0 \\implies T_{AC} \\sin 33.69^\\circ (8) - W(4) = 0 \\dots',
-        'T_{AC} = \\frac{18}{\\sin 33.69^\\circ} = \\frac{18}{0.5547} = 32.45\\text{ kN} \\approx 32.5\\text{ kN}',
+        '\\sum M_B = 0 \\implies T_{AC} L_1 \\sin\\theta - W L_2 = 0',
+        'T_{AC} = \\frac{W L_2}{L_1 \\sin\\theta}',
+      
       ],
       steps: [
         'Step 1: From the global equilibrium equations in Item 10: Bv = 54 kN and W = 36 kN.',
@@ -384,7 +395,7 @@ export const PSAD_NOV2025_PART1: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Engineering Mechanics - Maximum Lifting Capacity with Mast Self-Weight',
-    text: 'Situation 4 (Cont.) — 12. If the maximum tension allowable for cable $AC$ is $50\\text{ kN}$, determine the maximum weight $W$ (kN) that could be lifted. Consider the mast weight of $8\\text{ kN}$.',
+    text: 'Situation 4 (Cont.) — 12. If the maximum tension allowable for cable $AC$ is $50\$, determine the maximum weight $W$ (kN) that could be lifted. Consider the mast weight of $8\$.',
     options: [
       { label: 'A', text: '79.2' },
       { label: 'B', text: '55.5' },
@@ -393,12 +404,11 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Take moments about hinge B: $\\sum M_B = 0 \\implies W_b(2) + W(4) - T_{AC} \\sin\\theta(8) = 0$. For $T_{AC} = 50\\text{ kN}$ and $W_b = 8\\text{ kN}$: $8(2) + 4W - 50\\sin 33.69^\\circ(8) = 0$. Solving gives $W = 51.47\\text{ kN} \\approx 51.1\\text{ kN}$.',
+      summary: 'Take moments about hinge B: $\\sum M_B = 0 \\implies W_b(2) + W(4) - T_{AC} \\sin\\theta(8) = 0$. For $T_{AC} = 50\$ and $W_b = 8\$: $8(2) + 4W - 50\\sin 33.69^\\circ(8) = 0$. Solving gives $W = 51.47\ \\approx 51.1\$.',
       formulas: [
-        '\\sum M_B = 0 \\implies W_b(2) + W(4) - T_{AC}\\sin\\theta(8) = 0',
-        '8(2) + 4W - 50 \\sin 33.69^\\circ(8) = 0',
-        '16 + 4W - 400(0.5547) = 0 \\implies 16 + 4W - 221.88 = 0',
-        '4W = 205.88 \\implies W = 51.47\\text{ kN} \\approx 51.1\\text{ kN}',
+        '\\sum M_B = 0 \\implies W_b \\left(\\frac{L_1}{4}\\right) + W L_2 - T_{AC} L_1 \\sin\\theta = 0',
+        'W = \\frac{T_{AC} L_1 \\sin\\theta - W_b \\left(\\frac{L_1}{4}\\right)}{L_2}',
+      
       ],
       steps: [
         'Step 1: The uniform mast extends 4 m horizontally from B to C. Its center of gravity is at mid-span: x = 2 m from B.',
@@ -421,7 +431,7 @@ export const PSAD_NOV2025_PART1: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Structural Analysis - Truss with Diagonal Cable Members & Member Stress',
-    text: 'Situation 5 — Refer to the figure shown.\nA flat truss is supported by a pin at $A$ and a roller at $B$. The truss has four equal panels and is subjected to a concentrated load applied at an interior top joint. The diagonal elements are cables, while the remaining truss members are standard structural members.\nGiven: $a = 3\\text{ m}$; $b = 4\\text{ m}$; Area of standard members $= 1,728\\text{ mm}^2$; Diameter of cables $= 25\\text{ mm}$; Load $P = 140\\text{ kN}$ at joint $H$.\n\n13. Determine the tensile stress (MPa) in cable $DI$.',
+    text: 'Situation 5 — Refer to the figure shown.\nA flat truss is supported by a pin at $A$ and a roller at $B$. The truss has four equal panels and is subjected to a concentrated load applied at an interior top joint. The diagonal elements are cables, while the remaining truss members are standard structural members.\nGiven: $a = 3\$; $b = 4\$; Area of standard members $= 1,728\$; Diameter of cables $= 25\$; Load $P = 140\$ at joint $H$.\n\n13. Determine the tensile stress (MPa) in cable $DI$.',
     options: [
       { label: 'A', text: '101.27' },
       { label: 'B', text: '178.25' },
@@ -430,13 +440,14 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'B',
     solution: {
-      summary: 'Truss supports at A and B share the load symmetrically: $R_A = R_B = 70\\text{ kN}$. Diagonal cable angle is $\\theta = \\arctan(4/3) = 53.13^\\circ$. A cutting plane through panel 2 shows cable DI in tension with force $F_{DI} = \\frac{R_A}{\\sin 53.13^\\circ} = 87.5\\text{ kN}$. Cable area is $A = \\frac{\\pi(25)^2}{4} = 490.87\\text{ mm}^2$. Stress is $\\sigma_{DI} = \\frac{87,500}{490.87} = 178.25\\text{ MPa}$.',
+      summary: 'Truss supports at A and B share the load symmetrically: $R_A = R_B = 70\$. Diagonal cable angle is $\\theta = \\arctan(4/3) = 53.13^\\circ$. A cutting plane through panel 2 shows cable DI in tension with force $F_{DI} = \\frac{R_A}{\\sin 53.13^\\circ} = 87.5\$. Cable area is $A = \\frac{\\pi(25)^2}{4} = 490.87\$. Stress is $\\sigma_{DI} = \\frac{87,500}{490.87} = 178.25\$.',
       formulas: [
-        'R_A = \\frac{P}{2} = \\frac{140}{2} = 70\\text{ kN}',
-        '\\tan\\theta = \\frac{b}{a} = \\frac{4}{3} \\implies \\theta = 53.13^\\circ, \\quad \\sin\\theta = 0.80',
-        '\\sum F_v = 0 \\implies 70 - F_{DI} \\sin 53.13^\\circ = 0 \\implies F_{DI} = \\frac{70}{0.80} = 87.5\\text{ kN}',
-        'A_{\\text{cable}} = \\frac{\\pi}{4}(25)^2 = 490.87\\text{ mm}^2',
-        '\\sigma_{DI} = \\frac{F_{DI}}{A_{\\text{cable}}} = \\frac{87,500}{490.87} = 178.25\\text{ MPa}',
+        'R_A = \\frac{P}{2}',
+        '\\tan\\theta = \\frac{b}{a}',
+        'F_{DI} = \\frac{R_A}{\\sin\\theta}',
+        'A = \\frac{\\pi d^2}{4}',
+        '\\sigma_{DI} = \\frac{F_{DI}}{A}',
+      
       ],
       steps: [
         'Step 1: Support reactions: Symmetrical 4-panel truss with P = 140 kN at center joint H gives RA = RB = 70 kN.',
@@ -467,10 +478,11 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'A',
     solution: {
-      summary: 'At joint H, the cables CH and EH are in compression and therefore inactive ($F_{CH} = F_{EH} = 0$). By vertical equilibrium of joint H, the vertical member carries the full applied load: $F_{DH} = P = 140\\text{ kN}$. The stress is $\\sigma_{DH} = \\frac{140,000}{1,728} = 81.02\\text{ MPa} \\approx 81.0\\text{ MPa}$.',
+      summary: 'At joint H, the cables CH and EH are in compression and therefore inactive ($F_{CH} = F_{EH} = 0$). By vertical equilibrium of joint H, the vertical member carries the full applied load: $F_{DH} = P = 140\$. The stress is $\\sigma_{DH} = \\frac{140,000}{1,728} = 81.02\ \\approx 81.0\$.',
       formulas: [
-        '\\sum F_v = 0 \\quad (\\text{at joint } H) \\implies F_{DH} = P = 140\\text{ kN}',
-        '\\sigma_{DH} = \\frac{F_{DH}}{A_{DH}} = \\frac{140,000\\text{ N}}{1,728\\text{ mm}^2} = 81.02\\text{ MPa} \\approx 81.0\\text{ MPa}',
+        '\\sum F_v = 0 \\implies F_{DH} = P',
+        '\\sigma_{DH} = \\frac{F_{DH}}{A_{DH}}',
+      
       ],
       steps: [
         'Step 1: Isolate joint H at the top center of the truss.',
@@ -493,7 +505,7 @@ export const PSAD_NOV2025_PART1: Question[] = [
     year: 2025,
     month: 'November',
     category: 'Structural Analysis - Maximum Allowable Load on Truss System',
-    text: 'Situation 5 (Cont.) — 15. If the maximum allowable stress for the cable is $163\\text{ MPa}$, determine the maximum allowable load $P$ (kN).',
+    text: 'Situation 5 (Cont.) — 15. If the maximum allowable stress for the cable is $163\$, determine the maximum allowable load $P$ (kN).',
     options: [
       { label: 'A', text: '225.3' },
       { label: 'B', text: '64.0' },
@@ -502,11 +514,12 @@ export const PSAD_NOV2025_PART1: Question[] = [
     ],
     correctAnswer: 'C',
     solution: {
-      summary: 'Maximum allowable cable capacity is $F_{\\text{cable}} = \\sigma_{\\text{allow}} A = 163 \\times 490.87 = 80,012\\text{ N} = 80.012\\text{ kN}$. By linear proportionality: $P = 140 \\times \\frac{163}{178.25} = 128.02\\text{ kN} \\approx 128.0\\text{ kN}$.',
+      summary: 'Maximum allowable cable capacity is $F_{\\text{cable}} = \\sigma_{\\text{allow}} A = 163 \\times 490.87 = 80,012\ = 80.012\$. By linear proportionality: $P = 140 \\times \\frac{163}{178.25} = 128.02\ \\approx 128.0\$.',
       formulas: [
-        'F_{\\text{cable}} = \\sigma_{\\text{allow}} A_{\\text{cable}} = 163\\text{ MPa} \\times 490.87\\text{ mm}^2 = 80,012\\text{ N} = 80.012\\text{ kN}',
-        '\\frac{P}{2} - F_{\\text{cable}} \\sin 53.13^\\circ = 0 \\implies P = 2(80.012)(0.80) = 128.02\\text{ kN}',
-        '\\text{Direct proportion: } P = 140 \\times \\left(\\frac{163}{178.25}\\right) = 128.02\\text{ kN} \\approx 128.0\\text{ kN}',
+        'F_{\\mathrm{all}} = \\sigma_{\\mathrm{all}} A',
+        'P = 2 F_{\\mathrm{all}} \\sin\\theta',
+        'P = P_0 \\left(\\frac{\\sigma_{\\mathrm{all}}}{\\sigma_0}\\right)',
+      
       ],
       steps: [
         'Step 1: Allowable tension capacity of cable: F_allow = 163 MPa × 490.87 mm² = 80.012 kN.',
