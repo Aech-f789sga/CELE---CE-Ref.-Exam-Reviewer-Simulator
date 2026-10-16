@@ -42,6 +42,7 @@ import { Scene3D } from './Scene3D';
 import { TerrariumOrb3D } from './TerrariumOrb3D';
 import { Matilda3D } from './Matilda3D';
 import { ParticleSystem3D } from './ParticleSystem3D';
+import { SubmergedEra3D } from './SubmergedEra3D';
 import { Tilt3D } from './Tilt3D';
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -105,6 +106,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const isTerrarium = themeConfig.id === 'terrarium_orb';
   const isMatilda = themeConfig.id === 'matilda_3d';
   const isParticle = themeConfig.id === 'particle_flow';
+  const isSubmerged = themeConfig.id === 'submerged_era';
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
   const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
 
@@ -129,6 +131,11 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
       {/* Hero Banner */}
       <div className="hero-aurora relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 border border-slate-700/80 shadow-2xl bg-blueprint-grid">
+        {isSubmerged && (
+          <div className="absolute inset-y-0 right-0 w-full sm:w-1/2 md:w-3/5 opacity-95 sm:opacity-100 pointer-events-auto">
+            <SubmergedEra3D mode="hero" interactive={true} />
+          </div>
+        )}
         {isAurora && (
           <div className="absolute inset-y-0 right-0 w-full sm:w-3/5 opacity-60 sm:opacity-100 pointer-events-none">
             <Scene3D variant="hero" accent={themeConfig.accent} />
@@ -150,7 +157,12 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </div>
         )}
         <div className="relative z-10 space-y-3 sm:max-w-[55%]">
-          {isParticle ? (
+          {isSubmerged ? (
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Submerged Era 3D • Animated Lilies, Swimming Koi &amp; Sakura Breeze</span>
+            </div>
+          ) : isParticle ? (
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-xs font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
               <span>3D Particle Theme • Reactive Background &amp; Hand Gestures Active</span>

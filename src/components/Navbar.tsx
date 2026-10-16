@@ -198,24 +198,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* Quick 3D Particles Button */}
-            <button
-              onClick={() => setThemeId('particle_flow')}
-              title="Interactive 3D Particle Theme & Gestures"
-              className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer ${
-                themeConfig.id === 'particle_flow'
-                  ? 'border-cyan-400 bg-cyan-950/60 text-cyan-200 ring-1 ring-cyan-400/50'
-                  : ''
-              }`}
-              style={{
-                backgroundColor: themeConfig.id === 'particle_flow' ? undefined : themeConfig.bgCardSubtle,
-                borderColor: themeConfig.id === 'particle_flow' ? undefined : themeConfig.border,
-                color: themeConfig.id === 'particle_flow' ? undefined : themeConfig.textPrimary,
-              }}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="hidden md:inline">3D Particles</span>
-            </button>
 
             {/* Theme & Fonts Customizer Trigger */}
             <button

@@ -227,6 +227,19 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                               ORIGINAL
                             </span>
                           )}
+                          {item.id === 'submerged_era' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"
+                              style={{
+                                backgroundColor: 'rgba(56, 217, 169, 0.2)',
+                                borderColor: 'rgba(56, 217, 169, 0.45)',
+                                color: '#a5d3cb',
+                              }}
+                            >
+                              <Sparkles className="w-2.5 h-2.5 mr-0.5 text-emerald-300" />
+                              <span>3D SUBMERGED ERA</span>
+                            </span>
+                          )}
                           {item.id === 'particle_flow' && (
                             <span
                               className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"

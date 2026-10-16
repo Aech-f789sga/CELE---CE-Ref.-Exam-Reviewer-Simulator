@@ -33,6 +33,7 @@ import { Scene3D } from './components/Scene3D';
 import { TerrariumOrb3D } from './components/TerrariumOrb3D';
 import { Matilda3D } from './components/Matilda3D';
 import { ParticleSystem3D } from './components/ParticleSystem3D';
+import { SubmergedEra3D } from './components/SubmergedEra3D';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
 import {
   Sparkles,
@@ -243,10 +244,16 @@ function MainApp() {
   const isTerrarium = themeConfig.id === 'terrarium_orb';
   const isMatilda = themeConfig.id === 'matilda_3d';
   const isParticle = themeConfig.id === 'particle_flow';
-  const is3DTheme = isAurora || isTerrarium || isMatilda || isParticle;
+  const isSubmerged = themeConfig.id === 'submerged_era';
+  const is3DTheme = isAurora || isTerrarium || isMatilda || isParticle || isSubmerged;
 
   return (
     <>
+      {isSubmerged && (
+        <div className="scene-layer opacity-65 pointer-events-none">
+          <SubmergedEra3D mode="background" interactive={false} />
+        </div>
+      )}
       {isAurora && (
         <div className="scene-layer">
           <Scene3D variant="background" accent={themeConfig.accent} />

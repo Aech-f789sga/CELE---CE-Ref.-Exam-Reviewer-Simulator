@@ -1,4 +1,5 @@
 export type AppThemeId =
+  | 'submerged_era'
   | 'particle_flow'
   | 'matilda_3d'
   | 'aurora_glass'
@@ -59,6 +60,26 @@ export interface FontSizeOption {
 }
 
 export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
+  // SUBMERGED ERA 3D THEME
+  submerged_era: {
+    id: 'submerged_era',
+    name: 'Submerged Era (3D)',
+    category: 'dark',
+    accentName: 'Sunken Emerald & Sakura Coral',
+    description: 'Serene flooded sanctuary with submerged Gundam colossus, sunken Gothic clock tower, drifting wooden canoe, swimming koi fish, blooming lilies, and sakura petals.',
+    bgPage: '#08171e',
+    bgCard: '#0f252e',
+    bgCardSubtle: '#16333e',
+    border: '#235362',
+    textPrimary: '#e8f7f5',
+    textSecondary: '#a5d3cb',
+    textMuted: '#5a968d',
+    accent: '#38d9a9',
+    accentHover: '#20c997',
+    accentText: '#061a1f',
+    accentBadge: 'rgba(56, 217, 169, 0.22)',
+    gridStyle: 'rgba(56, 217, 169, 0.08)',
+  },
   // INTERACTIVE 3D PARTICLE SYSTEM THEME
   particle_flow: {
     id: 'particle_flow',
