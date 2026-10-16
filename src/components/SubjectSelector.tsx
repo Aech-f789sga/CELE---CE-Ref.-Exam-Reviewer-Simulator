@@ -327,7 +327,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
           <span className="text-xs text-slate-400 font-tech-mono">
-            Available Sets: <strong className="text-amber-400">April 2024 (MSTC, HPGE, PSAD)</strong> • <strong className="text-cyan-400">November 2024 (MSTC • 66 Items, HPGE • 46 Items, PSAD • 75 Items)</strong>
+            Available Sets: <strong className="text-amber-400">May 2022 (MSTC • 55 Items)</strong> • <strong className="text-emerald-400">2024–2025 Sets (MSTC, HPGE, PSAD)</strong>
           </span>
         </div>
 

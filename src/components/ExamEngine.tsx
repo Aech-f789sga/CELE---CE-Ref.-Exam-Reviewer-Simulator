@@ -24,10 +24,12 @@ import {
   Pause,
   Play,
   BookmarkCheck,
+  PenTool,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
 import { deletePausedSession } from '../utils/storage';
+import { Scratchpad } from './Scratchpad';
 
 interface ExamEngineProps {
   subject: SubjectArea;
@@ -76,6 +78,8 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showSolutionForCurrent, setShowSolutionForCurrent] = useState(false);
+  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
+  const [isScratchpadDocked, setIsScratchpadDocked] = useState(false);
 
   const subjectConfig = SUBJECT_CONFIGS[subject];
   const currentQuestion = questions[currentIndex];
@@ -214,6 +218,25 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           )}
 
           {/* Quick Actions */}
+          <button
+            type="button"
+            onClick={() => setIsScratchpadOpen((prev) => !prev)}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all shadow-sm ${
+              isScratchpadOpen
+                ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-bold shadow-cyan-500/20'
+                : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white border-cyan-500/30'
+            }`}
+            title="Toggle persistent scratchpad for rough calculations, drawings & notes"
+          >
+            <PenTool className="w-3.5 h-3.5" />
+            <span>Scratchpad</span>
+            {isScratchpadOpen && isScratchpadDocked && (
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-200 uppercase font-mono font-bold">
+                Docked
+              </span>
+            )}
+          </button>
+
           {isPauseEligible && (
             <button
               type="button"
@@ -246,9 +269,17 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
       </div>
 
       {/* Main Examination Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left Column: Question Content (3 columns on lg) */}
-        <div className="lg:col-span-3 space-y-6">
+      <div className={`grid grid-cols-1 ${
+        isScratchpadOpen && isScratchpadDocked
+          ? 'xl:grid-cols-12 gap-6'
+          : 'lg:grid-cols-4 gap-6'
+      }`}>
+        {/* Left Column: Question Content */}
+        <div className={`${
+          isScratchpadOpen && isScratchpadDocked
+            ? 'xl:col-span-5 space-y-6'
+            : 'lg:col-span-3 space-y-6'
+        }`}>
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6 relative">
             {/* Header: Question Number & Tags */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
@@ -440,8 +471,25 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           </div>
         </div>
 
+        {/* Docked Scratchpad alongside exam question */}
+        {isScratchpadOpen && isScratchpadDocked && (
+          <div className="xl:col-span-4 h-[750px] min-h-[520px] sticky top-28">
+            <Scratchpad
+              isOpen={isScratchpadOpen}
+              onClose={() => setIsScratchpadOpen(false)}
+              isDocked={true}
+              onToggleDock={() => setIsScratchpadDocked(false)}
+              storageKeyPrefix={`${subject}_${year}_${month}_`}
+            />
+          </div>
+        )}
+
         {/* Right Column: Question Navigator Matrix */}
-        <div className="space-y-4">
+        <div className={`${
+          isScratchpadOpen && isScratchpadDocked
+            ? 'xl:col-span-3 space-y-4'
+            : 'space-y-4'
+        }`}>
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-arnie text-sm font-bold text-white tracking-wide">
@@ -521,6 +569,30 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Floating Scratchpad when not docked */}
+      {isScratchpadOpen && !isScratchpadDocked && (
+        <Scratchpad
+          isOpen={isScratchpadOpen}
+          onClose={() => setIsScratchpadOpen(false)}
+          isDocked={false}
+          onToggleDock={() => setIsScratchpadDocked(true)}
+          storageKeyPrefix={`${subject}_${year}_${month}_`}
+        />
+      )}
+
+      {/* Floating Quick Scratchpad Trigger when closed */}
+      {!isScratchpadOpen && (
+        <button
+          type="button"
+          onClick={() => setIsScratchpadOpen(true)}
+          className="fixed bottom-6 right-6 z-40 flex items-center space-x-2 px-4 py-2.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-2xl shadow-cyan-500/30 border border-cyan-300 transition-all hover:scale-105 cursor-pointer group"
+          title="Open Scratchpad for rough calculations and notes"
+        >
+          <PenTool className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          <span>Scratchpad</span>
+        </button>
+      )}
 
       {/* Submit Confirmation Modal */}
       {showSubmitModal && (
