@@ -21,18 +21,21 @@ import {
   Trash2,
   Calculator,
   ChevronRight,
+  PenTool,
 } from 'lucide-react';
 
 interface PerformanceReviewProps {
   attempts: ExamAttempt[];
   onAttemptsChange: (updated: ExamAttempt[]) => void;
   onTakeExamArea: (subject: SubjectArea) => void;
+  onOpenScratchpad?: (padId?: string) => void;
 }
 
 export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   attempts,
   onAttemptsChange,
   onTakeExamArea,
+  onOpenScratchpad,
 }) => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const cycles = computePairedCycles(attempts);
@@ -549,11 +552,13 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                     <th className="p-4">PRC Area Status</th>
                     <th className="p-4">Time Spent</th>
                     <th className="p-4">Mode</th>
+                    <th className="p-4 text-right">Rough Sheets</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800 font-tech-mono">
                   {attempts.map((att) => {
                     const isPassed = att.ratingPercentage >= 50.0;
+                    const padId = att.scratchpadId || `exam_${att.subject}_${att.year}_${att.month}`;
                     return (
                       <tr key={att.id} className="hover:bg-slate-800/40 transition-colors">
                         <td className="p-4 text-slate-300">
@@ -599,6 +604,17 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                         </td>
                         <td className="p-4 text-slate-400 text-[11px]">
                           {att.isInteractive ? 'Interactive' : 'Simulation'}
+                        </td>
+                        <td className="p-4 text-right">
+                          <button
+                            type="button"
+                            onClick={() => onOpenScratchpad?.(padId)}
+                            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all hover:scale-105 cursor-pointer"
+                            title="View and edit rough calculation sheets from this session"
+                          >
+                            <PenTool className="w-3.5 h-3.5" />
+                            <span>Scratchpad</span>
+                          </button>
                         </td>
                       </tr>
                     );

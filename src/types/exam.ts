@@ -111,6 +111,7 @@ export interface ExamAttempt {
   totalQuestions: number;
   ratingPercentage: number;
   passedArea: boolean; // >= 50%
+  scratchpadId?: string; // Linked rough sheets document ID
 }
 
 export interface PairedCycle {
@@ -138,5 +139,6 @@ export interface PausedExamSession {
   savedAt: string; // ISO string
   totalQuestions: number;
   answeredCount: number;
+  scratchpadId?: string; // Linked rough sheets document ID
 }
 

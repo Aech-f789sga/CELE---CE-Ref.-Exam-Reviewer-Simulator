@@ -25,11 +25,18 @@ import {
   Play,
   BookmarkCheck,
   PenTool,
+  Gauge,
+  Zap,
+  AlertCircle,
+  TrendingUp,
+  TrendingDown,
+  Activity,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
 import { deletePausedSession } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
+import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
 
 interface ExamEngineProps {
   subject: SubjectArea;
@@ -80,6 +87,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const [showSolutionForCurrent, setShowSolutionForCurrent] = useState(false);
   const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
   const [isScratchpadDocked, setIsScratchpadDocked] = useState(false);
+  const [showPacingDetails, setShowPacingDetails] = useState(false);
 
   const subjectConfig = SUBJECT_CONFIGS[subject];
   const currentQuestion = questions[currentIndex];
@@ -117,6 +125,14 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   }, [timerMode, isPaused]);
 
   const handleSaveAndExit = () => {
+    const storageKeyPrefix = `exam_${subject}_${year}_${month}_`;
+    syncExamScratchpadRecord({
+      subject,
+      year,
+      month,
+      storageKeyPrefix,
+    }).catch((e) => console.warn('Failed to sync scratchpad record on pause:', e));
+
     if (onSaveAndExit) {
       onSaveAndExit({
         currentIndex,
@@ -157,6 +173,15 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
     const timeSpent = timerMode === 'exam_timer'
       ? totalDurationSeconds - secondsRemaining
       : secondsElapsed;
+
+    const storageKeyPrefix = `exam_${subject}_${year}_${month}_`;
+    syncExamScratchpadRecord({
+      subject,
+      year,
+      month,
+      storageKeyPrefix,
+    }).catch((e) => console.warn('Failed to sync scratchpad record on submit:', e));
+
     onSubmit(userAnswers, Math.max(1, timeSpent));
   };
 
@@ -172,6 +197,66 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const unansweredCount = questions.length - answeredCount;
   const currentAnswer = userAnswers[currentQuestion?.id];
   const isCurrentCorrect = currentAnswer === currentQuestion?.correctAnswer;
+
+  // ----------------------------------------------------
+  // REAL-TIME PACING INDICATOR CALCULATIONS
+  // ----------------------------------------------------
+  const totalQuestions = questions.length;
+  const timeSpent = timerMode === 'exam_timer'
+    ? Math.max(0, totalDurationSeconds - secondsRemaining)
+    : secondsElapsed;
+
+  // Recommended time allocated per question (in seconds)
+  // For exam_timer: total exam seconds / totalQuestions (e.g. 14,400s / 55 = 262s = 4m 22s)
+  // For stopwatch / no_limit: standard Philippine Board Exam allotment (~4.0 - 4.36 min per question)
+  const targetSecPerQuestion = timerMode === 'exam_timer' && totalDurationSeconds > 0
+    ? Math.round(totalDurationSeconds / totalQuestions)
+    : (totalQuestions >= 70 ? 240 : 262);
+
+  // Expected progress (questions that should ideally be completed by current timeSpent)
+  const expectedQuestionsAnswered = targetSecPerQuestion > 0
+    ? timeSpent / targetSecPerQuestion
+    : 0;
+
+  // Expected elapsed time for the number of questions answered so far
+  const targetTimeForAnsweredCount = answeredCount * targetSecPerQuestion;
+
+  // Delta in seconds: positive means user has saved time (AHEAD), negative means behind schedule
+  const paceDeltaSeconds = answeredCount > 0
+    ? targetTimeForAnsweredCount - timeSpent
+    : Math.round(targetSecPerQuestion - timeSpent);
+
+  const paceDeltaQuestions = answeredCount - expectedQuestionsAnswered;
+
+  // Status classification
+  let paceStatus: 'ahead' | 'on_track' | 'behind' = 'on_track';
+  if (paceDeltaSeconds > 75 || paceDeltaQuestions > 0.45) {
+    paceStatus = 'ahead';
+  } else if (paceDeltaSeconds < -75 || paceDeltaQuestions < -0.45) {
+    paceStatus = 'behind';
+  } else {
+    paceStatus = 'on_track';
+  }
+
+  // Average time spent per answered question
+  const userAvgSecPerQuestion = answeredCount > 0
+    ? Math.round(timeSpent / answeredCount)
+    : timeSpent;
+
+  // Projected remaining seconds and buffer
+  const remainingQuestions = Math.max(0, totalQuestions - answeredCount);
+  const projectedRemainingSec = userAvgSecPerQuestion * remainingQuestions;
+  const projectedBufferSec = timerMode === 'exam_timer'
+    ? secondsRemaining - projectedRemainingSec
+    : 0;
+
+  const formatPaceTime = (secs: number) => {
+    const abs = Math.abs(secs);
+    const m = Math.floor(abs / 60);
+    const s = abs % 60;
+    if (m === 0) return `${s}s`;
+    return `${m}m ${s.toString().padStart(2, '0')}s`;
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20">
@@ -216,6 +301,140 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
               <span>Untimed Review</span>
             </div>
           )}
+
+          {/* Real-Time Pacing Indicator Badge */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowPacingDetails((prev) => !prev)}
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all shadow-sm ${
+                paceStatus === 'ahead'
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 shadow-emerald-500/10'
+                  : paceStatus === 'behind'
+                  ? 'bg-rose-500/15 border-rose-500/40 text-rose-300 hover:bg-rose-500/25 shadow-rose-500/10 animate-pulse'
+                  : 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25 shadow-amber-500/10'
+              }`}
+              title="Click to view real-time pacing breakdown and speed management"
+            >
+              {paceStatus === 'ahead' && <Zap className="w-3.5 h-3.5 text-emerald-400" />}
+              {paceStatus === 'behind' && <AlertCircle className="w-3.5 h-3.5 text-rose-400" />}
+              {paceStatus === 'on_track' && <Gauge className="w-3.5 h-3.5 text-amber-400" />}
+
+              <div className="flex flex-col text-left leading-none">
+                <span className="text-[9px] uppercase font-mono tracking-wider opacity-80">
+                  Pace: {paceStatus === 'ahead' ? 'Ahead' : paceStatus === 'behind' ? 'Behind' : 'On Track'}
+                </span>
+                <span className="font-tech-mono font-bold text-xs mt-0.5">
+                  {paceStatus === 'ahead' && `+${formatPaceTime(paceDeltaSeconds)}`}
+                  {paceStatus === 'behind' && `-${formatPaceTime(paceDeltaSeconds)}`}
+                  {paceStatus === 'on_track' && `±${formatPaceTime(Math.abs(paceDeltaSeconds))}`}
+                </span>
+              </div>
+
+              <span className="text-[10px] opacity-60 ml-0.5 hidden sm:inline">
+                {showPacingDetails ? '▲' : '▼'}
+              </span>
+            </button>
+
+            {/* Interactive Pacing Details Dropdown Popover */}
+            {showPacingDetails && (
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 p-4 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl z-50 text-xs space-y-3 animate-in fade-in zoom-in-95">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                  <div className="flex items-center space-x-1.5 text-slate-200 font-bold">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    <span>Real-Time Exam Pacing</span>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
+                    paceStatus === 'ahead'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      : paceStatus === 'behind'
+                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                  }`}>
+                    {paceStatus === 'ahead' ? 'Ahead of Pace' : paceStatus === 'behind' ? 'Behind Schedule' : 'Balanced Pace'}
+                  </span>
+                </div>
+
+                {/* Pacing Visual Bar: Actual vs Target */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                    <span>Questions Progress</span>
+                    <span className="text-white font-bold">{answeredCount} of {totalQuestions} answered</span>
+                  </div>
+                  <div className="relative w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    {/* Target Pace Marker */}
+                    <div
+                      className="absolute top-0 bottom-0 w-1 bg-cyan-400 z-10 shadow-[0_0_8px_rgba(56,189,248,0.8)]"
+                      style={{ left: `${Math.min(100, Math.max(0, (expectedQuestionsAnswered / totalQuestions) * 100))}%` }}
+                      title={`Target Pace: ${expectedQuestionsAnswered.toFixed(1)} questions`}
+                    />
+                    {/* User answered bar */}
+                    <div
+                      className={`h-full transition-all duration-300 ${
+                        paceStatus === 'ahead' ? 'bg-emerald-400' : paceStatus === 'behind' ? 'bg-rose-400' : 'bg-amber-400'
+                      }`}
+                      style={{ width: `${Math.min(100, (answeredCount / totalQuestions) * 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                    <span>Actual: {answeredCount} Qs</span>
+                    <span className="text-cyan-400 font-semibold">Target: {expectedQuestionsAnswered.toFixed(1)} Qs</span>
+                  </div>
+                </div>
+
+                {/* 2x2 Metrics Grid */}
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                    <span className="text-slate-400 block text-[9px] uppercase font-mono">Target Speed</span>
+                    <span className="text-white font-bold font-tech-mono">{formatPaceTime(targetSecPerQuestion)} / item</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                    <span className="text-slate-400 block text-[9px] uppercase font-mono">Your Speed</span>
+                    <span className={`font-bold font-tech-mono ${
+                      userAvgSecPerQuestion <= targetSecPerQuestion ? 'text-emerald-400' : 'text-rose-400'
+                    }`}>
+                      {answeredCount > 0 ? `${formatPaceTime(userAvgSecPerQuestion)} / item` : 'Pending...'}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                    <span className="text-slate-400 block text-[9px] uppercase font-mono">Pace Delta</span>
+                    <span className={`font-bold font-tech-mono ${
+                      paceStatus === 'ahead' ? 'text-emerald-400' : paceStatus === 'behind' ? 'text-rose-400' : 'text-amber-400'
+                    }`}>
+                      {paceDeltaSeconds >= 0 ? `+${formatPaceTime(paceDeltaSeconds)} ahead` : `-${formatPaceTime(paceDeltaSeconds)} behind`}
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                    <span className="text-slate-400 block text-[9px] uppercase font-mono">Projected Buffer</span>
+                    <span className="text-cyan-300 font-bold font-tech-mono">
+                      {timerMode === 'exam_timer' 
+                        ? (projectedBufferSec >= 0 ? `+${formatPaceTime(projectedBufferSec)} spare` : `-${formatPaceTime(projectedBufferSec)} deficit`)
+                        : 'N/A (Untimed)'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Strategic Pace Coaching Tip */}
+                <div className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-[10px] text-slate-300 leading-snug">
+                  {paceStatus === 'ahead' && (
+                    <span className="text-emerald-300">
+                      💡 <strong>Ahead of pace:</strong> You have built a comfortable time reserve. Take your time to double-check structural calculations and flagged questions.
+                    </span>
+                  )}
+                  {paceStatus === 'behind' && (
+                    <span className="text-rose-300">
+                      ⚠️ <strong>Behind pace:</strong> You are currently trailing the target speed. Bookmark complex multi-step problems and answer standard recall items first.
+                    </span>
+                  )}
+                  {paceStatus === 'on_track' && (
+                    <span className="text-amber-300">
+                      🎯 <strong>Optimal pace:</strong> You are matching the official PRC Civil Engineering board examination pace standard. Maintain this focus!
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Quick Actions */}
           <button
@@ -476,10 +695,20 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           <div className="xl:col-span-4 h-[750px] min-h-[520px] sticky top-28">
             <Scratchpad
               isOpen={isScratchpadOpen}
-              onClose={() => setIsScratchpadOpen(false)}
+              onClose={() => {
+                setIsScratchpadOpen(false);
+                syncExamScratchpadRecord({
+                  subject,
+                  year,
+                  month,
+                  storageKeyPrefix: `exam_${subject}_${year}_${month}_`,
+                }).catch((e) => console.warn('Sync on close error:', e));
+              }}
               isDocked={true}
               onToggleDock={() => setIsScratchpadDocked(false)}
-              storageKeyPrefix={`${subject}_${year}_${month}_`}
+              storageKeyPrefix={`exam_${subject}_${year}_${month}_`}
+              title={`${subject} ${month} ${year} Exam Rough Sheets`}
+              documentId={`exam_${subject}_${year}_${month}`}
             />
           </div>
         )}
@@ -567,6 +796,79 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
               <span>SUBMIT EXAMINATION</span>
             </button>
           </div>
+
+          {/* Real-Time Pacing Monitor Card in Palette Column */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1.5">
+                <Gauge className="w-4 h-4 text-cyan-400" />
+                <h4 className="font-arnie text-xs font-bold text-white tracking-wide">
+                  Pacing Monitor
+                </h4>
+              </div>
+              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold font-mono uppercase ${
+                paceStatus === 'ahead'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                  : paceStatus === 'behind'
+                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
+                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              }`}>
+                {paceStatus === 'ahead' ? 'Ahead' : paceStatus === 'behind' ? 'Behind' : 'On Track'}
+              </span>
+            </div>
+
+            {/* Progress: Target Pace Marker vs Actual Questions Answered */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                <span>Progress vs Schedule</span>
+                <span className={`font-bold ${
+                  paceStatus === 'ahead' ? 'text-emerald-400' : paceStatus === 'behind' ? 'text-rose-400' : 'text-amber-400'
+                }`}>
+                  {paceDeltaSeconds >= 0 ? `+${formatPaceTime(paceDeltaSeconds)} ahead` : `-${formatPaceTime(paceDeltaSeconds)} behind`}
+                </span>
+              </div>
+              <div className="relative w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                {/* Ideal Pace Marker */}
+                <div
+                  className="absolute top-0 bottom-0 w-1 bg-cyan-400 z-10 shadow-[0_0_8px_rgba(56,189,248,1)]"
+                  style={{ left: `${Math.min(100, Math.max(0, (expectedQuestionsAnswered / totalQuestions) * 100))}%` }}
+                  title={`Ideal Pace Target: ${expectedQuestionsAnswered.toFixed(1)} items`}
+                />
+                {/* Actual Answered Bar */}
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    paceStatus === 'ahead' ? 'bg-emerald-400' : paceStatus === 'behind' ? 'bg-rose-400' : 'bg-amber-400'
+                  }`}
+                  style={{ width: `${Math.min(100, (answeredCount / totalQuestions) * 100)}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[9px] text-slate-500 font-mono">
+                <span>Answered: {answeredCount}</span>
+                <span className="text-cyan-400">Target: {expectedQuestionsAnswered.toFixed(1)}</span>
+              </div>
+            </div>
+
+            {/* Speed Comparison Grid */}
+            <div className="grid grid-cols-2 gap-2 text-center text-[10px] font-mono">
+              <div className="p-1.5 rounded-lg bg-slate-950/70 border border-slate-800">
+                <span className="text-slate-500 block text-[8px] uppercase">TARGET PACE</span>
+                <span className="text-slate-200 font-bold">{formatPaceTime(targetSecPerQuestion)}/item</span>
+              </div>
+              <div className="p-1.5 rounded-lg bg-slate-950/70 border border-slate-800">
+                <span className="text-slate-500 block text-[8px] uppercase">YOUR SPEED</span>
+                <span className={`font-bold ${userAvgSecPerQuestion <= targetSecPerQuestion ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {answeredCount > 0 ? `${formatPaceTime(userAvgSecPerQuestion)}/item` : '—'}
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Coaching Advice */}
+            <p className="text-[10px] text-slate-400 leading-tight">
+              {paceStatus === 'ahead' && '⚡ Excellent time management. You have buffer to review flagged questions.'}
+              {paceStatus === 'behind' && '⚠️ Pacing alert: Consider answering standard items first to recover time.'}
+              {paceStatus === 'on_track' && '🎯 Steady pace matching standard CE Board time allotment.'}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -574,10 +876,20 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
       {isScratchpadOpen && !isScratchpadDocked && (
         <Scratchpad
           isOpen={isScratchpadOpen}
-          onClose={() => setIsScratchpadOpen(false)}
+          onClose={() => {
+            setIsScratchpadOpen(false);
+            syncExamScratchpadRecord({
+              subject,
+              year,
+              month,
+              storageKeyPrefix: `exam_${subject}_${year}_${month}_`,
+            }).catch((e) => console.warn('Sync on close error:', e));
+          }}
           isDocked={false}
           onToggleDock={() => setIsScratchpadDocked(true)}
-          storageKeyPrefix={`${subject}_${year}_${month}_`}
+          storageKeyPrefix={`exam_${subject}_${year}_${month}_`}
+          title={`${subject} ${month} ${year} Exam Rough Sheets`}
+          documentId={`exam_${subject}_${year}_${month}`}
         />
       )}
 

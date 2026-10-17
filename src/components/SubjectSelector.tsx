@@ -37,6 +37,7 @@ import {
   RotateCcw,
   Trash2,
   ArrowRight,
+  PenTool,
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
 import { TerrariumOrb3D } from './TerrariumOrb3D';
@@ -686,6 +687,11 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                     <span className="text-emerald-400 font-medium">Untimed Practice</span>
                   </>
                 )}
+                <span className="text-slate-600">•</span>
+                <div className="flex items-center space-x-1.5 font-tech-mono text-cyan-400">
+                  <PenTool className="w-3.5 h-3.5" />
+                  <span>Rough Sheets Saved</span>
+                </div>
               </div>
 
               {/* Progress bar */}

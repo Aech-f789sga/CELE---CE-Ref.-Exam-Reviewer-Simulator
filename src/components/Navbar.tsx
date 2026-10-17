@@ -16,14 +16,15 @@ import {
   Megaphone,
   KeyRound,
   Sparkles,
+  PenTool,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Cube3D } from './Cube3D';
 
 interface NavbarProps {
-  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin';
-  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin') => void;
+  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad';
+  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad') => void;
   activeSubject: SubjectArea;
   onSubjectChange?: (subject: SubjectArea) => void;
   isExamRunning: boolean;
@@ -162,6 +163,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <BarChart3 className="w-4 h-4" />
                   <span>Performance</span>
+                </button>
+
+                <button
+                  onClick={() => setCurrentTab('scratchpad')}
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                    currentTab === 'scratchpad' ? 'shadow-md font-semibold' : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: currentTab === 'scratchpad' ? themeConfig.accent : 'transparent',
+                    color: currentTab === 'scratchpad' ? themeConfig.accentText : themeConfig.textSecondary,
+                  }}
+                  title="View, edit, and export rough sheets, calculations, and standalone notebooks"
+                >
+                  <PenTool className="w-4 h-4" />
+                  <span>Scratchpads</span>
                 </button>
 
                 {/* Admin Tab (Only visible to admin) */}

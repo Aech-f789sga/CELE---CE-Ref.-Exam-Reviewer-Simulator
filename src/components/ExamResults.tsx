@@ -16,11 +16,23 @@ import {
   BarChart3,
   Lightbulb,
   FileSpreadsheet,
-  BookOpen,
   Filter,
+  PenTool,
+  Tablet,
+  FileCode,
+  Download,
+  Layers,
+  BookOpen,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
+import { Scratchpad } from './Scratchpad';
+import {
+  exportScratchpadBundle,
+  generateScratchpadSvg,
+  downloadFile,
+  idbLoadCanvas,
+} from '../utils/scratchpadStorage';
 
 interface ExamResultsProps {
   subject: SubjectArea;
@@ -49,6 +61,57 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'incorrect' | 'correct'>('all');
   const [expandedSolutions, setExpandedSolutions] = useState<Record<string, boolean>>({});
+  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+
+  const scratchpadPrefix = `exam_${subject}_${year}_${month}_`;
+  const scratchpadDocId = `exam_${subject}_${year}_${month}`;
+
+  const handleExportCescratch = async () => {
+    const bundle = await exportScratchpadBundle(scratchpadDocId);
+    if (!bundle) {
+      alert('No scratchpad drawings recorded for this session yet.');
+      return;
+    }
+    const jsonStr = JSON.stringify(bundle, null, 2);
+    downloadFile(jsonStr, `${subject}_${month}_${year}_Exam_Scratchpad.cescratch`, 'application/json');
+    setExportMenuOpen(false);
+  };
+
+  const handleExportSvg = async () => {
+    const sheet1Data = (await idbLoadCanvas(`${scratchpadPrefix}ce_scratchpad_canvas_page_1`)) || undefined;
+    const svgStr = generateScratchpadSvg(
+      {
+        id: scratchpadDocId,
+        title: `${subject} ${month} ${year} Exam Rough Sheets`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        type: 'exam_session',
+        paperTexture: 'blueprint',
+        paperBgColor: '#06131c',
+        dpi: 600,
+        notesText: '',
+        totalPages: 5,
+      },
+      1,
+      sheet1Data
+    );
+    downloadFile(svgStr, `${subject}_${month}_${year}_Exam_RoughSheet_1.svg`, 'image/svg+xml');
+    setExportMenuOpen(false);
+  };
+
+  const handleExportPng = async () => {
+    const sheet1Data = await idbLoadCanvas(`${scratchpadPrefix}ce_scratchpad_canvas_page_1`);
+    if (!sheet1Data) {
+      alert('Sheet 1 has no drawing yet.');
+      return;
+    }
+    const a = document.createElement('a');
+    a.download = `${subject}_${month}_${year}_Exam_Sheet_1_600DPI.png`;
+    a.href = sheet1Data;
+    a.click();
+    setExportMenuOpen(false);
+  };
 
   const subjectConfig = SUBJECT_CONFIGS[subject];
 
@@ -214,6 +277,93 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             <Home className="w-4 h-4" />
             <span>Portal Home</span>
           </button>
+        </div>
+      </div>
+
+      {/* EXAM SCRATCHPAD & ROUGH CALCULATIONS RECORD */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-cyan-950/40 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/30 shrink-0">
+            <PenTool className="w-5 h-5" />
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center space-x-2">
+              <h3 className="font-arnie text-sm sm:text-base font-bold text-white tracking-wide">
+                Exam Scratchpad &amp; Rough Calculations
+              </h3>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                5 Sheets Saved
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 max-w-xl">
+              All rough calculations, drawings, and notes created during this exam session were saved with your submission.
+            </p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsScratchpadOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all shadow-md shadow-cyan-500/20 cursor-pointer"
+          >
+            <PenTool className="w-3.5 h-3.5" />
+            <span>Open &amp; Review Scratchpad</span>
+          </button>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setExportMenuOpen((prev) => !prev)}
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors cursor-pointer"
+              title="Download Scratchpad files for tablets or other apps"
+            >
+              <Download className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Download Files</span>
+              <span className="text-[8px]">▼</span>
+            </button>
+
+            {exportMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-56 p-2 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-40 text-xs space-y-1 animate-in fade-in zoom-in-95 backdrop-blur-xl">
+                <button
+                  type="button"
+                  onClick={handleExportCescratch}
+                  className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
+                >
+                  <Tablet className="w-3.5 h-3.5 text-cyan-400" />
+                  <div>
+                    <div className="font-semibold text-[11px]">.cescratch (Universal)</div>
+                    <div className="text-[9px] text-slate-500">Editable bundle for tablets/apps</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportSvg}
+                  className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-amber-400" />
+                  <div>
+                    <div className="font-semibold text-[11px]">.svg (Vector / Tablets)</div>
+                    <div className="text-[9px] text-slate-500">GoodNotes, Notability, Procreate</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportPng}
+                  className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                  <div>
+                    <div className="font-semibold text-[11px]">.png (600+ DPI Archival)</div>
+                    <div className="text-[9px] text-slate-500">Full ultra-HD raster print</div>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -484,6 +634,18 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
           })}
         </div>
       </div>
+
+      {/* Exam Scratchpad Modal */}
+      {isScratchpadOpen && (
+        <Scratchpad
+          isOpen={isScratchpadOpen}
+          onClose={() => setIsScratchpadOpen(false)}
+          isDocked={false}
+          storageKeyPrefix={scratchpadPrefix}
+          title={`${subject} ${month} ${year} Exam Rough Sheets (${ratingPercentage}%)`}
+          documentId={scratchpadDocId}
+        />
+      )}
     </div>
   );
 };

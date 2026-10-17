@@ -35,6 +35,8 @@ import { Matilda3D } from './components/Matilda3D';
 import { ParticleSystem3D } from './components/ParticleSystem3D';
 import { SubmergedEra3D } from './components/SubmergedEra3D';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
+import { ScratchpadHub } from './components/ScratchpadHub';
+import { syncExamScratchpadRecord } from './utils/scratchpadStorage';
 import {
   Sparkles,
   Sliders,
@@ -52,8 +54,9 @@ import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './ser
 
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<
-    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin'
+    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad'
   >('setup');
+  const [selectedScratchpadId, setSelectedScratchpadId] = useState<string | undefined>(undefined);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [latestAnnouncement, setLatestAnnouncement] = useState<SystemAnnouncement | null>(null);
   const { themeConfig } = useTheme();
@@ -133,6 +136,16 @@ function MainApp() {
     flaggedQuestions: Record<string, boolean>;
     secondsElapsed: number;
   }) => {
+    const scratchpadId = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}`;
+    const storageKeyPrefix = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}_`;
+
+    syncExamScratchpadRecord({
+      subject: selectedSubject,
+      year: selectedYear,
+      month: selectedMonth,
+      storageKeyPrefix,
+    }).catch((e) => console.warn('Failed to sync scratchpad record on pause in App:', e));
+
     const sessionToSave: PausedExamSession = {
       id: getSessionKey(selectedSubject, selectedYear, selectedMonth),
       subject: selectedSubject,
@@ -147,6 +160,7 @@ function MainApp() {
       savedAt: new Date().toISOString(),
       totalQuestions: activeQuestions.length,
       answeredCount: Object.keys(state.userAnswers).length,
+      scratchpadId,
     };
     savePausedSession(sessionToSave);
     setIsExamRunning(false);
@@ -167,9 +181,23 @@ function MainApp() {
 
     const ratingPercentage = Math.round((correctCount / activeQuestions.length) * 10000) / 100;
     const passedArea = ratingPercentage >= 50.0;
+    const attemptId = `attempt-${Date.now()}`;
+    const scratchpadId = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}`;
+    const storageKeyPrefix = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}_`;
+
+    syncExamScratchpadRecord({
+      subject: selectedSubject,
+      year: selectedYear,
+      month: selectedMonth,
+      storageKeyPrefix,
+      attemptId,
+      score: correctCount,
+      totalQuestions: activeQuestions.length,
+      ratingPercentage,
+    }).catch((e) => console.warn('Failed to sync scratchpad record on submit in App:', e));
 
     const newAttempt: ExamAttempt = {
-      id: `attempt-${Date.now()}`,
+      id: attemptId,
       attemptIndexInSubject: 1, // Will be computed inside saveAttempt
       subject: selectedSubject,
       year: selectedYear,
@@ -183,6 +211,7 @@ function MainApp() {
       totalQuestions: activeQuestions.length,
       ratingPercentage,
       passedArea,
+      scratchpadId,
     };
 
     const updatedList = saveAttempt(newAttempt);
@@ -426,6 +455,20 @@ function MainApp() {
                     handleSubjectChange(sub);
                     setCurrentTab('setup');
                   }}
+                  onOpenScratchpad={(padId) => {
+                    setSelectedScratchpadId(padId);
+                    setCurrentTab('scratchpad');
+                  }}
+                />
+              )}
+
+              {currentTab === 'scratchpad' && (
+                <ScratchpadHub
+                  onBackToPortal={() => {
+                    setSelectedScratchpadId(undefined);
+                    setCurrentTab('setup');
+                  }}
+                  initialOpenPadId={selectedScratchpadId}
                 />
               )}
 
