@@ -24,6 +24,14 @@ import {
   FileCode,
   Save,
   Check,
+  LassoSelect,
+  Square,
+  Circle,
+  Triangle,
+  ArrowRight,
+  Spline,
+  Copy,
+  Sliders,
 } from 'lucide-react';
 import {
   generateScratchpadSvg,
@@ -33,7 +41,37 @@ import {
   getScratchpadById,
 } from '../utils/scratchpadStorage';
 
-export type ToolType = 'pen' | 'pencil' | 'calligraphy' | 'highlighter' | 'eraser' | 'bucket';
+export type ToolType =
+  | 'pen'
+  | 'pencil'
+  | 'calligraphy'
+  | 'highlighter'
+  | 'eraser'
+  | 'bucket'
+  | 'shape'
+  | 'lasso';
+
+export type ShapeType =
+  | 'line'
+  | 'arrow'
+  | 'dimension'
+  | 'rect'
+  | 'circle'
+  | 'triangle'
+  | 'coord';
+
+export interface LassoSelection {
+  canvas: HTMLCanvasElement;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  initialX: number;
+  initialY: number;
+  initialWidth: number;
+  initialHeight: number;
+}
+
 export type PaperTexture = 'blueprint' | 'graph' | 'lined' | 'blank';
 export type ScratchpadTab = 'draw' | 'notes' | 'calc';
 
@@ -287,6 +325,31 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dpiScale = dpi / 96; // 600 DPI = 6.25x scale factor, 720 DPI = 7.5x, 1200 DPI = 12.5x
 
+  // Line Smoother & Correction Intensity State
+  const [smootherIntensity, setSmootherIntensity] = useState<number>(50); // 0 (Off), 25, 50, 75, 95 (Ultra)
+  const [showSmootherMenu, setShowSmootherMenu] = useState<boolean>(false);
+  const smoothedPointRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Shapes & Lines Mode State
+  const [shapeType, setShapeType] = useState<ShapeType>('line');
+  const [isShapeFilled, setIsShapeFilled] = useState<boolean>(false);
+  const [isDashed, setIsDashed] = useState<boolean>(false);
+  const [showShapeMenu, setShowShapeMenu] = useState<boolean>(false);
+  const shapeStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Hold-to-Straighten & Shape Snap State
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHeldStraightRef = useRef<boolean>(false);
+  const strokePointsRef = useRef<{ x: number; y: number }[]>([]);
+  const strokeSnapshotRef = useRef<ImageData | null>(null);
+  const [snapFeedback, setSnapFeedback] = useState<{ x: number; y: number; text: string } | null>(null);
+
+  // Freehand Lasso Selection & Transform State
+  const [lassoSelection, setLassoSelection] = useState<LassoSelection | null>(null);
+  const [activeLassoPoints, setActiveLassoPoints] = useState<{ x: number; y: number }[] | null>(null);
+  const isLassoDrawingRef = useRef<boolean>(false);
+  const lassoPointsRef = useRef<{ x: number; y: number }[]>([]);
+
   // Floating Window Geometry (when not docked)
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
     if (typeof window !== 'undefined') {
@@ -460,6 +523,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   // Switch Page: save current, load next
   const switchPage = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+    if (lassoSelection) {
+      commitLassoSelection();
+    }
     saveCanvasToStorage(currentPage);
     setCurrentPage(newPage);
   };
@@ -754,6 +820,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
   // Safe flush on Close
   const handleClose = () => {
+    if (lassoSelection) {
+      commitLassoSelection();
+    }
     saveCanvasToStorage(currentPage);
     if (documentId) {
       const thumb = canvasRef.current?.toDataURL('image/png');
@@ -981,15 +1050,550 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     requestAnimationFrame(stepAnimation);
   };
 
+  // ----------------------------------------------------
+  // Shapes & Lines Engine for Engineering Drawings
+  // ----------------------------------------------------
+  const drawShape = (
+    ctx: CanvasRenderingContext2D,
+    type: ShapeType,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    currentColor: string,
+    currentThickness: number,
+    scale: number,
+    filled: boolean,
+    dashed: boolean
+  ) => {
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = currentColor;
+    ctx.fillStyle = currentColor;
+    ctx.lineWidth = currentThickness * scale;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (dashed) {
+      ctx.setLineDash([8 * scale, 6 * scale]);
+    } else {
+      ctx.setLineDash([]);
+    }
+
+    if (type === 'line') {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    } else if (type === 'arrow') {
+      // Directed vector line with solid arrowhead
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const headLen = Math.max(14 * scale, currentThickness * scale * 3.5);
+      ctx.beginPath();
+      ctx.setLineDash([]);
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(
+        x2 - headLen * Math.cos(angle - Math.PI / 6),
+        y2 - headLen * Math.sin(angle - Math.PI / 6)
+      );
+      ctx.lineTo(
+        x2 - headLen * Math.cos(angle + Math.PI / 6),
+        y2 - headLen * Math.sin(angle + Math.PI / 6)
+      );
+      ctx.closePath();
+      ctx.fill();
+    } else if (type === 'dimension') {
+      // Structural dimensioning line: Extension ticks, double arrowheads, and distance measurement
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const tickLen = 14 * scale;
+      const perpAngle = angle + Math.PI / 2;
+
+      // Tick 1
+      ctx.beginPath();
+      ctx.moveTo(x1 - tickLen * Math.cos(perpAngle), y1 - tickLen * Math.sin(perpAngle));
+      ctx.lineTo(x1 + tickLen * Math.cos(perpAngle), y1 + tickLen * Math.sin(perpAngle));
+      ctx.stroke();
+
+      // Tick 2
+      ctx.beginPath();
+      ctx.moveTo(x2 - tickLen * Math.cos(perpAngle), y2 - tickLen * Math.sin(perpAngle));
+      ctx.lineTo(x2 + tickLen * Math.cos(perpAngle), y2 + tickLen * Math.sin(perpAngle));
+      ctx.stroke();
+
+      // Dimension main line
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      // Dimension text badge
+      const distPx = Math.round(Math.hypot(x2 - x1, y2 - y1) / scale);
+      const distM = (distPx / 100).toFixed(2);
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.font = `bold ${Math.round(11 * scale)}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      const label = `${distM} m (${distPx}px)`;
+      const textMetrics = ctx.measureText(label);
+      ctx.fillStyle = 'rgba(6, 19, 28, 0.85)';
+      ctx.fillRect(
+        midX - textMetrics.width / 2 - 4 * scale,
+        midY - 14 * scale,
+        textMetrics.width + 8 * scale,
+        14 * scale
+      );
+      ctx.fillStyle = currentColor;
+      ctx.fillText(label, midX, midY - 2 * scale);
+      ctx.restore();
+    } else if (type === 'rect') {
+      const rx = Math.min(x1, x2);
+      const ry = Math.min(y1, y2);
+      const rw = Math.abs(x2 - x1);
+      const rh = Math.abs(y2 - y1);
+      if (filled) {
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.fillRect(rx, ry, rw, rh);
+        ctx.restore();
+      }
+      ctx.strokeRect(rx, ry, rw, rh);
+    } else if (type === 'circle') {
+      const cx = (x1 + x2) / 2;
+      const cy = (y1 + y2) / 2;
+      const rx = Math.abs(x2 - x1) / 2;
+      const ry = Math.abs(y2 - y1) / 2;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, Math.max(1, rx), Math.max(1, ry), 0, 0, 2 * Math.PI);
+      if (filled) {
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.stroke();
+    } else if (type === 'triangle') {
+      // Right triangle / truss triangle
+      ctx.beginPath();
+      ctx.moveTo(x1, y2);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x1, y1);
+      ctx.closePath();
+      if (filled) {
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.stroke();
+    } else if (type === 'coord') {
+      // X-Y Coordinate axes
+      const originX = x1;
+      const originY = y2;
+      ctx.beginPath();
+      ctx.moveTo(originX, originY);
+      ctx.lineTo(x2, originY);
+      ctx.moveTo(originX, originY);
+      ctx.lineTo(originX, y1);
+      ctx.stroke();
+
+      const head = 10 * scale;
+      ctx.beginPath();
+      ctx.moveTo(x2, originY);
+      ctx.lineTo(x2 - head, originY - head / 2);
+      ctx.lineTo(x2 - head, originY + head / 2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(originX, y1);
+      ctx.lineTo(originX - head / 2, y1 + head);
+      ctx.lineTo(originX + head / 2, y1 + head);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.save();
+      ctx.font = `bold ${Math.round(10 * scale)}px sans-serif`;
+      ctx.fillText('x', x2 + 4 * scale, originY + 4 * scale);
+      ctx.fillText('y', originX - 12 * scale, y1 - 4 * scale);
+      ctx.restore();
+    }
+    ctx.restore();
+  };
+
+  // ----------------------------------------------------
+  // Hold-to-Straighten & Shape Snap Trigger
+  // ----------------------------------------------------
+  const triggerHoldStraighten = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    if (!isDrawingRef.current || strokePointsRef.current.length < 3) return;
+    if (!strokeSnapshotRef.current) return;
+
+    isHeldStraightRef.current = true;
+    const start = strokePointsRef.current[0];
+    const end = strokePointsRef.current[strokePointsRef.current.length - 1];
+
+    ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+
+    const pt = getCanvasPoint(0, 0);
+    const scale = pt.scale;
+    const dist = Math.hypot(end.x - start.x, end.y - start.y);
+
+    configureContext(ctx, tool, color, thickness, scale);
+
+    // If path is closed loop (circle or box)
+    if (dist < 45 * scale && strokePointsRef.current.length > 25) {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const p of strokePointsRef.current) {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+      }
+      const w = maxX - minX;
+      const h = maxY - minY;
+      const aspect = w / Math.max(1, h);
+
+      if (aspect >= 0.75 && aspect <= 1.33) {
+        const cx = (minX + maxX) / 2;
+        const cy = (minY + maxY) / 2;
+        const r = (w + h) / 4;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+        ctx.stroke();
+        setSnapFeedback({ x: cx, y: cy, text: 'Circle Snapped ⭕' });
+      } else {
+        ctx.strokeRect(minX, minY, w, h);
+        setSnapFeedback({ x: (minX + maxX) / 2, y: (minY + maxY) / 2, text: 'Box Snapped ⬛' });
+      }
+    } else {
+      // Straighten line from start to held end point
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
+      setSnapFeedback({ x: end.x, y: end.y, text: 'Line Straightened ⚡' });
+    }
+
+    setTimeout(() => setSnapFeedback(null), 1200);
+  };
+
+  // ----------------------------------------------------
+  // Freehand Lasso Extraction & Transform Helpers
+  // ----------------------------------------------------
+  const commitLassoSelection = () => {
+    if (!lassoSelection) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(
+      lassoSelection.canvas,
+      0,
+      0,
+      lassoSelection.canvas.width,
+      lassoSelection.canvas.height,
+      lassoSelection.x,
+      lassoSelection.y,
+      lassoSelection.width,
+      lassoSelection.height
+    );
+    ctx.restore();
+
+    setLassoSelection(null);
+    pushUndoState();
+    saveCanvasToStorage(currentPage);
+  };
+
+  const cancelLassoSelection = () => {
+    if (!lassoSelection) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(
+      lassoSelection.canvas,
+      0,
+      0,
+      lassoSelection.canvas.width,
+      lassoSelection.canvas.height,
+      lassoSelection.initialX,
+      lassoSelection.initialY,
+      lassoSelection.initialWidth,
+      lassoSelection.initialHeight
+    );
+    ctx.restore();
+
+    setLassoSelection(null);
+  };
+
+  const duplicateLassoSelection = () => {
+    if (!lassoSelection) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(
+      lassoSelection.canvas,
+      0,
+      0,
+      lassoSelection.canvas.width,
+      lassoSelection.canvas.height,
+      lassoSelection.x,
+      lassoSelection.y,
+      lassoSelection.width,
+      lassoSelection.height
+    );
+    ctx.restore();
+
+    setLassoSelection((prev) =>
+      prev
+        ? {
+            ...prev,
+            x: prev.x + 25 * dpiScale,
+            y: prev.y + 25 * dpiScale,
+          }
+        : null
+    );
+
+    pushUndoState();
+    saveCanvasToStorage(currentPage);
+  };
+
+  const deleteLassoSelection = () => {
+    setLassoSelection(null);
+    pushUndoState();
+    saveCanvasToStorage(currentPage);
+  };
+
+  const executeLassoCut = (points: { x: number; y: number }[]) => {
+    if (points.length < 5) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const p of points) {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    }
+
+    const w = Math.ceil(maxX - minX);
+    const h = Math.ceil(maxY - minY);
+    if (w < 8 || h < 8) return;
+
+    // Create offscreen canvas for the cut polygon
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = w;
+    offCanvas.height = h;
+    const offCtx = offCanvas.getContext('2d');
+    if (!offCtx) return;
+
+    // 1. Clip offscreen canvas to exact freehand loop
+    offCtx.save();
+    offCtx.beginPath();
+    points.forEach((p, idx) => {
+      const lx = p.x - minX;
+      const ly = p.y - minY;
+      if (idx === 0) offCtx.moveTo(lx, ly);
+      else offCtx.lineTo(lx, ly);
+    });
+    offCtx.closePath();
+    offCtx.clip();
+
+    // 2. Draw from main canvas into the offscreen cutout
+    offCtx.drawImage(canvas, minX, minY, w, h, 0, 0, w, h);
+    offCtx.restore();
+
+    // 3. Erase the exact enclosed polygon from main canvas
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    points.forEach((p, idx) => {
+      if (idx === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // 4. Activate transform selection
+    setLassoSelection({
+      canvas: offCanvas,
+      x: minX,
+      y: minY,
+      width: w,
+      height: h,
+      initialX: minX,
+      initialY: minY,
+      initialWidth: w,
+      initialHeight: h,
+    });
+  };
+
+  // ----------------------------------------------------
+  // Interactive Move & Resize Handles for Lasso Selection
+  // ----------------------------------------------------
+  const handleLassoHandleDown = (
+    type: 'move' | 'nw' | 'ne' | 'sw' | 'se' | 'n' | 's' | 'e' | 'w',
+    e: React.PointerEvent
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!lassoSelection || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+    const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialSelX = lassoSelection.x;
+    const initialSelY = lassoSelection.y;
+    const initialSelW = lassoSelection.width;
+    const initialSelH = lassoSelection.height;
+
+    const handleWindowPointerMove = (moveEvent: PointerEvent) => {
+      const dx = (moveEvent.clientX - startX) * scaleX;
+      const dy = (moveEvent.clientY - startY) * scaleY;
+
+      setLassoSelection((prev) => {
+        if (!prev) return null;
+        let newX = prev.x;
+        let newY = prev.y;
+        let newW = prev.width;
+        let newH = prev.height;
+
+        if (type === 'move') {
+          newX = initialSelX + dx;
+          newY = initialSelY + dy;
+        } else if (type === 'se') {
+          newW = Math.max(20 * scaleX, initialSelW + dx);
+          newH = Math.max(20 * scaleY, initialSelH + dy);
+        } else if (type === 'e') {
+          newW = Math.max(20 * scaleX, initialSelW + dx);
+        } else if (type === 's') {
+          newH = Math.max(20 * scaleY, initialSelH + dy);
+        } else if (type === 'nw') {
+          const candW = initialSelW - dx;
+          const candH = initialSelH - dy;
+          if (candW > 20 * scaleX) {
+            newX = initialSelX + dx;
+            newW = candW;
+          }
+          if (candH > 20 * scaleY) {
+            newY = initialSelY + dy;
+            newH = candH;
+          }
+        } else if (type === 'ne') {
+          const candH = initialSelH - dy;
+          newW = Math.max(20 * scaleX, initialSelW + dx);
+          if (candH > 20 * scaleY) {
+            newY = initialSelY + dy;
+            newH = candH;
+          }
+        } else if (type === 'sw') {
+          const candW = initialSelW - dx;
+          if (candW > 20 * scaleX) {
+            newX = initialSelX + dx;
+            newW = candW;
+          }
+          newH = Math.max(20 * scaleY, initialSelH + dy);
+        } else if (type === 'n') {
+          const candH = initialSelH - dy;
+          if (candH > 20 * scaleY) {
+            newY = initialSelY + dy;
+            newH = candH;
+          }
+        } else if (type === 'w') {
+          const candW = initialSelW - dx;
+          if (candW > 20 * scaleX) {
+            newX = initialSelX + dx;
+            newW = candW;
+          }
+        }
+
+        return {
+          ...prev,
+          x: newX,
+          y: newY,
+          width: newW,
+          height: newH,
+        };
+      });
+    };
+
+    const handleWindowPointerUp = () => {
+      window.removeEventListener('pointermove', handleWindowPointerMove);
+      window.removeEventListener('pointerup', handleWindowPointerUp);
+    };
+
+    window.addEventListener('pointermove', handleWindowPointerMove);
+    window.addEventListener('pointerup', handleWindowPointerUp);
+  };
+
+  // ----------------------------------------------------
+  // Main Pointer Event Handlers
+  // ----------------------------------------------------
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // If there is an active lasso selection and user clicked outside, commit it
+    if (lassoSelection) {
+      commitLassoSelection();
+    }
+
+    const pt = getCanvasPoint(e.clientX, e.clientY);
+
+    // Handle Freehand Lasso Drawing
+    if (tool === 'lasso') {
+      isLassoDrawingRef.current = true;
+      lassoPointsRef.current = [{ x: pt.x, y: pt.y }];
+      setActiveLassoPoints([{ x: pt.x, y: pt.y }]);
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    }
+
+    // Handle Geometric Shapes Drawing
+    if (tool === 'shape') {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      isDrawingRef.current = true;
+      shapeStartRef.current = { x: pt.x, y: pt.y };
+      strokeSnapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    }
+
     // Handle Color Bucket Fill
     if (tool === 'bucket') {
       if (isFilling) return;
-      const pt = getCanvasPoint(e.clientX, e.clientY);
       const containerRect = containerRef.current?.getBoundingClientRect();
       if (containerRect) {
         setFillRipple({
@@ -1003,47 +1607,186 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       return;
     }
 
+    // Freehand Drawing Tools (Pen, Pencil, Calligraphy, Highlighter, Eraser)
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     canvas.setPointerCapture(e.pointerId);
 
-    const pt = getCanvasPoint(e.clientX, e.clientY);
     isDrawingRef.current = true;
     lastPointRef.current = { x: pt.x, y: pt.y };
+    smoothedPointRef.current = { x: pt.x, y: pt.y };
+    strokePointsRef.current = [{ x: pt.x, y: pt.y }];
+    isHeldStraightRef.current = false;
+    strokeSnapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
     // Configure Context based on Tool Texture and High-DPI Scale
     configureContext(ctx, tool, color, thickness, pt.scale);
 
     // Initial dot
     drawStroke(ctx, pt.x, pt.y, pt.x + 0.1, pt.y + 0.1, pt.scale);
+
+    // Start hold-to-straighten timer if not eraser
+    if (tool !== 'eraser') {
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = setTimeout(() => {
+        triggerHoldStraighten();
+      }, 500);
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (tool === 'bucket') return;
-    if (!isDrawingRef.current || !lastPointRef.current) return;
-    e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    const currentPt = getCanvasPoint(e.clientX, e.clientY);
+
+    // 1. Freehand Lasso Loop update
+    if (tool === 'lasso' && isLassoDrawingRef.current) {
+      e.preventDefault();
+      lassoPointsRef.current.push({ x: currentPt.x, y: currentPt.y });
+      setActiveLassoPoints([...lassoPointsRef.current]);
+      return;
+    }
+
+    // 2. Geometric Shape live drag preview
+    if (tool === 'shape' && isDrawingRef.current && shapeStartRef.current && strokeSnapshotRef.current) {
+      e.preventDefault();
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+      drawShape(
+        ctx,
+        shapeType,
+        shapeStartRef.current.x,
+        shapeStartRef.current.y,
+        currentPt.x,
+        currentPt.y,
+        color,
+        thickness,
+        currentPt.scale,
+        isShapeFilled,
+        isDashed
+      );
+      return;
+    }
+
+    // 3. Freehand Stroke drawing
+    if (!isDrawingRef.current || !lastPointRef.current) return;
+    e.preventDefault();
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const currentPt = getCanvasPoint(e.clientX, e.clientY);
-    configureContext(ctx, tool, color, thickness, currentPt.scale);
-    drawStroke(ctx, lastPointRef.current.x, lastPointRef.current.y, currentPt.x, currentPt.y, currentPt.scale);
-    lastPointRef.current = { x: currentPt.x, y: currentPt.y };
+    // If hold-to-straighten already snapped, pivot the straight line to the moving pointer
+    if (isHeldStraightRef.current && strokeSnapshotRef.current && strokePointsRef.current.length > 0) {
+      ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+      configureContext(ctx, tool, color, thickness, currentPt.scale);
+      ctx.beginPath();
+      ctx.moveTo(strokePointsRef.current[0].x, strokePointsRef.current[0].y);
+      ctx.lineTo(currentPt.x, currentPt.y);
+      ctx.stroke();
+      strokePointsRef.current[strokePointsRef.current.length - 1] = { x: currentPt.x, y: currentPt.y };
+      return;
+    }
+
+    // Reset hold timer since pointer is still moving
+    if (tool !== 'eraser') {
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = setTimeout(() => {
+        triggerHoldStraighten();
+      }, 500);
+    }
+
+    // Line Smoother Streamline Algorithm with Correction Intensity
+    if (smootherIntensity > 0 && tool !== 'eraser') {
+      const factor = 1 - (smootherIntensity / 100) * 0.85;
+      const prev = smoothedPointRef.current || lastPointRef.current;
+      const targetX = prev.x + (currentPt.x - prev.x) * factor;
+      const targetY = prev.y + (currentPt.y - prev.y) * factor;
+      smoothedPointRef.current = { x: targetX, y: targetY };
+
+      configureContext(ctx, tool, color, thickness, currentPt.scale);
+      drawStroke(ctx, lastPointRef.current.x, lastPointRef.current.y, targetX, targetY, currentPt.scale);
+      lastPointRef.current = { x: targetX, y: targetY };
+      strokePointsRef.current.push({ x: targetX, y: targetY });
+    } else {
+      configureContext(ctx, tool, color, thickness, currentPt.scale);
+      drawStroke(ctx, lastPointRef.current.x, lastPointRef.current.y, currentPt.x, currentPt.y, currentPt.scale);
+      lastPointRef.current = { x: currentPt.x, y: currentPt.y };
+      strokePointsRef.current.push({ x: currentPt.x, y: currentPt.y });
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (tool === 'bucket') return;
+    const canvas = canvasRef.current;
+
+    // 1. Finish Freehand Lasso Loop
+    if (tool === 'lasso') {
+      if (isLassoDrawingRef.current) {
+        isLassoDrawingRef.current = false;
+        const pts = [...lassoPointsRef.current];
+        setActiveLassoPoints(null);
+        lassoPointsRef.current = [];
+        if (pts.length >= 5) {
+          executeLassoCut(pts);
+        }
+      }
+      if (canvas && canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+      return;
+    }
+
+    // 2. Finish Geometric Shape
+    if (tool === 'shape') {
+      if (isDrawingRef.current && shapeStartRef.current) {
+        const currentPt = getCanvasPoint(e.clientX, e.clientY);
+        const ctx = canvas?.getContext('2d');
+        if (ctx && strokeSnapshotRef.current) {
+          ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+          drawShape(
+            ctx,
+            shapeType,
+            shapeStartRef.current.x,
+            shapeStartRef.current.y,
+            currentPt.x,
+            currentPt.y,
+            color,
+            thickness,
+            currentPt.scale,
+            isShapeFilled,
+            isDashed
+          );
+        }
+        isDrawingRef.current = false;
+        shapeStartRef.current = null;
+        strokeSnapshotRef.current = null;
+        pushUndoState();
+        saveCanvasToStorage(currentPage);
+      }
+      if (canvas && canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+      return;
+    }
+
+    // 3. Finish Freehand Stroke
+    if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
     if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
+    isHeldStraightRef.current = false;
     lastPointRef.current = null;
-    const canvas = canvasRef.current;
+    smoothedPointRef.current = null;
+    strokePointsRef.current = [];
+    strokeSnapshotRef.current = null;
+
     if (canvas && canvas.hasPointerCapture(e.pointerId)) {
       canvas.releasePointerCapture(e.pointerId);
     }
     pushUndoState();
+    saveCanvasToStorage(currentPage);
   };
 
   // Context Configuration for Pen Textures & Localized Pixel Eraser at High-DPI
@@ -1106,7 +1849,6 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     scale: number
   ) => {
     if (tool === 'pencil') {
-      // Add slight organic stipple jitter for genuine pencil graphite texture scaled to DPI
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * 1.6 * scale;
@@ -1114,7 +1856,6 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       ctx.quadraticCurveTo(midX, midY, x2, y2);
       ctx.stroke();
     } else if (tool === 'calligraphy') {
-      // Dynamic chisel nib angle offset
       const dx = x2 - x1;
       const dy = y2 - y1;
       const angle = Math.atan2(dy, dx);
@@ -1125,7 +1866,6 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       ctx.lineTo(x2, y2);
       ctx.stroke();
     } else {
-      // Standard pen, highlighter, or pixel eraser
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
@@ -1581,7 +2321,11 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
             {/* PRECISION PIXEL ERASER (Only erases where hit) */}
             <button
               type="button"
-              onClick={() => setTool('eraser')}
+              onClick={() => {
+                setTool('eraser');
+                setShowShapeMenu(false);
+                setShowSmootherMenu(false);
+              }}
               className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
                 tool === 'eraser'
                   ? 'bg-rose-500 text-slate-950 border border-rose-400 font-bold shadow-sm'
@@ -1592,6 +2336,183 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
               <Eraser className="w-3 h-3" />
               <span>Eraser</span>
             </button>
+
+            {/* GEOMETRIC SHAPES & ENGINEERING LINES */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setTool('shape');
+                  setShowShapeMenu((prev) => !prev);
+                  setShowSmootherMenu(false);
+                }}
+                className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
+                  tool === 'shape'
+                    ? 'bg-emerald-500 text-slate-950 border border-emerald-400 font-bold shadow-sm'
+                    : 'bg-slate-900 border border-slate-800 text-emerald-300 hover:text-white hover:bg-slate-800'
+                }`}
+                title="Shapes & Lines: Straight line, force arrow vector, dimension line, box, circle, triangle, and coordinate axes"
+              >
+                {shapeType === 'line' && <Minus className="w-3 h-3" />}
+                {shapeType === 'arrow' && <ArrowRight className="w-3 h-3" />}
+                {shapeType === 'dimension' && <Minus className="w-3 h-3 text-cyan-300" />}
+                {shapeType === 'rect' && <Square className="w-3 h-3" />}
+                {shapeType === 'circle' && <Circle className="w-3 h-3" />}
+                {shapeType === 'triangle' && <Triangle className="w-3 h-3" />}
+                {shapeType === 'coord' && <span className="text-[10px] font-mono font-bold">XY</span>}
+                <span>Shapes</span>
+                <span className="text-[7px]">▼</span>
+              </button>
+
+              {showShapeMenu && (
+                <div className="absolute left-0 top-full mt-1.5 w-64 p-2.5 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-50 text-[10px] space-y-2 backdrop-blur-xl animate-in fade-in zoom-in-95">
+                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider pb-1 border-b border-slate-800 flex justify-between items-center">
+                    <span>Engineering Shapes & Lines</span>
+                    <span className="text-emerald-400 font-mono">2D Drafting</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1">
+                    {[
+                      { id: 'line' as const, label: 'Straight Line', icon: <Minus className="w-3.5 h-3.5" /> },
+                      { id: 'arrow' as const, label: 'Force Vector', icon: <ArrowRight className="w-3.5 h-3.5" /> },
+                      { id: 'dimension' as const, label: 'Dimension Line', icon: <Minus className="w-3.5 h-3.5 text-cyan-400" /> },
+                      { id: 'rect' as const, label: 'Rectangle / Box', icon: <Square className="w-3.5 h-3.5" /> },
+                      { id: 'circle' as const, label: 'Circle / Pipe', icon: <Circle className="w-3.5 h-3.5" /> },
+                      { id: 'triangle' as const, label: 'Truss Triangle', icon: <Triangle className="w-3.5 h-3.5" /> },
+                      { id: 'coord' as const, label: 'X-Y Axes', icon: <span className="font-mono font-bold text-xs">XY</span> },
+                    ].map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          setShapeType(s.id);
+                          setTool('shape');
+                          setShowShapeMenu(false);
+                        }}
+                        className={`flex items-center space-x-1.5 px-2 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
+                          shapeType === s.id && tool === 'shape'
+                            ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/50 font-bold'
+                            : 'hover:bg-slate-800/80 text-slate-300'
+                        }`}
+                      >
+                        {s.icon}
+                        <span className="truncate">{s.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[9px]">
+                    <label className="flex items-center space-x-1.5 cursor-pointer text-slate-300 hover:text-white">
+                      <input
+                        type="checkbox"
+                        checked={isShapeFilled}
+                        onChange={(e) => setIsShapeFilled(e.target.checked)}
+                        className="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"
+                      />
+                      <span>Fill Interior</span>
+                    </label>
+
+                    <label className="flex items-center space-x-1.5 cursor-pointer text-slate-300 hover:text-white">
+                      <input
+                        type="checkbox"
+                        checked={isDashed}
+                        onChange={(e) => setIsDashed(e.target.checked)}
+                        className="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"
+                      />
+                      <span>Dashed Line</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* FREEHAND LASSO SELECTOR */}
+            <button
+              type="button"
+              onClick={() => {
+                setTool('lasso');
+                setShowShapeMenu(false);
+                setShowSmootherMenu(false);
+              }}
+              className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
+                tool === 'lasso'
+                  ? 'bg-cyan-500 text-slate-950 border border-cyan-400 font-bold shadow-sm'
+                  : 'bg-slate-900 border border-slate-800 text-cyan-300 hover:text-white hover:bg-slate-800'
+              }`}
+              title="Freehand Lasso: Drag a closed loop around any drawings, text, or equations to move or resize them"
+            >
+              <LassoSelect className="w-3 h-3" />
+              <span>Lasso</span>
+            </button>
+
+            {/* LINE SMOOTHER & CORRECTION INTENSITY */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSmootherMenu((prev) => !prev);
+                  setShowShapeMenu(false);
+                }}
+                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
+                  smootherIntensity > 0
+                    ? 'bg-slate-900 border border-amber-400/60 text-amber-300'
+                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
+                }`}
+                title="Line Smoother: Smooths lines and curves to make them more defined with adjustable correction intensity"
+              >
+                <Spline className="w-3 h-3 text-amber-400" />
+                <span>Smooth: {smootherIntensity > 0 ? `${smootherIntensity}%` : 'Off'}</span>
+                <span className="text-[7px]">▼</span>
+              </button>
+
+              {showSmootherMenu && (
+                <div className="absolute left-0 top-full mt-1.5 w-60 p-2.5 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-50 text-[10px] space-y-2 backdrop-blur-xl animate-in fade-in zoom-in-95">
+                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider pb-1 border-b border-slate-800 flex justify-between items-center">
+                    <span>Stroke Smoothing Engine</span>
+                    <span className="text-amber-400 font-mono">{smootherIntensity}% Intensity</span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[9px] text-slate-400">
+                      <span>Raw (0%)</span>
+                      <span>Architect (95%)</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="95"
+                      step="5"
+                      value={smootherIntensity}
+                      onChange={(e) => setSmootherIntensity(parseInt(e.target.value, 10))}
+                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded cursor-pointer"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-800">
+                    {[
+                      { val: 0, label: 'Off' },
+                      { val: 25, label: 'Low (25%)' },
+                      { val: 50, label: 'Med (50%)' },
+                      { val: 75, label: 'High (75%)' },
+                      { val: 95, label: 'Max (95%)' },
+                    ].map((preset) => (
+                      <button
+                        key={preset.val}
+                        type="button"
+                        onClick={() => setSmootherIntensity(preset.val)}
+                        className={`py-1 rounded text-[9px] font-semibold transition-colors cursor-pointer ${
+                          smootherIntensity === preset.val
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'bg-slate-900 border border-slate-800 text-slate-300 hover:text-white'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Stroke Thickness Controls & Indicator */}
@@ -1865,7 +2786,15 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
-              className={`w-full h-full block ${tool === 'bucket' ? 'cursor-pointer' : 'cursor-crosshair'}`}
+              className={`w-full h-full block ${
+                tool === 'bucket'
+                  ? 'cursor-pointer'
+                  : tool === 'lasso'
+                  ? lassoSelection
+                    ? 'cursor-default'
+                    : 'cursor-crosshair'
+                  : 'cursor-crosshair'
+              }`}
               style={{
                 touchAction: 'none',
               }}
@@ -1886,14 +2815,197 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
               />
             )}
 
-            {/* Small Floating Eraser Status Indicator */}
+            {/* Live Freehand Lasso Perimeter Loop (while dragging loop) */}
+            {activeLassoPoints && activeLassoPoints.length > 1 && canvasRef.current && (
+              (() => {
+                const canvas = canvasRef.current;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+
+                const pathData = activeLassoPoints
+                  .map((p, idx) => {
+                    const cx = p.x / scaleX;
+                    const cy = p.y / scaleY;
+                    return `${idx === 0 ? 'M' : 'L'} ${cx.toFixed(1)} ${cy.toFixed(1)}`;
+                  })
+                  .join(' ');
+
+                return (
+                  <svg className="absolute inset-0 pointer-events-none w-full h-full z-40">
+                    <path
+                      d={pathData}
+                      fill="rgba(56, 189, 248, 0.18)"
+                      stroke="#38bdf8"
+                      strokeWidth="2"
+                      strokeDasharray="6 4"
+                      className="filter drop-shadow-[0_0_6px_rgba(56,189,248,0.7)]"
+                    />
+                  </svg>
+                );
+              })()
+            )}
+
+            {/* Active Freehand Lasso Selection Transform Box & 8 Handles */}
+            {lassoSelection && canvasRef.current && (
+              (() => {
+                const canvas = canvasRef.current;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+
+                const cssLeft = lassoSelection.x / scaleX;
+                const cssTop = lassoSelection.y / scaleY;
+                const cssWidth = lassoSelection.width / scaleX;
+                const cssHeight = lassoSelection.height / scaleY;
+
+                return (
+                  <div
+                    className="absolute z-40 select-none animate-in fade-in zoom-in-95 duration-150"
+                    style={{
+                      left: `${cssLeft}px`,
+                      top: `${cssTop}px`,
+                      width: `${cssWidth}px`,
+                      height: `${cssHeight}px`,
+                    }}
+                  >
+                    {/* Move & Dragging Container */}
+                    <div
+                      onPointerDown={(e) => handleLassoHandleDown('move', e)}
+                      className="w-full h-full relative border-2 border-dashed border-cyan-400 bg-cyan-500/10 cursor-move rounded group shadow-2xl transition-all"
+                    >
+                      {/* Render Cutout Canvas Layer */}
+                      <canvas
+                        ref={(node) => {
+                          if (node && lassoSelection) {
+                            node.width = lassoSelection.canvas.width;
+                            node.height = lassoSelection.canvas.height;
+                            const c = node.getContext('2d');
+                            if (c) {
+                              c.clearRect(0, 0, node.width, node.height);
+                              c.drawImage(lassoSelection.canvas, 0, 0);
+                            }
+                          }
+                        }}
+                        className="w-full h-full object-contain pointer-events-none"
+                      />
+
+                      {/* Floating Mini Action Bar */}
+                      <div
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="absolute -top-9 left-1/2 -translate-x-1/2 flex items-center space-x-1 px-2 py-1 rounded-xl bg-slate-950/95 border border-slate-700 shadow-2xl z-50 backdrop-blur-xl animate-in fade-in"
+                      >
+                        <button
+                          type="button"
+                          onClick={commitLassoSelection}
+                          className="p-1 px-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-colors shadow-sm"
+                          title="Apply & Commit (or click outside)"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span className="text-[10px]">Apply</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={duplicateLassoSelection}
+                          className="p-1 px-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-xs flex items-center space-x-1 cursor-pointer transition-colors"
+                          title="Duplicate Selection"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          <span className="text-[10px]">Clone</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={deleteLassoSelection}
+                          className="p-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs cursor-pointer transition-colors"
+                          title="Delete Cutout"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelLassoSelection}
+                          className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs cursor-pointer transition-colors"
+                          title="Cancel (Restore Original Position)"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* 8 Precision Resize Handles */}
+                      {/* NW */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('nw', e)}
+                        className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                      />
+                      {/* NE */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('ne', e)}
+                        className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                      />
+                      {/* SW */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('sw', e)}
+                        className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                      />
+                      {/* SE */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('se', e)}
+                        className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                      />
+                      {/* N */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('n', e)}
+                        className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform"
+                      />
+                      {/* S */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('s', e)}
+                        className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform"
+                      />
+                      {/* W */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('w', e)}
+                        className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                      />
+                      {/* E */}
+                      <div
+                        onPointerDown={(e) => handleLassoHandleDown('e', e)}
+                        className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                      />
+                    </div>
+                  </div>
+                );
+              })()
+            )}
+
+            {/* Hold-to-Straighten / Shape Snapping Feedback Toast */}
+            {snapFeedback && canvasRef.current && (
+              (() => {
+                const canvas = canvasRef.current;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+                const cssX = snapFeedback.x / scaleX;
+                const cssY = snapFeedback.y / scaleY;
+
+                return (
+                  <div
+                    className="pointer-events-none absolute z-50 px-2.5 py-1 rounded-full bg-cyan-400 text-slate-950 font-bold font-mono text-[10px] shadow-2xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-75 duration-200 flex items-center space-x-1 border border-white/40"
+                    style={{ left: `${cssX}px`, top: `${cssY}px` }}
+                  >
+                    <span>{snapFeedback.text}</span>
+                  </div>
+                );
+              })()
+            )}
+
+            {/* Floating Status Indicators */}
             {tool === 'eraser' && (
               <div className="absolute bottom-2 left-2 pointer-events-none px-2 py-0.5 rounded-full bg-rose-950/80 border border-rose-500/40 text-[9px] text-rose-200">
                 Pixel Eraser Active ({thickness * 2.5}px) • Only hits touched points
               </div>
             )}
 
-            {/* Floating Color Bucket Status Indicator */}
             {tool === 'bucket' && (
               <div className="absolute bottom-2 left-2 pointer-events-none px-2.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/50 text-[10px] text-cyan-200 flex items-center space-x-1.5 shadow-lg backdrop-blur-sm">
                 <PaintBucket className={`w-3 h-3 ${isFilling ? 'animate-bounce text-cyan-300' : 'text-cyan-400'}`} />
@@ -1907,8 +3019,29 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
               </div>
             )}
 
-            {/* High-DPI Engine Status Badge */}
-            <div className="absolute bottom-2 right-2 pointer-events-none px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800/80 text-[8px] font-mono text-slate-400 flex items-center space-x-1.5 backdrop-blur-sm">
+            {tool === 'lasso' && (
+              <div className="absolute bottom-2 left-2 pointer-events-none px-2.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/50 text-[10px] text-cyan-200 flex items-center space-x-1.5 shadow-lg backdrop-blur-sm">
+                <LassoSelect className="w-3 h-3 text-cyan-400 animate-pulse" />
+                <span>
+                  {lassoSelection ? 'Drag to move, pull handles to resize, or click Apply' : 'Drag loop around any drawings, text, or shapes to select & transform'}
+                </span>
+              </div>
+            )}
+
+            {tool === 'shape' && (
+              <div className="absolute bottom-2 left-2 pointer-events-none px-2.5 py-1 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-[10px] text-emerald-200 flex items-center space-x-1.5 shadow-lg backdrop-blur-sm">
+                <Square className="w-3 h-3 text-emerald-400" />
+                <span>
+                  Drag across canvas to create {shapeType} ({isDashed ? 'Dashed' : 'Solid'}, {isShapeFilled ? 'Filled' : 'Outline'})
+                </span>
+              </div>
+            )}
+
+            {/* High-DPI Engine & Smoother Status Badge */}
+            <div className="absolute bottom-2 right-2 pointer-events-none px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800/80 text-[8px] font-mono text-slate-400 flex items-center space-x-2 backdrop-blur-sm">
+              {smootherIntensity > 0 && (
+                <span className="text-amber-400 font-bold">Smoother: {smootherIntensity}%</span>
+              )}
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>{dpi} DPI • IndexedDB</span>
             </div>
