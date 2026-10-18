@@ -68,6 +68,7 @@ interface SubjectSelectorProps {
   onExamModeChange: (mode: ExamMode) => void;
   onStartExam: () => void;
   onResumeExam: (session: PausedExamSession) => void;
+  onNavigateToFlashcards?: () => void;
 }
 
 export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
@@ -85,6 +86,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onExamModeChange,
   onStartExam,
   onResumeExam,
+  onNavigateToFlashcards,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
   const [pausedSessionsList, setPausedSessionsList] = useState<PausedExamSession[]>(() => getAllPausedSessions());
@@ -776,6 +778,43 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Engineereya's Vlog Flashcards & Terms Quiz Quick Access */}
+      {onNavigateToFlashcards && (
+        <div className="bg-slate-900/80 border border-amber-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+          <div className="flex items-start space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 mt-0.5">
+              <Layers className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
+                  Engineereya&apos;s Vlog
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  New Flashcards &amp; 4-Choice Quizzes
+                </span>
+              </div>
+              <h4 className="text-base font-bold text-white mt-0.5">
+                Master CE Board Exam Terms &amp; Mnemonics
+              </h4>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Practice with active recall flashcards (sort cards you know vs need review) and customizable 4-choice terms quizzes with randomized choices every attempt!
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onNavigateToFlashcards}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-500/40 text-xs font-bold font-arnie tracking-wider transition-all flex items-center justify-center space-x-2 shrink-0 cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>OPEN FLASHCARDS &amp; QUIZ</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 

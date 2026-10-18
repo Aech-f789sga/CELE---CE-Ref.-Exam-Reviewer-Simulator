@@ -36,6 +36,7 @@ import { ParticleSystem3D } from './components/ParticleSystem3D';
 import { SubmergedEra3D } from './components/SubmergedEra3D';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
 import { ScratchpadHub } from './components/ScratchpadHub';
+import { FlashcardsAndQuizHub } from './components/FlashcardsAndQuizHub';
 import { syncExamScratchpadRecord } from './utils/scratchpadStorage';
 import {
   Sparkles,
@@ -54,7 +55,7 @@ import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './ser
 
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<
-    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad'
+    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards'
   >('setup');
   const [selectedScratchpadId, setSelectedScratchpadId] = useState<string | undefined>(undefined);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
@@ -428,6 +429,7 @@ function MainApp() {
                   onExamModeChange={setExamMode}
                   onStartExam={handleStartExam}
                   onResumeExam={handleResumeExam}
+                  onNavigateToFlashcards={() => setCurrentTab('flashcards')}
                 />
               )}
 
@@ -471,6 +473,8 @@ function MainApp() {
                   initialOpenPadId={selectedScratchpadId}
                 />
               )}
+
+              {currentTab === 'flashcards' && <FlashcardsAndQuizHub />}
 
               {currentTab === 'admin' && (
                 <AdminPanel

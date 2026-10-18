@@ -39,6 +39,8 @@ import {
   saveScratchpadMeta,
   exportScratchpadBundle,
   getScratchpadById,
+  idbSaveCanvas,
+  idbLoadCanvas,
 } from '../utils/scratchpadStorage';
 
 export type ToolType =
@@ -168,59 +170,6 @@ export const addDpiToPngBlob = async (blob: Blob, targetDpi: number): Promise<Bl
 // IndexedDB Engine for High-DPI (600+ DPI) Canvas Data
 // Eliminates localStorage 5MB quota restrictions
 // ----------------------------------------------------
-const IDB_NAME = 'ce_scratchpad_db_v2';
-const IDB_STORE = 'high_dpi_canvases';
-
-const getIDB = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
-    if (typeof indexedDB === 'undefined') {
-      return reject(new Error('IndexedDB not supported'));
-    }
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains(IDB_STORE)) {
-        db.createObjectStore(IDB_STORE);
-      }
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-};
-
-const idbSaveCanvas = async (key: string, dataUrl: string) => {
-  try {
-    const db = await getIDB();
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    tx.objectStore(IDB_STORE).put(dataUrl, key);
-  } catch {
-    try {
-      localStorage.setItem(key, dataUrl);
-    } catch {
-      // Ignore quota
-    }
-  }
-};
-
-const idbLoadCanvas = async (key: string): Promise<string | null> => {
-  try {
-    const db = await getIDB();
-    return new Promise((resolve) => {
-      const tx = db.transaction(IDB_STORE, 'readonly');
-      const req = tx.objectStore(IDB_STORE).get(key);
-      req.onsuccess = () => {
-        if (req.result) {
-          resolve(req.result);
-        } else {
-          resolve(localStorage.getItem(key));
-        }
-      };
-      req.onerror = () => resolve(localStorage.getItem(key));
-    });
-  } catch {
-    return localStorage.getItem(key);
-  }
-};
 
 const STORAGE_KEY_STATE = 'ce_scratchpad_state_v2';
 const STORAGE_KEY_CANVAS_PREFIX = 'ce_scratchpad_canvas_page_';
@@ -323,7 +272,22 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   const [showExportMenu, setShowExportMenu] = useState<boolean>(false);
   const [importNotification, setImportNotification] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const dpiScale = dpi / 96; // 600 DPI = 6.25x scale factor, 720 DPI = 7.5x, 1200 DPI = 12.5x
+  
+  // High-performance screen drafting resolution scale:
+  // Uses native device pixel ratio (capped at 2.0x for Retina crispness with 120 FPS latency-free drawing)
+  // Full 1200 DPI is applied when exporting PNG/SVG files
+  const getScreenResolutionScale = useCallback((): number => {
+    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1.5 : 1.5;
+    return Math.min(2.0, Math.max(1.0, dpr));
+  }, []);
+
+  const screenScale = getScreenResolutionScale();
+  const dpiScale = dpi / 96; // Physical export scale factor (1200 DPI = 12.5x)
+  const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const offscreenSnapshotCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const saveDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isCanvasInitializedRef = useRef<boolean>(false);
+  const loadedPageRef = useRef<number | null>(null);
 
   // Line Smoother & Correction Intensity State
   const [smootherIntensity, setSmootherIntensity] = useState<number>(50); // 0 (Off), 25, 50, 75, 95 (Ultra)
@@ -465,21 +429,49 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   };
 
   // ----------------------------------------------------
-  // Save & Load Canvas Drawings per Page
+  // Save & Load Canvas Drawings per Page (High-Performance Engine)
   // ----------------------------------------------------
-  const saveCanvasToStorage = useCallback(
+  const flushSaveCanvasToStorage = useCallback(
     (page: number) => {
+      if (saveDebounceTimerRef.current) {
+        clearTimeout(saveDebounceTimerRef.current);
+        saveDebounceTimerRef.current = null;
+      }
       const canvas = canvasRef.current;
       if (!canvas) return;
       try {
         const dataUrl = canvas.toDataURL('image/png');
         const key = `${storageKeyPrefix}${STORAGE_KEY_CANVAS_PREFIX}${page}`;
         idbSaveCanvas(key, dataUrl);
-      } catch {
-        // Ignore quota error
+
+        // Keep ScratchpadHub thumbnail card instantly in sync on sheet 1
+        if (documentId && page === 1) {
+          const existing = getScratchpadById(documentId);
+          if (existing) {
+            saveScratchpadMeta({
+              ...existing,
+              thumbnail: dataUrl,
+              updatedAt: new Date().toISOString(),
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Canvas storage flush error:', err);
       }
     },
-    [storageKeyPrefix]
+    [storageKeyPrefix, documentId]
+  );
+
+  const saveCanvasToStorage = useCallback(
+    (page: number) => {
+      if (saveDebounceTimerRef.current) {
+        clearTimeout(saveDebounceTimerRef.current);
+      }
+      saveDebounceTimerRef.current = setTimeout(() => {
+        flushSaveCanvasToStorage(page);
+      }, 350);
+    },
+    [flushSaveCanvasToStorage]
   );
 
   const loadCanvasFromStorage = useCallback(
@@ -489,51 +481,81 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      undoStackRef.current = [];
-      redoStackRef.current = [];
-      setCanUndo(false);
-      setCanRedo(false);
-
       try {
         const key = `${storageKeyPrefix}${STORAGE_KEY_CANVAS_PREFIX}${page}`;
-        const savedDataUrl = await idbLoadCanvas(key);
+        let savedDataUrl = await idbLoadCanvas(key);
+
+        // If page 1 has no savedDataUrl, check document metadata thumbnail as fallback
+        if (!savedDataUrl && page === 1 && documentId) {
+          const meta = getScratchpadById(documentId);
+          if (meta?.thumbnail && meta.thumbnail.length > 50) {
+            savedDataUrl = meta.thumbnail;
+          }
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        undoStackRef.current = [];
+        redoStackRef.current = [];
+        setCanUndo(false);
+        setCanRedo(false);
+
         if (savedDataUrl) {
           const img = new Image();
           img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            // Initial snapshot for undo
-            const initialSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            undoStackRef.current = [initialSnapshot];
+            try {
+              const initialSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              undoStackRef.current = [initialSnapshot];
+            } catch {
+              // Ignore snapshot error
+            }
             setCanUndo(false);
           };
           img.src = savedDataUrl;
         } else {
-          const initialSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          undoStackRef.current = [initialSnapshot];
+          try {
+            const initialSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            undoStackRef.current = [initialSnapshot];
+          } catch {
+            // Ignore
+          }
           setCanUndo(false);
         }
-      } catch {
-        // Ignore
+        loadedPageRef.current = page;
+      } catch (err) {
+        console.warn('loadCanvasFromStorage failed:', err);
       }
     },
-    [storageKeyPrefix]
+    [storageKeyPrefix, documentId]
   );
 
-  // Switch Page: save current, load next
+  // Switch Page: safe flush current, load next
   const switchPage = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
     if (lassoSelection) {
       commitLassoSelection();
     }
-    saveCanvasToStorage(currentPage);
+    flushSaveCanvasToStorage(currentPage);
+    isCanvasInitializedRef.current = false;
+    loadedPageRef.current = null;
     setCurrentPage(newPage);
   };
 
+  // Reset initialization flag when Scratchpad closes
+  useEffect(() => {
+    if (!isOpen) {
+      isCanvasInitializedRef.current = false;
+      loadedPageRef.current = null;
+    }
+  }, [isOpen]);
+
   // ----------------------------------------------------
-  // Canvas Resolution Setup & Resize (600+ DPI Engine)
+  // Canvas Resolution Setup & Resize (Hardware-Accelerated 120 FPS Engine)
   // ----------------------------------------------------
   useEffect(() => {
+    if (!isOpen || activeTab !== 'draw') return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -545,17 +567,24 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
     if (cssW <= 0 || cssH <= 0) return;
 
-    const targetW = Math.round(cssW * dpiScale);
-    const targetH = Math.round(cssH * dpiScale);
+    const targetW = Math.round(cssW * screenScale);
+    const targetH = Math.round(cssH * screenScale);
 
-    if (canvas.width === targetW && canvas.height === targetH) {
+    const isFirstInit = !isCanvasInitializedRef.current || loadedPageRef.current !== currentPage;
+    const isDimensionChange = canvas.width !== targetW || canvas.height !== targetH;
+
+    if (!isFirstInit && !isDimensionChange) {
       return;
     }
 
-    // Temporary copy existing drawing before resize if dimensions changed
+    // Preserve active drawing during window resize only after initial load
     let tempImgData: string | null = null;
-    if (canvas.width > 0 && canvas.height > 0) {
-      tempImgData = canvas.toDataURL('image/png');
+    if (!isFirstInit && isDimensionChange && canvas.width > 0 && canvas.height > 0) {
+      try {
+        tempImgData = canvas.toDataURL('image/png');
+      } catch {
+        tempImgData = null;
+      }
     }
 
     canvas.width = targetW;
@@ -563,22 +592,41 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     canvas.style.width = '100%';
     canvas.style.height = '100%';
 
+    // Sync high-speed hardware overlay canvas
+    const overlay = overlayCanvasRef.current;
+    if (overlay) {
+      overlay.width = targetW;
+      overlay.height = targetH;
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+    }
+
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
 
-      if (tempImgData) {
+      if (isFirstInit) {
+        isCanvasInitializedRef.current = true;
+        loadCanvasFromStorage(currentPage);
+      } else if (tempImgData) {
         const img = new Image();
         img.onload = () => {
           ctx.drawImage(img, 0, 0, targetW, targetH);
         };
         img.src = tempImgData;
-      } else {
-        loadCanvasFromStorage(currentPage);
       }
     }
-  }, [size, isDocked, isFullscreen, currentPage, dpi, dpiScale, loadCanvasFromStorage]);
+  }, [
+    isOpen,
+    activeTab,
+    size,
+    isDocked,
+    isFullscreen,
+    currentPage,
+    screenScale,
+    loadCanvasFromStorage,
+  ]);
 
   // Push Canvas State to Undo Stack
   const pushUndoState = () => {
@@ -587,15 +635,19 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    undoStackRef.current.push(snapshot);
-    if (undoStackRef.current.length > 25) {
-      undoStackRef.current.shift();
+    try {
+      const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      undoStackRef.current.push(snapshot);
+      if (undoStackRef.current.length > 12) {
+        undoStackRef.current.shift();
+      }
+      redoStackRef.current = [];
+      setCanUndo(undoStackRef.current.length > 1);
+      setCanRedo(false);
+      saveCanvasToStorage(currentPage);
+    } catch {
+      // Ignore snapshot error
     }
-    redoStackRef.current = [];
-    setCanUndo(undoStackRef.current.length > 1);
-    setCanRedo(false);
-    saveCanvasToStorage(currentPage);
   };
 
   // Undo Functionality
@@ -651,8 +703,12 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
     // Create export canvas with background texture baked in
     const exportCanvas = document.createElement('canvas');
-    exportCanvas.width = canvas.width;
-    exportCanvas.height = canvas.height;
+    const container = canvas.parentElement;
+    const cssW = container ? container.clientWidth : 1200;
+    const cssH = container ? container.clientHeight : 800;
+    const expScale = dpi / 96;
+    exportCanvas.width = Math.round(cssW * expScale);
+    exportCanvas.height = Math.round(cssH * expScale);
     const expCtx = exportCanvas.getContext('2d');
     if (!expCtx) return;
 
@@ -662,10 +718,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
 
     // Draw grid if selected, scaling step proportional to high-DPI
-    const gridStep = Math.round(20 * dpiScale);
+    const gridStep = Math.round(20 * expScale);
     if (paperTexture === 'blueprint' || paperTexture === 'graph') {
       expCtx.strokeStyle = light ? 'rgba(2, 132, 199, 0.28)' : 'rgba(56, 189, 248, 0.18)';
-      expCtx.lineWidth = Math.max(1, Math.round(1 * dpiScale));
+      expCtx.lineWidth = Math.max(1, Math.round(1 * expScale));
       for (let x = 0; x < exportCanvas.width; x += gridStep) {
         expCtx.beginPath();
         expCtx.moveTo(x, 0);
@@ -680,8 +736,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       }
     } else if (paperTexture === 'lined') {
       expCtx.strokeStyle = light ? 'rgba(15, 23, 42, 0.22)' : 'rgba(148, 163, 184, 0.18)';
-      expCtx.lineWidth = Math.max(1, Math.round(1 * dpiScale));
-      const lineStep = Math.round(26 * dpiScale);
+      expCtx.lineWidth = Math.max(1, Math.round(1 * expScale));
+      const lineStep = Math.round(26 * expScale);
       for (let y = lineStep; y < exportCanvas.height; y += lineStep) {
         expCtx.beginPath();
         expCtx.moveTo(0, y);
@@ -690,8 +746,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       }
     }
 
-    // Draw user's artwork
-    expCtx.drawImage(canvas, 0, 0);
+    // Draw user's artwork scaled smoothly to full physical resolution
+    expCtx.imageSmoothingEnabled = true;
+    expCtx.imageSmoothingQuality = 'high';
+    expCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
 
     // Export with pHYs chunk for genuine physical 600+ DPI
     exportCanvas.toBlob(async (blob) => {
@@ -724,7 +782,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
   // Export Multi-Page Universal .cescratch Bundle for Tablets and Third-Party Apps
   const handleExportCescratch = async () => {
-    saveCanvasToStorage(currentPage);
+    flushSaveCanvasToStorage(currentPage);
     const pages: { page: number; dataUrl: string; updatedAt: string }[] = [];
     for (let p = 1; p <= totalPages; p++) {
       const key = `${storageKeyPrefix}${STORAGE_KEY_CANVAS_PREFIX}${p}`;
@@ -823,7 +881,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     if (lassoSelection) {
       commitLassoSelection();
     }
-    saveCanvasToStorage(currentPage);
+    flushSaveCanvasToStorage(currentPage);
     if (documentId) {
       const thumb = canvasRef.current?.toDataURL('image/png');
       const existing = getScratchpadById(documentId);
@@ -1230,7 +1288,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   };
 
   // ----------------------------------------------------
-  // Hold-to-Straighten & Shape Snap Trigger
+  // Hold-to-Straighten & Shape Snap Trigger (GPU-Accelerated)
   // ----------------------------------------------------
   const triggerHoldStraighten = () => {
     const canvas = canvasRef.current;
@@ -1238,13 +1296,16 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     if (!isDrawingRef.current || strokePointsRef.current.length < 3) return;
-    if (!strokeSnapshotRef.current) return;
 
     isHeldStraightRef.current = true;
     const start = strokePointsRef.current[0];
     const end = strokePointsRef.current[strokePointsRef.current.length - 1];
 
-    ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+    // Hardware GPU blit restore
+    if (offscreenSnapshotCanvasRef.current) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(offscreenSnapshotCanvasRef.current, 0, 0);
+    }
 
     const pt = getCanvasPoint(0, 0);
     const scale = pt.scale;
@@ -1582,11 +1643,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
     // Handle Geometric Shapes Drawing
     if (tool === 'shape') {
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
       isDrawingRef.current = true;
       shapeStartRef.current = { x: pt.x, y: pt.y };
-      strokeSnapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
       canvas.setPointerCapture(e.pointerId);
       return;
     }
@@ -1618,7 +1676,21 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     smoothedPointRef.current = { x: pt.x, y: pt.y };
     strokePointsRef.current = [{ x: pt.x, y: pt.y }];
     isHeldStraightRef.current = false;
-    strokeSnapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    // Fast GPU blit to offscreen buffer in case of hold-to-straighten
+    if (!offscreenSnapshotCanvasRef.current) {
+      offscreenSnapshotCanvasRef.current = document.createElement('canvas');
+    }
+    const off = offscreenSnapshotCanvasRef.current;
+    if (off.width !== canvas.width || off.height !== canvas.height) {
+      off.width = canvas.width;
+      off.height = canvas.height;
+    }
+    const offCtx = off.getContext('2d');
+    if (offCtx) {
+      offCtx.clearRect(0, 0, off.width, off.height);
+      offCtx.drawImage(canvas, 0, 0);
+    }
 
     // Configure Context based on Tool Texture and High-DPI Scale
     configureContext(ctx, tool, color, thickness, pt.scale);
@@ -1650,14 +1722,16 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       return;
     }
 
-    // 2. Geometric Shape live drag preview
-    if (tool === 'shape' && isDrawingRef.current && shapeStartRef.current && strokeSnapshotRef.current) {
+    // 2. Geometric Shape live drag preview via zero-latency Overlay Canvas
+    if (tool === 'shape' && isDrawingRef.current && shapeStartRef.current) {
       e.preventDefault();
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+      const overlay = overlayCanvasRef.current;
+      if (!overlay) return;
+      const overlayCtx = overlay.getContext('2d');
+      if (!overlayCtx) return;
+      overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
       drawShape(
-        ctx,
+        overlayCtx,
         shapeType,
         shapeStartRef.current.x,
         shapeStartRef.current.y,
@@ -1678,9 +1752,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // If hold-to-straighten already snapped, pivot the straight line to the moving pointer
-    if (isHeldStraightRef.current && strokeSnapshotRef.current && strokePointsRef.current.length > 0) {
-      ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+    // If hold-to-straighten already snapped, pivot the straight line to the moving pointer with GPU blit
+    if (isHeldStraightRef.current && offscreenSnapshotCanvasRef.current && strokePointsRef.current.length > 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(offscreenSnapshotCanvasRef.current, 0, 0);
       configureContext(ctx, tool, color, thickness, currentPt.scale);
       ctx.beginPath();
       ctx.moveTo(strokePointsRef.current[0].x, strokePointsRef.current[0].y);
@@ -1743,9 +1818,13 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     if (tool === 'shape') {
       if (isDrawingRef.current && shapeStartRef.current) {
         const currentPt = getCanvasPoint(e.clientX, e.clientY);
+        const overlay = overlayCanvasRef.current;
+        if (overlay) {
+          const overlayCtx = overlay.getContext('2d');
+          overlayCtx?.clearRect(0, 0, overlay.width, overlay.height);
+        }
         const ctx = canvas?.getContext('2d');
-        if (ctx && strokeSnapshotRef.current) {
-          ctx.putImageData(strokeSnapshotRef.current, 0, 0);
+        if (ctx) {
           drawShape(
             ctx,
             shapeType,
@@ -1762,9 +1841,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         }
         isDrawingRef.current = false;
         shapeStartRef.current = null;
-        strokeSnapshotRef.current = null;
         pushUndoState();
-        saveCanvasToStorage(currentPage);
       }
       if (canvas && canvas.hasPointerCapture(e.pointerId)) {
         canvas.releasePointerCapture(e.pointerId);
@@ -1780,13 +1857,11 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     lastPointRef.current = null;
     smoothedPointRef.current = null;
     strokePointsRef.current = [];
-    strokeSnapshotRef.current = null;
 
     if (canvas && canvas.hasPointerCapture(e.pointerId)) {
       canvas.releasePointerCapture(e.pointerId);
     }
     pushUndoState();
-    saveCanvasToStorage(currentPage);
   };
 
   // Context Configuration for Pen Textures & Localized Pixel Eraser at High-DPI
@@ -2795,6 +2870,15 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                     : 'cursor-crosshair'
                   : 'cursor-crosshair'
               }`}
+              style={{
+                touchAction: 'none',
+              }}
+            />
+
+            {/* High-Speed Hardware Overlay Canvas for Live Shape & Straighten Dragging */}
+            <canvas
+              ref={overlayCanvasRef}
+              className="absolute inset-0 pointer-events-none w-full h-full block"
               style={{
                 touchAction: 'none',
               }}

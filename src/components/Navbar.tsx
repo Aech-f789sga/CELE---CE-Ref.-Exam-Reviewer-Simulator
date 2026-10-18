@@ -17,14 +17,15 @@ import {
   KeyRound,
   Sparkles,
   PenTool,
+  Layers,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Cube3D } from './Cube3D';
 
 interface NavbarProps {
-  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad';
-  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad') => void;
+  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards';
+  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards') => void;
   activeSubject: SubjectArea;
   onSubjectChange?: (subject: SubjectArea) => void;
   isExamRunning: boolean;
@@ -178,6 +179,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <PenTool className="w-4 h-4" />
                   <span>Scratchpads</span>
+                </button>
+
+                <button
+                  onClick={() => setCurrentTab('flashcards')}
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer relative ${
+                    currentTab === 'flashcards' ? 'shadow-md font-semibold' : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: currentTab === 'flashcards' ? themeConfig.accent : 'transparent',
+                    color: currentTab === 'flashcards' ? themeConfig.accentText : themeConfig.textSecondary,
+                  }}
+                  title="Engineereya's Vlog Terms Flashcards and 4-Choice Quizzes"
+                >
+                  <Layers className="w-4 h-4" />
+                  <span>Flashcards</span>
+                  <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                    Vlog
+                  </span>
                 </button>
 
                 {/* Admin Tab (Only visible to admin) */}

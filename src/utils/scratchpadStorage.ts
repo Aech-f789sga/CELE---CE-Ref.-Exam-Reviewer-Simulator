@@ -64,20 +64,34 @@ export const getIDB = (): Promise<IDBDatabase> => {
 };
 
 export const idbSaveCanvas = async (key: string, dataUrl: string): Promise<void> => {
+  // 1. Synchronous instant local storage cache
+  try {
+    localStorage.setItem(key, dataUrl);
+  } catch {
+    // Quota reached or private mode; IndexedDB handles large canvases
+  }
+  // 2. High-capacity IndexedDB storage
   try {
     const db = await getIDB();
     const tx = db.transaction(IDB_STORE, 'readwrite');
     tx.objectStore(IDB_STORE).put(dataUrl, key);
   } catch {
-    try {
-      localStorage.setItem(key, dataUrl);
-    } catch {
-      // Ignore quota
-    }
+    // Ignore IDB errors if already stored
   }
 };
 
 export const idbLoadCanvas = async (key: string): Promise<string | null> => {
+  // 1. Check instant synchronous cache first
+  try {
+    const local = localStorage.getItem(key);
+    if (local && local.length > 50) {
+      return local;
+    }
+  } catch {
+    // Continue to IndexedDB
+  }
+
+  // 2. Load from IndexedDB
   try {
     const db = await getIDB();
     return new Promise((resolve) => {
@@ -87,27 +101,42 @@ export const idbLoadCanvas = async (key: string): Promise<string | null> => {
         if (req.result) {
           resolve(req.result);
         } else {
-          resolve(localStorage.getItem(key));
+          try {
+            resolve(localStorage.getItem(key));
+          } catch {
+            resolve(null);
+          }
         }
       };
-      req.onerror = () => resolve(localStorage.getItem(key));
+      req.onerror = () => {
+        try {
+          resolve(localStorage.getItem(key));
+        } catch {
+          resolve(null);
+        }
+      };
     });
   } catch {
-    return localStorage.getItem(key);
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
   }
 };
 
 export const idbDeleteCanvas = async (key: string): Promise<void> => {
   try {
+    localStorage.removeItem(key);
+  } catch {
+    // Ignore
+  }
+  try {
     const db = await getIDB();
     const tx = db.transaction(IDB_STORE, 'readwrite');
     tx.objectStore(IDB_STORE).delete(key);
   } catch {
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      // Ignore
-    }
+    // Ignore
   }
 };
 
