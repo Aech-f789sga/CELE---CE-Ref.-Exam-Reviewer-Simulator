@@ -11,7 +11,8 @@ export type AppThemeId =
   | 'sepia_draft'
   | 'cyber_cad'
   | 'emerald_matrix'
-  | 'underwave';
+  | 'underwave'
+  | 'cyberdeck_2077';
 
 export type FontFamilyId =
   | 'sans'
@@ -315,6 +316,29 @@ export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
     accentText: '#ffffff',
     accentBadge: 'rgba(250, 30, 78, 0.16)',
     gridStyle: 'rgba(250, 30, 78, 0.09)',
+  },
+  // OPERA GX MOD PORT — "Cyberdeck" (Cyberpunk 2077)
+  // Colours are the mod's own: accent #eaea22 / #ffff44, signal red #fa1e46,
+  // data cyan #00b0f4, ink #08050e, panel #121019, muted #72767d.
+  cyberdeck_2077: {
+    id: 'cyberdeck_2077',
+    name: 'Cyberdeck 2077 (Opera GX Mod)',
+    category: 'dark',
+    accentName: 'Night City Yellow & Chrome',
+    description:
+      'Ported from the Opera GX Cyberdeck mod: the Night City skyline wallpaper as a looping video, layered Cyberdeck soundtrack, UI sound effects, custom cursors, glitch shaders and bracketed chrome panels.',
+    bgPage: '#08050e',
+    bgCard: '#121019',
+    bgCardSubtle: '#1b1726',
+    border: '#3d3348',
+    textPrimary: '#fafdff',
+    textSecondary: '#c9cbce',
+    textMuted: '#8a8f99',
+    accent: '#eaea22',
+    accentHover: '#ffff44',
+    accentText: '#08050e',
+    accentBadge: 'rgba(234, 234, 34, 0.16)',
+    gridStyle: 'rgba(234, 234, 34, 0.08)',
   },
 };
 

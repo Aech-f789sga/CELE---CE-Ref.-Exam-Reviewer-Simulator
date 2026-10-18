@@ -1204,3 +1204,482 @@ html[data-theme='underwave'] .exam-table-row-odd {
 
 
 
+
+/* =========================================================================
+   CYBERDECK 2077  ·  Opera GX "Cyberdeck" mod port
+   data-theme="cyberdeck_2077"
+   -------------------------------------------------------------------------
+   Source of truth: public/XThemes/Cyberpunk 2077/5.7_0
+     · manifest.json       -> accent #eaea22 / #ffff44, red #fa1e46,
+                              link #00b0f4, ink #08050e, panel #121019,
+                              muted #72767d, font-in-accent #000
+     · css/changecolors.css -> the same RGB ramp + "Chakra Petch" note
+     · wallpaper/animated.webm + first_frame.jpg -> live Night City backdrop
+     · shaders/cyberdeck.txt -> RGB-split glitch + binary matrix rain
+     · cursors/dark/*.cur   -> pointer / i-beam cursors
+     · music/*.mp3, sounds/*.mp3 -> handled by src/audio/cyberdeckAudio.ts
+   ========================================================================= */
+
+html[data-theme='cyberdeck_2077'] {
+  /* chrome tokens */
+  --cp-yellow: #eaea22;
+  --cp-yellow-bright: #ffff44;
+  --cp-red: #fa1e46;
+  --cp-cyan: #00b0f4;
+  --cp-ink: #08050e;
+  --cp-panel: #121019;
+  --cp-panel-2: #1b1726;
+  --cp-line: rgba(234, 234, 34, 0.22);
+  --cp-line-soft: rgba(255, 255, 255, 0.08);
+  --cp-cut: 12px;
+
+  /* 45deg hairline that closes the bottom-right corner cut */
+  --cp-cut-edge: linear-gradient(
+    135deg,
+    transparent calc(50% - 0.5px),
+    rgba(234, 234, 34, 0.55) calc(50% - 0.5px),
+    rgba(234, 234, 34, 0.55) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+
+  /* ---- palette swap: the site's amber accent becomes Night City yellow ---- */
+  --color-amber-100: #fdfde0;
+  --color-amber-200: #faf9a8;
+  --color-amber-300: #f4f26a;
+  --color-amber-400: #eaea22;
+  --color-amber-500: #d4d414;
+  --color-amber-600: #b0b00c;
+  --color-amber-700: #8a8a08;
+  --color-amber-800: #5f5f06;
+  --color-amber-900: #3a3a04;
+  --color-amber-950: #1f1f02;
+  --color-yellow-300: #f4f26a;
+  --color-yellow-400: #eaea22;
+  --color-yellow-500: #d4d414;
+
+  background-color: var(--cp-ink) !important;
+}
+
+html[data-theme='cyberdeck_2077'] body {
+  background: var(--cp-ink) !important;
+}
+
+/* ---- wallpaper stack ---- */
+.cp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: #08050e;
+  background-image: url('/XThemes/Cyberpunk%202077/5.7_0/wallpaper/first_frame.jpg');
+  background-size: cover;
+  background-position: center 42%;
+  background-repeat: no-repeat;
+}
+
+/* "STILL" wallpaper mode — the mod ships first_frame.jpg as the poster */
+html[data-cp-wallpaper='still'] .cp-wallpaper {
+  display: none;
+}
+
+.cp-wallpaper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+  filter: saturate(1.12) contrast(1.04);
+  opacity: 0.92;
+}
+
+.cp-wallpaper-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 85% at 50% 0%, rgba(8, 5, 14, 0.18) 0%, rgba(8, 5, 14, 0.62) 62%),
+    linear-gradient(180deg, rgba(8, 5, 14, 0.74) 0%, rgba(8, 5, 14, 0.3) 34%, rgba(8, 5, 14, 0.84) 100%);
+}
+
+.cp-matrix {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+  mix-blend-mode: screen;
+}
+
+.cp-scanlines {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.28) 0 1px,
+    rgba(0, 0, 0, 0) 1px 3px
+  );
+  opacity: 0.45;
+}
+
+.cp-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(135% 105% at 50% 50%, transparent 52%, rgba(4, 2, 8, 0.6) 100%),
+    linear-gradient(90deg, rgba(250, 30, 70, 0.05) 0%, transparent 18%, transparent 82%, rgba(0, 176, 244, 0.05) 100%);
+}
+
+/* ---- typography: Chakra Petch chrome + chromatic split on headings ---- */
+html[data-theme='cyberdeck_2077'] h1,
+html[data-theme='cyberdeck_2077'] h2,
+html[data-theme='cyberdeck_2077'] h3,
+html[data-theme='cyberdeck_2077'] header .font-arnie,
+html[data-theme='cyberdeck_2077'] button.font-arnie,
+html[data-theme='cyberdeck_2077'] .font-arnie.text-2xl,
+html[data-theme='cyberdeck_2077'] .font-arnie.text-3xl,
+html[data-theme='cyberdeck_2077'] .font-arnie.text-4xl {
+  font-family: 'Chakra Petch', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  letter-spacing: 0.01em;
+}
+
+html[data-theme='cyberdeck_2077'] h1,
+html[data-theme='cyberdeck_2077'] h2 {
+  text-shadow:
+    1.5px 0 rgba(250, 30, 70, 0.55),
+    -1.5px 0 rgba(0, 176, 244, 0.55);
+}
+
+html[data-theme='cyberdeck_2077'] header .font-arnie {
+  white-space: nowrap;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+/* ---- panels: chrome sheets that let the skyline bleed through ---- */
+html[data-theme='cyberdeck_2077'] .bg-slate-900:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/90:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/95:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/80:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-950:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-950\/90:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-950\/80:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-950\/70:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-950\/60:not(body),
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/60:not(body),
+html[data-theme='cyberdeck_2077'] .app-card-bg,
+html[data-theme='cyberdeck_2077'] .app-card-subtle-bg {
+  background-color: rgba(18, 16, 25, 0.84) !important;
+  background-image: linear-gradient(
+    180deg,
+    rgba(234, 234, 34, 0.055) 0%,
+    rgba(234, 234, 34, 0) 34%
+  ) !important;
+  border-color: rgba(234, 234, 34, 0.2) !important;
+  color: #fafdff;
+  -webkit-backdrop-filter: blur(8px) saturate(125%);
+  backdrop-filter: blur(8px) saturate(125%);
+  box-shadow:
+    inset 0 1px 0 rgba(234, 234, 34, 0.22),
+    0 24px 60px -34px #000;
+}
+
+html[data-theme='cyberdeck_2077'] .bg-slate-800,
+html[data-theme='cyberdeck_2077'] .bg-slate-800\/60,
+html[data-theme='cyberdeck_2077'] .bg-slate-800\/80 {
+  background-color: rgba(27, 23, 38, 0.9) !important;
+  border-color: var(--cp-line) !important;
+}
+
+html[data-theme='cyberdeck_2077'] .border-slate-800,
+html[data-theme='cyberdeck_2077'] .border-slate-700,
+html[data-theme='cyberdeck_2077'] .border-slate-700\/80,
+html[data-theme='cyberdeck_2077'] .border-slate-900 {
+  border-color: rgba(234, 234, 34, 0.16) !important;
+}
+
+/* ---- bracket-cut chrome panels (single bottom-right cut, like Night City UI) ---- */
+html[data-theme='cyberdeck_2077'] .bg-slate-900.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/90.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/95.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .bg-slate-900\/80.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .bg-slate-950.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .bg-slate-950\/90.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .bg-slate-950\/80.rounded-2xl,
+html[data-theme='cyberdeck_2077'] .app-card-bg,
+html[data-theme='cyberdeck_2077'] .app-card-subtle-bg,
+html[data-theme='cyberdeck_2077'] .exam-table-card {
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cp-cut)),
+    calc(100% - var(--cp-cut)) 100%,
+    0 100%
+  );
+  background-image: var(--cp-cut-edge),
+    linear-gradient(180deg, rgba(234, 234, 34, 0.055) 0%, rgba(234, 234, 34, 0) 34%) !important;
+  background-size:
+    var(--cp-cut) var(--cp-cut),
+    100% 100% !important;
+  background-position:
+    bottom right,
+    center !important;
+  background-repeat: no-repeat, no-repeat !important;
+}
+
+/* ---- hero: skyline window with a yellow rule ---- */
+html[data-theme='cyberdeck_2077'] .hero-aurora {
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cp-cut)) ,
+    calc(100% - var(--cp-cut)) 100%,
+    0 100%
+  );
+  background-image: var(--cp-cut-edge),
+    linear-gradient(115deg, rgba(10, 7, 18, 0.88) 0%, rgba(18, 16, 25, 0.62) 52%, rgba(10, 7, 18, 0.38) 100%) !important;
+  background-size:
+    var(--cp-cut) var(--cp-cut),
+    100% 100% !important;
+  background-position:
+    bottom right,
+    center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  border-color: rgba(234, 234, 34, 0.34) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  backdrop-filter: blur(10px) saturate(130%);
+  box-shadow:
+    inset 0 1px 0 rgba(234, 234, 34, 0.35),
+    0 40px 90px -46px rgba(0, 0, 0, 0.95),
+    0 0 60px -30px rgba(234, 234, 34, 0.4);
+}
+
+html[data-theme='cyberdeck_2077'] .hero-aurora h1 {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  color: #fafdff !important;
+  text-shadow:
+    2px 0 rgba(250, 30, 70, 0.6),
+    -2px 0 rgba(0, 176, 244, 0.6),
+    0 0 24px rgba(234, 234, 34, 0.18) !important;
+}
+
+/* ---- primary CTAs: yellow chrome, black label, one cut corner ---- */
+html[data-theme='cyberdeck_2077'] button.bg-amber-500,
+html[data-theme='cyberdeck_2077'] button.bg-amber-400,
+html[data-theme='cyberdeck_2077'] a.bg-amber-500 {
+  background-color: var(--cp-yellow) !important;
+  background-image: linear-gradient(135deg, #ffff44 0%, #d4d414 100%) !important;
+  color: #08050e !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  box-shadow:
+    0 0 0 1px rgba(234, 234, 34, 0.55),
+    0 10px 30px -14px rgba(234, 234, 34, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+html[data-theme='cyberdeck_2077'] button.bg-amber-500:hover,
+html[data-theme='cyberdeck_2077'] button.bg-amber-400:hover,
+html[data-theme='cyberdeck_2077'] a.bg-amber-500:hover {
+  background-image: linear-gradient(135deg, #ffffff 0%, #eaea22 100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 68, 0.8),
+    0 14px 40px -14px rgba(234, 234, 34, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme='cyberdeck_2077'] .bg-amber-500,
+html[data-theme='cyberdeck_2077'] .bg-amber-400 {
+  color: #08050e !important;
+}
+
+/* the launch strip: full yellow chrome band */
+html[data-theme='cyberdeck_2077'] div.from-amber-500 {
+  background-image: var(--cp-cut-edge),
+    linear-gradient(100deg, #eaea22 0%, #d4d414 55%, #a8a80a 100%) !important;
+  background-size:
+    var(--cp-cut) var(--cp-cut),
+    100% 100% !important;
+  background-position:
+    bottom right,
+    center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cp-cut)),
+    calc(100% - var(--cp-cut)) 100%,
+    0 100%
+  );
+  color: #08050e !important;
+  box-shadow: 0 26px 70px -34px rgba(234, 234, 34, 0.6);
+}
+
+html[data-theme='cyberdeck_2077'] div.from-amber-500 h3,
+html[data-theme='cyberdeck_2077'] div.from-amber-500 p {
+  color: #08050e !important;
+  text-shadow: none;
+}
+
+html[data-theme='cyberdeck_2077'] .from-amber-500 button.bg-slate-950,
+html[data-theme='cyberdeck_2077'] .from-amber-400 button.bg-slate-950 {
+  background-color: #08050e !important;
+  color: var(--cp-yellow) !important;
+  border-radius: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(234, 234, 34, 0.45);
+}
+
+/* ---- header / footer ---- */
+html[data-theme='cyberdeck_2077'] header {
+  background-color: rgba(8, 5, 14, 0.82) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border-color: rgba(234, 234, 34, 0.28) !important;
+  box-shadow: 0 1px 0 rgba(234, 234, 34, 0.18), 0 18px 40px -30px #000;
+}
+
+html[data-theme='cyberdeck_2077'] footer {
+  background-color: rgba(8, 5, 14, 0.9) !important;
+  border-color: rgba(234, 234, 34, 0.2) !important;
+}
+
+html[data-theme='cyberdeck_2077'] header .w-10.h-10 {
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+  background-image: linear-gradient(140deg, #ffff44, #d4d414) !important;
+  color: #08050e !important;
+  box-shadow: 0 0 18px -4px rgba(234, 234, 34, 0.75);
+}
+
+/* ---- inputs ---- */
+html[data-theme='cyberdeck_2077'] input:focus,
+html[data-theme='cyberdeck_2077'] select:focus,
+html[data-theme='cyberdeck_2077'] textarea:focus {
+  border-color: var(--cp-yellow) !important;
+  box-shadow: 0 0 0 1px rgba(234, 234, 34, 0.5), 0 0 22px -6px rgba(234, 234, 34, 0.6) !important;
+}
+
+/* ---- custom cursors from the mod ---- */
+html[data-theme='cyberdeck_2077'] a,
+html[data-theme='cyberdeck_2077'] button:not(:disabled),
+html[data-theme='cyberdeck_2077'] [role='button'],
+html[data-theme='cyberdeck_2077'] summary,
+html[data-theme='cyberdeck_2077'] label[for],
+html[data-theme='cyberdeck_2077'] select {
+  cursor: url('/XThemes/Cyberpunk%202077/5.7_0/cursors/dark/pointer.cur'), pointer;
+}
+
+html[data-theme='cyberdeck_2077'] input[type='text'],
+html[data-theme='cyberdeck_2077'] input[type='number'],
+html[data-theme='cyberdeck_2077'] input[type='email'],
+html[data-theme='cyberdeck_2077'] input[type='password'],
+html[data-theme='cyberdeck_2077'] input[type='search'],
+html[data-theme='cyberdeck_2077'] textarea,
+html[data-theme='cyberdeck_2077'] [contenteditable='true'] {
+  cursor: url('/XThemes/Cyberpunk%202077/5.7_0/cursors/dark/i_beam.cur'), text;
+}
+
+html[data-theme='cyberdeck_2077'] button:disabled,
+html[data-theme='cyberdeck_2077'] [aria-disabled='true'] {
+  cursor: url('/XThemes/Cyberpunk%202077/5.7_0/cursors/dark/wait.cur'), not-allowed;
+}
+
+/* ---- scrollbars, selection, tables ---- */
+html[data-theme='cyberdeck_2077'] ::-webkit-scrollbar-track {
+  background: #08050e;
+}
+
+html[data-theme='cyberdeck_2077'] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #eaea22, #6f6f08);
+  border-radius: 0;
+}
+
+html[data-theme='cyberdeck_2077'] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ffff44, #b0b00c);
+}
+
+html[data-theme='cyberdeck_2077'] ::selection {
+  background: var(--cp-yellow);
+  color: #08050e;
+}
+
+html[data-theme='cyberdeck_2077'] .exam-table-header {
+  background-color: rgba(234, 234, 34, 0.1) !important;
+  border-color: var(--cp-line) !important;
+}
+
+html[data-theme='cyberdeck_2077'] .exam-table-row-odd {
+  background-color: rgba(234, 234, 34, 0.035) !important;
+}
+
+/* ---- theme customizer panel ---- */
+html[data-theme='cyberdeck_2077'] .max-w-3xl.rounded-3xl {
+  border-radius: 0 !important;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 18px),
+    calc(100% - 18px) 100%,
+    0 100%
+  );
+  border-color: rgba(234, 234, 34, 0.32) !important;
+  box-shadow: 0 40px 110px -50px #000, 0 0 40px -18px rgba(234, 234, 34, 0.45);
+}
+
+/* ---- audio panel bits ---- */
+@keyframes cp-layer-pulse {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.cp-layer-bar {
+  transform-origin: bottom;
+  animation: cp-layer-pulse 1.15s ease-in-out infinite;
+}
+
+.cp-range {
+  background: rgba(255, 255, 255, 0.12);
+  height: 4px;
+  border-radius: 0;
+}
+
+.cp-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 14px;
+  background: #eaea22;
+  border: 1px solid #08050e;
+  box-shadow: 0 0 10px rgba(234, 234, 34, 0.8);
+  cursor: pointer;
+}
+
+.cp-range::-moz-range-thumb {
+  width: 10px;
+  height: 14px;
+  background: #eaea22;
+  border: 1px solid #08050e;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-layer-bar {
+    animation: none;
+  }
+  .cp-wallpaper {
+    display: none;
+  }
+}

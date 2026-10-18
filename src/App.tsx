@@ -35,6 +35,10 @@ import { Matilda3D } from './components/Matilda3D';
 import { ParticleSystem3D } from './components/ParticleSystem3D';
 import { SubmergedEra3D } from './components/SubmergedEra3D';
 import { UnderwaveBackdrop } from './components/UnderwaveBackdrop';
+import { CyberdeckBackdrop } from './components/CyberdeckBackdrop';
+import { CyberdeckAudioPanel } from './components/CyberdeckAudioPanel';
+import { CyberdeckAudioProvider } from './context/CyberdeckAudioContext';
+import { cyberdeckAudio } from './audio/cyberdeckAudio';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
 import { ScratchpadHub } from './components/ScratchpadHub';
 import { FlashcardsAndQuizHub } from './components/FlashcardsAndQuizHub';
@@ -277,17 +281,34 @@ function MainApp() {
   const isParticle = themeConfig.id === 'particle_flow';
   const isSubmerged = themeConfig.id === 'submerged_era';
   const isUnderwave = themeConfig.id === 'underwave';
+  const isCyberpunk = themeConfig.id === 'cyberdeck_2077';
   const is3DTheme =
-    isAurora || isTerrarium || isMatilda || isParticle || isSubmerged || isUnderwave;
+    isAurora ||
+    isTerrarium ||
+    isMatilda ||
+    isParticle ||
+    isSubmerged ||
+    isUnderwave ||
+    isCyberpunk;
+
+  // Cyberdeck mod: tab-insert blip when the user changes views
+  const prevTabRef = React.useRef(currentTab);
+  useEffect(() => {
+    if (isCyberpunk && prevTabRef.current !== currentTab) {
+      cyberdeckAudio.tab();
+    }
+    prevTabRef.current = currentTab;
+  }, [currentTab, isCyberpunk]);
 
   return (
-    <>
+    <CyberdeckAudioProvider active={isCyberpunk}>
       {isSubmerged && (
         <div className="scene-layer opacity-65 pointer-events-none">
           <SubmergedEra3D mode="background" interactive={false} />
         </div>
       )}
       {isUnderwave && <UnderwaveBackdrop />}
+      {isCyberpunk && <CyberdeckBackdrop />}
       {isAurora && (
         <div className="scene-layer">
           <Scene3D variant="background" accent={themeConfig.accent} />
@@ -674,7 +695,10 @@ function MainApp() {
           </div>
         )}
       </div>
-    </>
+
+      {/* Cyberdeck mod audio controls (music / SFX) */}
+      {isCyberpunk && <CyberdeckAudioPanel />}
+    </CyberdeckAudioProvider>
   );
 }
 

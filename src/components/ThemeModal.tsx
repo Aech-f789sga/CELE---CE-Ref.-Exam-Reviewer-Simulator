@@ -293,6 +293,19 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                               <span>OPERA GX MOD</span>
                             </span>
                           )}
+                          {item.id === 'cyberdeck_2077' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"
+                              style={{
+                                backgroundColor: 'rgba(234, 234, 34, 0.16)',
+                                borderColor: 'rgba(234, 234, 34, 0.55)',
+                                color: '#eaea22',
+                              }}
+                            >
+                              <Sparkles className="w-2.5 h-2.5 mr-0.5" style={{ color: '#eaea22' }} />
+                              <span>CYBERDECK · VIDEO + AUDIO</span>
+                            </span>
+                          )}
                           <span
                             className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
                             style={{
