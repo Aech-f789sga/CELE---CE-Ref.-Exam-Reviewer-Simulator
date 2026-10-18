@@ -1,0 +1,432 @@
+{
+   "author": "Opera Software",
+   "description": "Live your best life, in this distant future, you can pimp your body with all kinds of modifications you can imagine, be careful not to lose it before you make it!",
+   "developer": {
+      "name": "Opera Software"
+   },
+   "icons": {
+      "512": "icon_512.png"
+   },
+   "key": "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwXkiJa8yi9+tkLeW1GAL+5laMvdtN4zt/ZbAyugnADf4QUFUlhquS1LYYf6WpaSFMtIieoj8PJlhLz2F3KJ0Fvy1opLOYVDe9QGlmbjmjp5NUZbHUzRbWSDwFSXrg+NIcAGqfyMNEj8/m6agFw7f/Ae2Aw7opncyy6GyWKwQMB109++EP82u1xqLGq5etDPfV3R41pEwc+oy6e7OTEPSg5+BgfWP0CTIGvz1jenik4yPsrmAYYBSe0AkTPJ+wr8wLeO+oBszy2p2c90RdZ2AWy6mGUNLDCnPRDlKx9OzVL8tG4UNdrWUwI6OvTqZ8po1n3a6rgnWgxcaOxmKMooqq5QNgVqZJdhexX3l7GJkwO1Q/IqNx8NdbH8QgpBgNFa0VkURkNgPq+qibIl1kTnh/7GkXyTovoRsiDGV7msq7GbRBhhoFLsHXUy3LQHz1pbn7eoDmFIAmpWr23gRs0eNaPOPGfmlmMOyIRmoKUx37d9vIlNiWWfybYLhisFbLxoutxm0mAWjirnsXeffC7H2Bjj7XqR6pp6R7TpwxBVoIPvNguB3JVqNy4157bySqvcDSv8+PHKd4qvEZxTtd0oUzf/ku1YvThsYr9U/W/tFsJFJL9Udgh5A3LH6AfmTrV83oAB/cvvGpEBPJs9cBpqLa+cj6QgNBrv7RU4E8NcZ1YkCAwEAAQ==",
+   "manifest_version": 3,
+   "mod": {
+      "flavor": {
+         "features": [  ],
+         "hash": "74be16979710d4c4e7c6647856088456",
+         "parent_hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "payload": {
+         "background_music": [ {
+            "id": "0",
+            "name": "Cyberdeck",
+            "tracks": [ "music/layer1.mp3", "music/layer2.mp3", "music/layer3.mp3" ]
+         } ],
+         "browser_sounds": [ {
+            "id": "0",
+            "name": "Cyberdeck",
+            "sounds": {
+               "CLICK": [ "sounds/spacebar.mp3" ],
+               "FEATURE_SWITCH_OFF": [ "sounds/FeatureSwitchOFF.mp3" ],
+               "FEATURE_SWITCH_ON": [ "sounds/FeatureSwitchON.mp3" ],
+               "HOVER": [ "sounds/Hover.mp3" ],
+               "HOVER_UP": [ "sounds/Hover.mp3" ],
+               "LIMITER_OFF": [ "sounds/FeatureSwitchOFF.mp3" ],
+               "LIMITER_ON": [ "sounds/FeatureSwitchON.mp3" ],
+               "SWITCH_TOGGLE": [ "sounds/FeatureSwitchON.mp3" ],
+               "TAB_CLOSE": [ "sounds/CloseTab.mp3" ],
+               "TAB_INSERT": [ "sounds/NewTab.mp3" ]
+            }
+         } ],
+         "cursors": [ {
+            "id": "cursors_0",
+            "items": [ {
+               "path": "cursors/dark/north_resize.cur",
+               "type": "NORTH_RESIZE"
+            }, {
+               "path": "cursors/dark/north_east_resize.cur",
+               "type": "NORTH_EAST_RESIZE"
+            }, {
+               "path": "cursors/dark/north_south_resize.cur",
+               "type": "NORTH_SOUTH_RESIZE"
+            }, {
+               "path": "cursors/dark/no_drop.cur",
+               "type": "NO_DROP"
+            }, {
+               "path": "cursors/dark/north_east_south_west_resize.cur",
+               "type": "NORTH_EAST_SOUTH_WEST_RESIZE"
+            }, {
+               "path": "cursors/dark/grab.cur",
+               "type": "GRAB"
+            }, {
+               "path": "cursors/dark/alias.cur",
+               "type": "ALIAS"
+            }, {
+               "path": "cursors/dark/west_resize.cur",
+               "type": "WEST_RESIZE"
+            }, {
+               "path": "cursors/dark/south_west_panning.cur",
+               "type": "SOUTH_WEST_PANNING"
+            }, {
+               "path": "cursors/dark/north_west_south_east_resize.cur",
+               "type": "NORTH_WEST_SOUTH_EAST_RESIZE"
+            }, {
+               "path": "cursors/dark/south_east_resize.cur",
+               "type": "SOUTH_EAST_RESIZE"
+            }, {
+               "path": "cursors/dark/wait.cur",
+               "type": "WAIT"
+            }, {
+               "path": "cursors/dark/north_south_no_resize.cur",
+               "type": "NORTH_SOUTH_NO_RESIZE"
+            }, {
+               "path": "cursors/dark/not_allowed.cur",
+               "type": "NOT_ALLOWED"
+            }, {
+               "path": "cursors/dark/middle_panning.cur",
+               "type": "MIDDLE_PANNING"
+            }, {
+               "path": "cursors/dark/copy.cur",
+               "type": "COPY"
+            }, {
+               "path": "cursors/dark/middle_panning_horizontal.cur",
+               "type": "MIDDLE_PANNING_HORIZONTAL"
+            }, {
+               "path": "cursors/dark/row_resize.cur",
+               "type": "ROW_RESIZE"
+            }, {
+               "path": "cursors/dark/cell.cur",
+               "type": "CELL"
+            }, {
+               "path": "cursors/dark/zoom_out.cur",
+               "type": "ZOOM_OUT"
+            }, {
+               "path": "cursors/dark/north_west_south_east_no_resize.cur",
+               "type": "NORTH_WEST_SOUTH_EAST_NO_RESIZE"
+            }, {
+               "path": "cursors/dark/vertical_text.cur",
+               "type": "VERTICAL_TEXT"
+            }, {
+               "path": "cursors/dark/help.cur",
+               "type": "HELP"
+            }, {
+               "path": "cursors/dark/column_resize.cur",
+               "type": "COLUMN_RESIZE"
+            }, {
+               "path": "cursors/dark/cross.cur",
+               "type": "CROSS"
+            }, {
+               "path": "cursors/dark/east_panning.cur",
+               "type": "EAST_PANNING"
+            }, {
+               "path": "cursors/dark/grabbing.cur",
+               "type": "GRABBING"
+            }, {
+               "path": "cursors/dark/east_west_no_resize.cur",
+               "type": "EAST_WEST_NO_RESIZE"
+            }, {
+               "path": "cursors/dark/north_west_panning.cur",
+               "type": "NORTH_WEST_PANNING"
+            }, {
+               "path": "cursors/dark/move.cur",
+               "type": "MOVE"
+            }, {
+               "path": "cursors/dark/east_west_resize.cur",
+               "type": "EAST_WEST_RESIZE"
+            }, {
+               "path": "cursors/dark/context_menu.cur",
+               "type": "CONTEXT_MENU"
+            }, {
+               "path": "cursors/dark/zoom_in.cur",
+               "type": "ZOOM_IN"
+            }, {
+               "path": "cursors/dark/south_panning.cur",
+               "type": "SOUTH_PANNING"
+            }, {
+               "path": "cursors/dark/north_east_panning.cur",
+               "type": "NORTH_EAST_PANNING"
+            }, {
+               "path": "cursors/dark/pointer.cur",
+               "type": "POINTER"
+            }, {
+               "path": "cursors/dark/west_panning.cur",
+               "type": "WEST_PANNING"
+            }, {
+               "path": "cursors/dark/hand.cur",
+               "type": "HAND"
+            }, {
+               "path": "cursors/dark/i_beam.cur",
+               "type": "I_BEAM"
+            }, {
+               "path": "cursors/dark/north_panning.cur",
+               "type": "NORTH_PANNING"
+            }, {
+               "path": "cursors/dark/south_west_resize.cur",
+               "type": "SOUTH_WEST_RESIZE"
+            }, {
+               "path": "cursors/dark/south_resize.cur",
+               "type": "SOUTH_RESIZE"
+            }, {
+               "path": "cursors/dark/middle_panning_vertical.cur",
+               "type": "MIDDLE_PANNING_VERTICAL"
+            }, {
+               "path": "cursors/dark/progress.cur",
+               "type": "PROGRESS"
+            }, {
+               "path": "cursors/dark/north_east_south_west_no_resize.cur",
+               "type": "NORTH_EAST_SOUTH_WEST_NO_RESIZE"
+            }, {
+               "path": "cursors/dark/north_west_resize.cur",
+               "type": "NORTH_WEST_RESIZE"
+            }, {
+               "path": "cursors/dark/east_resize.cur",
+               "type": "EAST_RESIZE"
+            }, {
+               "path": "cursors/dark/south_east_panning.cur",
+               "type": "SOUTH_EAST_PANNING"
+            } ],
+            "name": "Dark",
+            "preview": "cursors/dark/preview.png"
+         }, {
+            "id": "cursors_1",
+            "items": [ {
+               "path": "cursors/light/north_resize.cur",
+               "type": "NORTH_RESIZE"
+            }, {
+               "path": "cursors/light/north_east_resize.cur",
+               "type": "NORTH_EAST_RESIZE"
+            }, {
+               "path": "cursors/light/north_south_resize.cur",
+               "type": "NORTH_SOUTH_RESIZE"
+            }, {
+               "path": "cursors/light/no_drop.cur",
+               "type": "NO_DROP"
+            }, {
+               "path": "cursors/light/north_east_south_west_resize.cur",
+               "type": "NORTH_EAST_SOUTH_WEST_RESIZE"
+            }, {
+               "path": "cursors/light/grab.cur",
+               "type": "GRAB"
+            }, {
+               "path": "cursors/light/alias.cur",
+               "type": "ALIAS"
+            }, {
+               "path": "cursors/light/west_resize.cur",
+               "type": "WEST_RESIZE"
+            }, {
+               "path": "cursors/light/south_west_panning.cur",
+               "type": "SOUTH_WEST_PANNING"
+            }, {
+               "path": "cursors/light/north_west_south_east_resize.cur",
+               "type": "NORTH_WEST_SOUTH_EAST_RESIZE"
+            }, {
+               "path": "cursors/light/south_east_resize.cur",
+               "type": "SOUTH_EAST_RESIZE"
+            }, {
+               "path": "cursors/light/wait.cur",
+               "type": "WAIT"
+            }, {
+               "path": "cursors/light/north_south_no_resize.cur",
+               "type": "NORTH_SOUTH_NO_RESIZE"
+            }, {
+               "path": "cursors/light/not_allowed.cur",
+               "type": "NOT_ALLOWED"
+            }, {
+               "path": "cursors/light/middle_panning.cur",
+               "type": "MIDDLE_PANNING"
+            }, {
+               "path": "cursors/light/copy.cur",
+               "type": "COPY"
+            }, {
+               "path": "cursors/light/middle_panning_horizontal.cur",
+               "type": "MIDDLE_PANNING_HORIZONTAL"
+            }, {
+               "path": "cursors/light/row_resize.cur",
+               "type": "ROW_RESIZE"
+            }, {
+               "path": "cursors/light/cell.cur",
+               "type": "CELL"
+            }, {
+               "path": "cursors/light/zoom_out.cur",
+               "type": "ZOOM_OUT"
+            }, {
+               "path": "cursors/light/north_west_south_east_no_resize.cur",
+               "type": "NORTH_WEST_SOUTH_EAST_NO_RESIZE"
+            }, {
+               "path": "cursors/light/vertical_text.cur",
+               "type": "VERTICAL_TEXT"
+            }, {
+               "path": "cursors/light/help.cur",
+               "type": "HELP"
+            }, {
+               "path": "cursors/light/column_resize.cur",
+               "type": "COLUMN_RESIZE"
+            }, {
+               "path": "cursors/light/cross.cur",
+               "type": "CROSS"
+            }, {
+               "path": "cursors/light/east_panning.cur",
+               "type": "EAST_PANNING"
+            }, {
+               "path": "cursors/light/grabbing.cur",
+               "type": "GRABBING"
+            }, {
+               "path": "cursors/light/east_west_no_resize.cur",
+               "type": "EAST_WEST_NO_RESIZE"
+            }, {
+               "path": "cursors/light/north_west_panning.cur",
+               "type": "NORTH_WEST_PANNING"
+            }, {
+               "path": "cursors/light/move.cur",
+               "type": "MOVE"
+            }, {
+               "path": "cursors/light/east_west_resize.cur",
+               "type": "EAST_WEST_RESIZE"
+            }, {
+               "path": "cursors/light/context_menu.cur",
+               "type": "CONTEXT_MENU"
+            }, {
+               "path": "cursors/light/zoom_in.cur",
+               "type": "ZOOM_IN"
+            }, {
+               "path": "cursors/light/south_panning.cur",
+               "type": "SOUTH_PANNING"
+            }, {
+               "path": "cursors/light/north_east_panning.cur",
+               "type": "NORTH_EAST_PANNING"
+            }, {
+               "path": "cursors/light/pointer.cur",
+               "type": "POINTER"
+            }, {
+               "path": "cursors/light/west_panning.cur",
+               "type": "WEST_PANNING"
+            }, {
+               "path": "cursors/light/hand.cur",
+               "type": "HAND"
+            }, {
+               "path": "cursors/light/i_beam.cur",
+               "type": "I_BEAM"
+            }, {
+               "path": "cursors/light/north_panning.cur",
+               "type": "NORTH_PANNING"
+            }, {
+               "path": "cursors/light/south_west_resize.cur",
+               "type": "SOUTH_WEST_RESIZE"
+            }, {
+               "path": "cursors/light/south_resize.cur",
+               "type": "SOUTH_RESIZE"
+            }, {
+               "path": "cursors/light/middle_panning_vertical.cur",
+               "type": "MIDDLE_PANNING_VERTICAL"
+            }, {
+               "path": "cursors/light/progress.cur",
+               "type": "PROGRESS"
+            }, {
+               "path": "cursors/light/north_east_south_west_no_resize.cur",
+               "type": "NORTH_EAST_SOUTH_WEST_NO_RESIZE"
+            }, {
+               "path": "cursors/light/north_west_resize.cur",
+               "type": "NORTH_WEST_RESIZE"
+            }, {
+               "path": "cursors/light/east_resize.cur",
+               "type": "EAST_RESIZE"
+            }, {
+               "path": "cursors/light/south_east_panning.cur",
+               "type": "SOUTH_EAST_PANNING"
+            } ],
+            "name": "Light",
+            "preview": "cursors/light/preview.png"
+         } ],
+         "keyboard_sounds": [ {
+            "id": "0",
+            "name": "Cyberdeck",
+            "sounds": {
+               "TYPING_BACKSPACE": [ "sounds/backspace.mp3" ],
+               "TYPING_ENTER": [ "sounds/spacebar.mp3" ],
+               "TYPING_LETTER": [ "sounds/keyboard1.mp3", "sounds/keyboard8.mp3", "sounds/keyboard2.mp3", "sounds/keyboard7.mp3", "sounds/keyboard3.mp3", "sounds/keyboard6.mp3", "sounds/keyboard4.mp3", "sounds/keyboard5.mp3" ],
+               "TYPING_SPACE": [ "sounds/spacebar.mp3" ]
+            }
+         } ],
+         "page_styles": [ {
+            "css": [ "css/main.theme.css", "css/changecolors.css" ],
+            "id": "0",
+            "matches": [ "https://*.discord.com/*" ],
+            "name": "Cyberdeck"
+         } ],
+         "shaders": [ {
+            "animation": {
+               "duration": 120,
+               "steps": 3600
+            },
+            "id": "Cyberdeck",
+            "name": "Cyberdeck",
+            "path": "shaders/cyberdeck.txt"
+         } ],
+         "theme": [ {
+            "dark": {
+               "gx_accent": {
+                  "h": 346,
+                  "l": 54,
+                  "s": 95
+               },
+               "gx_secondary_base": {
+                  "h": 360,
+                  "l": 16,
+                  "s": 100
+               }
+            },
+            "id": "0",
+            "light": {
+               "gx_accent": {
+                  "h": 346,
+                  "l": 53,
+                  "s": 94
+               },
+               "gx_secondary_base": {
+                  "h": 0,
+                  "l": 88,
+                  "s": 100
+               }
+            },
+            "name": "Cyberdeck"
+         } ],
+         "wallpaper": [ {
+            "dark": {
+               "first_frame": "wallpaper/first_frame.jpg",
+               "image": "wallpaper/animated.webm",
+               "image_mobile": "wallpaper/mobile_dark.mp4",
+               "speeddial_position": "top",
+               "text_color": "#ffffff",
+               "text_shadow": "#ffffff",
+               "ui_settings": {
+                  "background_blur": 0,
+                  "background_opacity": 0,
+                  "focus_mode": false,
+                  "islands_opacity": 0,
+                  "vignette_strength": 41
+               }
+            },
+            "id": "0",
+            "light": {
+               "first_frame": "wallpaper/first_frame.jpg",
+               "image": "wallpaper/animated.webm",
+               "image_mobile": "wallpaper/mobile_light.mp4",
+               "speeddial_position": "top",
+               "text_color": "#ffffff",
+               "text_shadow": "#00ff00",
+               "ui_settings": {
+                  "background_blur": 0,
+                  "background_opacity": 0,
+                  "focus_mode": false,
+                  "islands_opacity": 100,
+                  "vignette_strength": 0
+               }
+            },
+            "name": "Cyberdeck"
+         } ]
+      },
+      "schema_version": 2
+   },
+   "name": "Cyberdeck",
+   "update_url": "https://api.gx.me/store/mods/update",
+   "version": "5.7"
+}
