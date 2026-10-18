@@ -10,19 +10,15 @@ import {
   X,
   Move,
   Download,
-  Palette,
-  Grid,
   Calculator,
   FileText,
   Columns,
   Minus,
   Plus,
-  Sparkles,
   PaintBucket,
   Upload,
   Tablet,
   FileCode,
-  Save,
   Check,
   LassoSelect,
   Square,
@@ -31,7 +27,12 @@ import {
   ArrowRight,
   Spline,
   Copy,
-  Sliders,
+  ChevronLeft,
+  ChevronRight,
+  Highlighter,
+  Pencil,
+  Brush,
+  Layers,
 } from 'lucide-react';
 import {
   generateScratchpadSvg,
@@ -175,6 +176,28 @@ const STORAGE_KEY_STATE = 'ce_scratchpad_state_v2';
 const STORAGE_KEY_CANVAS_PREFIX = 'ce_scratchpad_canvas_page_';
 const STORAGE_KEY_NOTES = 'ce_scratchpad_notes_v2';
 
+// ----------------------------------------------------
+// FIXED DOCUMENT GEOMETRY — blur-proof persistence
+// ----------------------------------------------------
+// The drawing buffer used to follow the viewport (container size × DPR). Every
+// time the pad was closed and reopened — or the window was resized, docked, or
+// maximised — the stored PNG was stretched into a *different* buffer size. Each
+// round-trip resampled the artwork, so the ink, shapes and fills progressively
+// turned soft and blurry.
+//
+// The page is now a fixed-size document: 1200 × 800 logical units rendered into
+// a 1800 × 1200 buffer (1.5×) that never depends on the window, the dock state,
+// the fullscreen state or the device pixel ratio. The same bitmap therefore
+// round-trips byte-for-byte, and the on-screen page is simply a CSS-scaled view
+// of it (like zooming a real notebook page).
+const DOC_W = 1200;
+const DOC_H = 800;
+const DOC_ASPECT = DOC_W / DOC_H;
+const DOC_BUF_W = Math.round(DOC_W * 1.5); // 1800
+const DOC_BUF_H = Math.round(DOC_H * 1.5); // 1200
+const PALETTE_RESERVE = 94; // vertical space kept for the floating tool palette
+const PAGE_GUTTER = 10; // breathing room around the page
+
 const COLOR_PRESETS = [
   '#38bdf8', // Cyan
   '#f59e0b', // Amber
@@ -242,6 +265,53 @@ export const hexToRgba = (hex: string, alpha = 255): [number, number, number, nu
   return [56, 189, 248, alpha];
 };
 
+// ----------------------------------------------------
+// Floating Palette Button (GoodNotes-style icon chip)
+// ----------------------------------------------------
+type PaletteTone = 'cyan' | 'rose' | 'emerald' | 'amber' | 'violet';
+
+const TONE_ACTIVE: Record<PaletteTone, string> = {
+  cyan: 'bg-cyan-400 text-slate-950 shadow-[0_2px_8px_rgba(34,211,238,0.45)]',
+  rose: 'bg-rose-400 text-slate-950 shadow-[0_2px_8px_rgba(251,113,133,0.45)]',
+  emerald: 'bg-emerald-400 text-slate-950 shadow-[0_2px_8px_rgba(52,211,153,0.45)]',
+  amber: 'bg-amber-400 text-slate-950 shadow-[0_2px_8px_rgba(251,191,36,0.45)]',
+  violet: 'bg-violet-400 text-slate-950 shadow-[0_2px_8px_rgba(167,139,250,0.45)]',
+};
+
+const TONE_SUBTLE: Record<PaletteTone, string> = {
+  cyan: 'bg-cyan-400/15 text-cyan-300 ring-1 ring-cyan-400/40',
+  rose: 'bg-rose-400/15 text-rose-300 ring-1 ring-rose-400/40',
+  emerald: 'bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-400/40',
+  amber: 'bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/40',
+  violet: 'bg-violet-400/15 text-violet-300 ring-1 ring-violet-400/40',
+};
+
+const PaletteBtn: React.FC<{
+  title: string;
+  active?: boolean;
+  tone?: PaletteTone;
+  subtle?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}> = ({ title, active = false, tone = 'cyan', subtle = false, disabled = false, onClick, children }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    title={title}
+    className={`sp-chip w-[30px] h-[30px] ${
+      active
+        ? subtle
+          ? TONE_SUBTLE[tone]
+          : TONE_ACTIVE[tone]
+        : 'text-slate-300 hover:text-white hover:bg-white/10'
+    } ${disabled ? 'opacity-25 cursor-not-allowed' : 'cursor-pointer'}`}
+  >
+    {children}
+  </button>
+);
+
 export const Scratchpad: React.FC<ScratchpadProps> = ({
   isOpen,
   onClose,
@@ -256,7 +326,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   // Modes & Tabs
   const [activeTab, setActiveTab] = useState<ScratchpadTab>('draw');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPages = 5;
+  // Sheets are unlimited, GoodNotes-style. The count is persisted per document.
+  const [totalPages, setTotalPages] = useState<number>(5);
+  const MAX_PAGES = 60;
 
   // Drawing Tools State
   const [tool, setTool] = useState<ToolType>('pen');
@@ -268,20 +340,19 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   const [isFilling, setIsFilling] = useState<boolean>(false);
   const [fillRipple, setFillRipple] = useState<{ x: number; y: number; color: string } | null>(null);
   const [dpi, setDpi] = useState<DpiMode>(600);
-  const [showDpiMenu, setShowDpiMenu] = useState<boolean>(false);
   const [showExportMenu, setShowExportMenu] = useState<boolean>(false);
+  const [showPaperMenu, setShowPaperMenu] = useState<boolean>(false);
+  const [showSizeMenu, setShowSizeMenu] = useState<boolean>(false);
   const [importNotification, setImportNotification] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   
-  // High-performance screen drafting resolution scale:
-  // Uses native device pixel ratio (capped at 2.0x for Retina crispness with 120 FPS latency-free drawing)
-  // Full 1200 DPI is applied when exporting PNG/SVG files
-  const getScreenResolutionScale = useCallback((): number => {
-    const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1.5 : 1.5;
-    return Math.min(2.0, Math.max(1.0, dpr));
-  }, []);
+  // Page view geometry (CSS px). The document buffer stays fixed at
+  // DOC_BUF_W × DOC_BUF_H; only this letterboxed view size changes with the
+  // window, so resizing can never touch the pixels that are stored.
+  const [viewSize, setViewSize] = useState<{ w: number; h: number }>({ w: 480, h: 320 });
+  const deskRef = useRef<HTMLDivElement | null>(null);
+  const lastCanvasElRef = useRef<HTMLCanvasElement | null>(null);
 
-  const screenScale = getScreenResolutionScale();
   const dpiScale = dpi / 96; // Physical export scale factor (1200 DPI = 12.5x)
   const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const offscreenSnapshotCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -382,6 +453,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         if (parsed.paperBgColor) setPaperBgColor(parsed.paperBgColor);
         if (parsed.dpi) setDpi(parsed.dpi);
         if (parsed.size) setSize(parsed.size);
+        if (typeof parsed.totalPages === 'number' && parsed.totalPages >= 1) {
+          setTotalPages(Math.min(MAX_PAGES, Math.round(parsed.totalPages)));
+        }
         if (parsed.position && !isDocked) {
           // Check bounds
           const boundedX = Math.min(Math.max(10, parsed.position.x), window.innerWidth - 150);
@@ -411,12 +485,13 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         dpi,
         size,
         position,
+        totalPages,
       };
       localStorage.setItem(`${storageKeyPrefix}${STORAGE_KEY_STATE}`, JSON.stringify(stateToSave));
     } catch {
       // Ignore quota errors
     }
-  }, [tool, color, thickness, paperTexture, paperBgColor, dpi, size, position, storageKeyPrefix]);
+  }, [tool, color, thickness, paperTexture, paperBgColor, dpi, size, position, totalPages, storageKeyPrefix]);
 
   // Save Notes changes to localStorage
   const handleNotesChange = (text: string) => {
@@ -431,6 +506,26 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   // ----------------------------------------------------
   // Save & Load Canvas Drawings per Page (High-Performance Engine)
   // ----------------------------------------------------
+  // Small preview for the hub cards — keeps the metadata (and therefore
+  // localStorage) tiny even though the stored sheet is 1800 × 1200.
+  const makeThumbnail = useCallback((source: HTMLCanvasElement): string => {
+    try {
+      const targetW = 480;
+      const targetH = Math.round((source.height / source.width) * targetW);
+      const thumb = document.createElement('canvas');
+      thumb.width = targetW;
+      thumb.height = targetH;
+      const tctx = thumb.getContext('2d');
+      if (!tctx) return source.toDataURL('image/png');
+      tctx.imageSmoothingEnabled = true;
+      tctx.imageSmoothingQuality = 'high';
+      tctx.drawImage(source, 0, 0, targetW, targetH);
+      return thumb.toDataURL('image/png');
+    } catch {
+      return source.toDataURL('image/png');
+    }
+  }, []);
+
   const flushSaveCanvasToStorage = useCallback(
     (page: number) => {
       if (saveDebounceTimerRef.current) {
@@ -450,7 +545,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
           if (existing) {
             saveScratchpadMeta({
               ...existing,
-              thumbnail: dataUrl,
+              thumbnail: makeThumbnail(canvas),
               updatedAt: new Date().toISOString(),
             });
           }
@@ -459,7 +554,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         console.warn('Canvas storage flush error:', err);
       }
     },
-    [storageKeyPrefix, documentId]
+    [storageKeyPrefix, documentId, makeThumbnail]
   );
 
   const saveCanvasToStorage = useCallback(
@@ -503,7 +598,23 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
           const img = new Image();
           img.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            const imgAspect = img.width / img.height;
+            const bufAspect = canvas.width / canvas.height;
+            if (Math.abs(imgAspect - bufAspect) < 0.01) {
+              // Saved by this version: same document geometry, so this is a
+              // 1:1 blit — zero resampling, zero blur.
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            } else {
+              // Legacy sheet captured at a viewport-dependent size. Fit it
+              // inside the document instead of stretching it out of shape.
+              const fit = Math.min(canvas.width / img.width, canvas.height / img.height);
+              const w = img.width * fit;
+              const h = img.height * fit;
+              ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+            }
             try {
               const initialSnapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
               undoStackRef.current = [initialSnapshot];
@@ -542,6 +653,34 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     setCurrentPage(newPage);
   };
 
+  // Add a new blank sheet and jump to it
+  const addPage = () => {
+    if (totalPages >= MAX_PAGES) return;
+    if (lassoSelection) commitLassoSelection();
+    flushSaveCanvasToStorage(currentPage);
+    const next = totalPages + 1;
+    isCanvasInitializedRef.current = false;
+    loadedPageRef.current = null;
+    setTotalPages(next);
+    setCurrentPage(next);
+  };
+
+  // Switch Tab: flush the sheet before the <canvas> node unmounts
+  const closeAllMenus = () => {
+    setShowExportMenu(false);
+    setShowShapeMenu(false);
+    setShowSmootherMenu(false);
+    setShowPaperMenu(false);
+    setShowSizeMenu(false);
+  };
+
+  const switchTab = (tab: ScratchpadTab) => {
+    if (tab === activeTab) return;
+    if (activeTab === 'draw') flushSaveCanvasToStorage(currentPage);
+    closeAllMenus();
+    setActiveTab(tab);
+  };
+
   // Reset initialization flag when Scratchpad closes
   useEffect(() => {
     if (!isOpen) {
@@ -551,52 +690,31 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   }, [isOpen]);
 
   // ----------------------------------------------------
-  // Canvas Resolution Setup & Resize (Hardware-Accelerated 120 FPS Engine)
+  // Document Buffer Setup (resolution-stable, 120 FPS drawing)
   // ----------------------------------------------------
+  // The buffer size is a constant. It is only ever written when the <canvas>
+  // node is new or the page changes — never because the window moved or the
+  // pad was docked/maximised. That is what keeps reopened artwork pixel-exact.
   useEffect(() => {
     if (!isOpen || activeTab !== 'draw') return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const container = canvas.parentElement;
-    if (!container) return;
-
-    const cssW = container.clientWidth;
-    const cssH = container.clientHeight;
-
-    if (cssW <= 0 || cssH <= 0) return;
-
-    const targetW = Math.round(cssW * screenScale);
-    const targetH = Math.round(cssH * screenScale);
-
-    const isFirstInit = !isCanvasInitializedRef.current || loadedPageRef.current !== currentPage;
-    const isDimensionChange = canvas.width !== targetW || canvas.height !== targetH;
-
-    if (!isFirstInit && !isDimensionChange) {
-      return;
+    if (canvas.width !== DOC_BUF_W || canvas.height !== DOC_BUF_H) {
+      canvas.width = DOC_BUF_W;
+      canvas.height = DOC_BUF_H;
     }
-
-    // Preserve active drawing during window resize only after initial load
-    let tempImgData: string | null = null;
-    if (!isFirstInit && isDimensionChange && canvas.width > 0 && canvas.height > 0) {
-      try {
-        tempImgData = canvas.toDataURL('image/png');
-      } catch {
-        tempImgData = null;
-      }
-    }
-
-    canvas.width = targetW;
-    canvas.height = targetH;
     canvas.style.width = '100%';
     canvas.style.height = '100%';
 
     // Sync high-speed hardware overlay canvas
     const overlay = overlayCanvasRef.current;
     if (overlay) {
-      overlay.width = targetW;
-      overlay.height = targetH;
+      if (overlay.width !== DOC_BUF_W || overlay.height !== DOC_BUF_H) {
+        overlay.width = DOC_BUF_W;
+        overlay.height = DOC_BUF_H;
+      }
       overlay.style.width = '100%';
       overlay.style.height = '100%';
     }
@@ -605,28 +723,44 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     if (ctx) {
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-
-      if (isFirstInit) {
-        isCanvasInitializedRef.current = true;
-        loadCanvasFromStorage(currentPage);
-      } else if (tempImgData) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, targetW, targetH);
-        };
-        img.src = tempImgData;
-      }
     }
-  }, [
-    isOpen,
-    activeTab,
-    size,
-    isDocked,
-    isFullscreen,
-    currentPage,
-    screenScale,
-    loadCanvasFromStorage,
-  ]);
+
+    // React re-creates the <canvas> node whenever the draw tab remounts, so a
+    // different element identity always means "reload this page from storage".
+    const isNewElement = lastCanvasElRef.current !== canvas;
+    if (isNewElement || !isCanvasInitializedRef.current || loadedPageRef.current !== currentPage) {
+      lastCanvasElRef.current = canvas;
+      isCanvasInitializedRef.current = true;
+      loadCanvasFromStorage(currentPage);
+    }
+  }, [isOpen, activeTab, currentPage, loadCanvasFromStorage]);
+
+  // ----------------------------------------------------
+  // Letterboxed Page View Size (CSS px only — no pixel writes)
+  // ----------------------------------------------------
+  useEffect(() => {
+    if (!isOpen || activeTab !== 'draw') return;
+    const desk = deskRef.current;
+    if (!desk) return;
+
+    const measure = () => {
+      const availW = desk.clientWidth - PAGE_GUTTER * 2;
+      const availH = desk.clientHeight - PALETTE_RESERVE - PAGE_GUTTER;
+      if (availW <= 0 || availH <= 0) return;
+      const w = Math.floor(Math.min(availW, availH * DOC_ASPECT));
+      const h = Math.floor(w / DOC_ASPECT);
+      setViewSize((prev) => (prev.w === w && prev.h === h ? prev : { w, h }));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(desk);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [isOpen, activeTab, isDocked, isFullscreen]);
 
   // Push Canvas State to Undo Stack
   const pushUndoState = () => {
@@ -638,8 +772,14 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     try {
       const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
       undoStackRef.current.push(snapshot);
-      if (undoStackRef.current.length > 12) {
-        undoStackRef.current.shift();
+      // Cap by step count AND by memory: at the fixed 1800 × 1200 document size
+      // each snapshot is ~8.6 MB, so a hard count of 12 could hold 100 MB+.
+      const maxSteps = 12;
+      const maxBytes = 64 * 1024 * 1024;
+      let bytes = undoStackRef.current.length * snapshot.data.length;
+      while (undoStackRef.current.length > 1 && (undoStackRef.current.length > maxSteps || bytes > maxBytes)) {
+        const dropped = undoStackRef.current.shift();
+        bytes -= dropped ? dropped.data.length : 0;
       }
       redoStackRef.current = [];
       setCanUndo(undoStackRef.current.length > 1);
@@ -691,8 +831,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Snapshot the sheet BEFORE wiping it so Ctrl+Z can bring it back.
     pushUndoState();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    saveCanvasToStorage(currentPage);
   };
 
   // Download / Export Drawing as PNG
@@ -701,14 +843,14 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Create export canvas with background texture baked in
+    // Create export canvas with background texture baked in.
+    // Always rendered from the fixed document geometry — never from the current
+    // window size — so the exported PNG matches the stored sheet exactly.
     const exportCanvas = document.createElement('canvas');
-    const container = canvas.parentElement;
-    const cssW = container ? container.clientWidth : 1200;
-    const cssH = container ? container.clientHeight : 800;
-    const expScale = dpi / 96;
-    exportCanvas.width = Math.round(cssW * expScale);
-    exportCanvas.height = Math.round(cssH * expScale);
+    const MAX_EXPORT_EDGE = 8192;
+    const expScale = Math.min(dpi / 96, MAX_EXPORT_EDGE / DOC_W);
+    exportCanvas.width = Math.round(DOC_W * expScale);
+    exportCanvas.height = Math.round(DOC_H * expScale);
     const expCtx = exportCanvas.getContext('2d');
     if (!expCtx) return;
 
@@ -717,8 +859,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     expCtx.fillStyle = paperBgColor;
     expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
 
-    // Draw grid if selected, scaling step proportional to high-DPI
-    const gridStep = Math.round(20 * expScale);
+    // Draw grid if selected, scaling step proportional to high-DPI.
+    // The on-screen sheet shows ~24 cells across, so the export matches that.
+    const gridStep = Math.max(1, Math.round((DOC_W / 24) * expScale));
     if (paperTexture === 'blueprint' || paperTexture === 'graph') {
       expCtx.strokeStyle = light ? 'rgba(2, 132, 199, 0.28)' : 'rgba(56, 189, 248, 0.18)';
       expCtx.lineWidth = Math.max(1, Math.round(1 * expScale));
@@ -737,7 +880,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     } else if (paperTexture === 'lined') {
       expCtx.strokeStyle = light ? 'rgba(15, 23, 42, 0.22)' : 'rgba(148, 163, 184, 0.18)';
       expCtx.lineWidth = Math.max(1, Math.round(1 * expScale));
-      const lineStep = Math.round(26 * expScale);
+      const lineStep = Math.max(1, Math.round((DOC_H / 30) * expScale));
       for (let y = lineStep; y < exportCanvas.height; y += lineStep) {
         expCtx.beginPath();
         expCtx.moveTo(0, y);
@@ -883,7 +1026,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     }
     flushSaveCanvasToStorage(currentPage);
     if (documentId) {
-      const thumb = canvasRef.current?.toDataURL('image/png');
+      const thumb = canvasRef.current ? makeThumbnail(canvasRef.current) : undefined;
       const existing = getScratchpadById(documentId);
       saveScratchpadMeta({
         id: documentId,
@@ -1652,15 +1795,13 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     // Handle Color Bucket Fill
     if (tool === 'bucket') {
       if (isFilling) return;
-      const containerRect = containerRef.current?.getBoundingClientRect();
-      if (containerRect) {
-        setFillRipple({
-          x: e.clientX - containerRect.left,
-          y: e.clientY - containerRect.top,
-          color,
-        });
-        setTimeout(() => setFillRipple(null), 700);
-      }
+      const canvasRect = canvas.getBoundingClientRect();
+      setFillRipple({
+        x: e.clientX - canvasRect.left,
+        y: e.clientY - canvasRect.top,
+        color,
+      });
+      setTimeout(() => setFillRipple(null), 700);
       performBucketFill(Math.round(pt.x), Math.round(pt.y), color);
       return;
     }
@@ -2000,7 +2141,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       if (!isResizingRef.current) return;
       const dw = moveEvent.clientX - resizeStartRef.current.mouseX;
       const dh = moveEvent.clientY - resizeStartRef.current.mouseY;
-      const newW = Math.min(Math.max(340, resizeStartRef.current.initialW + dw), window.innerWidth - 30);
+      const newW = Math.min(Math.max(400, resizeStartRef.current.initialW + dw), window.innerWidth - 30);
       const newH = Math.min(Math.max(260, resizeStartRef.current.initialH + dh), window.innerHeight - 60);
       setSize({ width: newW, height: newH });
     };
@@ -2095,15 +2236,18 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     };
   };
 
+  const anyMenuOpen =
+    showShapeMenu || showSmootherMenu || showSizeMenu || showPaperMenu || showExportMenu;
+
   return (
     <div
       ref={containerRef}
-      className={`scratchpad-root flex flex-col rounded-2xl border shadow-2xl overflow-hidden select-none z-50 backdrop-blur-xl transition-shadow ${
+      className={`scratchpad-root sp-shell flex flex-col select-none z-50 overflow-hidden ${
         isDocked
-          ? 'w-full h-full relative border-slate-800'
+          ? 'w-full h-full relative'
           : isFullscreen
-          ? 'fixed inset-4 z-50 border-cyan-500/50'
-          : 'fixed border-slate-700/80'
+          ? 'fixed inset-3 z-50 rounded-2xl'
+          : 'fixed rounded-2xl'
       } ${className}`}
       style={
         isDocked
@@ -2115,174 +2259,107 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
               top: `${position.y}px`,
               width: `${size.width}px`,
               height: `${size.height}px`,
-              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 25px rgba(56, 189, 248, 0.15)',
+              boxShadow:
+                '0 30px 70px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(148, 163, 184, 0.14)',
             }
       }
     >
       {/* ====================================================
-          1. HEADER TOOLBAR & WINDOW DRAG HANDLE
+          1. HEADER — window chrome, mode switch, page indicator
           ==================================================== */}
       <div
         onMouseDown={handleHeaderMouseDown}
-        className={`px-3 py-2 flex items-center justify-between border-b border-slate-800/80 cursor-grab active:cursor-grabbing transition-colors ${
-          isDocked ? 'bg-slate-900/95' : 'bg-slate-950/95'
-        }`}
+        className="sp-header shrink-0 h-9 px-2 flex items-center justify-between gap-2 border-b cursor-grab active:cursor-grabbing"
       >
-        {/* Title, Mode Tabs, and Move Grip */}
-        <div className="flex items-center space-x-2">
-          {!isDocked && !isFullscreen && (
-            <Move className="w-3.5 h-3.5 text-slate-500 mr-0.5 cursor-grab" />
-          )}
+        <div className="flex items-center gap-1.5 min-w-0">
+          {!isDocked && !isFullscreen && <Move className="w-3.5 h-3.5 text-slate-500 shrink-0" />}
 
-          <div className="flex items-center space-x-1.5">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <h3 className="font-arnie text-xs font-bold text-slate-100 tracking-wider truncate max-w-[140px] sm:max-w-xs" title={title || 'Scratchpad'}>
-              {title || 'Scratchpad'}
-            </h3>
-          </div>
+          <h3
+            className="font-arnie text-[11px] font-bold text-slate-100 tracking-wide truncate max-w-[130px] sm:max-w-[190px]"
+            title={title || 'Scratchpad'}
+          >
+            {title || 'Scratchpad'}
+          </h3>
 
-          {/* Mode Switcher: Draw | Notes | Calculator */}
-          <div className="flex items-center space-x-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800 ml-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab('draw')}
-              className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
-                activeTab === 'draw'
-                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <PenTool className="w-2.5 h-2.5" />
-              <span>Canvas</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('notes')}
-              className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
-                activeTab === 'notes'
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <FileText className="w-2.5 h-2.5" />
-              <span>Notes</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('calc')}
-              className={`flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
-                activeTab === 'calc'
-                  ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Calculator className="w-2.5 h-2.5" />
-              <span>Calc</span>
-            </button>
+          {/* Mode switcher: Canvas | Notes | Calc */}
+          <div className="sp-seg ml-0.5 shrink-0">
+            {[
+              { id: 'draw' as const, label: 'Canvas', icon: <PenTool className="w-2.5 h-2.5" /> },
+              { id: 'notes' as const, label: 'Notes', icon: <FileText className="w-2.5 h-2.5" /> },
+              { id: 'calc' as const, label: 'Calc', icon: <Calculator className="w-2.5 h-2.5" /> },
+            ].map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => switchTab(t.id)}
+                title={`${t.label} mode`}
+                className={`flex items-center gap-1 px-1.5 h-5 rounded-[7px] text-[10px] font-semibold transition-all cursor-pointer ${
+                  activeTab === t.id
+                    ? 'bg-slate-100 text-slate-900 shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {t.icon}
+                <span className="hidden sm:inline">{t.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Right Actions: Sheets, Dock, Fullscreen, Close */}
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Page indicator — GoodNotes style */}
           {activeTab === 'draw' && (
-            <div className="flex items-center space-x-1 mr-1">
-              <span className="text-[10px] font-mono text-slate-400">Sheet:</span>
-              <div className="flex items-center space-x-0.5">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
-                  <button
-                    key={pg}
-                    type="button"
-                    onClick={() => switchPage(pg)}
-                    className={`w-4.5 h-4.5 rounded text-[9px] font-bold font-mono transition-all cursor-pointer ${
-                      currentPage === pg
-                        ? 'bg-cyan-400 text-slate-950 scale-105'
-                        : 'bg-slate-800 text-slate-400 hover:text-white'
-                    }`}
-                    title={`Switch to Rough Sheet #${pg}`}
-                  >
-                    {pg}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* High-DPI Engine Selector (600+ DPI) */}
-          {activeTab === 'draw' && (
-            <div className="relative mr-1">
+            <div className="sp-seg">
               <button
                 type="button"
-                onClick={() => setShowDpiMenu((prev) => !prev)}
-                className="flex items-center space-x-1 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[9px] font-mono font-bold text-cyan-300 hover:text-white hover:border-cyan-400 transition-all cursor-pointer shadow-sm"
-                title="Canvas Resolution: At least 600 DPI hardware-accelerated precision"
+                onClick={() => switchPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="sp-chip w-5 h-5 text-slate-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                title="Previous sheet"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>{dpi} DPI</span>
-                <span className="text-[7px] text-slate-400">▼</span>
+                <ChevronLeft className="w-3 h-3" />
               </button>
-
-              {showDpiMenu && (
-                <div className="absolute right-0 top-full mt-1.5 w-52 p-2 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-50 text-[10px] space-y-1 backdrop-blur-xl">
-                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-1 pb-1 border-b border-slate-800 flex items-center justify-between">
-                    <span>Engine Resolution</span>
-                    <span className="text-cyan-400 font-mono">600+ DPI</span>
-                  </div>
-
-                  {[
-                    { value: 600, label: '600 DPI', tag: 'Ultra-HD (Default)', desc: 'Sharp engineering drafting & calculations' },
-                    { value: 720, label: '720 DPI', tag: 'Master Blueprint', desc: 'High-density architectural line resolution' },
-                    { value: 1200, label: '1200 DPI', tag: 'CAD Archival', desc: 'Extreme subpixel drafting precision' },
-                    { value: 300, label: '300 DPI', tag: 'Standard High-Res', desc: 'Compact memory footprint' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => {
-                        saveCanvasToStorage(currentPage);
-                        setDpi(opt.value as DpiMode);
-                        setShowDpiMenu(false);
-                      }}
-                      className={`w-full text-left px-2 py-1 rounded-lg flex flex-col cursor-pointer transition-colors ${
-                        dpi === opt.value
-                          ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 font-bold'
-                          : 'hover:bg-slate-800 text-slate-300 border border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono">{opt.label}</span>
-                        <span className={`text-[8px] px-1 py-0.2 rounded font-mono ${
-                          dpi === opt.value ? 'bg-cyan-400 text-slate-950 font-bold' : 'text-slate-400 bg-slate-900'
-                        }`}>
-                          {opt.tag}
-                        </span>
-                      </div>
-                      <span className="text-[8px] text-slate-400 mt-0.5">{opt.desc}</span>
-                    </button>
-                  ))}
-
-                  <div className="pt-1 border-t border-slate-800 text-[8px] text-slate-500 font-mono px-1 flex justify-between">
-                    <span>Buffer:</span>
-                    <span className="text-cyan-400">
-                      {canvasRef.current ? `${canvasRef.current.width} × ${canvasRef.current.height} px` : `${dpi} DPI`}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <span className="font-mono text-[10px] text-slate-300 tabular-nums px-0.5 select-none">
+                {currentPage}
+                <span className="text-slate-600">/</span>
+                {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => switchPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="sp-chip w-5 h-5 text-slate-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                title="Next sheet"
+              >
+                <ChevronRight className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={addPage}
+                disabled={totalPages >= MAX_PAGES}
+                className="sp-chip w-5 h-5 text-slate-300 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                title="Add a blank sheet"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
             </div>
           )}
+
+          <span className="hidden md:flex items-center gap-1 pl-0.5 text-[9px] font-mono text-emerald-400/80">
+            <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+            saved
+          </span>
 
           {onToggleDock && (
             <button
               type="button"
               onClick={onToggleDock}
-              className={`p-1 rounded-md text-xs transition-colors cursor-pointer ${
+              className={`sp-chip w-6 h-6 cursor-pointer ${
                 isDocked
-                  ? 'bg-cyan-500/20 text-cyan-300'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  ? 'bg-cyan-400/20 text-cyan-300'
+                  : 'text-slate-400 hover:text-white hover:bg-white/10'
               }`}
-              title={isDocked ? 'Undock to floating window' : 'Dock to side alongside questions'}
+              title={isDocked ? 'Undock to floating window' : 'Dock alongside the questions'}
             >
               <Columns className="w-3.5 h-3.5" />
             </button>
@@ -2292,7 +2369,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
             <button
               type="button"
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 text-xs transition-colors cursor-pointer"
+              className="sp-chip w-6 h-6 text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
               title={isFullscreen ? 'Restore window size' : 'Maximize scratchpad'}
             >
               {isFullscreen ? (
@@ -2306,8 +2383,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
           <button
             type="button"
             onClick={handleClose}
-            className="p-1 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs transition-colors cursor-pointer ml-1"
-            title="Minimize Scratchpad"
+            className="sp-chip w-6 h-6 text-slate-400 hover:text-rose-300 hover:bg-rose-500/15 cursor-pointer"
+            title="Minimize scratchpad"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -2315,884 +2392,877 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       </div>
 
       {/* ====================================================
-          2. SECONDARY CONTROLS (Only visible in 'draw' tab)
-             Tools, Textures, Thickness, Color, Undo/Redo
+          2. WORKSPACE
           ==================================================== */}
-      {activeTab === 'draw' && (
-        <div className="px-3 py-1.5 bg-slate-950/80 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-1.5 text-xs">
-          {/* Pen Tool Selectors with Textures */}
-          <div className="flex items-center space-x-1">
-            <button
-              type="button"
-              onClick={() => setTool('pen')}
-              className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'pen'
-                  ? 'bg-cyan-500/20 border border-cyan-400/60 text-cyan-200 font-bold'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-              }`}
-              title="Ballpoint Pen: Smooth, crisp precision strokes"
-            >
-              <PenTool className="w-3 h-3 text-cyan-400" />
-              <span className="hidden sm:inline">Pen</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setTool('pencil')}
-              className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'pencil'
-                  ? 'bg-amber-500/20 border border-amber-400/60 text-amber-200 font-bold'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-              }`}
-              title="Graphite Pencil: Natural texture with organic grain and light shading"
-            >
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span className="hidden sm:inline">Pencil</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setTool('calligraphy')}
-              className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'calligraphy'
-                  ? 'bg-purple-500/20 border border-purple-400/60 text-purple-200 font-bold'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-              }`}
-              title="Chisel Pen: Angle-sensitive engineering sketching"
-            >
-              <PenTool className="w-3 h-3 text-purple-400" />
-              <span className="hidden sm:inline">Chisel</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setTool('highlighter')}
-              className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'highlighter'
-                  ? 'bg-yellow-500/20 border border-yellow-400/60 text-yellow-200 font-bold'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-              }`}
-              title="Highlighter: Semi-transparent marker"
-            >
-              <Palette className="w-3 h-3 text-yellow-400" />
-              <span className="hidden sm:inline">Marker</span>
-            </button>
-
-            {/* COLOR BUCKET FILL (Spreading Flood Fill on closed areas) */}
-            <button
-              type="button"
-              onClick={() => setTool('bucket')}
-              className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'bucket'
-                  ? 'bg-cyan-500 text-slate-950 border border-cyan-400 font-bold shadow-sm'
-                  : 'bg-slate-900 border border-slate-800 text-cyan-300 hover:text-white hover:bg-slate-800'
-              }`}
-              title="Color Bucket: Click inside any closed area (e.g. drawn box/circle) to fill with spreading animation"
-            >
-              <PaintBucket className="w-3 h-3" />
-              <span>Fill</span>
-            </button>
-
-            {/* PRECISION PIXEL ERASER (Only erases where hit) */}
-            <button
-              type="button"
-              onClick={() => {
-                setTool('eraser');
-                setShowShapeMenu(false);
-                setShowSmootherMenu(false);
-              }}
-              className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'eraser'
-                  ? 'bg-rose-500 text-slate-950 border border-rose-400 font-bold shadow-sm'
-                  : 'bg-slate-900 border border-slate-800 text-rose-300 hover:text-white hover:bg-slate-800'
-              }`}
-              title="Precision Pixel Eraser: Erases exactly where touched without deleting connected lines"
-            >
-              <Eraser className="w-3 h-3" />
-              <span>Eraser</span>
-            </button>
-
-            {/* GEOMETRIC SHAPES & ENGINEERING LINES */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setTool('shape');
-                  setShowShapeMenu((prev) => !prev);
-                  setShowSmootherMenu(false);
-                }}
-                className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                  tool === 'shape'
-                    ? 'bg-emerald-500 text-slate-950 border border-emerald-400 font-bold shadow-sm'
-                    : 'bg-slate-900 border border-slate-800 text-emerald-300 hover:text-white hover:bg-slate-800'
-                }`}
-                title="Shapes & Lines: Straight line, force arrow vector, dimension line, box, circle, triangle, and coordinate axes"
-              >
-                {shapeType === 'line' && <Minus className="w-3 h-3" />}
-                {shapeType === 'arrow' && <ArrowRight className="w-3 h-3" />}
-                {shapeType === 'dimension' && <Minus className="w-3 h-3 text-cyan-300" />}
-                {shapeType === 'rect' && <Square className="w-3 h-3" />}
-                {shapeType === 'circle' && <Circle className="w-3 h-3" />}
-                {shapeType === 'triangle' && <Triangle className="w-3 h-3" />}
-                {shapeType === 'coord' && <span className="text-[10px] font-mono font-bold">XY</span>}
-                <span>Shapes</span>
-                <span className="text-[7px]">▼</span>
-              </button>
-
-              {showShapeMenu && (
-                <div className="absolute left-0 top-full mt-1.5 w-64 p-2.5 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-50 text-[10px] space-y-2 backdrop-blur-xl animate-in fade-in zoom-in-95">
-                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider pb-1 border-b border-slate-800 flex justify-between items-center">
-                    <span>Engineering Shapes & Lines</span>
-                    <span className="text-emerald-400 font-mono">2D Drafting</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-1">
-                    {[
-                      { id: 'line' as const, label: 'Straight Line', icon: <Minus className="w-3.5 h-3.5" /> },
-                      { id: 'arrow' as const, label: 'Force Vector', icon: <ArrowRight className="w-3.5 h-3.5" /> },
-                      { id: 'dimension' as const, label: 'Dimension Line', icon: <Minus className="w-3.5 h-3.5 text-cyan-400" /> },
-                      { id: 'rect' as const, label: 'Rectangle / Box', icon: <Square className="w-3.5 h-3.5" /> },
-                      { id: 'circle' as const, label: 'Circle / Pipe', icon: <Circle className="w-3.5 h-3.5" /> },
-                      { id: 'triangle' as const, label: 'Truss Triangle', icon: <Triangle className="w-3.5 h-3.5" /> },
-                      { id: 'coord' as const, label: 'X-Y Axes', icon: <span className="font-mono font-bold text-xs">XY</span> },
-                    ].map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => {
-                          setShapeType(s.id);
-                          setTool('shape');
-                          setShowShapeMenu(false);
-                        }}
-                        className={`flex items-center space-x-1.5 px-2 py-1.5 rounded-lg text-left transition-colors cursor-pointer ${
-                          shapeType === s.id && tool === 'shape'
-                            ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/50 font-bold'
-                            : 'hover:bg-slate-800/80 text-slate-300'
-                        }`}
-                      >
-                        {s.icon}
-                        <span className="truncate">{s.label}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[9px]">
-                    <label className="flex items-center space-x-1.5 cursor-pointer text-slate-300 hover:text-white">
-                      <input
-                        type="checkbox"
-                        checked={isShapeFilled}
-                        onChange={(e) => setIsShapeFilled(e.target.checked)}
-                        className="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"
-                      />
-                      <span>Fill Interior</span>
-                    </label>
-
-                    <label className="flex items-center space-x-1.5 cursor-pointer text-slate-300 hover:text-white">
-                      <input
-                        type="checkbox"
-                        checked={isDashed}
-                        onChange={(e) => setIsDashed(e.target.checked)}
-                        className="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0"
-                      />
-                      <span>Dashed Line</span>
-                    </label>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* FREEHAND LASSO SELECTOR */}
-            <button
-              type="button"
-              onClick={() => {
-                setTool('lasso');
-                setShowShapeMenu(false);
-                setShowSmootherMenu(false);
-              }}
-              className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                tool === 'lasso'
-                  ? 'bg-cyan-500 text-slate-950 border border-cyan-400 font-bold shadow-sm'
-                  : 'bg-slate-900 border border-slate-800 text-cyan-300 hover:text-white hover:bg-slate-800'
-              }`}
-              title="Freehand Lasso: Drag a closed loop around any drawings, text, or equations to move or resize them"
-            >
-              <LassoSelect className="w-3 h-3" />
-              <span>Lasso</span>
-            </button>
-
-            {/* LINE SMOOTHER & CORRECTION INTENSITY */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowSmootherMenu((prev) => !prev);
-                  setShowShapeMenu(false);
-                }}
-                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                  smootherIntensity > 0
-                    ? 'bg-slate-900 border border-amber-400/60 text-amber-300'
-                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-                }`}
-                title="Line Smoother: Smooths lines and curves to make them more defined with adjustable correction intensity"
-              >
-                <Spline className="w-3 h-3 text-amber-400" />
-                <span>Smooth: {smootherIntensity > 0 ? `${smootherIntensity}%` : 'Off'}</span>
-                <span className="text-[7px]">▼</span>
-              </button>
-
-              {showSmootherMenu && (
-                <div className="absolute left-0 top-full mt-1.5 w-60 p-2.5 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-50 text-[10px] space-y-2 backdrop-blur-xl animate-in fade-in zoom-in-95">
-                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider pb-1 border-b border-slate-800 flex justify-between items-center">
-                    <span>Stroke Smoothing Engine</span>
-                    <span className="text-amber-400 font-mono">{smootherIntensity}% Intensity</span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-[9px] text-slate-400">
-                      <span>Raw (0%)</span>
-                      <span>Architect (95%)</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="95"
-                      step="5"
-                      value={smootherIntensity}
-                      onChange={(e) => setSmootherIntensity(parseInt(e.target.value, 10))}
-                      className="w-full accent-amber-400 h-1.5 bg-slate-800 rounded cursor-pointer"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-800">
-                    {[
-                      { val: 0, label: 'Off' },
-                      { val: 25, label: 'Low (25%)' },
-                      { val: 50, label: 'Med (50%)' },
-                      { val: 75, label: 'High (75%)' },
-                      { val: 95, label: 'Max (95%)' },
-                    ].map((preset) => (
-                      <button
-                        key={preset.val}
-                        type="button"
-                        onClick={() => setSmootherIntensity(preset.val)}
-                        className={`py-1 rounded text-[9px] font-semibold transition-colors cursor-pointer ${
-                          smootherIntensity === preset.val
-                            ? 'bg-amber-500 text-slate-950 font-bold'
-                            : 'bg-slate-900 border border-slate-800 text-slate-300 hover:text-white'
-                        }`}
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Stroke Thickness Controls & Indicator */}
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">Size:</span>
-            <div className="flex items-center space-x-1">
-              {THICKNESS_PRESETS.map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => setThickness(p.value)}
-                  className={`w-5 h-5 rounded-md flex items-center justify-center transition-all cursor-pointer ${
-                    thickness === p.value
-                      ? 'bg-slate-700 border border-cyan-400 text-cyan-300 font-bold'
-                      : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-                  }`}
-                  title={`${p.label} (${p.value}px)`}
-                >
-                  <span
-                    className="rounded-full bg-current"
-                    style={{
-                      width: `${Math.min(12, Math.max(2, p.value))}px`,
-                      height: `${Math.min(12, Math.max(2, p.value))}px`,
-                    }}
-                  />
-                </button>
-              ))}
-
-              <input
-                type="range"
-                min="1"
-                max="32"
-                value={thickness}
-                onChange={(e) => setThickness(parseInt(e.target.value, 10))}
-                className="w-14 sm:w-20 accent-cyan-400 h-1 bg-slate-800 rounded cursor-pointer"
-                title={`Custom Thickness: ${thickness}px`}
-              />
-              <span className="text-[9px] font-mono text-cyan-300 w-5">{thickness}p</span>
-            </div>
-          </div>
-
-          {/* Color Palette & Custom Color Picker */}
-          {tool !== 'eraser' && (
-            <div className="flex items-center space-x-1">
-              {COLOR_PRESETS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setColor(c)}
-                  className={`w-4.5 h-4.5 rounded-full border transition-all cursor-pointer ${
-                    color === c ? 'scale-125 border-white ring-1 ring-cyan-400' : 'border-slate-700'
-                  }`}
-                  style={{ backgroundColor: c }}
-                  title={c}
-                />
-              ))}
-
-              {/* Native Color Picker */}
-              <label
-                className="w-4.5 h-4.5 rounded-full overflow-hidden border border-slate-700 cursor-pointer relative flex items-center justify-center"
-                title="Custom Color"
-              >
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="opacity-0 absolute inset-0 cursor-pointer"
-                />
-                <span
-                  className="w-full h-full"
-                  style={{
-                    background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
-                  }}
-                />
-              </label>
-            </div>
-          )}
-
-          {/* Paper Background & History Actions */}
-          <div className="flex items-center space-x-1">
-            {/* Texture Selector */}
-            <select
-              value={paperTexture}
-              onChange={(e) => setPaperTexture(e.target.value as PaperTexture)}
-              className="bg-slate-900 border border-slate-800 text-slate-300 text-[10px] rounded px-1.5 py-0.5 cursor-pointer outline-none"
-              title="Paper Background Grid"
-            >
-              <option value="blueprint">Blueprint Grid</option>
-              <option value="graph">Engineering Graph</option>
-              <option value="lined">Ruled Lines</option>
-              <option value="blank">Blank Slate</option>
-            </select>
-
-            {/* Sheet Background Color Option */}
-            <div className="flex items-center space-x-1 pl-1.5 border-l border-slate-800">
-              <span className="text-[10px] text-slate-400 font-mono hidden md:inline">Sheet BG:</span>
-              <div className="flex items-center space-x-1">
-                {SHEET_BG_PRESETS.map((p) => (
-                  <button
-                    key={p.color}
-                    type="button"
-                    onClick={() => {
-                      setPaperBgColor(p.color);
-                      if (p.isLight && (color === '#ffffff' || color === '#facc15')) {
-                        setColor('#0f172a');
-                      } else if (!p.isLight && color === '#0f172a') {
-                        setColor('#38bdf8');
-                      }
-                    }}
-                    className={`w-4 h-4 rounded border transition-all cursor-pointer ${
-                      paperBgColor.toLowerCase() === p.color.toLowerCase()
-                        ? 'scale-120 border-white ring-1 ring-cyan-400 z-10'
-                        : 'border-slate-700/80 hover:scale-110 opacity-80 hover:opacity-100'
-                    }`}
-                    style={{ backgroundColor: p.color }}
-                    title={`Sheet Color: ${p.label}`}
-                  />
-                ))}
-
-                {/* Custom Sheet Background Color Picker */}
-                <label
-                  className="w-4 h-4 rounded overflow-hidden border border-slate-700 cursor-pointer relative flex items-center justify-center hover:scale-110 transition-transform"
-                  title="Pick Custom Sheet Background Color"
-                >
-                  <input
-                    type="color"
-                    value={paperBgColor}
-                    onChange={(e) => setPaperBgColor(e.target.value)}
-                    className="opacity-0 absolute inset-0 cursor-pointer"
-                  />
-                  <div
-                    className="w-full h-full flex items-center justify-center text-[7px]"
-                    style={{
-                      background: 'conic-gradient(from 180deg at 50% 50%, #38bdf8 0deg, #f59e0b 90deg, #10b981 180deg, #f43f5e 270deg, #38bdf8 360deg)',
-                    }}
-                  />
-                </label>
-              </div>
-            </div>
-
-            {/* Undo */}
-            <button
-              type="button"
-              onClick={handleUndo}
-              disabled={!canUndo}
-              className="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:text-white transition-colors cursor-pointer"
-              title="Undo Stroke (Ctrl+Z)"
-            >
-              <RotateCcw className="w-3 h-3" />
-            </button>
-
-            {/* Redo */}
-            <button
-              type="button"
-              onClick={handleRedo}
-              disabled={!canRedo}
-              className="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:text-white transition-colors cursor-pointer"
-              title="Redo Stroke"
-            >
-              <RotateCw className="w-3 h-3" />
-            </button>
-
-            {/* Hidden file input for .cescratch upload */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImportFile}
-              accept=".cescratch,.json"
-              className="hidden"
-            />
-
-            {/* Import .cescratch bundle */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="p-1 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
-              title="Import .cescratch or .json file from computer or tablet"
-            >
-              <Upload className="w-3 h-3" />
-            </button>
-
-            {/* Download / Export Multi-Format */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowExportMenu((prev) => !prev)}
-                className="flex items-center space-x-0.5 p-1 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
-                title="Download / Export Scratchpad (PNG, SVG, or .cescratch for tablets)"
-              >
-                <Download className="w-3 h-3" />
-                <span className="text-[7px]">▼</span>
-              </button>
-
-              {showExportMenu && (
-                <div className="absolute right-0 top-full mt-1.5 w-60 p-2 rounded-xl bg-slate-950 border border-slate-700 shadow-2xl z-50 text-[10px] space-y-1 backdrop-blur-xl">
-                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 border-b border-slate-800">
-                    Export Options
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleExportCescratch}
-                    className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
-                  >
-                    <Tablet className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                    <div>
-                      <div className="font-semibold text-[10px]">.cescratch (Universal Editable)</div>
-                      <div className="text-[8px] text-slate-500">All 5 sheets + notes for tablets/apps</div>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleExportSvg}
-                    className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
-                  >
-                    <FileCode className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                    <div>
-                      <div className="font-semibold text-[10px]">.svg (Vector / Tablet Canvas)</div>
-                      <div className="text-[8px] text-slate-500">GoodNotes, Notability, Procreate, Illustrator</div>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleDownload();
-                      setShowExportMenu(false);
-                    }}
-                    className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <div>
-                      <div className="font-semibold text-[10px]">.png (600+ DPI Archival Image)</div>
-                      <div className="text-[8px] text-slate-500">Ultra-HD with pHYs print metadata</div>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Clear Sheet */}
-            <button
-              type="button"
-              onClick={handleClear}
-              className="p-1 rounded bg-slate-900 border border-slate-800 text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
-              title="Clear Current Sheet"
-            >
-              <Trash2 className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ====================================================
-          3. MAIN WORKSPACE CONTENT
-             Tab 1: Canvas Drawing Surface
-             Tab 2: Text / Notes Pad
-             Tab 3: Engineering Mini-Calculator
-          ==================================================== */}
-      <div className="relative flex-1 w-full h-full overflow-hidden bg-slate-950">
-        {/* TAB 1: CANVAS DRAWING */}
+      <div className="relative flex-1 min-h-0 w-full overflow-hidden">
+        {/* ---------- TAB 1: CANVAS ---------- */}
         {activeTab === 'draw' && (
-          <div
-            className="relative w-full h-full overflow-hidden touch-none"
-            style={getTextureStyle()}
-          >
-            <canvas
-              ref={canvasRef}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-              className={`w-full h-full block ${
-                tool === 'bucket'
-                  ? 'cursor-pointer'
-                  : tool === 'lasso'
-                  ? lassoSelection
-                    ? 'cursor-default'
-                    : 'cursor-crosshair'
-                  : 'cursor-crosshair'
-              }`}
-              style={{
-                touchAction: 'none',
-              }}
-            />
-
-            {/* High-Speed Hardware Overlay Canvas for Live Shape & Straighten Dragging */}
-            <canvas
-              ref={overlayCanvasRef}
-              className="absolute inset-0 pointer-events-none w-full h-full block"
-              style={{
-                touchAction: 'none',
-              }}
-            />
-
-            {/* Liquid Fill Click Ripple Wave */}
-            {fillRipple && (
+          <div className="sp-desk absolute inset-0">
+            <div ref={deskRef} className="absolute inset-0 flex flex-col items-center px-2 pt-2">
+              {/* ---------- THE PAGE (fixed document, letterboxed) ---------- */}
               <div
-                className="pointer-events-none absolute rounded-full border-2 animate-ping z-30 transition-all"
+                className="sp-page shrink-0"
                 style={{
-                  left: `${fillRipple.x - 20}px`,
-                  top: `${fillRipple.y - 20}px`,
-                  width: '40px',
-                  height: '40px',
-                  borderColor: fillRipple.color,
-                  boxShadow: `0 0 16px ${fillRipple.color}`,
+                  width: viewSize.w,
+                  height: viewSize.h,
+                  ...getTextureStyle(),
                 }}
-              />
-            )}
+              >
+                <canvas
+                  ref={canvasRef}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerUp}
+                  className={`w-full h-full block rounded-[10px] ${
+                    tool === 'bucket'
+                      ? 'cursor-pointer'
+                      : tool === 'lasso' && lassoSelection
+                      ? 'cursor-default'
+                      : 'cursor-crosshair'
+                  }`}
+                  style={{ touchAction: 'none' }}
+                />
 
-            {/* Live Freehand Lasso Perimeter Loop (while dragging loop) */}
-            {activeLassoPoints && activeLassoPoints.length > 1 && canvasRef.current && (
-              (() => {
-                const canvas = canvasRef.current;
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
-                const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+                {/* Live shape / straighten preview layer */}
+                <canvas
+                  ref={overlayCanvasRef}
+                  className="absolute inset-0 pointer-events-none w-full h-full block rounded-[10px]"
+                  style={{ touchAction: 'none' }}
+                />
 
-                const pathData = activeLassoPoints
-                  .map((p, idx) => {
-                    const cx = p.x / scaleX;
-                    const cy = p.y / scaleY;
-                    return `${idx === 0 ? 'M' : 'L'} ${cx.toFixed(1)} ${cy.toFixed(1)}`;
-                  })
-                  .join(' ');
-
-                return (
-                  <svg className="absolute inset-0 pointer-events-none w-full h-full z-40">
-                    <path
-                      d={pathData}
-                      fill="rgba(56, 189, 248, 0.18)"
-                      stroke="#38bdf8"
-                      strokeWidth="2"
-                      strokeDasharray="6 4"
-                      className="filter drop-shadow-[0_0_6px_rgba(56,189,248,0.7)]"
-                    />
-                  </svg>
-                );
-              })()
-            )}
-
-            {/* Active Freehand Lasso Selection Transform Box & 8 Handles */}
-            {lassoSelection && canvasRef.current && (
-              (() => {
-                const canvas = canvasRef.current;
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
-                const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
-
-                const cssLeft = lassoSelection.x / scaleX;
-                const cssTop = lassoSelection.y / scaleY;
-                const cssWidth = lassoSelection.width / scaleX;
-                const cssHeight = lassoSelection.height / scaleY;
-
-                return (
+                {/* Click-away scrim so any open popover dismisses on tap */}
+                {anyMenuOpen && (
                   <div
-                    className="absolute z-40 select-none animate-in fade-in zoom-in-95 duration-150"
+                    className="absolute inset-0 z-30 cursor-default"
+                    onMouseDown={closeAllMenus}
+                    onPointerDown={closeAllMenus}
+                  />
+                )}
+
+                {/* Bucket-fill ripple */}
+                {fillRipple && (
+                  <div
+                    className="pointer-events-none absolute rounded-full border-2 animate-ping z-30"
                     style={{
-                      left: `${cssLeft}px`,
-                      top: `${cssTop}px`,
-                      width: `${cssWidth}px`,
-                      height: `${cssHeight}px`,
+                      left: `${fillRipple.x - 20}px`,
+                      top: `${fillRipple.y - 20}px`,
+                      width: '40px',
+                      height: '40px',
+                      borderColor: fillRipple.color,
+                      boxShadow: `0 0 16px ${fillRipple.color}`,
+                    }}
+                  />
+                )}
+
+                {/* Live lasso loop */}
+                {activeLassoPoints && activeLassoPoints.length > 1 && canvasRef.current && (
+                  (() => {
+                    const canvas = canvasRef.current;
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                    const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+
+                    const pathData = activeLassoPoints
+                      .map((p, idx) => {
+                        const cx = p.x / scaleX;
+                        const cy = p.y / scaleY;
+                        return `${idx === 0 ? 'M' : 'L'} ${cx.toFixed(1)} ${cy.toFixed(1)}`;
+                      })
+                      .join(' ');
+
+                    return (
+                      <svg className="absolute inset-0 pointer-events-none w-full h-full z-40">
+                        <path
+                          d={pathData}
+                          fill="rgba(56, 189, 248, 0.16)"
+                          stroke="#38bdf8"
+                          strokeWidth="1.5"
+                          strokeDasharray="5 4"
+                          className="filter drop-shadow-[0_0_6px_rgba(56,189,248,0.7)]"
+                        />
+                      </svg>
+                    );
+                  })()
+                )}
+
+                {/* Lasso selection transform box */}
+                {lassoSelection && canvasRef.current && (
+                  (() => {
+                    const canvas = canvasRef.current;
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                    const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+
+                    const cssLeft = lassoSelection.x / scaleX;
+                    const cssTop = lassoSelection.y / scaleY;
+                    const cssWidth = lassoSelection.width / scaleX;
+                    const cssHeight = lassoSelection.height / scaleY;
+
+                    return (
+                      <div
+                        className="absolute z-40 select-none"
+                        style={{
+                          left: `${cssLeft}px`,
+                          top: `${cssTop}px`,
+                          width: `${cssWidth}px`,
+                          height: `${cssHeight}px`,
+                        }}
+                      >
+                        <div
+                          onPointerDown={(e) => handleLassoHandleDown('move', e)}
+                          className="w-full h-full relative border border-dashed border-cyan-300/90 bg-cyan-400/5 cursor-move rounded-[3px]"
+                        >
+                          <canvas
+                            ref={(node) => {
+                              if (node && lassoSelection) {
+                                node.width = lassoSelection.canvas.width;
+                                node.height = lassoSelection.canvas.height;
+                                const c = node.getContext('2d');
+                                if (c) {
+                                  c.clearRect(0, 0, node.width, node.height);
+                                  c.drawImage(lassoSelection.canvas, 0, 0);
+                                }
+                              }
+                            }}
+                            className="w-full h-full object-contain pointer-events-none"
+                          />
+
+                          {/* Floating action bar */}
+                          <div
+                            onPointerDown={(e) => e.stopPropagation()}
+                            className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 rounded-xl bg-slate-950/95 border border-white/15 shadow-2xl z-50 backdrop-blur-xl"
+                          >
+                            <button
+                              type="button"
+                              onClick={commitLassoSelection}
+                              className="h-6 px-2 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-colors"
+                              title="Apply & commit"
+                            >
+                              <Check className="w-3 h-3" />
+                              Apply
+                            </button>
+                            <button
+                              type="button"
+                              onClick={duplicateLassoSelection}
+                              className="h-6 w-6 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-200 flex items-center justify-center cursor-pointer transition-colors"
+                              title="Duplicate selection"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={deleteLassoSelection}
+                              className="h-6 w-6 rounded-lg bg-white/10 hover:bg-rose-500/40 text-rose-200 flex items-center justify-center cursor-pointer transition-colors"
+                              title="Delete selection"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={cancelLassoSelection}
+                              className="h-6 w-6 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center cursor-pointer transition-colors"
+                              title="Cancel"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          {/* Resize handles */}
+                          <div onPointerDown={(e) => handleLassoHandleDown('nw', e)} className="sp-handle -top-1 -left-1 cursor-nwse-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('ne', e)} className="sp-handle -top-1 -right-1 cursor-nesw-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('sw', e)} className="sp-handle -bottom-1 -left-1 cursor-nesw-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('se', e)} className="sp-handle -bottom-1 -right-1 cursor-nwse-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('n', e)} className="sp-handle -top-1 left-1/2 -translate-x-1/2 cursor-ns-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('s', e)} className="sp-handle -bottom-1 left-1/2 -translate-x-1/2 cursor-ns-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('w', e)} className="sp-handle top-1/2 -left-1 -translate-y-1/2 cursor-ew-resize" />
+                          <div onPointerDown={(e) => handleLassoHandleDown('e', e)} className="sp-handle top-1/2 -right-1 -translate-y-1/2 cursor-ew-resize" />
+                        </div>
+                      </div>
+                    );
+                  })()
+                )}
+
+                {/* Snap feedback */}
+                {snapFeedback && canvasRef.current && (
+                  (() => {
+                    const canvas = canvasRef.current;
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                    const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+                    const cssX = snapFeedback.x / scaleX;
+                    const cssY = snapFeedback.y / scaleY;
+
+                    return (
+                      <div
+                        className="pointer-events-none absolute z-50 px-2 py-0.5 rounded-full bg-cyan-300 text-slate-950 font-bold font-mono text-[9px] shadow-xl -translate-x-1/2 -translate-y-1/2"
+                        style={{ left: `${cssX}px`, top: `${cssY}px` }}
+                      >
+                        {snapFeedback.text}
+                      </div>
+                    );
+                  })()
+                )}
+
+                {/* Contextual hint */}
+                {tool === 'eraser' && (
+                  <div className="sp-hint">
+                    <Eraser className="w-2.5 h-2.5" />
+                    Eraser · {Math.round(thickness * 2.5)}px tip · only erases what it touches
+                  </div>
+                )}
+                {tool === 'bucket' && (
+                  <div className="sp-hint">
+                    <PaintBucket className="w-2.5 h-2.5" />
+                    {isFilling ? 'Filling…' : 'Tap inside a closed shape to fill it'}
+                    <span
+                      className="w-2 h-2 rounded-full border border-white/50"
+                      style={{ backgroundColor: color }}
+                    />
+                  </div>
+                )}
+                {tool === 'lasso' && (
+                  <div className="sp-hint">
+                    <LassoSelect className="w-2.5 h-2.5" />
+                    {lassoSelection ? 'Drag to move · pull handles to resize' : 'Loop around ink to select it'}
+                  </div>
+                )}
+                {tool === 'shape' && (
+                  <div className="sp-hint">
+                    <Square className="w-2.5 h-2.5" />
+                    Drag to draw {shapeType} · {isDashed ? 'dashed' : 'solid'} ·{' '}
+                    {isShapeFilled ? 'filled' : 'outline'}
+                  </div>
+                )}
+
+                {/* Import toast */}
+                {importNotification && (
+                  <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 px-2.5 py-1 rounded-full bg-slate-950/95 border border-cyan-400/60 text-[10px] font-mono text-cyan-200 shadow-2xl backdrop-blur-md flex items-center gap-1">
+                    <Check className="w-3 h-3 text-cyan-300" />
+                    <span className="truncate max-w-[220px]">{importNotification}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* ---------- FLOATING PALETTE ---------- */}
+              <div className="flex-1 min-h-0" />
+              <div className="relative z-40 w-full flex flex-col items-center gap-1.5 pb-0.5">
+                {/* ROW A — tools & history */}
+                <div className="sp-pill">
+                  <PaletteBtn
+                    title="Pen — crisp, smooth ballpoint"
+                    active={tool === 'pen'}
+                    onClick={() => setTool('pen')}
+                  >
+                    <PenTool className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
+                  <PaletteBtn
+                    title="Pencil — graphite grain & shading"
+                    active={tool === 'pencil'}
+                    tone="amber"
+                    onClick={() => setTool('pencil')}
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
+                  <PaletteBtn
+                    title="Chisel — angle-sensitive engineering stroke"
+                    active={tool === 'calligraphy'}
+                    tone="violet"
+                    onClick={() => setTool('calligraphy')}
+                  >
+                    <Brush className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
+                  <PaletteBtn
+                    title="Marker — translucent highlighter"
+                    active={tool === 'highlighter'}
+                    tone="amber"
+                    onClick={() => setTool('highlighter')}
+                  >
+                    <Highlighter className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
+                  <PaletteBtn
+                    title="Fill — flood-fill a closed area"
+                    active={tool === 'bucket'}
+                    onClick={() => setTool('bucket')}
+                  >
+                    <PaintBucket className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
+                  <PaletteBtn
+                    title="Eraser — precision pixel eraser"
+                    active={tool === 'eraser'}
+                    tone="rose"
+                    onClick={() => {
+                      setTool('eraser');
+                      closeAllMenus();
                     }}
                   >
-                    {/* Move & Dragging Container */}
-                    <div
-                      onPointerDown={(e) => handleLassoHandleDown('move', e)}
-                      className="w-full h-full relative border-2 border-dashed border-cyan-400 bg-cyan-500/10 cursor-move rounded group shadow-2xl transition-all"
-                    >
-                      {/* Render Cutout Canvas Layer */}
-                      <canvas
-                        ref={(node) => {
-                          if (node && lassoSelection) {
-                            node.width = lassoSelection.canvas.width;
-                            node.height = lassoSelection.canvas.height;
-                            const c = node.getContext('2d');
-                            if (c) {
-                              c.clearRect(0, 0, node.width, node.height);
-                              c.drawImage(lassoSelection.canvas, 0, 0);
-                            }
-                          }
-                        }}
-                        className="w-full h-full object-contain pointer-events-none"
-                      />
+                    <Eraser className="w-3.5 h-3.5" />
+                  </PaletteBtn>
 
-                      {/* Floating Mini Action Bar */}
-                      <div
-                        onPointerDown={(e) => e.stopPropagation()}
-                        className="absolute -top-9 left-1/2 -translate-x-1/2 flex items-center space-x-1 px-2 py-1 rounded-xl bg-slate-950/95 border border-slate-700 shadow-2xl z-50 backdrop-blur-xl animate-in fade-in"
-                      >
+                  <div className="sp-div" />
+
+                  {/* Shapes */}
+                  <div className="relative">
+                    <PaletteBtn
+                      title="Shapes & lines — straight line, force vector, dimension, box, circle, truss, axes"
+                      active={tool === 'shape'}
+                      tone="emerald"
+                      onClick={() => {
+                        const next = !showShapeMenu;
+                        closeAllMenus();
+                        setShowShapeMenu(next);
+                        setTool('shape');
+                      }}
+                    >
+                      {shapeType === 'line' && <Minus className="w-3.5 h-3.5" />}
+                      {shapeType === 'arrow' && <ArrowRight className="w-3.5 h-3.5" />}
+                      {shapeType === 'dimension' && <Minus className="w-3.5 h-3.5" />}
+                      {shapeType === 'rect' && <Square className="w-3.5 h-3.5" />}
+                      {shapeType === 'circle' && <Circle className="w-3.5 h-3.5" />}
+                      {shapeType === 'triangle' && <Triangle className="w-3.5 h-3.5" />}
+                      {shapeType === 'coord' && (
+                        <span className="text-[9px] font-mono font-bold leading-none">XY</span>
+                      )}
+                    </PaletteBtn>
+
+                    {showShapeMenu && (
+                      <div className="sp-pop bottom-full left-1/2 -translate-x-1/2 mb-2 w-[248px]">
+                        <div className="sp-pop-head">
+                          <span>Shapes & Lines</span>
+                          <span className="text-emerald-300/80">2D drafting</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-1">
+                          {[
+                            { id: 'line' as const, label: 'Straight', icon: <Minus className="w-3.5 h-3.5" /> },
+                            { id: 'arrow' as const, label: 'Force Vector', icon: <ArrowRight className="w-3.5 h-3.5" /> },
+                            { id: 'dimension' as const, label: 'Dimension', icon: <Minus className="w-3.5 h-3.5" /> },
+                            { id: 'rect' as const, label: 'Box', icon: <Square className="w-3.5 h-3.5" /> },
+                            { id: 'circle' as const, label: 'Circle', icon: <Circle className="w-3.5 h-3.5" /> },
+                            { id: 'triangle' as const, label: 'Truss', icon: <Triangle className="w-3.5 h-3.5" /> },
+                            { id: 'coord' as const, label: 'X-Y Axes', icon: <span className="font-mono font-bold text-[11px] leading-none">XY</span> },
+                          ].map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              onClick={() => {
+                                setShapeType(s.id);
+                                setTool('shape');
+                                setShowShapeMenu(false);
+                              }}
+                              className={`flex items-center gap-1.5 px-2 h-7 rounded-lg text-[10px] text-left transition-colors cursor-pointer ${
+                                shapeType === s.id && tool === 'shape'
+                                  ? 'bg-emerald-400/20 text-emerald-200 font-bold'
+                                  : 'text-slate-300 hover:bg-white/10'
+                              }`}
+                            >
+                              {s.icon}
+                              <span className="truncate">{s.label}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 pt-2 mt-2 border-t border-white/10">
+                          <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-300 hover:text-white">
+                            <input
+                              type="checkbox"
+                              checked={isShapeFilled}
+                              onChange={(e) => setIsShapeFilled(e.target.checked)}
+                              className="sp-check"
+                            />
+                            Fill
+                          </label>
+                          <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-300 hover:text-white">
+                            <input
+                              type="checkbox"
+                              checked={isDashed}
+                              onChange={(e) => setIsDashed(e.target.checked)}
+                              className="sp-check"
+                            />
+                            Dashed
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <PaletteBtn
+                    title="Lasso — loop around ink to move, resize, clone or delete it"
+                    active={tool === 'lasso'}
+                    onClick={() => {
+                      setTool('lasso');
+                      closeAllMenus();
+                    }}
+                  >
+                    <LassoSelect className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
+                  {/* Smoother */}
+                  <div className="relative">
+                    <PaletteBtn
+                      title="Line smoother — correction intensity"
+                      active={smootherIntensity > 0}
+                      subtle
+                      tone="amber"
+                      onClick={() => {
+                        const next = !showSmootherMenu;
+                        closeAllMenus();
+                        setShowSmootherMenu(next);
+                      }}
+                    >
+                      <Spline className="w-3.5 h-3.5" />
+                    </PaletteBtn>
+
+                    {showSmootherMenu && (
+                      <div className="sp-pop bottom-full left-1/2 -translate-x-1/2 mb-2 w-[224px]">
+                        <div className="sp-pop-head">
+                          <span>Smoothing</span>
+                          <span className="text-amber-300/90 font-mono">
+                            {smootherIntensity > 0 ? `${smootherIntensity}%` : 'Off'}
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="95"
+                          step="5"
+                          value={smootherIntensity}
+                          onChange={(e) => setSmootherIntensity(parseInt(e.target.value, 10))}
+                          className="sp-range w-full"
+                        />
+                        <div className="grid grid-cols-3 gap-1 pt-1.5">
+                          {[
+                            { val: 0, label: 'Off' },
+                            { val: 25, label: '25%' },
+                            { val: 50, label: '50%' },
+                            { val: 75, label: '75%' },
+                            { val: 95, label: 'Max' },
+                          ].map((preset) => (
+                            <button
+                              key={preset.val}
+                              type="button"
+                              onClick={() => setSmootherIntensity(preset.val)}
+                              className={`h-6 rounded-lg text-[10px] font-semibold transition-colors cursor-pointer ${
+                                smootherIntensity === preset.val
+                                  ? 'bg-amber-400 text-slate-950'
+                                  : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="sp-div" />
+
+                  <PaletteBtn
+                    title="Undo (Ctrl+Z)"
+                    disabled={!canUndo}
+                    onClick={handleUndo}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+                  <PaletteBtn
+                    title="Redo (Ctrl+Shift+Z)"
+                    disabled={!canRedo}
+                    onClick={handleRedo}
+                  >
+                    <RotateCw className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+                </div>
+
+                {/* ROW B — ink, paper, files */}
+                <div className="sp-pill">
+                  {COLOR_PRESETS.map((c) => {
+                    const selected = color.toLowerCase() === c.toLowerCase();
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setColor(c)}
+                        title={c}
+                        className={`sp-chip w-[18px] h-[18px] rounded-full transition-transform cursor-pointer ${
+                          selected
+                            ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-950 scale-110'
+                            : 'ring-1 ring-white/20 hover:scale-110'
+                        }`}
+                        style={{ backgroundColor: c }}
+                      />
+                    );
+                  })}
+
+                  <label
+                    className="sp-chip w-[18px] h-[18px] rounded-full overflow-hidden ring-1 ring-white/25 cursor-pointer relative hover:scale-110 transition-transform"
+                    title="Custom ink colour"
+                  >
+                    <input
+                      type="color"
+                      value={color}
+                      onChange={(e) => setColor(e.target.value)}
+                      className="opacity-0 absolute inset-0 cursor-pointer"
+                    />
+                    <span
+                      className="w-full h-full"
+                      style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}
+                    />
+                  </label>
+
+                  <div className="sp-div" />
+
+                  {/* Stroke size */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = !showSizeMenu;
+                        closeAllMenus();
+                        setShowSizeMenu(next);
+                      }}
+                      title={`Stroke size — ${thickness}px`}
+                      className={`sp-chip w-7 h-7 cursor-pointer ${
+                        showSizeMenu ? 'bg-white/15' : 'hover:bg-white/10'
+                      }`}
+                    >
+                      <span
+                        className="rounded-full ring-1 ring-white/30"
+                        style={{
+                          width: Math.min(16, Math.max(5, thickness)),
+                          height: Math.min(16, Math.max(5, thickness)),
+                          backgroundColor: color,
+                          boxShadow: `0 0 7px ${color}66`,
+                        }}
+                      />
+                    </button>
+
+                    {showSizeMenu && (
+                      <div className="sp-pop bottom-full left-0 mb-2 w-[196px]">
+                        <div className="sp-pop-head">
+                          <span>Stroke</span>
+                          <span className="font-mono text-cyan-300/90">{thickness}px</span>
+                        </div>
+                        <div className="grid grid-cols-5 gap-1">
+                          {THICKNESS_PRESETS.map((p) => (
+                            <button
+                              key={p.value}
+                              type="button"
+                              onClick={() => setThickness(p.value)}
+                              title={`${p.label} · ${p.value}px`}
+                              className={`h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+                                thickness === p.value
+                                  ? 'bg-cyan-400/25 ring-1 ring-cyan-400/60'
+                                  : 'hover:bg-white/10'
+                              }`}
+                            >
+                              <span
+                                className="rounded-full bg-slate-200"
+                                style={{
+                                  width: Math.min(12, Math.max(2, p.value)),
+                                  height: Math.min(12, Math.max(2, p.value)),
+                                }}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="32"
+                          value={thickness}
+                          onChange={(e) => setThickness(parseInt(e.target.value, 10))}
+                          className="sp-range w-full mt-2"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Paper & DPI */}
+                  <div className="relative">
+                    <PaletteBtn
+                      title="Paper, sheet colour & export resolution"
+                      active={showPaperMenu}
+                      onClick={() => {
+                        const next = !showPaperMenu;
+                        closeAllMenus();
+                        setShowPaperMenu(next);
+                      }}
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                    </PaletteBtn>
+
+                    {showPaperMenu && (
+                      <div className="sp-pop bottom-full right-0 mb-2 w-[248px]">
+                        <div className="sp-pop-head">
+                          <span>Paper</span>
+                          <span className="font-mono text-slate-400">
+                            {DOC_BUF_W}×{DOC_BUF_H}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-1">
+                          {[
+                            { id: 'blueprint' as const, label: 'Blueprint' },
+                            { id: 'graph' as const, label: 'Graph' },
+                            { id: 'lined' as const, label: 'Ruled' },
+                            { id: 'blank' as const, label: 'Blank' },
+                          ].map((t) => (
+                            <button
+                              key={t.id}
+                              type="button"
+                              onClick={() => setPaperTexture(t.id)}
+                              className={`h-7 rounded-lg text-[10px] font-semibold transition-colors cursor-pointer ${
+                                paperTexture === t.id
+                                  ? 'bg-cyan-400 text-slate-950'
+                                  : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                              }`}
+                            >
+                              {t.label}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="sp-pop-sub">Sheet colour</div>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {SHEET_BG_PRESETS.map((p) => (
+                            <button
+                              key={p.color}
+                              type="button"
+                              onClick={() => {
+                                setPaperBgColor(p.color);
+                                if (p.isLight && (color === '#ffffff' || color === '#facc15')) {
+                                  setColor('#0f172a');
+                                } else if (!p.isLight && color === '#0f172a') {
+                                  setColor('#38bdf8');
+                                }
+                              }}
+                              title={p.label}
+                              className={`w-5 h-5 rounded-md transition-transform cursor-pointer ${
+                                paperBgColor.toLowerCase() === p.color.toLowerCase()
+                                  ? 'ring-2 ring-cyan-300 ring-offset-2 ring-offset-slate-950 scale-105'
+                                  : 'ring-1 ring-white/20 hover:scale-110'
+                              }`}
+                              style={{ backgroundColor: p.color }}
+                            />
+                          ))}
+                          <label
+                            className="w-5 h-5 rounded-md overflow-hidden ring-1 ring-white/25 cursor-pointer relative hover:scale-110 transition-transform"
+                            title="Custom sheet colour"
+                          >
+                            <input
+                              type="color"
+                              value={paperBgColor}
+                              onChange={(e) => setPaperBgColor(e.target.value)}
+                              className="opacity-0 absolute inset-0 cursor-pointer"
+                            />
+                            <span
+                              className="w-full h-full block"
+                              style={{
+                                background:
+                                  'conic-gradient(from 180deg, #38bdf8, #f59e0b, #10b981, #f43f5e, #38bdf8)',
+                              }}
+                            />
+                          </label>
+                        </div>
+
+                        <div className="sp-pop-sub">Export resolution</div>
+                        <div className="grid grid-cols-2 gap-1">
+                          {[
+                            { value: 300, label: '300 DPI' },
+                            { value: 600, label: '600 DPI' },
+                            { value: 720, label: '720 DPI' },
+                            { value: 1200, label: '1200 DPI' },
+                          ].map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                saveCanvasToStorage(currentPage);
+                                setDpi(opt.value as DpiMode);
+                              }}
+                              className={`h-7 rounded-lg text-[10px] font-mono font-semibold transition-colors cursor-pointer ${
+                                dpi === opt.value
+                                  ? 'bg-cyan-400/25 text-cyan-200 ring-1 ring-cyan-400/50'
+                                  : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="sp-div" />
+
+                  {/* Import */}
+                  <PaletteBtn
+                    title="Import a .cescratch / .json sheet"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImportFile}
+                    accept=".cescratch,.json"
+                    className="hidden"
+                  />
+
+                  {/* Export */}
+                  <div className="relative">
+                    <PaletteBtn
+                      title="Download / export"
+                      active={showExportMenu}
+                      onClick={() => {
+                        const next = !showExportMenu;
+                        closeAllMenus();
+                        setShowExportMenu(next);
+                      }}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </PaletteBtn>
+
+                    {showExportMenu && (
+                      <div className="sp-pop bottom-full right-0 mb-2 w-[236px] space-y-0.5">
+                        <div className="sp-pop-head">
+                          <span>Export</span>
+                          <span className="font-mono text-slate-400">sheet {currentPage}</span>
+                        </div>
+
                         <button
                           type="button"
-                          onClick={commitLassoSelection}
-                          className="p-1 px-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-colors shadow-sm"
-                          title="Apply & Commit (or click outside)"
+                          onClick={handleExportCescratch}
+                          className="sp-pop-item"
                         >
-                          <Check className="w-3.5 h-3.5" />
-                          <span className="text-[10px]">Apply</span>
+                          <Tablet className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[10px] text-slate-100">
+                              .cescratch — editable
+                            </div>
+                            <div className="text-[9px] text-slate-500">
+                              All {totalPages} sheets + notes
+                            </div>
+                          </div>
                         </button>
+
                         <button
                           type="button"
-                          onClick={duplicateLassoSelection}
-                          className="p-1 px-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-xs flex items-center space-x-1 cursor-pointer transition-colors"
-                          title="Duplicate Selection"
+                          onClick={handleExportSvg}
+                          className="sp-pop-item"
                         >
-                          <Copy className="w-3.5 h-3.5" />
-                          <span className="text-[10px]">Clone</span>
+                          <FileCode className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[10px] text-slate-100">
+                              .svg — vector
+                            </div>
+                            <div className="text-[9px] text-slate-500">
+                              GoodNotes, Notability, Procreate
+                            </div>
+                          </div>
                         </button>
+
                         <button
                           type="button"
-                          onClick={deleteLassoSelection}
-                          className="p-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs cursor-pointer transition-colors"
-                          title="Delete Cutout"
+                          onClick={() => {
+                            handleDownload();
+                            setShowExportMenu(false);
+                          }}
+                          className="sp-pop-item"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelLassoSelection}
-                          className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs cursor-pointer transition-colors"
-                          title="Cancel (Restore Original Position)"
-                        >
-                          <X className="w-3.5 h-3.5" />
+                          <Download className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[10px] text-slate-100">
+                              .png — {dpi} DPI
+                            </div>
+                            <div className="text-[9px] text-slate-500">
+                              Print-ready with pHYs metadata
+                            </div>
+                          </div>
                         </button>
                       </div>
-
-                      {/* 8 Precision Resize Handles */}
-                      {/* NW */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('nw', e)}
-                        className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
-                      />
-                      {/* NE */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('ne', e)}
-                        className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
-                      />
-                      {/* SW */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('sw', e)}
-                        className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
-                      />
-                      {/* SE */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('se', e)}
-                        className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded bg-cyan-400 border border-slate-950 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
-                      />
-                      {/* N */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('n', e)}
-                        className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform"
-                      />
-                      {/* S */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('s', e)}
-                        className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ns-resize hover:scale-125 transition-transform"
-                      />
-                      {/* W */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('w', e)}
-                        className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
-                      />
-                      {/* E */}
-                      <div
-                        onPointerDown={(e) => handleLassoHandleDown('e', e)}
-                        className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3.5 h-3.5 rounded bg-white border border-slate-950 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
-                      />
-                    </div>
+                    )}
                   </div>
-                );
-              })()
-            )}
 
-            {/* Hold-to-Straighten / Shape Snapping Feedback Toast */}
-            {snapFeedback && canvasRef.current && (
-              (() => {
-                const canvas = canvasRef.current;
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
-                const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
-                const cssX = snapFeedback.x / scaleX;
-                const cssY = snapFeedback.y / scaleY;
-
-                return (
-                  <div
-                    className="pointer-events-none absolute z-50 px-2.5 py-1 rounded-full bg-cyan-400 text-slate-950 font-bold font-mono text-[10px] shadow-2xl -translate-x-1/2 -translate-y-1/2 animate-in zoom-in-75 duration-200 flex items-center space-x-1 border border-white/40"
-                    style={{ left: `${cssX}px`, top: `${cssY}px` }}
-                  >
-                    <span>{snapFeedback.text}</span>
-                  </div>
-                );
-              })()
-            )}
-
-            {/* Floating Status Indicators */}
-            {tool === 'eraser' && (
-              <div className="absolute bottom-2 left-2 pointer-events-none px-2 py-0.5 rounded-full bg-rose-950/80 border border-rose-500/40 text-[9px] text-rose-200">
-                Pixel Eraser Active ({thickness * 2.5}px) • Only hits touched points
+                  {/* Clear */}
+                  <PaletteBtn title="Clear this sheet" tone="rose" onClick={handleClear}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+                </div>
               </div>
-            )}
-
-            {tool === 'bucket' && (
-              <div className="absolute bottom-2 left-2 pointer-events-none px-2.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/50 text-[10px] text-cyan-200 flex items-center space-x-1.5 shadow-lg backdrop-blur-sm">
-                <PaintBucket className={`w-3 h-3 ${isFilling ? 'animate-bounce text-cyan-300' : 'text-cyan-400'}`} />
-                <span>
-                  {isFilling ? 'Liquid fill spreading...' : 'Click inside any closed box/shape to fill with spreading color'}
-                </span>
-                <span
-                  className="w-2.5 h-2.5 rounded-full border border-white/60 ml-1 inline-block"
-                  style={{ backgroundColor: color }}
-                />
-              </div>
-            )}
-
-            {tool === 'lasso' && (
-              <div className="absolute bottom-2 left-2 pointer-events-none px-2.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/50 text-[10px] text-cyan-200 flex items-center space-x-1.5 shadow-lg backdrop-blur-sm">
-                <LassoSelect className="w-3 h-3 text-cyan-400 animate-pulse" />
-                <span>
-                  {lassoSelection ? 'Drag to move, pull handles to resize, or click Apply' : 'Drag loop around any drawings, text, or shapes to select & transform'}
-                </span>
-              </div>
-            )}
-
-            {tool === 'shape' && (
-              <div className="absolute bottom-2 left-2 pointer-events-none px-2.5 py-1 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-[10px] text-emerald-200 flex items-center space-x-1.5 shadow-lg backdrop-blur-sm">
-                <Square className="w-3 h-3 text-emerald-400" />
-                <span>
-                  Drag across canvas to create {shapeType} ({isDashed ? 'Dashed' : 'Solid'}, {isShapeFilled ? 'Filled' : 'Outline'})
-                </span>
-              </div>
-            )}
-
-            {/* High-DPI Engine & Smoother Status Badge */}
-            <div className="absolute bottom-2 right-2 pointer-events-none px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800/80 text-[8px] font-mono text-slate-400 flex items-center space-x-2 backdrop-blur-sm">
-              {smootherIntensity > 0 && (
-                <span className="text-amber-400 font-bold">Smoother: {smootherIntensity}%</span>
-              )}
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>{dpi} DPI • IndexedDB</span>
             </div>
-
-            {/* Import Notification Toast */}
-            {importNotification && (
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-cyan-950/95 border border-cyan-400 text-xs font-mono text-cyan-200 shadow-2xl backdrop-blur-md flex items-center space-x-1.5 animate-in fade-in">
-                <Check className="w-3.5 h-3.5 text-cyan-400" />
-                <span>{importNotification}</span>
-              </div>
-            )}
           </div>
         )}
 
-        {/* TAB 2: TEXT & CALCULATION NOTES */}
+        {/* ---------- TAB 2: NOTES ---------- */}
         {activeTab === 'notes' && (
-          <div
-            className="w-full h-full p-3 flex flex-col space-y-2 transition-colors"
-            style={getTextureStyle()}
-          >
-            {/* Quick Math Symbols Helper */}
-            <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[11px] text-slate-400 shrink-0">
-              <span className={`text-[10px] font-mono ${isLightColor(paperBgColor) ? 'text-slate-600' : 'text-slate-500'}`}>Insert:</span>
-              {['π', 'θ', '√', '²', '³', '°', '±', 'Σ', 'Δ', 'λ', 'μ', '≤', '≥', '≈'].map((sym) => (
-                <button
-                  key={sym}
-                  type="button"
-                  onClick={() => handleNotesChange(notesText + sym)}
-                  className={`px-1.5 py-0.5 rounded border font-mono cursor-pointer transition-colors ${
-                    isLightColor(paperBgColor)
-                      ? 'bg-white/80 hover:bg-white text-slate-800 border-slate-300 shadow-sm'
-                      : 'bg-slate-900 hover:bg-slate-800 border-slate-800 text-cyan-300'
+          <div className="absolute inset-0 flex flex-col px-2 py-2">
+            <div
+              className="sp-page flex-1 min-h-0 flex flex-col overflow-hidden"
+              style={getTextureStyle()}
+            >
+              <div
+                className={`flex items-center gap-1 px-2 py-1.5 overflow-x-auto no-scrollbar shrink-0 border-b ${
+                  isLightColor(paperBgColor) ? 'border-slate-900/10' : 'border-white/10'
+                }`}
+              >
+                <span
+                  className={`text-[9px] font-mono uppercase tracking-wider shrink-0 ${
+                    isLightColor(paperBgColor) ? 'text-slate-500' : 'text-slate-400'
                   }`}
                 >
-                  {sym}
-                </button>
-              ))}
-            </div>
+                  Insert
+                </span>
+                {['π', 'θ', '√', '²', '³', '°', '±', 'Σ', 'Δ', 'λ', 'μ', '≤', '≥', '≈'].map((sym) => (
+                  <button
+                    key={sym}
+                    type="button"
+                    onClick={() => handleNotesChange(notesText + sym)}
+                    className={`sp-chip w-6 h-6 rounded-lg font-mono text-[11px] cursor-pointer transition-colors ${
+                      isLightColor(paperBgColor)
+                        ? 'text-slate-700 hover:bg-slate-900/10'
+                        : 'text-cyan-200 hover:bg-white/10'
+                    }`}
+                  >
+                    {sym}
+                  </button>
+                ))}
+              </div>
 
-            <textarea
-              value={notesText}
-              onChange={(e) => handleNotesChange(e.target.value)}
-              placeholder="Type your engineering scratch notes, formula derivations, given parameters, and intermediate computations here... (Auto-saved across reloads)"
-              className={`w-full flex-1 p-3 rounded-xl border font-mono text-xs leading-relaxed resize-none outline-none focus:ring-1 transition-colors ${
-                isLightColor(paperBgColor)
-                  ? 'bg-white/70 border-slate-300/80 text-slate-900 placeholder-slate-400 focus:border-cyan-500 focus:ring-cyan-500'
-                  : 'bg-slate-900/90 border-slate-800 text-slate-100 placeholder-slate-500 focus:border-amber-400 focus:ring-amber-400'
-              }`}
-            />
+              <textarea
+                value={notesText}
+                onChange={(e) => handleNotesChange(e.target.value)}
+                placeholder="Type scratch notes, derivations, given parameters and intermediate computations… (auto-saved)"
+                className={`flex-1 w-full bg-transparent p-4 text-[13px] leading-7 resize-none outline-none ${
+                  isLightColor(paperBgColor)
+                    ? 'text-slate-900 placeholder-slate-400'
+                    : 'text-slate-100 placeholder-slate-500'
+                }`}
+              />
+            </div>
           </div>
         )}
 
-        {/* TAB 3: ENGINEERING MINI-CALCULATOR */}
+        {/* ---------- TAB 3: CALCULATOR ---------- */}
         {activeTab === 'calc' && (
-          <div className="w-full h-full p-4 flex flex-col items-center justify-center bg-slate-950">
-            <div className="w-full max-w-sm space-y-3">
-              {/* Display */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-right space-y-1">
-                <div className="text-xs font-mono text-slate-400 overflow-x-auto whitespace-nowrap min-h-[16px]">
+          <div className="sp-desk absolute inset-0 flex items-center justify-center p-3">
+            <div className="w-full max-w-[320px] space-y-2">
+              <div className="sp-page px-3 py-2.5">
+                <div className="text-[11px] font-mono text-slate-400 overflow-x-auto whitespace-nowrap min-h-[15px]">
                   {calcInput || '0'}
                 </div>
-                <div className="text-xl font-bold font-mono text-emerald-400 min-h-[28px]">
+                <div className="text-[22px] font-bold font-mono text-emerald-300 min-h-[28px] text-right tabular-nums">
                   {calcResult || '= 0'}
                 </div>
               </div>
 
-              {/* Keypad */}
               <div className="grid grid-cols-4 gap-1.5">
                 {[
                   'C', 'DEL', '(', ')',
@@ -3206,15 +3276,15 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                   const isAction = ['C', 'DEL'].includes(btn);
                   const isSci = ['sin(', 'cos(', 'tan(', 'sqrt('].includes(btn);
 
-                  let btnStyle = 'bg-slate-900 text-slate-200 border-slate-800 hover:bg-slate-800';
+                  let btnStyle = 'bg-white/[0.06] text-slate-100 hover:bg-white/[0.12]';
                   if (btn === '=') {
-                    btnStyle = 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md';
+                    btnStyle = 'bg-emerald-400 text-slate-950 font-bold hover:bg-emerald-300';
                   } else if (isAction) {
-                    btnStyle = 'bg-rose-500/20 text-rose-300 border-rose-500/30 hover:bg-rose-500/30';
+                    btnStyle = 'bg-rose-500/20 text-rose-200 hover:bg-rose-500/30';
                   } else if (isOp) {
-                    btnStyle = 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30 font-bold';
+                    btnStyle = 'bg-amber-400/20 text-amber-200 hover:bg-amber-400/30 font-bold';
                   } else if (isSci) {
-                    btnStyle = 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/25 text-[10px]';
+                    btnStyle = 'bg-cyan-400/15 text-cyan-200 hover:bg-cyan-400/25 text-[10px]';
                   }
 
                   return (
@@ -3222,7 +3292,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                       key={btn}
                       type="button"
                       onClick={() => handleCalcButton(btn)}
-                      className={`h-9 rounded-lg border text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center ${btnStyle}`}
+                      className={`h-9 rounded-xl text-xs font-mono font-semibold transition-colors cursor-pointer flex items-center justify-center ${btnStyle}`}
                     >
                       {btn}
                     </button>
@@ -3235,7 +3305,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       </div>
 
       {/* ====================================================
-          4. RESIZE HANDLE (Bottom-Right Corner)
+          3. RESIZE HANDLE
           ==================================================== */}
       {!isDocked && !isFullscreen && (
         <div
@@ -3243,7 +3313,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
           className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-center justify-center z-20 group"
           title="Drag to resize scratchpad"
         >
-          <div className="w-2 h-2 border-r-2 border-b-2 border-slate-400 group-hover:border-cyan-400 transition-colors" />
+          <div className="w-2 h-2 border-r-2 border-b-2 border-slate-500 group-hover:border-cyan-400 transition-colors" />
         </div>
       )}
     </div>
