@@ -182,6 +182,89 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
         />
       </div>
 
+      {/* Official PRC Passing Rule (permanent bulletin) */}
+      <div
+        className="rounded-2xl border p-5 sm:p-6"
+        style={{
+          backgroundColor: themeConfig.bgCard,
+          borderColor: themeConfig.border,
+        }}
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+          <div className="flex items-start gap-3.5">
+            <span
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: themeConfig.accentBadge,
+                color: themeConfig.accent,
+              }}
+            >
+              <ShieldCheck className="w-5 h-5" />
+            </span>
+            <div>
+              <span
+                className="text-[10px] font-bold uppercase tracking-[0.18em]"
+                style={{ color: themeConfig.accent }}
+              >
+                PRC Rule
+              </span>
+              <h2 className="text-base font-bold text-white mt-0.5">
+                Official Passing Criteria
+              </h2>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-md">
+                A candidate passes only when the general weighted average reaches 70.00% and no
+                single subject rating falls below 50.00%.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-stretch gap-2.5 shrink-0">
+            <div
+              className="px-4 py-2.5 rounded-xl border"
+              style={{ backgroundColor: themeConfig.bgCardSubtle, borderColor: themeConfig.border }}
+            >
+              <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                Overall Passing
+              </div>
+              <div className="text-sm font-bold text-emerald-400 mt-0.5">≥ 70.00% GWA</div>
+            </div>
+
+            <div
+              className="px-4 py-2.5 rounded-xl border"
+              style={{ backgroundColor: themeConfig.bgCardSubtle, borderColor: themeConfig.border }}
+            >
+              <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                Min. Per Subject
+              </div>
+              <div className="text-sm font-bold mt-0.5" style={{ color: themeConfig.accent }}>
+                ≥ 50.00%
+              </div>
+            </div>
+
+            <div
+              className="px-4 py-2.5 rounded-xl border"
+              style={{ backgroundColor: themeConfig.bgCardSubtle, borderColor: themeConfig.border }}
+            >
+              <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                Subject Weights
+              </div>
+              <div className="text-xs font-bold mt-0.5 flex items-center gap-2">
+                <span className="text-amber-400">MSTC 35%</span>
+                <span className="text-slate-600">•</span>
+                <span className="text-cyan-400">HPGE 30%</span>
+                <span className="text-slate-600">•</span>
+                <span className="text-emerald-400">PSAD 35%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-[11px] text-slate-500 mt-4 pt-3 border-t border-slate-800/80 flex items-center gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span>Failure if any subject rating is below 50.00%, regardless of the general average.</span>
+        </p>
+      </div>
+
       {/* Filter & Search Bar */}
       <div
         className="rounded-2xl p-4 border flex flex-col sm:flex-row items-center justify-between gap-4"

@@ -2,10 +2,10 @@
 
 @layer base {
   :root {
-    --font-arnie: 'Architects Daughter', cursive, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Plus Jakarta Sans', sans-serif;
-    --app-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-arnie: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --font-mono: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --font-sans: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --app-font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
     --app-font-scale: 100%;
     --app-bg-page: #020617;
     --app-bg-card: #0f172a;
@@ -29,21 +29,27 @@
   }
 }
 
-/* Default brand font for specific titles */
-.font-arnie-brand {
-  font-family: 'Architects Daughter', cursive, sans-serif;
-  letter-spacing: 0.02em;
-}
-
-/* Dynamic question, answer, solution, and reader font (inherits user's chosen font) */
+/* =========================================================================
+   GLOBAL TYPE SYSTEM
+   One typeface for every text node. The user's choice (--app-font-family) is
+   the single source of truth: the display, mono, and sans utilities all resolve
+   to it, so switching the reading font re-cuts the WHOLE interface instead of
+   only the headings. KaTeX is unaffected — it declares its own fonts on .katex.
+   ========================================================================= */
+html,
+body,
+.font-arnie-brand,
 .font-reader,
-.font-arnie {
+.font-arnie,
+.font-tech-mono,
+.font-sans,
+.font-mono,
+.font-serif,
+button,
+input,
+textarea,
+select {
   font-family: var(--app-font-family) !important;
-}
-
-/* Code & numbers font */
-.font-tech-mono {
-  font-family: 'JetBrains Mono', monospace;
 }
 
 /* =========================================================================
@@ -1006,18 +1012,22 @@ html[data-theme='underwave'] .hero-aurora h1 {
   text-shadow: none !important;
 }
 
-/* ---- display type: the mod's own Underwave-Bold on headings, brand and CTAs ----
-   NOTE: .font-arnie is also the reading class for question/solution prose
-   (index.css remaps it to --app-font-family), so it is only re-cut here in
-   display contexts — never on long-form text. */
-html[data-theme='underwave'] h1,
-html[data-theme='underwave'] h2,
-html[data-theme='underwave'] h3,
-html[data-theme='underwave'] header .font-arnie,
-html[data-theme='underwave'] button.font-arnie,
-html[data-theme='underwave'] .font-arnie.text-2xl,
-html[data-theme='underwave'] .font-arnie.text-3xl,
-html[data-theme='underwave'] .font-arnie.text-4xl {
+/* ---- type: the mod's own Underwave face across EVERY text node ----
+   The theme owns the typeface while it is active: headings, chrome, labels,
+   inputs, tables and reading prose all switch together so nothing is left
+   behind in the default face. */
+html[data-theme='underwave'] body,
+html[data-theme='underwave'] .font-arnie-brand,
+html[data-theme='underwave'] .font-reader,
+html[data-theme='underwave'] .font-arnie,
+html[data-theme='underwave'] .font-tech-mono,
+html[data-theme='underwave'] .font-sans,
+html[data-theme='underwave'] .font-mono,
+html[data-theme='underwave'] .font-serif,
+html[data-theme='underwave'] button,
+html[data-theme='underwave'] input,
+html[data-theme='underwave'] textarea,
+html[data-theme='underwave'] select {
   font-family: 'Underwave', 'Plus Jakarta Sans', system-ui, sans-serif !important;
   letter-spacing: 0.005em;
 }
@@ -1330,15 +1340,19 @@ html[data-cp-wallpaper='still'] .cp-wallpaper {
     linear-gradient(90deg, rgba(250, 30, 70, 0.05) 0%, transparent 18%, transparent 82%, rgba(0, 176, 244, 0.05) 100%);
 }
 
-/* ---- typography: Chakra Petch chrome + chromatic split on headings ---- */
-html[data-theme='cyberdeck_2077'] h1,
-html[data-theme='cyberdeck_2077'] h2,
-html[data-theme='cyberdeck_2077'] h3,
-html[data-theme='cyberdeck_2077'] header .font-arnie,
-html[data-theme='cyberdeck_2077'] button.font-arnie,
-html[data-theme='cyberdeck_2077'] .font-arnie.text-2xl,
-html[data-theme='cyberdeck_2077'] .font-arnie.text-3xl,
-html[data-theme='cyberdeck_2077'] .font-arnie.text-4xl {
+/* ---- typography: Chakra Petch across EVERY text node + chromatic split ---- */
+html[data-theme='cyberdeck_2077'] body,
+html[data-theme='cyberdeck_2077'] .font-arnie-brand,
+html[data-theme='cyberdeck_2077'] .font-reader,
+html[data-theme='cyberdeck_2077'] .font-arnie,
+html[data-theme='cyberdeck_2077'] .font-tech-mono,
+html[data-theme='cyberdeck_2077'] .font-sans,
+html[data-theme='cyberdeck_2077'] .font-mono,
+html[data-theme='cyberdeck_2077'] .font-serif,
+html[data-theme='cyberdeck_2077'] button,
+html[data-theme='cyberdeck_2077'] input,
+html[data-theme='cyberdeck_2077'] textarea,
+html[data-theme='cyberdeck_2077'] select {
   font-family: 'Chakra Petch', 'Plus Jakarta Sans', system-ui, sans-serif !important;
   letter-spacing: 0.01em;
 }
@@ -1682,4 +1696,16 @@ html[data-theme='cyberdeck_2077'] .max-w-3xl.rounded-3xl {
   .cp-wallpaper {
     display: none;
   }
+}
+
+/* slim scroll containers that must not show a bar (header tab strip) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }

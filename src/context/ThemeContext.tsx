@@ -40,7 +40,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [fontId, setFontIdState] = useState<FontFamilyId>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_FONT) as FontFamilyId;
-    return saved && FONT_OPTIONS.some((f) => f.id === saved) ? saved : 'sans';
+    return saved && FONT_OPTIONS.some((f) => f.id === saved) ? saved : 'arial';
   });
 
   const [fontSizeId, setFontSizeIdState] = useState<FontSizeId>(() => {
@@ -87,7 +87,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const resetToDefaults = () => {
     setThemeId('aurora_glass');
-    setFontId('sans');
+    setFontId('arial');
     setFontSizeId('medium');
     setIsHighContrastFigures(true);
     setTextOutlineMode(true);

@@ -18,6 +18,8 @@ import {
   Sparkles,
   PenTool,
   Layers,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -47,6 +49,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isMatilda = themeConfig.id === 'matilda_3d';
   const isParticle = themeConfig.id === 'particle_flow';
   const activeUser = profile || user;
+  const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+
+  const navItems: {
+    id: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'scratchpad' | 'flashcards' | 'admin';
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    hint?: string;
+  }[] = [
+    { id: 'setup', label: 'Exam Portal', icon: BookOpen },
+    { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
+    { id: 'announcements', label: 'Announcements', icon: Megaphone },
+    { id: 'performance', label: 'Performance', icon: BarChart3 },
+    { id: 'scratchpad', label: 'Scratchpads', icon: PenTool },
+    { id: 'flashcards', label: 'Flashcards', icon: Layers },
+    ...(isAdmin ? [{ id: 'admin' as const, label: 'Admin', icon: ShieldCheck }] : []),
+  ];
 
   return (
     <header
@@ -67,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Title */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 shrink-0">
             <button
               onClick={() => {
                 if (!isExamRunning) setCurrentTab('setup');
@@ -83,36 +101,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <span className="font-arnie text-lg font-bold tracking-tight text-white transition-colors">
-                    CE BOARD EXAM
-                  </span>
-                  <span
-                    className="text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold border"
-                    style={{
-                      backgroundColor: themeConfig.accentBadge,
-                      borderColor: `${themeConfig.accent}40`,
-                      color: themeConfig.accent,
-                    }}
-                  >
-                    2024 UPDATE
-                  </span>
-                </div>
-                <p className="text-[11px] leading-tight" style={{ color: themeConfig.textMuted }}>
-                  Nov 2024 (MSTC 66 • HPGE 46 • PSAD 75) + Apr 2024 (100)
-                </p>
+              <div className="flex items-center space-x-2">
+                <span className="font-arnie text-[15px] font-bold tracking-tight text-white transition-colors whitespace-nowrap">
+                  CE BOARD EXAM
+                </span>
               </div>
             </button>
           </div>
 
           {/* Center Navigation Tabs (Only when NOT actively taking exam) */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center justify-start space-x-0.5 min-w-0 overflow-x-auto no-scrollbar px-1">
             {!isExamRunning && (
               <>
                 <button
                   onClick={() => setCurrentTab('setup')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  title="Exam Portal"
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'setup' ? 'shadow-md font-semibold' : 'hover:opacity-80'
                   }`}
                   style={{
@@ -121,12 +125,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>Exam Portal</span>
+                  <span className="hidden xl:inline">Exam Portal</span>
                 </button>
 
                 <button
                   onClick={() => setCurrentTab('leaderboard')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  title="Leaderboard"
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'leaderboard' ? 'shadow-md font-semibold' : 'hover:opacity-80'
                   }`}
                   style={{
@@ -135,12 +140,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <Trophy className="w-4 h-4" />
-                  <span>Leaderboard</span>
+                  <span className="hidden xl:inline">Leaderboard</span>
                 </button>
 
                 <button
                   onClick={() => setCurrentTab('announcements')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  title="Announcements"
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'announcements' ? 'shadow-md font-semibold' : 'hover:opacity-80'
                   }`}
                   style={{
@@ -149,12 +155,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <Megaphone className="w-4 h-4" />
-                  <span>Announcements</span>
+                  <span className="hidden xl:inline">Announcements</span>
                 </button>
 
                 <button
                   onClick={() => setCurrentTab('performance')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  title="Performance"
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'performance' ? 'shadow-md font-semibold' : 'hover:opacity-80'
                   }`}
                   style={{
@@ -163,12 +170,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <BarChart3 className="w-4 h-4" />
-                  <span>Performance</span>
+                  <span className="hidden xl:inline">Performance</span>
                 </button>
 
                 <button
                   onClick={() => setCurrentTab('scratchpad')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'scratchpad' ? 'shadow-md font-semibold' : 'hover:opacity-80'
                   }`}
                   style={{
@@ -178,7 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   title="View, edit, and export rough sheets, calculations, and standalone notebooks"
                 >
                   <PenTool className="w-4 h-4" />
-                  <span>Scratchpads</span>
+                  <span className="hidden xl:inline">Scratchpads</span>
                 </button>
 
                 <button
@@ -193,24 +200,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                   title="Engineereya's Vlog Terms Flashcards and 4-Choice Quizzes"
                 >
                   <Layers className="w-4 h-4" />
-                  <span>Flashcards</span>
-                  <span className="text-[9px] font-mono font-bold px-1 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                    Vlog
-                  </span>
+                  <span className="hidden xl:inline">Flashcards</span>
                 </button>
 
                 {/* Admin Tab (Only visible to admin) */}
                 {isAdmin && (
                   <button
                     onClick={() => setCurrentTab('admin')}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                    className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                       currentTab === 'admin'
                         ? 'bg-amber-400 text-slate-950 font-bold shadow-md'
                         : 'text-amber-400 hover:bg-amber-500/10 border border-amber-500/30'
                     }`}
                   >
                     <ShieldCheck className="w-4 h-4" />
-                    <span className="font-tech-mono font-bold">Admin</span>
+                    <span className="hidden xl:inline font-tech-mono font-bold">Admin</span>
                   </button>
                 )}
               </>
@@ -218,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Side Navigation, Auth & Theme Button */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 shrink-0">
             {isExamRunning && (
               <div
                 className="flex items-center space-x-2 px-3 py-1 rounded-full border text-xs font-semibold animate-pulse"
@@ -233,6 +237,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
+
+            {/* Mobile menu trigger */}
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen((v) => !v)}
+              className="md:hidden p-2 rounded-lg border transition-colors cursor-pointer"
+              style={{
+                backgroundColor: themeConfig.bgCardSubtle,
+                borderColor: themeConfig.border,
+                color: themeConfig.textPrimary,
+              }}
+              aria-expanded={mobileNavOpen}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
 
             {/* Theme & Fonts Customizer Trigger */}
             <button
@@ -314,7 +334,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onClick={openAuthModal}
                 disabled={authLoading}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-400 shadow-md transition-all hover:scale-105 cursor-pointer ml-1"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-400 shadow-md transition-all hover:scale-105 cursor-pointer ml-1 whitespace-nowrap shrink-0"
                 title="Sign in with Password or Google"
               >
                 <KeyRound className="w-3.5 h-3.5" />
@@ -326,38 +346,38 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* PRC Quick Weights Banner */}
-      <div
-        className="border-t px-4 py-1 text-center text-[11px] flex items-center justify-center space-x-4 overflow-x-auto transition-colors"
-        style={{
-          borderColor: `${themeConfig.border}80`,
-          backgroundColor: `${themeConfig.bgPage}80`,
-          color: themeConfig.textMuted,
-        }}
-      >
-        <span className="font-semibold" style={{ color: themeConfig.accent }}>
-          PRC Rule:
-        </span>
-        <span style={{ color: themeConfig.textSecondary }}>
-          Overall Passing: <strong className="text-emerald-400">≥ 70.00% GWA</strong>
-        </span>
-        <span>•</span>
-        <span style={{ color: themeConfig.textSecondary }}>
-          Min. Per Subject: <strong style={{ color: themeConfig.accent }}>≥ 50.00%</strong> (Failure if &lt;50%)
-        </span>
-        <span>•</span>
-        <span>
-          MSTC: <span style={{ color: themeConfig.accent }}>35%</span>
-        </span>
-        <span>•</span>
-        <span>
-          HPGE: <span className="text-cyan-400">30%</span>
-        </span>
-        <span>•</span>
-        <span>
-          PSAD: <span className="text-emerald-400">35%</span>
-        </span>
-      </div>
+      {/* Mobile navigation panel (the tab strip is hidden below md) */}
+      {mobileNavOpen && !isExamRunning && (
+        <div className="md:hidden border-t px-3 py-3" style={{ borderColor: themeConfig.border }}>
+          <div className="grid grid-cols-2 gap-1.5">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = currentTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setCurrentTab(item.id);
+                    setMobileNavOpen(false);
+                  }}
+                  className={`flex items-center space-x-2 px-3 py-2.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
+                    active ? 'shadow-md' : 'hover:opacity-85'
+                  }`}
+                  style={{
+                    backgroundColor: active ? themeConfig.accent : themeConfig.bgCardSubtle,
+                    borderColor: active ? themeConfig.accent : themeConfig.border,
+                    color: active ? themeConfig.accentText : themeConfig.textSecondary,
+                  }}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </header>
   );
 };

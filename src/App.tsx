@@ -55,6 +55,7 @@ import {
   Globe,
   Flame,
   Atom,
+  Megaphone,
 } from 'lucide-react';
 import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './services/firebase';
 
@@ -407,18 +408,18 @@ function MainApp() {
             <>
               {/* Optional Top Announcement Alert Banner on Exam Portal */}
               {currentTab === 'setup' && latestAnnouncement && (
-                <div className="max-w-7xl mx-auto mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
-                  <div className="flex items-start sm:items-center space-x-3">
-                    <span className="p-2 rounded-xl bg-amber-500/20 text-amber-300 shrink-0">
-                      📣
+                <div className="max-w-6xl mx-auto mb-6 px-0.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 animate-in fade-in">
+                  <div className="flex items-start sm:items-center space-x-3 min-w-0">
+                    <span className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                      <Megaphone className="w-4 h-4" />
                     </span>
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white text-xs">
+                        <span className="font-bold text-white text-xs truncate">
                           {latestAnnouncement.title}
                         </span>
                         {latestAnnouncement.isPinned && (
-                          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 font-black">
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold shrink-0">
                             PINNED
                           </span>
                         )}
@@ -431,7 +432,7 @@ function MainApp() {
 
                   <button
                     onClick={() => setCurrentTab('announcements')}
-                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
+                    className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
                   >
                     Read All Updates
                   </button>
@@ -522,24 +523,6 @@ function MainApp() {
           onClose={() => setIsThemeModalOpen(false)}
         />
 
-        {/* Footer */}
-        <footer
-          className="border-t py-6 text-center text-xs transition-colors"
-          style={{
-            borderColor: themeConfig.border,
-            backgroundColor: themeConfig.bgPage,
-            color: themeConfig.textMuted,
-          }}
-        >
-          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="font-tech-mono">
-              Philippine Civil Engineering Licensure Examination (CE Board Exam) Simulator
-            </p>
-            <p className="text-[11px]" style={{ color: themeConfig.textMuted }}>
-              PRC Criteria: GWA ≥ 70.00% • MSTC 35% • HPGE 30% • PSAD 35% • No Rating &lt; 50.00%
-            </p>
-          </div>
-        </footer>
         {/* Floating Quick Particle Controller for the Theme (Available from any tab or during exams) */}
         {isParticle && (
           <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">

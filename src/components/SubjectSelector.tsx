@@ -10,7 +10,6 @@ import {
 import {
   ALL_YEARS,
   ALL_MONTHS,
-  getSubjectStats,
   hasExamData,
   isYearAvailable,
   isMonthAvailable,
@@ -22,7 +21,6 @@ import {
   Clock,
   Timer,
   Infinity as InfinityIcon,
-  HelpCircle,
   Play,
   CheckCircle2,
   Calendar,
@@ -31,7 +29,6 @@ import {
   Zap,
   Eye,
   Lock,
-  AlertCircle,
   Pause,
   BookmarkCheck,
   RotateCcw,
@@ -111,7 +108,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const isParticle = themeConfig.id === 'particle_flow';
   const isSubmerged = themeConfig.id === 'submerged_era';
   const currentConfig = SUBJECT_CONFIGS[selectedSubject];
-  const stats = getSubjectStats(selectedSubject, selectedYear, selectedMonth);
 
   const currentPausedSession = pausedSessionsList.find(
     (s) => s.subject === selectedSubject && Number(s.year) === Number(selectedYear) && s.month === selectedMonth
@@ -131,9 +127,9 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const hasSelectedData = hasExamData(selectedSubject, selectedYear, selectedMonth);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+    <div className="max-w-6xl mx-auto pb-12 space-y-6">
       {/* Hero Banner */}
-      <div className="hero-aurora relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 border border-slate-700/80 shadow-2xl bg-blueprint-grid">
+      <div className="hero-aurora relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-7 border border-slate-700/80 shadow-2xl bg-blueprint-grid">
         {isSubmerged && (
           <div className="absolute inset-y-0 right-0 w-full sm:w-1/2 md:w-3/5 opacity-95 sm:opacity-100 pointer-events-auto">
             <SubmergedEra3D mode="hero" interactive={true} />
@@ -159,46 +155,47 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <ParticleSystem3D mode="hero" interactive={true} />
           </div>
         )}
-        <div className="relative z-10 space-y-3 sm:max-w-[55%]">
+        <div className="relative z-10 space-y-2.5 sm:max-w-[55%]">
           {isSubmerged ? (
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[11px] font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
               <span>Submerged Era 3D • Animated Lilies, Swimming Koi &amp; Sakura Breeze</span>
             </div>
           ) : isParticle ? (
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-xs font-semibold">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[11px] font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
               <span>3D Particle Theme • Reactive Background &amp; Hand Gestures Active</span>
             </div>
           ) : (
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] font-semibold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>PRC Board Exam Questions • 2024 &amp; 2025 Official Question Sets</span>
             </div>
           )}
-          <h1 className="font-arnie text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="font-arnie text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
             Civil Engineering Board Examination
           </h1>
-          <p className="text-slate-300 text-sm sm:text-base max-w-2xl font-light">
-            Simulate the official PRC examination with comprehensive questions (Pages 1–10), official answer keys (Page 11), and step-by-step engineering solutions with formulas (Pages 11–33).
+          <p className="text-slate-400 text-xs sm:text-sm max-w-md">
+            Select your examination area, board set, and timing to begin the simulated PRC
+            examination.
           </p>
         </div>
       </div>
 
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
+        <div className="space-y-6">
+
       {/* STEP 1: Select Area / Subject */}
-      <div className="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <span className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm">
-              1
+      <div className="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
+              Step 01
             </span>
-            <h2 className="text-lg font-bold text-white font-arnie tracking-wide">
+            <h2 className="text-lg font-bold text-white font-arnie tracking-wide leading-tight">
               Select Examination Area
             </h2>
           </div>
-          <span className="text-xs text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
-            MSTC (Nov 2024: 66 Qs, Apr 2024: 50 Qs), HPGE (48 Qs) &amp; PSAD (75 Qs)
-          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -319,19 +316,14 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       </div>
 
       {/* STEP 2: Select Past Board Exam Year & Month */}
-      <div className="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <span className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm">
-              2
-            </span>
-            <h2 className="text-lg font-bold text-white font-arnie tracking-wide">
-              Select Past Board Exam Year &amp; Month
-            </h2>
-          </div>
-          <span className="text-xs text-slate-400 font-tech-mono">
-            Available Sets: <strong className="text-amber-400">May 2022 (MSTC • 55 Items)</strong> • <strong className="text-emerald-400">2024–2025 Sets (MSTC, HPGE, PSAD)</strong>
+      <div className="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-5">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
+            Step 02
           </span>
+          <h2 className="text-lg font-bold text-white font-arnie tracking-wide leading-tight">
+            Select Past Board Exam Year &amp; Month
+          </h2>
         </div>
 
         {/* Year Selector (2011 to 2025) */}
@@ -342,10 +334,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <span>Examination Year (2011 – 2025)</span>
             </span>
             <span className="text-[10px] text-slate-400 normal-case">
-              Years without uploaded question data are blurred out
+              Years without uploaded data are unavailable
             </span>
           </label>
-          <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-15 gap-1.5">
+          <div className="grid grid-cols-5 sm:grid-cols-8 gap-1.5">
             {ALL_YEARS.map((yr) => {
               const hasData = isYearAvailable(yr, selectedSubject);
               const isSelected = selectedYear === yr;
@@ -370,7 +362,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                       ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20 scale-105 z-10'
                       : hasData
                       ? 'bg-slate-950/70 text-slate-200 hover:bg-slate-800 hover:text-white border border-slate-700 cursor-pointer'
-                      : 'bg-slate-950/20 text-slate-600 border border-slate-800/40 opacity-35 filter blur-[0.6px] hover:blur-none select-none cursor-not-allowed'
+                      : 'bg-slate-950/40 text-slate-600 border border-slate-800/60 opacity-70 select-none cursor-not-allowed'
                   }`}
                 >
                   <span>{yr}</span>
@@ -391,7 +383,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <span>Examination Month</span>
             </span>
             <span className="text-[10px] text-slate-400 normal-case">
-              Months without uploaded question data are blurred out
+              Months without uploaded data are unavailable
             </span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -414,227 +406,254 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                       ? `Select ${mon} ${selectedYear} examination`
                       : `${mon} ${selectedYear} - No questions uploaded yet (Locked)`
                   }
-                  className={`p-3 rounded-xl border text-sm font-semibold transition-all flex items-center justify-between ${
+                  className={`p-2.5 rounded-xl border text-xs font-semibold transition-all flex items-center justify-between gap-1.5 ${
                     isSelected
                       ? 'border-amber-400 bg-amber-500/10 text-amber-300 shadow-md ring-1 ring-amber-400/40'
                       : hasData
                       ? 'border-slate-800 bg-slate-950/60 text-slate-200 hover:border-slate-700 cursor-pointer'
-                      : 'border-slate-800/40 bg-slate-950/20 text-slate-600 opacity-35 filter blur-[0.6px] hover:blur-none select-none cursor-not-allowed'
+                      : 'border-slate-800/60 bg-slate-950/40 text-slate-600 opacity-70 select-none cursor-not-allowed'
                   }`}
                 >
-                  <div className="flex items-center space-x-2">
-                    {!hasData && <Lock className="w-3.5 h-3.5 text-slate-500" />}
-                    <span>{mon} Exam</span>
+                  <div className="flex items-center space-x-1.5 min-w-0">
+                    {!hasData && <Lock className="w-3 h-3 text-slate-500 shrink-0" />}
+                    <span className="whitespace-nowrap">{mon} Exam</span>
                   </div>
 
                   {isSelected && hasData && (
                     <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                  )}
-                  {!hasData && (
-                    <span className="text-[10px] font-tech-mono text-slate-500 font-normal">
-                      No Data
-                    </span>
                   )}
                 </button>
               );
             })}
           </div>
 
-          {/* Current Set Status Notice */}
-          <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
-            <div className="flex items-center space-x-2 text-slate-300">
-              <span>Selected Set:</span>
-              <strong className="text-amber-400 font-tech-mono">
-                {selectedMonth} {selectedYear}
-              </strong>
-              <span>— {currentConfig.fullName}</span>
-            </div>
-
-            {hasSelectedData ? (
-              <span className="text-emerald-400 flex items-center space-x-1 font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Verified PRC Exam Set Ready ({stats.total} Questions)</span>
-              </span>
-            ) : (
-              <span className="text-amber-400 flex items-center space-x-1 font-semibold">
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span>No question data uploaded yet for this period.</span>
-              </span>
-            )}
-          </div>
         </div>
       </div>
 
-      {/* STEP 3: Timer & Simulation Mode */}
-      <div className="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 shadow-xl space-y-6">
-        <div className="flex items-center space-x-2.5">
-          <span className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-sm">
-            3
-          </span>
-          <h2 className="text-lg font-bold text-white font-arnie tracking-wide">
-            Select Timing &amp; Interactive Mode
-          </h2>
         </div>
 
-        {/* Timer Mode Selection */}
-        <div>
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
-            <Clock className="w-3.5 h-3.5 text-amber-400" />
-            <span>Clock &amp; Timing Rules</span>
-          </label>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <button
-              type="button"
-              onClick={() => onTimerModeChange('exam_timer')}
-              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
-                timerMode === 'exam_timer'
-                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                  : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-amber-400" />
-                  <span className="font-bold text-sm">Standard PRC Timer</span>
-                </div>
-                {timerMode === 'exam_timer' && (
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                )}
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Countdown timer for {selectedSubject}: {currentConfig.defaultMinutes / 60} hours ({currentConfig.defaultMinutes} minutes). Auto-submits on timeout.
-              </p>
-            </button>
+        <aside className="space-y-5 xl:sticky xl:top-20">
+          {/* STEP 3: Timer & Simulation Mode */}
+          <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-xl">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
+                Step 03
+              </span>
+              <h2 className="text-lg font-bold text-white font-arnie tracking-wide leading-tight">
+                Timing &amp; Mode
+              </h2>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => onTimerModeChange('stopwatch')}
-              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
-                timerMode === 'stopwatch'
-                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                  : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center space-x-2">
-                  <Timer className="w-4 h-4 text-cyan-400" />
-                  <span className="font-bold text-sm">Stopwatch Mode</span>
-                </div>
-                {timerMode === 'stopwatch' && (
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                )}
+            {/* Clock */}
+            <div className="mt-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-2 flex items-center space-x-1.5">
+                <Clock className="w-3 h-3" />
+                <span>Clock</span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Counts elapsed time upwards from 00:00:00 without hard cutoff. Ideal for measuring problem pacing.
-              </p>
-            </button>
+              <div className="space-y-1.5">
+                {(
+                  [
+                    {
+                      id: 'exam_timer' as TimerMode,
+                      label: 'Standard PRC Timer',
+                      hint: `${currentConfig.defaultMinutes / 60}h countdown · auto-submit`,
+                      icon: Clock,
+                    },
+                    {
+                      id: 'stopwatch' as TimerMode,
+                      label: 'Stopwatch',
+                      hint: 'Counts up · no cutoff',
+                      icon: Timer,
+                    },
+                    {
+                      id: 'no_limit' as TimerMode,
+                      label: 'Untimed Practice',
+                      hint: 'No clock · own pace',
+                      icon: InfinityIcon,
+                    },
+                  ] as const
+                ).map((opt) => {
+                  const active = timerMode === opt.id;
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => onTimerModeChange(opt.id)}
+                      className={`w-full text-left px-3 py-2 rounded-lg border transition-all flex items-center justify-between gap-2 cursor-pointer ${
+                        active
+                          ? 'border-amber-400 bg-amber-500/10'
+                          : 'border-slate-800 bg-slate-950/40 hover:border-slate-700'
+                      }`}
+                    >
+                      <span className="flex items-center space-x-2 min-w-0">
+                        <Icon
+                          className={`w-3.5 h-3.5 shrink-0 ${active ? 'text-amber-400' : 'text-slate-500'}`}
+                        />
+                        <span className="min-w-0">
+                          <span
+                            className={`block text-xs font-bold truncate ${
+                              active ? 'text-white' : 'text-slate-300'
+                            }`}
+                          >
+                            {opt.label}
+                          </span>
+                          <span className="block text-[10px] text-slate-500 truncate">{opt.hint}</span>
+                        </span>
+                      </span>
+                      {active && <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
 
-            <button
-              type="button"
-              onClick={() => onTimerModeChange('no_limit')}
-              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
-                timerMode === 'no_limit'
-                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                  : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center space-x-2">
-                  <InfinityIcon className="w-4 h-4 text-emerald-400" />
-                  <span className="font-bold text-sm">Untimed Practice</span>
+              {timerMode === 'exam_timer' && (
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomTimeInput(!showCustomTimeInput)}
+                    className="text-[11px] text-amber-400 hover:underline cursor-pointer"
+                  >
+                    {showCustomTimeInput
+                      ? '− Hide custom duration'
+                      : `+ Custom duration (default ${currentConfig.defaultMinutes} min)`}
+                  </button>
+                  {showCustomTimeInput && (
+                    <div className="mt-2 flex items-center space-x-2 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                      <input
+                        type="number"
+                        min="5"
+                        max="600"
+                        value={customMinutes}
+                        onChange={(e) => onCustomMinutesChange(Number(e.target.value))}
+                        className="w-20 px-2 py-1.5 rounded-md bg-slate-900 border border-slate-700 text-white text-xs font-tech-mono"
+                      />
+                      <span className="text-[11px] text-slate-400">minutes</span>
+                    </div>
+                  )}
                 </div>
-                {timerMode === 'no_limit' && (
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                )}
+              )}
+            </div>
+
+            {/* Feedback mode */}
+            <div className="mt-5 pt-4 border-t border-slate-800">
+              <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-2 flex items-center space-x-1.5">
+                <Zap className="w-3 h-3" />
+                <span>Feedback</span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                No clock or time pressure. Solve equations and check solutions at your own relaxed pace.
-              </p>
-            </button>
+              <div className="space-y-1.5">
+                {(
+                  [
+                    {
+                      id: 'interactive' as ExamMode,
+                      label: 'Interactive Study',
+                      hint: 'Instant feedback + solution',
+                      icon: Zap,
+                    },
+                    {
+                      id: 'non_interactive' as ExamMode,
+                      label: 'Official Simulation',
+                      hint: 'Keys released after submit',
+                      icon: Eye,
+                    },
+                  ] as const
+                ).map((opt) => {
+                  const active = examMode === opt.id;
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => onExamModeChange(opt.id)}
+                      className={`w-full text-left px-3 py-2 rounded-lg border transition-all flex items-center justify-between gap-2 cursor-pointer ${
+                        active
+                          ? 'border-amber-400 bg-amber-500/10'
+                          : 'border-slate-800 bg-slate-950/40 hover:border-slate-700'
+                      }`}
+                    >
+                      <span className="flex items-center space-x-2 min-w-0">
+                        <Icon
+                          className={`w-3.5 h-3.5 shrink-0 ${active ? 'text-amber-400' : 'text-slate-500'}`}
+                        />
+                        <span className="min-w-0">
+                          <span
+                            className={`block text-xs font-bold truncate ${
+                              active ? 'text-white' : 'text-slate-300'
+                            }`}
+                          >
+                            {opt.label}
+                          </span>
+                          <span className="block text-[10px] text-slate-500 truncate">{opt.hint}</span>
+                        </span>
+                      </span>
+                      {active && <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Custom duration toggle if in exam timer mode */}
-        {timerMode === 'exam_timer' && (
-          <div className="pt-2 border-t border-slate-800/80">
-            <button
-              type="button"
-              onClick={() => setShowCustomTimeInput(!showCustomTimeInput)}
-              className="text-xs text-amber-400 hover:underline flex items-center space-x-1 cursor-pointer"
-            >
-              <span>{showCustomTimeInput ? '− Hide custom duration' : '+ Customize duration (default ' + currentConfig.defaultMinutes + ' mins)'}</span>
-            </button>
-            {showCustomTimeInput && (
-              <div className="mt-3 flex items-center space-x-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                <label className="text-xs text-slate-300">Set Timer in Minutes:</label>
-                <input
-                  type="number"
-                  min="5"
-                  max="600"
-                  value={customMinutes}
-                  onChange={(e) => onCustomMinutesChange(Number(e.target.value))}
-                  className="w-24 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-tech-mono"
-                />
-                <span className="text-xs text-slate-400">({Math.round(customMinutes / 6) / 10} hours)</span>
-              </div>
-            )}
+          {/* Launch Exam CTA */}
+          <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 rounded-2xl p-5 text-slate-950 shadow-2xl">
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] bg-slate-950 text-amber-400 px-2.5 py-1 rounded-full inline-block">
+              {hasSelectedData ? 'Ready to Begin' : 'Awaiting Data Update'}
+            </span>
+            <h3 className="font-arnie text-xl font-bold mt-2.5 leading-tight">
+              Proceed to {selectedSubject} Examination
+            </h3>
+            <p className="text-[11px] text-slate-900/80 mt-1">
+              {selectedMonth} {selectedYear} ·{' '}
+              {examMode === 'interactive' ? 'Interactive Study' : 'Official Simulation'} ·{' '}
+              {timerMode === 'exam_timer'
+                ? 'Timed'
+                : timerMode === 'stopwatch'
+                ? 'Stopwatch'
+                : 'Untimed'}
+            </p>
+
+            <div className="mt-4 space-y-2">
+              {currentPausedSession ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onResumeExam(currentPausedSession)}
+                    className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider bg-slate-950 hover:bg-slate-900 text-amber-400 hover:scale-[1.02] cursor-pointer"
+                  >
+                    <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <span>RESUME SESSION</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      deletePausedSession(selectedSubject, selectedYear, selectedMonth);
+                      setPausedSessionsList(getAllPausedSessions());
+                      onStartExam();
+                    }}
+                    className="w-full py-2.5 rounded-lg font-bold text-[11px] flex items-center justify-center space-x-1.5 transition-all font-arnie tracking-wider bg-slate-950/15 hover:bg-slate-950/25 text-slate-950 border border-slate-950/30 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>START FRESH</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onStartExam}
+                  disabled={!hasSelectedData}
+                  className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider ${
+                    hasSelectedData
+                      ? 'bg-slate-950 hover:bg-slate-900 text-white hover:scale-[1.02] cursor-pointer'
+                      : 'bg-slate-950/50 text-slate-500 cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <span>START EXAMINATION</span>
+                </button>
+              )}
+            </div>
           </div>
-        )}
-
-        {/* Interactive vs Non-Interactive Mode */}
-        <div>
-          <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>Question Feedback Mode</span>
-          </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => onExamModeChange('interactive')}
-              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
-                examMode === 'interactive'
-                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                  : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center space-x-2">
-                  <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="font-bold text-sm">Interactive Study Mode</span>
-                </div>
-                {examMode === 'interactive' && (
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                )}
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Instant feedback on choice selection. Reveals immediate correct/wrong validation with the official engineering solution and step derivations.
-              </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onExamModeChange('non_interactive')}
-              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
-                examMode === 'non_interactive'
-                  ? 'border-amber-400 bg-amber-500/10 text-white shadow-md'
-                  : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center space-x-2">
-                  <Eye className="w-4 h-4 text-slate-300" />
-                  <span className="font-bold text-sm">Non-Interactive (Simulation)</span>
-                </div>
-                {examMode === 'non_interactive' && (
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                )}
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Strict PRC board exam simulation: only questions and choices appear during the test. Complete answer keys and solutions are revealed upon submission.
-              </p>
-            </button>
-          </div>
-        </div>
+        </aside>
       </div>
 
       {/* Paused Study Session Card (if saved session exists for this exam) */}
@@ -817,62 +836,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </button>
         </div>
       )}
-
-      {/* Launch Exam CTA */}
-      <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 rounded-2xl p-6 text-slate-950 flex flex-col sm:flex-row items-center justify-between shadow-2xl gap-4">
-        <div>
-          <span className="text-xs font-bold uppercase tracking-wider bg-slate-950 text-amber-400 px-2.5 py-0.5 rounded-full inline-block mb-1">
-            {hasSelectedData ? 'Ready to Begin' : 'Awaiting Data Update'}
-          </span>
-          <h3 className="font-arnie text-2xl font-bold">
-            Proceed to {selectedSubject} Examination
-          </h3>
-          <p className="text-xs text-slate-900 mt-1">
-            {selectedMonth} {selectedYear} • Mode: {examMode === 'interactive' ? 'Interactive' : 'Official Simulation'} • Timing: {timerMode}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          {currentPausedSession ? (
-            <>
-              <button
-                type="button"
-                onClick={() => onResumeExam(currentPausedSession)}
-                className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider bg-slate-950 hover:bg-slate-900 text-amber-400 hover:scale-105 cursor-pointer"
-              >
-                <Play className="w-5 h-5 text-amber-400 fill-amber-400" />
-                <span>RESUME SESSION</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  deletePausedSession(selectedSubject, selectedYear, selectedMonth);
-                  setPausedSessionsList(getAllPausedSessions());
-                  onStartExam();
-                }}
-                className="flex-1 sm:flex-none px-5 py-3.5 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 shadow-md transition-all font-arnie tracking-wider bg-amber-600/30 hover:bg-amber-600/50 text-slate-950 border border-amber-600/40 cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>START FRESH</span>
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={onStartExam}
-              disabled={!hasSelectedData}
-              className={`w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-base flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider ${
-                hasSelectedData
-                  ? 'bg-slate-950 hover:bg-slate-900 text-white hover:scale-105 cursor-pointer'
-                  : 'bg-slate-950/50 text-slate-500 cursor-not-allowed opacity-60'
-              }`}
-            >
-              <Play className="w-5 h-5 text-amber-400 fill-amber-400" />
-              <span>START EXAMINATION</span>
-            </button>
-          )}
-        </div>
-      </div>
 
       {/* In-App Discard Confirmation Modal */}
       {sessionToDiscard && (

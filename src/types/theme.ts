@@ -344,6 +344,14 @@ export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
 
 export const FONT_OPTIONS: FontOption[] = [
   {
+    id: 'arial',
+    name: 'Arial',
+    familyCss: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
+    description: 'Clean, universally recognized standard typeface used extensively in official board exam documents. Default reading face.',
+    sample: 'Situation 1: Calculate the moment developed at support D in kN·m.',
+    category: 'System & Classic',
+  },
+  {
     id: 'sans',
     name: 'Plus Jakarta Sans',
     familyCss: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
@@ -358,14 +366,6 @@ export const FONT_OPTIONS: FontOption[] = [
     description: 'Distinctive engineering drafting script modeled after hand-lettered architectural and structural blueprints.',
     sample: 'Situation 1: Calculate the moment developed at support D in kN·m.',
     category: 'Architectural Script',
-  },
-  {
-    id: 'arial',
-    name: 'Arial',
-    familyCss: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
-    description: 'Clean, universally recognized standard typeface used extensively in official board exam documents.',
-    sample: 'Situation 1: Calculate the moment developed at support D in kN·m.',
-    category: 'System & Classic',
   },
   {
     id: 'inter',
