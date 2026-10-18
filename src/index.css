@@ -1588,7 +1588,7 @@ html[data-theme='cyberdeck_2077'] [contenteditable='true'] {
 
 html[data-theme='cyberdeck_2077'] button:disabled,
 html[data-theme='cyberdeck_2077'] [aria-disabled='true'] {
-  cursor: url('/XThemes/Cyberpunk%202077/5.7_0/cursors/dark/wait.cur'), not-allowed;
+  cursor: not-allowed;
 }
 
 /* ---- scrollbars, selection, tables ---- */
