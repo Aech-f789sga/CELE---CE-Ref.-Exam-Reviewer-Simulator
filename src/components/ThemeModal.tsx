@@ -280,6 +280,19 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                               3D AURORA
                             </span>
                           )}
+                          {item.id === 'underwave' && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"
+                              style={{
+                                backgroundColor: 'rgba(250, 30, 78, 0.18)',
+                                borderColor: 'rgba(250, 30, 78, 0.5)',
+                                color: '#ff8fa5',
+                              }}
+                            >
+                              <Sparkles className="w-2.5 h-2.5 mr-0.5 text-rose-300" />
+                              <span>OPERA GX MOD</span>
+                            </span>
+                          )}
                           <span
                             className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
                             style={{

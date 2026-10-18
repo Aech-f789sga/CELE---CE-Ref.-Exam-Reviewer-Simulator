@@ -34,6 +34,7 @@ import { TerrariumOrb3D } from './components/TerrariumOrb3D';
 import { Matilda3D } from './components/Matilda3D';
 import { ParticleSystem3D } from './components/ParticleSystem3D';
 import { SubmergedEra3D } from './components/SubmergedEra3D';
+import { UnderwaveBackdrop } from './components/UnderwaveBackdrop';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
 import { ScratchpadHub } from './components/ScratchpadHub';
 import { FlashcardsAndQuizHub } from './components/FlashcardsAndQuizHub';
@@ -275,7 +276,9 @@ function MainApp() {
   const isMatilda = themeConfig.id === 'matilda_3d';
   const isParticle = themeConfig.id === 'particle_flow';
   const isSubmerged = themeConfig.id === 'submerged_era';
-  const is3DTheme = isAurora || isTerrarium || isMatilda || isParticle || isSubmerged;
+  const isUnderwave = themeConfig.id === 'underwave';
+  const is3DTheme =
+    isAurora || isTerrarium || isMatilda || isParticle || isSubmerged || isUnderwave;
 
   return (
     <>
@@ -284,6 +287,7 @@ function MainApp() {
           <SubmergedEra3D mode="background" interactive={false} />
         </div>
       )}
+      {isUnderwave && <UnderwaveBackdrop />}
       {isAurora && (
         <div className="scene-layer">
           <Scene3D variant="background" accent={themeConfig.accent} />

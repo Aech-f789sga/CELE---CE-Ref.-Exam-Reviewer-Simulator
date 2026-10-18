@@ -10,7 +10,8 @@ export type AppThemeId =
   | 'paper_light'
   | 'sepia_draft'
   | 'cyber_cad'
-  | 'emerald_matrix';
+  | 'emerald_matrix'
+  | 'underwave';
 
 export type FontFamilyId =
   | 'sans'
@@ -293,6 +294,27 @@ export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
     accentText: '#042f2e',
     accentBadge: 'rgba(20, 184, 166, 0.22)',
     gridStyle: 'rgba(20, 184, 166, 0.12)',
+  },
+  // OPERA GX MOD PORT — "Underwave" (crimson trim-cut industrial)
+  underwave: {
+    id: 'underwave',
+    name: 'Underwave (Opera GX Mod)',
+    category: 'dark',
+    accentName: 'Crimson Signal & Cut Steel',
+    description:
+      'Ported from the Opera GX Underwave theme mod: crimson signal glow, chamfered trim-cut panels, circuit-trace line art, and the original Underwave display typeface on every heading.',
+    bgPage: '#080409',
+    bgCard: '#120a10',
+    bgCardSubtle: '#1d0d16',
+    border: '#4a1524',
+    textPrimary: '#fff4f7',
+    textSecondary: '#f0c3ce',
+    textMuted: '#a97886',
+    accent: '#fa1e4e',
+    accentHover: '#c8183e',
+    accentText: '#ffffff',
+    accentBadge: 'rgba(250, 30, 78, 0.16)',
+    gridStyle: 'rgba(250, 30, 78, 0.09)',
   },
 };
 

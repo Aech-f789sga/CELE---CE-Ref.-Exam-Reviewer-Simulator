@@ -732,6 +732,475 @@ html[data-theme="submerged_era"] textarea:focus {
   box-shadow: 0 0 0 2px rgba(56, 217, 169, 0.25) !important;
 }
 
+/* =========================================================================
+   UNDERWAVE  ·  Opera GX theme mod port
+   data-theme="underwave"
+   -------------------------------------------------------------------------
+   Source of truth: public/XThemes/aelmefcddnelhophneodelaokjogeemi/0.31.0_0
+     · underwave/gx_underwave_common.css   -> trim/spacing/motion tokens
+     · underwave/twitch_underwave_css_worklet.js -> the radial "gx-card-background"
+       paint (center-out crimson bloom + gradient frame stroke)
+     · assets/gx_underwave_background.svg  -> orthogonal + 45deg circuit traces
+     · assets/gx_button_mask.svg           -> the single-corner-cut button silhouette
+     · assets/Underwave-Bold.ttf           -> the mod's display typeface
+   Everything below is the same language re-cut for a full app shell.
+   ========================================================================= */
+
+@font-face {
+  font-family: 'Underwave';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/XThemes/aelmefcddnelhophneodelaokjogeemi/0.31.0_0/assets/Underwave-Bold.ttf')
+    format('truetype');
+}
+
+html[data-theme='underwave'] {
+  /* trim-cut scale, mirroring --opera-gx-cut-* from the mod */
+  --uw-cut: 20px;
+  --uw-cut-sm: 12px;
+  --uw-cut-lg: 28px;
+
+  /* the mod's signal palette */
+  --uw-signal: #fa1e4e;
+  --uw-signal-deep: #c8183e;
+  --uw-signal-soft: rgba(250, 30, 78, 0.45);
+  --uw-ink: #080409;
+  --uw-panel-top: #150b12;
+  --uw-panel-bottom: #0e070d;
+  --uw-line: #4a1524;
+
+  /* radial panel paint, adapted from paint(gx-card-background) */
+  --uw-panel-paint: radial-gradient(
+      120% 150% at 50% -12%,
+      rgba(250, 30, 78, 0.11) 0%,
+      rgba(250, 30, 78, 0) 58%
+    ),
+    linear-gradient(180deg, var(--uw-panel-top) 0%, var(--uw-panel-bottom) 100%);
+
+  /* the 45deg hairline that finishes the chamfered corners */
+  --uw-chamfer-edge: linear-gradient(
+    45deg,
+    transparent calc(50% - 0.5px),
+    var(--uw-signal-soft) calc(50% - 0.5px),
+    var(--uw-signal-soft) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+
+  /* ---- palette swap ----
+     Tailwind v4 utilities resolve through --color-amber-*, so remapping the
+     ramp here re-skins every amber border, ring, shadow, gradient stop and
+     opacity tint in the app at once (no per-class patching). */
+  --color-amber-100: #ffe4ea;
+  --color-amber-200: #ffc4d1;
+  --color-amber-300: #ff9db3;
+  --color-amber-400: #ff5c7f;
+  --color-amber-500: #fa1e4e;
+  --color-amber-600: #d81440;
+  --color-amber-700: #ab0f32;
+  --color-amber-800: #7d0b24;
+  --color-amber-900: #4d0716;
+  --color-amber-950: #2a040d;
+  --color-yellow-300: #ffb3c4;
+  --color-yellow-400: #ff7d99;
+  --color-yellow-500: #fa1e4e;
+
+  background-color: var(--uw-ink) !important;
+}
+
+html[data-theme='underwave'] body {
+  background:
+    radial-gradient(58rem 36rem at 50% -8%, rgba(200, 24, 62, 0.16), transparent 68%),
+    radial-gradient(44rem 30rem at 96% 78%, rgba(250, 30, 78, 0.09), transparent 70%),
+    radial-gradient(40rem 30rem at 2% 58%, rgba(250, 30, 78, 0.06), transparent 72%),
+    var(--uw-ink) !important;
+  background-attachment: fixed;
+}
+
+/* ---- the backdrop layer (circuit traces + drifting waves) ---- */
+.uw-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.uw-backdrop-bloom {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(46rem 30rem at 50% 4%, rgba(200, 24, 62, 0.18), transparent 66%),
+    radial-gradient(38rem 26rem at 88% 86%, rgba(250, 30, 78, 0.08), transparent 70%);
+}
+
+.uw-backdrop-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+
+.uw-backdrop-scan {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.028) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.45;
+  mix-blend-mode: overlay;
+}
+
+@keyframes uw-signal-travel {
+  from {
+    stroke-dashoffset: 1500;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.uw-signal {
+  animation-name: uw-signal-travel;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes uw-wave-drift {
+  0%,
+  100% {
+    transform: translateX(-26px);
+  }
+  50% {
+    transform: translateX(26px);
+  }
+}
+
+.uw-wave {
+  animation-name: uw-wave-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uw-signal,
+  .uw-wave {
+    animation: none !important;
+  }
+  .uw-signal {
+    opacity: 0.25;
+  }
+}
+
+/* ---- panel surfaces: radial paint + chamfered trim ---- */
+html[data-theme='underwave'] .bg-slate-900:not(body),
+html[data-theme='underwave'] .bg-slate-900\/90:not(body),
+html[data-theme='underwave'] .bg-slate-900\/95:not(body),
+html[data-theme='underwave'] .bg-slate-900\/80:not(body),
+html[data-theme='underwave'] .bg-slate-950:not(body),
+html[data-theme='underwave'] .bg-slate-950\/90:not(body),
+html[data-theme='underwave'] .bg-slate-950\/80:not(body),
+html[data-theme='underwave'] .bg-slate-950\/70:not(body),
+html[data-theme='underwave'] .app-card-bg,
+html[data-theme='underwave'] .app-card-subtle-bg {
+  background-color: var(--uw-panel-bottom) !important;
+  background-image: var(--uw-panel-paint) !important;
+  border-color: var(--uw-line) !important;
+  color: #fff4f7;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 18px 44px -28px rgba(0, 0, 0, 0.95);
+}
+
+/* deeper inset wells (inputs, palettes, inner list rows) */
+html[data-theme='underwave'] .bg-slate-800,
+html[data-theme='underwave'] .bg-slate-800\/60,
+html[data-theme='underwave'] .bg-slate-800\/80 {
+  background-color: rgba(34, 15, 25, 0.9) !important;
+  border-color: var(--uw-line) !important;
+}
+
+html[data-theme='underwave'] .border-slate-800,
+html[data-theme='underwave'] .border-slate-700,
+html[data-theme='underwave'] .border-slate-700\/80,
+html[data-theme='underwave'] .border-slate-900 {
+  border-color: var(--uw-line) !important;
+}
+
+/* trim-cut: top-right and bottom-left corners sliced at 45deg (mod language) */
+html[data-theme='underwave'] .bg-slate-900.rounded-2xl,
+html[data-theme='underwave'] .bg-slate-900\/90.rounded-2xl,
+html[data-theme='underwave'] .bg-slate-900\/95.rounded-2xl,
+html[data-theme='underwave'] .bg-slate-900\/80.rounded-2xl,
+html[data-theme='underwave'] .bg-slate-950.rounded-2xl,
+html[data-theme='underwave'] .bg-slate-950\/90.rounded-2xl,
+html[data-theme='underwave'] .bg-slate-950\/80.rounded-2xl,
+html[data-theme='underwave'] .app-card-bg,
+html[data-theme='underwave'] .app-card-subtle-bg,
+html[data-theme='underwave'] .exam-table-card {
+  border-radius: 2px !important;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--uw-cut)) 0,
+    100% var(--uw-cut),
+    100% 100%,
+    var(--uw-cut) 100%,
+    0 calc(100% - var(--uw-cut))
+  );
+  background-image: var(--uw-chamfer-edge), var(--uw-chamfer-edge), var(--uw-panel-paint) !important;
+  background-size:
+    var(--uw-cut) var(--uw-cut),
+    var(--uw-cut) var(--uw-cut),
+    100% 100%,
+    100% 100% !important;
+  background-position:
+    top right,
+    bottom left,
+    center,
+    center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat !important;
+}
+
+/* ---- hero: the mod's background SVG re-cut as a crimson instrument panel ---- */
+html[data-theme='underwave'] .hero-aurora {
+  border-radius: 2px !important;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--uw-cut-lg)) 0,
+    100% var(--uw-cut-lg),
+    100% 100%,
+    var(--uw-cut-lg) 100%,
+    0 calc(100% - var(--uw-cut-lg))
+  );
+  background-image: var(--uw-chamfer-edge), var(--uw-chamfer-edge),
+    radial-gradient(90% 130% at 78% 8%, rgba(250, 30, 78, 0.22) 0%, transparent 58%),
+    radial-gradient(70% 100% at 6% 100%, rgba(200, 24, 62, 0.16) 0%, transparent 60%),
+    linear-gradient(150deg, #1a0c14 0%, #0c060b 100%) !important;
+  background-size:
+    var(--uw-cut-lg) var(--uw-cut-lg),
+    var(--uw-cut-lg) var(--uw-cut-lg),
+    100% 100%,
+    100% 100%,
+    100% 100% !important;
+  background-position:
+    top right,
+    bottom left,
+    center,
+    center,
+    center !important;
+  background-repeat: no-repeat !important;
+  border-color: rgba(250, 30, 78, 0.34) !important;
+  box-shadow:
+    0 34px 90px -40px rgba(200, 24, 62, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme='underwave'] .hero-aurora h1 {
+  background: linear-gradient(96deg, #ffffff 6%, #ffd7e0 42%, #fa1e4e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* ---- display type: the mod's own Underwave-Bold on headings, brand and CTAs ----
+   NOTE: .font-arnie is also the reading class for question/solution prose
+   (index.css remaps it to --app-font-family), so it is only re-cut here in
+   display contexts — never on long-form text. */
+html[data-theme='underwave'] h1,
+html[data-theme='underwave'] h2,
+html[data-theme='underwave'] h3,
+html[data-theme='underwave'] header .font-arnie,
+html[data-theme='underwave'] button.font-arnie,
+html[data-theme='underwave'] .font-arnie.text-2xl,
+html[data-theme='underwave'] .font-arnie.text-3xl,
+html[data-theme='underwave'] .font-arnie.text-4xl {
+  font-family: 'Underwave', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  letter-spacing: 0.005em;
+}
+
+/* Underwave runs wide — keep the wordmark on one line and stop the header
+   from reflowing into two rows. */
+html[data-theme='underwave'] header .font-arnie {
+  white-space: nowrap;
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+/* ---- every amber fill becomes the mod's crimson signal ---- */
+html[data-theme='underwave'] .bg-amber-500,
+html[data-theme='underwave'] .bg-amber-400 {
+  background-color: var(--uw-signal) !important;
+  color: #ffffff !important;
+}
+
+/* amber gradient blocks (announcement / CTA strips) re-cut in crimson */
+html[data-theme='underwave'] .from-amber-500,
+html[data-theme='underwave'] .from-amber-400,
+html[data-theme='underwave'] .from-amber-600 {
+  background-image: linear-gradient(100deg, #fa1e4e 0%, #c8183e 54%, #7d0e24 100%) !important;
+}
+
+/* the launch-exam strip gets the full trim-cut treatment */
+html[data-theme='underwave'] div.from-amber-500 {
+  background-image: var(--uw-chamfer-edge), var(--uw-chamfer-edge),
+    linear-gradient(100deg, #fa1e4e 0%, #c8183e 54%, #7d0e24 100%) !important;
+  background-size:
+    var(--uw-cut) var(--uw-cut),
+    var(--uw-cut) var(--uw-cut),
+    100% 100% !important;
+  background-position:
+    top right,
+    bottom left,
+    center !important;
+  background-repeat: no-repeat !important;
+  border-radius: 2px !important;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--uw-cut)) 0,
+    100% var(--uw-cut),
+    100% 100%,
+    var(--uw-cut) 100%,
+    0 calc(100% - var(--uw-cut))
+  );
+  box-shadow: 0 26px 64px -32px rgba(250, 30, 78, 0.85);
+  color: #fff4f7 !important;
+}
+
+html[data-theme='underwave'] div.from-amber-500 h3,
+html[data-theme='underwave'] div.from-amber-500 p {
+  color: #fff4f7 !important;
+  text-shadow: 0 1px 2px rgba(60, 0, 12, 0.4);
+}
+
+/* amber-600 pills (start fresh / secondary CTAs) */
+html[data-theme='underwave'] .bg-amber-600\/30,
+html[data-theme='underwave'] .bg-amber-600\/50 {
+  background-color: rgba(250, 30, 78, 0.22) !important;
+}
+
+/* the dark pill sitting inside that CTA strip */
+html[data-theme='underwave'] .from-amber-500 button.bg-slate-950,
+html[data-theme='underwave'] .from-amber-400 button.bg-slate-950 {
+  background-color: #0a0409 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* ---- primary CTAs: single-corner-cut silhouette from gx_button_mask.svg ---- */
+html[data-theme='underwave'] button.bg-amber-500,
+html[data-theme='underwave'] button.bg-amber-400,
+html[data-theme='underwave'] a.bg-amber-500 {
+  background-color: var(--uw-signal) !important;
+  background-image: linear-gradient(135deg, #ff3d68 0%, #d3123c 100%) !important;
+  color: #ffffff !important;
+  border-radius: 2px !important;
+  clip-path: polygon(0 0, calc(100% - var(--uw-cut-sm)) 0, 100% var(--uw-cut-sm), 100% 100%, 0 100%);
+  box-shadow:
+    0 12px 30px -12px rgba(250, 30, 78, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition:
+    background-image 0.2s var(--uw-ease, cubic-bezier(0.9, 0.09, 0.29, 2.44)),
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+html[data-theme='underwave'] button.bg-amber-500:hover,
+html[data-theme='underwave'] button.bg-amber-400:hover,
+html[data-theme='underwave'] a.bg-amber-500:hover {
+  background-image: linear-gradient(135deg, #ff5c7f 0%, #fa1e4e 100%) !important;
+  box-shadow:
+    0 16px 38px -12px rgba(250, 30, 78, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* ---- interactive tiles & answer options: small single-corner trim ---- */
+html[data-theme='underwave'] button.rounded-xl.border-2 {
+  border-radius: 2px !important;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  background-image: var(--uw-chamfer-edge);
+  background-size: 10px 10px;
+  background-position: top right;
+  background-repeat: no-repeat;
+}
+
+/* ---- header / footer bars ---- */
+html[data-theme='underwave'] header {
+  background-color: rgba(10, 5, 9, 0.82) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border-color: var(--uw-line) !important;
+  box-shadow: 0 1px 0 rgba(250, 30, 78, 0.14);
+}
+
+html[data-theme='underwave'] footer {
+  background-color: rgba(8, 4, 9, 0.9) !important;
+  border-color: var(--uw-line) !important;
+}
+
+/* the brand mark becomes a trim-cut crimson tile */
+html[data-theme='underwave'] header .w-10.h-10 {
+  border-radius: 2px !important;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+  background-image: linear-gradient(140deg, #ff3d68, #c8183e) !important;
+  box-shadow: 0 8px 22px -10px rgba(250, 30, 78, 0.9);
+}
+
+/* ---- inputs ---- */
+html[data-theme='underwave'] input:focus,
+html[data-theme='underwave'] select:focus,
+html[data-theme='underwave'] textarea:focus {
+  border-color: var(--uw-signal) !important;
+  box-shadow: 0 0 0 2px rgba(250, 30, 78, 0.22) !important;
+}
+
+/* ---- theme customizer panel gets the same trim ---- */
+html[data-theme='underwave'] .max-w-3xl.rounded-3xl {
+  border-radius: 2px !important;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--uw-cut-lg)) 0,
+    100% var(--uw-cut-lg),
+    100% 100%,
+    var(--uw-cut-lg) 100%,
+    0 calc(100% - var(--uw-cut-lg))
+  );
+  border-color: rgba(250, 30, 78, 0.3) !important;
+  box-shadow: 0 40px 100px -40px rgba(200, 24, 62, 0.6);
+}
+
+/* ---- scrollbars & selection ---- */
+html[data-theme='underwave'] ::-webkit-scrollbar-track {
+  background: #0b0508;
+}
+
+html[data-theme='underwave'] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #fa1e4e, #7a0f22);
+  border-radius: 0;
+}
+
+html[data-theme='underwave'] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff5c7f, #c8183e);
+}
+
+html[data-theme='underwave'] ::selection {
+  background: var(--uw-signal);
+  color: #ffffff;
+}
+
+/* ---- tables ---- */
+html[data-theme='underwave'] .exam-table-header {
+  background-color: rgba(250, 30, 78, 0.1) !important;
+  border-color: var(--uw-line) !important;
+}
+
+html[data-theme='underwave'] .exam-table-row-odd {
+  background-color: rgba(250, 30, 78, 0.035) !important;
+}
+
 
 
 
