@@ -701,6 +701,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     setShowSmootherMenu(false);
     setShowPaperMenu(false);
     setShowSizeMenu(false);
+    setShowOpacityMenu(false);
   };
 
   const switchTab = (tab: ScratchpadTab) => {
@@ -764,7 +765,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       isCanvasInitializedRef.current = true;
       loadCanvasFromStorage(currentPage);
     }
-  }, [isOpen, activeTab, currentPage, loadCanvasFromStorage]);
+  }, [isOpen, activeTab, currentPage, pageMode, loadCanvasFromStorage]);
 
   // ----------------------------------------------------
   // Letterboxed Page View Size (CSS px only — no pixel writes)
@@ -778,8 +779,11 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       const availW = desk.clientWidth - PAGE_GUTTER * 2;
       const availH = desk.clientHeight - PALETTE_RESERVE - PAGE_GUTTER;
       if (availW <= 0 || availH <= 0) return;
-      const w = Math.floor(Math.min(availW, availH * NB_W / NB_H));
-      const h = Math.floor(w / NB_W / NB_H);
+      // Notebook aspect must follow the active sheet mode.
+      const docW = pageMode === 'infinite' ? INF_W : NB_W;
+      const docH = pageMode === 'infinite' ? INF_H : NB_H;
+      const w = Math.floor(Math.min(availW, (availH * docW) / docH));
+      const h = Math.floor((w * docH) / docW);
       setViewSize((prev) => (prev.w === w && prev.h === h ? prev : { w, h }));
     };
 
@@ -791,7 +795,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       observer.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, [isOpen, activeTab, isDocked, isFullscreen]);
+  }, [isOpen, activeTab, isDocked, isFullscreen, pageMode]);
 
   // Push Canvas State to Undo Stack
   const pushUndoState = () => {
@@ -3132,6 +3136,61 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                     )}
                   </div>
 
+                  {/* Opacity */}
+                  <div className="relative">
+                    <PaletteBtn
+                      title={`Opacity — ${opacity}%`}
+                      active={opacity < 100}
+                      subtle
+                      tone="violet"
+                      onClick={() => {
+                        const next = !showOpacityMenu;
+                        closeAllMenus();
+                        setShowOpacityMenu(next);
+                      }}
+                    >
+                      <span className="text-[9px] font-mono font-bold">{opacity}%</span>
+                    </PaletteBtn>
+                    {showOpacityMenu && (
+                      <div className="sp-pop bottom-full left-1/2 -translate-x-1/2 mb-2 w-[206px]">
+                        <div className="sp-pop-head">
+                          <span>Opacity</span>
+                          <span className="text-violet-300/90 font-mono">{opacity}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="10"
+                          max="100"
+                          step="5"
+                          value={opacity}
+                          onChange={(e) => setOpacity(parseInt(e.target.value, 10))}
+                          className="sp-range w-full"
+                        />
+                        <div className="grid grid-cols-4 gap-1 pt-1.5">
+                          {[
+                            { val: 20, label: '20%' },
+                            { val: 40, label: '40%' },
+                            { val: 60, label: '60%' },
+                            { val: 80, label: '80%' },
+                          ].map((preset) => (
+                            <button
+                              key={preset.val}
+                              type="button"
+                              onClick={() => setOpacity(preset.val)}
+                              className={`h-6 rounded-lg text-[9px] font-mono font-semibold transition-colors cursor-pointer ${
+                                opacity === preset.val
+                                  ? 'bg-violet-400 text-slate-950'
+                                  : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                              }`}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="sp-div" />
 
                   <PaletteBtn
@@ -3469,6 +3528,39 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                   <PaletteBtn title="Clear this sheet" tone="rose" onClick={handleClear}>
                     <Trash2 className="w-3.5 h-3.5" />
                   </PaletteBtn>
+
+                  {/* Sheet size mode */}
+                  <div className="relative">
+                    <PaletteBtn
+                      title={
+                        pageMode === 'notebook'
+                          ? 'Sheet size: Notebook (1200x800) — tap for Infinite canvas'
+                          : 'Sheet size: Infinite canvas (6000x4000) — tap for Notebook'
+                      }
+                      active={pageMode === 'infinite'}
+                      subtle
+                      tone="emerald"
+                      onClick={() => {
+                        const next = pageMode === 'notebook' ? 'infinite' : 'notebook';
+                        commitLassoSelection();
+                        flushSaveCanvasToStorage(currentPage);
+                        setPageMode(next);
+                        isCanvasInitializedRef.current = false;
+                        loadedPageRef.current = null;
+                      }}
+                    >
+                      {pageMode === 'notebook' ? (
+                        <Tablet className="w-3.5 h-3.5" />
+                      ) : (
+                        <Layers className="w-3.5 h-3.5" />
+                      )}
+                    </PaletteBtn>
+                    <span
+                      className="absolute -top-4 left-1/2 -translate-x-1/2 px-1 rounded bg-slate-900 text-[7px] font-mono text-slate-300 whitespace-nowrap border border-white/10 pointer-events-none"
+                    >
+                      {pageMode === 'notebook' ? 'A4' : 'INF'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
