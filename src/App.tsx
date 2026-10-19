@@ -59,6 +59,36 @@ import {
 } from 'lucide-react';
 import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './services/firebase';
 
+function CustomBgLayer() {
+  const [bg, setBg] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ce_custom_bg');
+      if (saved) setBg(saved);
+    } catch {}
+    const handler = () => {
+      try {
+        const saved = localStorage.getItem('ce_custom_bg');
+        setBg(saved);
+      } catch {}
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+  if (!bg) return null;
+  return (
+    <div
+      className="fixed inset-0 z-0"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    />
+  );
+}
+
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<
     'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards'

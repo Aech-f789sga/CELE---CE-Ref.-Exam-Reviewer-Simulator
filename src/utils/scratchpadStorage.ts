@@ -1,6 +1,6 @@
 import { SubjectArea, ExamMonth } from '../types/exam';
 
-export type PaperTexture = 'blueprint' | 'graph' | 'lined' | 'blank';
+export type PaperTexture = 'blueprint' | 'graph' | 'lined' | 'blank' | 'dot' | 'cornell';
 export type DpiMode = 600 | 720 | 1200 | 300;
 
 export interface ScratchpadPageData {

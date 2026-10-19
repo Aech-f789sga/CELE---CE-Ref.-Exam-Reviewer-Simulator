@@ -33,6 +33,8 @@ import {
   Pencil,
   Brush,
   Layers,
+  Type,
+  TypeOutline,
 } from 'lucide-react';
 import {
   generateScratchpadSvg,
@@ -52,7 +54,8 @@ export type ToolType =
   | 'eraser'
   | 'bucket'
   | 'shape'
-  | 'lasso';
+  | 'lasso'
+  | 'text';
 
 export type ShapeType =
   | 'line'
@@ -75,7 +78,10 @@ export interface LassoSelection {
   initialHeight: number;
 }
 
-export type PaperTexture = 'blueprint' | 'graph' | 'lined' | 'blank';
+export type LassoMode = 'cut' | 'select';
+
+export type PaperTexture = 'blueprint' | 'graph' | 'lined' | 'blank' | 'dot' | 'cornell';
+export type PageMode = 'notebook' | 'infinite';
 export type ScratchpadTab = 'draw' | 'notes' | 'calc';
 
 interface ScratchpadProps {
@@ -190,11 +196,14 @@ const STORAGE_KEY_NOTES = 'ce_scratchpad_notes_v2';
 // the fullscreen state or the device pixel ratio. The same bitmap therefore
 // round-trips byte-for-byte, and the on-screen page is simply a CSS-scaled view
 // of it (like zooming a real notebook page).
-const DOC_W = 1200;
-const DOC_H = 800;
-const DOC_ASPECT = DOC_W / DOC_H;
-const DOC_BUF_W = Math.round(DOC_W * 1.5); // 1800
-const DOC_BUF_H = Math.round(DOC_H * 1.5); // 1200
+const NB_W = 1200;
+const NB_H = 800;
+const INF_W = 6000;
+const INF_H = 4000;
+const NB_BUF_W = Math.round(NB_W * 1.5); // 1800
+const NB_BUF_H = Math.round(NB_H * 1.5); // 1200
+const INF_BUF_W = Math.round(INF_W * 1.5); // 9000
+const INF_BUF_H = Math.round(INF_H * 1.5); // 6000
 const PALETTE_RESERVE = 94; // vertical space kept for the floating tool palette
 const PAGE_GUTTER = 10; // breathing room around the page
 
@@ -334,8 +343,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   const [tool, setTool] = useState<ToolType>('pen');
   const [color, setColor] = useState<string>('#38bdf8');
   const [thickness, setThickness] = useState<number>(3);
+  const [opacity, setOpacity] = useState<number>(100);
   const [paperTexture, setPaperTexture] = useState<PaperTexture>('blueprint');
   const [paperBgColor, setPaperBgColor] = useState<string>('#06131c');
+  const [pageMode, setPageMode] = useState<PageMode>('notebook');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isFilling, setIsFilling] = useState<boolean>(false);
   const [fillRipple, setFillRipple] = useState<{ x: number; y: number; color: string } | null>(null);
@@ -343,13 +354,15 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   const [showExportMenu, setShowExportMenu] = useState<boolean>(false);
   const [showPaperMenu, setShowPaperMenu] = useState<boolean>(false);
   const [showSizeMenu, setShowSizeMenu] = useState<boolean>(false);
+  const [showOpacityMenu, setShowOpacityMenu] = useState<boolean>(false);
   const [importNotification, setImportNotification] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   
   // Page view geometry (CSS px). The document buffer stays fixed at
-  // DOC_BUF_W × DOC_BUF_H; only this letterboxed view size changes with the
+  // NB_BUF_W × NB_BUF_H; only this letterboxed view size changes with the
   // window, so resizing can never touch the pixels that are stored.
   const [viewSize, setViewSize] = useState<{ w: number; h: number }>({ w: 480, h: 320 });
+  const [scrollOffset, setScrollOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const deskRef = useRef<HTMLDivElement | null>(null);
   const lastCanvasElRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -369,6 +382,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   const [shapeType, setShapeType] = useState<ShapeType>('line');
   const [isShapeFilled, setIsShapeFilled] = useState<boolean>(false);
   const [isDashed, setIsDashed] = useState<boolean>(false);
+  const [dashGap, setDashGap] = useState<number>(8);
   const [showShapeMenu, setShowShapeMenu] = useState<boolean>(false);
   const shapeStartRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -381,6 +395,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
   // Freehand Lasso Selection & Transform State
   const [lassoSelection, setLassoSelection] = useState<LassoSelection | null>(null);
+  const [lassoMode, setLassoMode] = useState<LassoMode>('cut');
   const [activeLassoPoints, setActiveLassoPoints] = useState<{ x: number; y: number }[] | null>(null);
   const isLassoDrawingRef = useRef<boolean>(false);
   const lassoPointsRef = useRef<{ x: number; y: number }[]>([]);
@@ -402,6 +417,12 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     width: 540,
     height: 460,
   });
+
+  // Text tool state
+  const [textInput, setTextInput] = useState<string>('');
+  const [textPos, setTextPos] = useState<{ x: number; y: number } | null>(null);
+  const [showTextInput, setShowTextInput] = useState<boolean>(false);
+  const [canvasTexts, setCanvasTexts] = useState<Array<{ id: string; text: string; x: number; y: number; color: string; size: number; opacity: number }>>([]);
 
   // Notes state
   const [notesText, setNotesText] = useState<string>('');
@@ -449,9 +470,13 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         if (parsed.tool) setTool(parsed.tool);
         if (parsed.color) setColor(parsed.color);
         if (parsed.thickness) setThickness(parsed.thickness);
+        if (typeof parsed.opacity === 'number') setOpacity(parsed.opacity);
         if (parsed.paperTexture) setPaperTexture(parsed.paperTexture);
         if (parsed.paperBgColor) setPaperBgColor(parsed.paperBgColor);
+        if (parsed.pageMode) setPageMode(parsed.pageMode);
         if (parsed.dpi) setDpi(parsed.dpi);
+        if (parsed.lassoMode) setLassoMode(parsed.lassoMode);
+        if (typeof parsed.dashGap === 'number') setDashGap(parsed.dashGap);
         if (parsed.size) setSize(parsed.size);
         if (typeof parsed.totalPages === 'number' && parsed.totalPages >= 1) {
           setTotalPages(Math.min(MAX_PAGES, Math.round(parsed.totalPages)));
@@ -480,9 +505,13 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         tool,
         color,
         thickness,
+        opacity,
         paperTexture,
         paperBgColor,
+        pageMode,
         dpi,
+        lassoMode,
+        dashGap,
         size,
         position,
         totalPages,
@@ -491,7 +520,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     } catch {
       // Ignore quota errors
     }
-  }, [tool, color, thickness, paperTexture, paperBgColor, dpi, size, position, totalPages, storageKeyPrefix]);
+  }, [tool, color, thickness, opacity, paperTexture, paperBgColor, pageMode, dpi, lassoMode, dashGap, size, position, totalPages, storageKeyPrefix]);
 
   // Save Notes changes to localStorage
   const handleNotesChange = (text: string) => {
@@ -701,9 +730,11 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    if (canvas.width !== DOC_BUF_W || canvas.height !== DOC_BUF_H) {
-      canvas.width = DOC_BUF_W;
-      canvas.height = DOC_BUF_H;
+    const targetBufW = pageMode === 'infinite' ? INF_BUF_W : NB_BUF_W;
+    const targetBufH = pageMode === 'infinite' ? INF_BUF_H : NB_BUF_H;
+    if (canvas.width !== targetBufW || canvas.height !== targetBufH) {
+      canvas.width = targetBufW;
+      canvas.height = targetBufH;
     }
     canvas.style.width = '100%';
     canvas.style.height = '100%';
@@ -711,9 +742,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     // Sync high-speed hardware overlay canvas
     const overlay = overlayCanvasRef.current;
     if (overlay) {
-      if (overlay.width !== DOC_BUF_W || overlay.height !== DOC_BUF_H) {
-        overlay.width = DOC_BUF_W;
-        overlay.height = DOC_BUF_H;
+      if (overlay.width !== targetBufW || overlay.height !== targetBufH) {
+        overlay.width = targetBufW;
+        overlay.height = targetBufH;
       }
       overlay.style.width = '100%';
       overlay.style.height = '100%';
@@ -747,8 +778,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       const availW = desk.clientWidth - PAGE_GUTTER * 2;
       const availH = desk.clientHeight - PALETTE_RESERVE - PAGE_GUTTER;
       if (availW <= 0 || availH <= 0) return;
-      const w = Math.floor(Math.min(availW, availH * DOC_ASPECT));
-      const h = Math.floor(w / DOC_ASPECT);
+      const w = Math.floor(Math.min(availW, availH * NB_W / NB_H));
+      const h = Math.floor(w / NB_W / NB_H);
       setViewSize((prev) => (prev.w === w && prev.h === h ? prev : { w, h }));
     };
 
@@ -848,9 +879,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     // window size — so the exported PNG matches the stored sheet exactly.
     const exportCanvas = document.createElement('canvas');
     const MAX_EXPORT_EDGE = 8192;
-    const expScale = Math.min(dpi / 96, MAX_EXPORT_EDGE / DOC_W);
-    exportCanvas.width = Math.round(DOC_W * expScale);
-    exportCanvas.height = Math.round(DOC_H * expScale);
+    const expScale = Math.min(dpi / 96, MAX_EXPORT_EDGE / NB_W);
+    exportCanvas.width = Math.round(NB_W * expScale);
+    exportCanvas.height = Math.round(NB_H * expScale);
     const expCtx = exportCanvas.getContext('2d');
     if (!expCtx) return;
 
@@ -861,7 +892,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
     // Draw grid if selected, scaling step proportional to high-DPI.
     // The on-screen sheet shows ~24 cells across, so the export matches that.
-    const gridStep = Math.max(1, Math.round((DOC_W / 24) * expScale));
+    const gridStep = Math.max(1, Math.round((NB_W / 24) * expScale));
     if (paperTexture === 'blueprint' || paperTexture === 'graph') {
       expCtx.strokeStyle = light ? 'rgba(2, 132, 199, 0.28)' : 'rgba(56, 189, 248, 0.18)';
       expCtx.lineWidth = Math.max(1, Math.round(1 * expScale));
@@ -880,7 +911,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     } else if (paperTexture === 'lined') {
       expCtx.strokeStyle = light ? 'rgba(15, 23, 42, 0.22)' : 'rgba(148, 163, 184, 0.18)';
       expCtx.lineWidth = Math.max(1, Math.round(1 * expScale));
-      const lineStep = Math.max(1, Math.round((DOC_H / 30) * expScale));
+      const lineStep = Math.max(1, Math.round((NB_H / 30) * expScale));
       for (let y = lineStep; y < exportCanvas.height; y += lineStep) {
         expCtx.beginPath();
         expCtx.moveTo(0, y);
@@ -1276,7 +1307,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     ctx.lineJoin = 'round';
 
     if (dashed) {
-      ctx.setLineDash([8 * scale, 6 * scale]);
+      ctx.setLineDash([dashGap * scale, dashGap * 0.75 * scale]);
     } else {
       ctx.setLineDash([]);
     }
@@ -1287,7 +1318,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       ctx.lineTo(x2, y2);
       ctx.stroke();
     } else if (type === 'arrow') {
-      // Directed vector line with solid arrowhead
+      // Directed vector line with filled triangular arrowhead
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
@@ -1295,8 +1326,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
       const angle = Math.atan2(y2 - y1, x2 - x1);
       const headLen = Math.max(14 * scale, currentThickness * scale * 3.5);
-      ctx.beginPath();
+      ctx.save();
       ctx.setLineDash([]);
+      ctx.fillStyle = currentColor;
+      ctx.beginPath();
       ctx.moveTo(x2, y2);
       ctx.lineTo(
         x2 - headLen * Math.cos(angle - Math.PI / 6),
@@ -1308,6 +1341,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       );
       ctx.closePath();
       ctx.fill();
+      ctx.restore();
     } else if (type === 'dimension') {
       // Structural dimensioning line: Extension ticks, double arrowheads, and distance measurement
       const angle = Math.atan2(y2 - y1, x2 - x1);
@@ -1454,7 +1488,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const scale = pt.scale;
     const dist = Math.hypot(end.x - start.x, end.y - start.y);
 
-    configureContext(ctx, tool, color, thickness, scale);
+    configureContext(ctx, tool, color, thickness, scale, opacity);
 
     // If path is closed loop (circle or box)
     if (dist < 45 * scale && strokePointsRef.current.length > 25) {
@@ -1496,6 +1530,62 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   // ----------------------------------------------------
   // Freehand Lasso Extraction & Transform Helpers
   // ----------------------------------------------------
+  // ----------------------------------------------------
+  // Text Rendering on Canvas
+  // ----------------------------------------------------
+  const drawCanvasTexts = (ctx: CanvasRenderingContext2D) => {
+    canvasTexts.forEach((t) => {
+      ctx.save();
+      ctx.globalAlpha = t.opacity / 100;
+      ctx.fillStyle = t.color;
+      ctx.font = `bold ${Math.max(12, t.size * 4)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      ctx.textBaseline = 'top';
+      const lines = t.text.split('\n');
+      lines.forEach((line, i) => {
+        ctx.fillText(line, t.x, t.y + i * t.size * 5);
+      });
+      ctx.restore();
+    });
+  };
+
+  const commitTextToCanvas = () => {
+    if (!textInput.trim() || !textPos) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const newText = {
+      id: `text_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      text: textInput.trim(),
+      x: textPos.x,
+      y: textPos.y,
+      color,
+      size: thickness,
+      opacity,
+    };
+
+    setCanvasTexts((prev) => [...prev, newText]);
+
+    // Draw immediately
+    ctx.save();
+    ctx.globalAlpha = opacity / 100;
+    ctx.fillStyle = color;
+    ctx.font = `bold ${Math.max(12, thickness * 4)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.textBaseline = 'top';
+    const lines = newText.text.split('\n');
+    lines.forEach((line, i) => {
+      ctx.fillText(line, newText.x, newText.y + i * thickness * 5);
+    });
+    ctx.restore();
+
+    setShowTextInput(false);
+    setTextInput('');
+    setTextPos(null);
+    pushUndoState();
+    saveCanvasToStorage(currentPage);
+  };
+
   const commitLassoSelection = () => {
     if (!lassoSelection) return;
     const canvas = canvasRef.current;
@@ -1590,6 +1680,37 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     saveCanvasToStorage(currentPage);
   };
 
+  // Point-in-polygon test for area-coverage lasso
+  const pointInPoly = (x: number, y: number, poly: { x: number; y: number }[]) => {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i].x, yi = poly[i].y;
+      const xj = poly[j].x, yj = poly[j].y;
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  };
+
+  // Sample pixels from a rectangular region and check what % are inside the lasso
+  const sampleCoverage = (
+    minX: number, minY: number, maxX: number, maxY: number,
+    points: { x: number; y: number }[],
+    samplesPerSide = 12
+  ) => {
+    let inside = 0, total = 0;
+    for (let ix = 0; ix <= samplesPerSide; ix++) {
+      for (let iy = 0; iy <= samplesPerSide; iy++) {
+        const x = minX + (maxX - minX) * (ix / samplesPerSide);
+        const y = minY + (maxY - minY) * (iy / samplesPerSide);
+        total++;
+        if (pointInPoly(x, y, points)) inside++;
+      }
+    }
+    return total > 0 ? inside / total : 0;
+  };
+
   const executeLassoCut = (points: { x: number; y: number }[]) => {
     if (points.length < 5) return;
     const canvas = canvasRef.current;
@@ -1609,7 +1730,33 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     const h = Math.ceil(maxY - minY);
     if (w < 8 || h < 8) return;
 
-    // Create offscreen canvas for the cut polygon
+    // Area-coverage lasso mode: don't cut, just select region if coverage >= 85%
+    if (lassoMode === 'select') {
+      const coverage = sampleCoverage(minX, minY, maxX, maxY, points, 14);
+      if (coverage >= 0.85) {
+        // Create a selection highlight (visual only, no cut)
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = w;
+        offCanvas.height = h;
+        const offCtx = offCanvas.getContext('2d');
+        if (!offCtx) return;
+        offCtx.drawImage(canvas, minX, minY, w, h, 0, 0, w, h);
+        setLassoSelection({
+          canvas: offCanvas,
+          x: minX,
+          y: minY,
+          width: w,
+          height: h,
+          initialX: minX,
+          initialY: minY,
+          initialWidth: w,
+          initialHeight: h,
+        });
+      }
+      return;
+    }
+
+    // Standard cut mode
     const offCanvas = document.createElement('canvas');
     offCanvas.width = w;
     offCanvas.height = h;
@@ -1792,6 +1939,14 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       return;
     }
 
+    // Handle Text Tool
+    if (tool === 'text') {
+      setTextPos({ x: pt.x, y: pt.y });
+      setShowTextInput(true);
+      setTextInput('');
+      return;
+    }
+
     // Handle Color Bucket Fill
     if (tool === 'bucket') {
       if (isFilling) return;
@@ -1834,7 +1989,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     }
 
     // Configure Context based on Tool Texture and High-DPI Scale
-    configureContext(ctx, tool, color, thickness, pt.scale);
+    configureContext(ctx, tool, color, thickness, pt.scale, opacity);
 
     // Initial dot
     drawStroke(ctx, pt.x, pt.y, pt.x + 0.1, pt.y + 0.1, pt.scale);
@@ -1897,7 +2052,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     if (isHeldStraightRef.current && offscreenSnapshotCanvasRef.current && strokePointsRef.current.length > 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(offscreenSnapshotCanvasRef.current, 0, 0);
-      configureContext(ctx, tool, color, thickness, currentPt.scale);
+      configureContext(ctx, tool, color, thickness, currentPt.scale, opacity);
       ctx.beginPath();
       ctx.moveTo(strokePointsRef.current[0].x, strokePointsRef.current[0].y);
       ctx.lineTo(currentPt.x, currentPt.y);
@@ -1922,12 +2077,12 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       const targetY = prev.y + (currentPt.y - prev.y) * factor;
       smoothedPointRef.current = { x: targetX, y: targetY };
 
-      configureContext(ctx, tool, color, thickness, currentPt.scale);
+      configureContext(ctx, tool, color, thickness, currentPt.scale, opacity);
       drawStroke(ctx, lastPointRef.current.x, lastPointRef.current.y, targetX, targetY, currentPt.scale);
       lastPointRef.current = { x: targetX, y: targetY };
       strokePointsRef.current.push({ x: targetX, y: targetY });
     } else {
-      configureContext(ctx, tool, color, thickness, currentPt.scale);
+      configureContext(ctx, tool, color, thickness, currentPt.scale, opacity);
       drawStroke(ctx, lastPointRef.current.x, lastPointRef.current.y, currentPt.x, currentPt.y, currentPt.scale);
       lastPointRef.current = { x: currentPt.x, y: currentPt.y };
       strokePointsRef.current.push({ x: currentPt.x, y: currentPt.y });
@@ -2011,8 +2166,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     currentTool: ToolType,
     currentColor: string,
     currentThickness: number,
-    scale: number
+    scale: number,
+    currentOpacity?: number
   ) => {
+    const op = (currentOpacity ?? 100) / 100;
     if (currentTool === 'eraser') {
       // CRITICAL REQUIREMENT: "Include eraser that only erases where it hits (not all lines/connected lines)"
       // destination-out removes only the touched pixels with 600+ DPI subpixel precision
@@ -2033,25 +2190,25 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         ctx.lineWidth = currentThickness * scale;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.globalAlpha = 1.0;
+        ctx.globalAlpha = op;
       } else if (currentTool === 'pencil') {
         // Graphite pencil with textured grain and light pressure feel
         ctx.lineWidth = Math.max(1.5 * scale, currentThickness * 0.9 * scale);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.globalAlpha = 0.7;
+        ctx.globalAlpha = 0.7 * op;
       } else if (currentTool === 'calligraphy') {
         // Chisel nib / fountain pen
         ctx.lineWidth = currentThickness * 1.4 * scale;
         ctx.lineCap = 'square';
         ctx.lineJoin = 'miter';
-        ctx.globalAlpha = 0.9;
+        ctx.globalAlpha = 0.9 * op;
       } else if (currentTool === 'highlighter') {
-        // Translucent glowing marker
+        // Translucent marker with butt caps for clean overlapping
         ctx.lineWidth = currentThickness * 3.5 * scale;
-        ctx.lineCap = 'square';
+        ctx.lineCap = 'butt';
         ctx.lineJoin = 'bevel';
-        ctx.globalAlpha = 0.35;
+        ctx.globalAlpha = Math.min(0.55, 0.35 * op);
       }
     }
   };
@@ -2229,6 +2386,22 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         backgroundImage: `linear-gradient(${ruledLine} 1px, transparent 1px)`,
         backgroundSize: '100% 26px',
       };
+    } else if (paperTexture === 'dot') {
+      return {
+        backgroundColor: paperBgColor,
+        backgroundImage: `radial-gradient(circle, ${slateLine} 1.2px, transparent 1.2px)`,
+        backgroundSize: '24px 24px',
+      };
+    } else if (paperTexture === 'cornell') {
+      return {
+        backgroundColor: paperBgColor,
+        backgroundImage: `
+          linear-gradient(${ruledLine} 1px, transparent 1px),
+          linear-gradient(90deg, ${accentLine} 1px, transparent 1px)
+        `,
+        backgroundSize: '100% 26px, 180px 100%',
+        backgroundPosition: '0 0, 0 0',
+      };
     }
     // Blank
     return {
@@ -2237,7 +2410,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   };
 
   const anyMenuOpen =
-    showShapeMenu || showSmootherMenu || showSizeMenu || showPaperMenu || showExportMenu;
+    showShapeMenu || showSmootherMenu || showSizeMenu || showPaperMenu || showExportMenu || showTextInput;
 
   return (
     <div
@@ -2415,7 +2588,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                   onPointerUp={handlePointerUp}
                   onPointerCancel={handlePointerUp}
                   className={`w-full h-full block rounded-[10px] ${
-                    tool === 'bucket'
+                    tool === 'text'
+                      ? 'cursor-text'
+                      : tool === 'bucket'
                       ? 'cursor-pointer'
                       : tool === 'lasso' && lassoSelection
                       ? 'cursor-default'
@@ -2438,6 +2613,61 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                     onMouseDown={closeAllMenus}
                     onPointerDown={closeAllMenus}
                   />
+                )}
+
+                {/* Text input overlay */}
+                {showTextInput && textPos && canvasRef.current && (
+                  (() => {
+                    const canvas = canvasRef.current;
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = rect.width > 0 ? canvas.width / rect.width : 1;
+                    const scaleY = rect.height > 0 ? canvas.height / rect.height : 1;
+                    const cssLeft = textPos.x / scaleX;
+                    const cssTop = textPos.y / scaleY;
+                    return (
+                      <div
+                        className="absolute z-50 flex flex-col gap-1"
+                        style={{ left: cssLeft, top: cssTop }}
+                      >
+                        <input
+                          autoFocus
+                          type="text"
+                          value={textInput}
+                          onChange={(e) => setTextInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') commitTextToCanvas();
+                            if (e.key === 'Escape') {
+                              setShowTextInput(false);
+                              setTextInput('');
+                            }
+                          }}
+                          placeholder="Type text..."
+                          className="bg-slate-900/90 border border-cyan-400/50 rounded-lg px-2 py-1 text-xs text-white outline-none min-w-[120px]"
+                          style={{
+                            color,
+                            fontSize: `${Math.max(10, thickness * 1.5)}px`,
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          }}
+                        />
+                        <div className="flex gap-1">
+                          <button
+                            type="button"
+                            onClick={commitTextToCanvas}
+                            className="px-2 py-0.5 rounded bg-cyan-500 text-white text-[10px] font-bold cursor-pointer"
+                          >
+                            OK
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setShowTextInput(false); setTextInput(''); }}
+                            className="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-[10px] cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()
                 )}
 
                 {/* Bucket-fill ripple */}
@@ -2704,6 +2934,18 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                     <Eraser className="w-3.5 h-3.5" />
                   </PaletteBtn>
 
+                  <PaletteBtn
+                    title="Text — type on the canvas"
+                    active={tool === 'text'}
+                    tone="cyan"
+                    onClick={() => {
+                      setTool('text');
+                      closeAllMenus();
+                    }}
+                  >
+                    <Type className="w-3.5 h-3.5" />
+                  </PaletteBtn>
+
                   <div className="sp-div" />
 
                   {/* Shapes */}
@@ -2786,19 +3028,49 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                             Dashed
                           </label>
                         </div>
+                        {isDashed && (
+                          <div className="pt-2">
+                            <div className="sp-pop-sub">Dash gap</div>
+                            <input
+                              type="range"
+                              min="3"
+                              max="24"
+                              step="1"
+                              value={dashGap}
+                              onChange={(e) => setDashGap(parseInt(e.target.value, 10))}
+                              className="sp-range w-full"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="relative">
+                    <PaletteBtn
+                      title={`Lasso — ${lassoMode === 'cut' ? 'cut & move' : 'area select (85%+)'} mode`}
+                      active={tool === 'lasso'}
+                      onClick={() => {
+                        setTool('lasso');
+                        closeAllMenus();
+                      }}
+                    >
+                      <LassoSelect className="w-3.5 h-3.5" />
+                    </PaletteBtn>
+                    {tool === 'lasso' && (
+                      <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded bg-slate-900 text-[8px] text-slate-300 whitespace-nowrap border border-white/10">
+                        {lassoMode === 'cut' ? 'Cut' : 'Select'}
                       </div>
                     )}
                   </div>
 
                   <PaletteBtn
-                    title="Lasso — loop around ink to move, resize, clone or delete it"
-                    active={tool === 'lasso'}
-                    onClick={() => {
-                      setTool('lasso');
-                      closeAllMenus();
-                    }}
+                    title={`Toggle lasso mode — currently ${lassoMode}`}
+                    subtle
+                    tone="cyan"
+                    onClick={() => setLassoMode(lassoMode === 'cut' ? 'select' : 'cut')}
                   >
-                    <LassoSelect className="w-3.5 h-3.5" />
+                    <span className="text-[8px] font-mono font-bold uppercase">{lassoMode}</span>
                   </PaletteBtn>
 
                   {/* Smoother */}
@@ -3001,7 +3273,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                         <div className="sp-pop-head">
                           <span>Paper</span>
                           <span className="font-mono text-slate-400">
-                            {DOC_BUF_W}×{DOC_BUF_H}
+                            {NB_BUF_W}×{NB_BUF_H}
                           </span>
                         </div>
 
@@ -3010,6 +3282,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
                             { id: 'blueprint' as const, label: 'Blueprint' },
                             { id: 'graph' as const, label: 'Graph' },
                             { id: 'lined' as const, label: 'Ruled' },
+                            { id: 'dot' as const, label: 'Dotted' },
+                            { id: 'cornell' as const, label: 'Cornell' },
                             { id: 'blank' as const, label: 'Blank' },
                           ].map((t) => (
                             <button

@@ -21,6 +21,9 @@ import {
   Eye,
   ShieldCheck,
   Sparkle,
+  Image,
+  Layers,
+  Upload,
 } from 'lucide-react';
 
 interface ThemeModalProps {
@@ -44,7 +47,39 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
     resetToDefaults,
   } = useTheme();
 
-  const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'display'>('themes');
+  const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'display' | 'background'>('themes');
+  const [customBg, setCustomBg] = useState<string | null>(() => {
+    try { return localStorage.getItem('ce_custom_bg'); } catch { return null; }
+  });
+  const [mixedThemes, setMixedThemes] = useState<Record<string, AppThemeId>>(() => {
+    try {
+      const saved = localStorage.getItem('ce_mixed_themes');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setCustomBg(dataUrl);
+      try { localStorage.setItem('ce_custom_bg', dataUrl); } catch {}
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearCustomBg = () => {
+    setCustomBg(null);
+    try { localStorage.removeItem('ce_custom_bg'); } catch {}
+  };
+
+  const setPanelTheme = (panel: string, theme: AppThemeId) => {
+    const next = { ...mixedThemes, [panel]: theme };
+    setMixedThemes(next);
+    try { localStorage.setItem('ce_mixed_themes', JSON.stringify(next)); } catch {}
+  };
 
   if (!isOpen) return null;
 
@@ -145,6 +180,17 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
           >
             <Sliders className="w-4 h-4" />
             <span>Contrast Outline & Scale</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('background')}
+            className={`py-3 flex items-center space-x-2 border-b-2 transition-all ${
+              activeTab === 'background' ? 'border-current font-bold' : 'border-transparent opacity-60 hover:opacity-100'
+            }`}
+            style={{ color: activeTab === 'background' ? themeConfig.accent : themeConfig.textSecondary }}
+          >
+            <Image className="w-4 h-4" />
+            <span>Background & Mix</span>
           </button>
         </div>
 
@@ -603,6 +649,95 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                   style={{ color: themeConfig.textSecondary }}
                 >
                   Given: w = 1.2 m; h = 0.5 m; Coefficient of static friction μ = 0.25. Determine the maximum force P (N) to maintain equilibrium.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: BACKGROUND & THEME MIXING */}
+          {activeTab === 'background' && (
+            <div className="space-y-6">
+              {/* Custom Background Upload */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: themeConfig.textMuted }}>
+                  Custom Background Image
+                </h3>
+                <div
+                  className="p-4 rounded-2xl border space-y-3"
+                  style={{ backgroundColor: themeConfig.bgCardSubtle, borderColor: themeConfig.border }}
+                >
+                  {customBg ? (
+                    <div className="space-y-3">
+                      <div className="relative rounded-xl overflow-hidden h-32">
+                        <img src={customBg} alt="Custom background" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <span className="text-white text-xs font-semibold">Custom Background Active</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={clearCustomBg}
+                          className="px-3 py-1.5 rounded-lg text-xs border transition-colors cursor-pointer"
+                          style={{ borderColor: themeConfig.border, color: themeConfig.textSecondary }}
+                        >
+                          Remove Background
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2 border-dashed cursor-pointer transition-colors hover:opacity-80"
+                      style={{ borderColor: themeConfig.border, color: themeConfig.textMuted }}
+                    >
+                      <Upload className="w-6 h-6" />
+                      <span className="text-xs font-medium">Click to upload a background image</span>
+                      <span className="text-[10px] opacity-70">JPG, PNG, WEBP supported</span>
+                      <input type="file" accept="image/*" onChange={handleBgUpload} className="hidden" />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              {/* Theme Mixing */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: themeConfig.textMuted }}>
+                  Mix Themes by Panel
+                </h3>
+                <p className="text-xs" style={{ color: themeConfig.textSecondary }}>
+                  Assign different existing themes to different sections of the app for a personalized mixed look.
+                </p>
+                <div className="space-y-2">
+                  {[
+                    { key: 'header', label: 'Header / Navbar' },
+                    { key: 'cards', label: 'Exam Cards & Panels' },
+                    { key: 'sidebar', label: 'Sidebar / Side Panels' },
+                    { key: 'scratchpad', label: 'Scratchpad Chrome' },
+                  ].map((panel) => (
+                    <div
+                      key={panel.key}
+                      className="flex items-center justify-between p-3 rounded-xl border"
+                      style={{ backgroundColor: themeConfig.bgCardSubtle, borderColor: themeConfig.border }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-3.5 h-3.5" style={{ color: themeConfig.accent }} />
+                        <span className="text-xs font-medium">{panel.label}</span>
+                      </div>
+                      <select
+                        value={mixedThemes[panel.key] || themeId}
+                        onChange={(e) => setPanelTheme(panel.key, e.target.value as AppThemeId)}
+                        className="text-xs rounded-lg px-2 py-1 border outline-none cursor-pointer"
+                        style={{
+                          backgroundColor: themeConfig.bgCard,
+                          borderColor: themeConfig.border,
+                          color: themeConfig.textPrimary,
+                        }}
+                      >
+                        <option value="">Same as main</option>
+                        {Object.values(THEME_CONFIGS).map((t) => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

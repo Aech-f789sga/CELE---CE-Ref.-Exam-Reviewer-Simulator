@@ -17,6 +17,10 @@ export type AppThemeId =
 export type FontFamilyId =
   | 'sans'
   | 'arial'
+  | 'sfpro'
+  | 'nunito'
+  | 'poppins'
+  | 'quicksand'
   | 'arnie'
   | 'roboto'
   | 'inter'
@@ -350,6 +354,38 @@ export const FONT_OPTIONS: FontOption[] = [
     description: 'Clean, universally recognized standard typeface used extensively in official board exam documents. Default reading face.',
     sample: 'Situation 1: Calculate the moment developed at support D in kN·m.',
     category: 'System & Classic',
+  },
+  {
+    id: 'sfpro',
+    name: 'SF Pro Display',
+    familyCss: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif",
+    description: 'Apple system font — smooth, round, and highly legible. The signature look of iOS and macOS.',
+    sample: 'CE Board Exam 2024: MSTC, HPGE, PSAD Review',
+    category: 'Modern Sans',
+  },
+  {
+    id: 'nunito',
+    name: 'Nunito',
+    familyCss: "'Nunito', 'Quicksand', system-ui, sans-serif",
+    description: 'Soft, rounded sans-serif with friendly curves and excellent readability at all sizes.',
+    sample: 'Calculate the reaction forces at supports A and B.',
+    category: 'Modern Sans',
+  },
+  {
+    id: 'poppins',
+    name: 'Poppins',
+    familyCss: "'Poppins', system-ui, sans-serif",
+    description: 'Geometric sans-serif with pure round forms and a modern, clean aesthetic.',
+    sample: 'Moment of inertia I = bh³/12 for rectangular section.',
+    category: 'Modern Sans',
+  },
+  {
+    id: 'quicksand',
+    name: 'Quicksand',
+    familyCss: "'Quicksand', 'Nunito', system-ui, sans-serif",
+    description: 'Ultra-smooth rounded typeface with a playful yet professional character.',
+    sample: 'Stress analysis: σ = P/A + Mc/I',
+    category: 'Modern Sans',
   },
   {
     id: 'sans',
