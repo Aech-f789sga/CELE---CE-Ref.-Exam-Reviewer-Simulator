@@ -251,7 +251,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center space-x-2 shrink-0">
             {isExamRunning && (
               <div
-                className="flex items-center space-x-2 px-3 py-1 rounded-full border text-xs font-semibold animate-pulse"
+                className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full border text-xs font-semibold animate-pulse"
                 style={{
                   backgroundColor: themeConfig.accentBadge,
                   borderColor: `${themeConfig.accent}60`,

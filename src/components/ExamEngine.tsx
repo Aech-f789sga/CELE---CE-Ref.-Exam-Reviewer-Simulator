@@ -276,7 +276,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
         </div>
 
         {/* Timer Display */}
-        <div className="flex items-center space-x-4">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto sm:gap-4">
           {timerMode === 'exam_timer' && (
             <div className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl border font-tech-mono text-sm font-bold ${
               secondsRemaining < 600
