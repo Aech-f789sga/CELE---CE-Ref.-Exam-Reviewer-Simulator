@@ -81,6 +81,11 @@ export interface QuestionSolution {
   formulas?: string[];
   finalAnswer: string;
   pageNumber?: number; // Corresponding solution page (e.g. Page 11 - 33)
+  /**
+   * Scanned worked-solution crops taken from the source booklet. When present,
+   * the UI shows these images as the solution instead of the text breakdown.
+   */
+  images?: string[];
 }
 
 export interface Question {

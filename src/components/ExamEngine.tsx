@@ -33,6 +33,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
+import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
 import { deletePausedSession } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
@@ -270,7 +271,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
             {month} {year}
           </span>
           <span className="hidden sm:inline text-xs text-slate-400">
-            Page {currentQuestion?.pageNumber} of 10
+            Booklet p. {currentQuestion?.pageNumber ?? '—'}
           </span>
         </div>
 
@@ -625,17 +626,28 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                 {showSolutionForCurrent && (
                   <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs text-slate-300">
                     <div className="flex items-center justify-between text-amber-400 font-semibold border-b border-slate-800 pb-2">
-                      <span className="font-arnie text-sm">Page {currentQuestion.solution.pageNumber || 11} Solution</span>
+                      <span className="font-arnie text-sm">
+                        {currentQuestion.solution.images?.length
+                          ? `Worked Solution • Booklet p. ${currentQuestion.solution.pageNumber ?? '—'}`
+                          : `Page ${currentQuestion.solution.pageNumber || 11} Solution`}
+                      </span>
                       <span className="font-tech-mono">
                         <MathView text={currentQuestion.solution.finalAnswer} />
                       </span>
                     </div>
 
-                    <div className="text-slate-300 italic">
-                      <MathView text={currentQuestion.solution.summary} />
-                    </div>
+                    {currentQuestion.solution.images?.length ? (
+                      <SolutionFigures
+                        images={currentQuestion.solution.images}
+                        alt={`${currentQuestion.category} solution`}
+                      />
+                    ) : (
+                      <>
+                        <div className="text-slate-300 italic">
+                          <MathView text={currentQuestion.solution.summary} />
+                        </div>
 
-                    {currentQuestion.solution.formulas && (
+                        {currentQuestion.solution.formulas && (
                       <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-amber-300 space-y-1.5">
                         <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">
                           Key Governing Formulas (LaTeX):
@@ -649,13 +661,15 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                       </div>
                     )}
 
-                    <div className="space-y-1.5 pt-1">
-                      {currentQuestion.solution.steps.map((st, i) => (
-                        <div key={i} className="leading-relaxed p-1.5 rounded bg-slate-900/40 border border-slate-800/40">
-                          <MathView text={st} />
+                        <div className="space-y-1.5 pt-1">
+                          {currentQuestion.solution.steps.map((st, i) => (
+                            <div key={i} className="leading-relaxed p-1.5 rounded bg-slate-900/40 border border-slate-800/40">
+                              <MathView text={st} />
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

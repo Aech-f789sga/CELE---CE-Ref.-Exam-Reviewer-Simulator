@@ -292,11 +292,14 @@ html[data-theme="aurora_glass"] body {
 }
 .app-above-scene { position: relative; z-index: 1; }
 
-/* ---- glass surfaces: modern Glassmorphism design system ---- */
-html[data-theme="aurora_glass"] .bg-slate-900,
-html[data-theme="aurora_glass"] .bg-slate-900\/90,
-html[data-theme="aurora_glass"] .bg-slate-900\/95,
-html[data-theme="aurora_glass"] .bg-slate-900\/80,
+/* ---- glass surfaces: modern Glassmorphism design system ----
+   NOTE: <body> itself carries .bg-slate-900, so every selector here must
+   exclude it. Otherwise the page backdrop turns into translucent white and
+   all the light-on-dark text becomes invisible. */
+html[data-theme="aurora_glass"] .bg-slate-900:not(body),
+html[data-theme="aurora_glass"] .bg-slate-900\/90:not(body),
+html[data-theme="aurora_glass"] .bg-slate-900\/95:not(body),
+html[data-theme="aurora_glass"] .bg-slate-900\/80:not(body),
 html[data-theme="aurora_glass"] .app-card-bg {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
@@ -309,7 +312,7 @@ html[data-theme="aurora_glass"] .app-card-bg {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
 }
 
-html[data-theme="aurora_glass"] .bg-slate-900:hover,
+html[data-theme="aurora_glass"] .bg-slate-900:not(body):hover,
 html[data-theme="aurora_glass"] .app-card-bg:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, 0.32) !important;

@@ -12,6 +12,7 @@ import { HPGE_NOVEMBER_2025_QUESTIONS } from './questionBanks/hpge/nov2025Questi
 import { MSTC_NOVEMBER_2025_QUESTIONS } from './questionBanks/mstc/nov2025Questions';
 import { PSAD_NOVEMBER_2025_QUESTIONS } from './questionBanks/psad/nov2025Questions';
 import { MSTC_MAY_2022_QUESTIONS } from './questionBanks/mstc/may2022Questions';
+import { HPGE_MAY_2022_QUESTIONS } from './questionBanks/hpge/may2022Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2025 - i); // 2025 down to 2011
 export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
@@ -58,7 +59,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2022,
     month: 'May',
-    subjects: ['MSTC'],
+    subjects: ['MSTC', 'HPGE'],
   },
 ];
 
@@ -134,6 +135,9 @@ function getBaseQuestions(subject: SubjectArea, year: number, month: ExamMonth):
   }
   if (subject === 'MSTC' && year === 2022 && month === 'May') {
     return MSTC_MAY_2022_QUESTIONS;
+  }
+  if (subject === 'HPGE' && year === 2022 && month === 'May') {
+    return HPGE_MAY_2022_QUESTIONS;
   }
   if (subject === 'MSTC') {
     return MSTC_QUESTIONS;

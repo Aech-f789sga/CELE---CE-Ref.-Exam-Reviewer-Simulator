@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
+import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
 import {
   exportScratchpadBundle,
@@ -66,6 +67,21 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
   const scratchpadPrefix = `exam_${subject}_${year}_${month}_`;
   const scratchpadDocId = `exam_${subject}_${year}_${month}`;
+
+  /**
+   * Booklet page span that the answer key and worked solutions were printed on.
+   * Derived from the question bank so the copy is correct for every exam
+   * instead of being hard-wired to the PSAD April 2024 booklet.
+   */
+  const solutionPageRange = (() => {
+    const pages = questions
+      .map((q) => q.solution?.pageNumber)
+      .filter((p): p is number => typeof p === 'number');
+    if (!pages.length) return null;
+    const min = Math.min(...pages);
+    const max = Math.max(...pages);
+    return min === max ? `${min}` : `${min}–${max}`;
+  })();
 
   const handleExportCescratch = async () => {
     const bundle = await exportScratchpadBundle(scratchpadDocId);
@@ -201,7 +217,14 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </h1>
 
             <p className="text-slate-300 text-sm max-w-xl">
-              Completed in {formatTime(timeSpentSeconds)}. Review your answers against the official <strong className="text-amber-400">Page 11 Answer Keys</strong> and <strong className="text-amber-400">Pages 11–33 Step-by-Step Solutions</strong> below.
+              Completed in {formatTime(timeSpentSeconds)}. Review your answers against the official{' '}
+              <strong className="text-amber-400">Answer Key</strong>
+              {solutionPageRange && (
+                <>
+                  {' '}(booklet p. {solutionPageRange})
+                </>
+              )}{' '}
+              and the <strong className="text-amber-400">scanned Worked Solutions</strong> below.
             </p>
 
             {/* PRC Subject Status Tag */}
@@ -376,7 +399,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </div>
             <div>
               <h2 className="font-arnie text-lg font-bold text-white tracking-wide">
-                Page 11: Official Answer Keys
+                {solutionPageRange ? `Booklet p. ${solutionPageRange}: ` : 'Page 11: '}Official Answer Keys
               </h2>
               <p className="text-[11px] text-slate-400">
                 Official PRC Examination Master Key &amp; Candidate Response Comparison
@@ -430,7 +453,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </div>
             <div>
               <h2 className="font-arnie text-lg font-bold text-white tracking-wide">
-                Pages 11–33: Detailed Step-by-Step Solutions
+                {solutionPageRange ? `Booklet pp. ${solutionPageRange}: ` : 'Pages 11–33: '}Detailed Worked Solutions
               </h2>
               <p className="text-[11px] text-slate-400">
                 Complete engineering computations, derivations, and formulas
@@ -592,14 +615,22 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center space-x-2 text-amber-400 font-semibold text-xs">
                         <Lightbulb className="w-4 h-4" />
-                        <span className="font-arnie text-sm">Step-by-Step Solution Breakdown</span>
+                        <span className="font-arnie text-sm">
+                          {q.solution.images?.length
+                            ? `Worked Solution • Booklet p. ${q.solution.pageNumber ?? '—'}`
+                            : 'Step-by-Step Solution Breakdown'}
+                        </span>
                       </div>
 
-                      <div className="text-xs text-slate-300 leading-relaxed italic bg-slate-900/50 p-3 rounded-lg border border-slate-800">
-                        <MathView text={q.solution.summary} />
-                      </div>
+                      {q.solution.images?.length ? (
+                        <SolutionFigures images={q.solution.images} alt={`${q.category} solution`} />
+                      ) : (
+                        <>
+                          <div className="text-xs text-slate-300 leading-relaxed italic bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                            <MathView text={q.solution.summary} />
+                          </div>
 
-                      {q.solution.formulas && (
+                          {q.solution.formulas && (
                         <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-amber-300 space-y-1.5">
                           <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">
                             Governing Civil Engineering Formulas (LaTeX):
@@ -612,13 +643,15 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                         </div>
                       )}
 
-                      <div className="space-y-2 pt-1 text-xs text-slate-200">
-                        {q.solution.steps.map((st, i) => (
-                          <div key={i} className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800/60 leading-relaxed font-sans">
-                            <MathView text={st} />
+                          <div className="space-y-2 pt-1 text-xs text-slate-200">
+                            {q.solution.steps.map((st, i) => (
+                              <div key={i} className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-800/60 leading-relaxed font-sans">
+                                <MathView text={st} />
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </>
+                      )}
 
                       <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs font-tech-mono">
                         <span className="text-slate-300">Final Answer:</span>
