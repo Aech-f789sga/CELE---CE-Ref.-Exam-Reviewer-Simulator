@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Maximize2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Maximize2, X } from 'lucide-react';
 
 interface SolutionFiguresProps {
   images: string[];
   alt?: string;
+  /**
+   * Show only the first crop until the reader asks for the rest. The results
+   * review lists every question at once, and a situation's solution can run to
+   * four booklet pages, so expanding them all by default makes the page
+   * unusable.
+   */
+  collapsible?: boolean;
 }
 
 /**
@@ -11,15 +18,23 @@ interface SolutionFiguresProps {
  * Click any crop to open it full screen (small subscripts are unreadable
  * at card width on a phone).
  */
-export const SolutionFigures: React.FC<SolutionFiguresProps> = ({ images, alt = 'Worked solution' }) => {
+export const SolutionFigures: React.FC<SolutionFiguresProps> = ({
+  images,
+  alt = 'Worked solution',
+  collapsible = false,
+}) => {
   const [zoomed, setZoomed] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   if (!images || images.length === 0) return null;
+
+  const isCollapsed = collapsible && !expanded && images.length > 1;
+  const visible = isCollapsed ? images.slice(0, 1) : images;
 
   return (
     <>
       <div className="space-y-2">
-        {images.map((src, index) => (
+        {visible.map((src, index) => (
           <figure
             key={`${src}-${index}`}
             className="overflow-hidden rounded-xl border border-slate-700 bg-white shadow-sm"
@@ -43,6 +58,19 @@ export const SolutionFigures: React.FC<SolutionFiguresProps> = ({ images, alt = 
           </figure>
         ))}
       </div>
+
+      {collapsible && images.length > 1 && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+        >
+          {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          {expanded
+            ? 'Collapse to first page'
+            : `Show all ${images.length} solution pages`}
+        </button>
+      )}
 
       {zoomed && (
         <div

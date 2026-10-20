@@ -82,6 +82,11 @@ export interface QuestionSolution {
   finalAnswer: string;
   pageNumber?: number; // Corresponding solution page (e.g. Page 11 - 33)
   /**
+   * Last page of a multi-page solution, when the worked solution spills over
+   * more than one booklet page.
+   */
+  pageNumberEnd?: number;
+  /**
    * Scanned worked-solution crops taken from the source booklet. When present,
    * the UI shows these images as the solution instead of the text breakdown.
    */

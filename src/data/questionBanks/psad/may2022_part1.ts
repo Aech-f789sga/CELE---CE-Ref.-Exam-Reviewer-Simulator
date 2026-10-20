@@ -1,0 +1,301 @@
+import { Question } from '../../../types/exam';
+import {
+  psadFigure,
+  psadMay2022SolutionImages,
+  psadMay2022SolutionPage,
+  psadMay2022SolutionPageEnd,
+} from '../../psadMay2022Images';
+
+const sol = (situation: number) => ({
+  summary: '',
+  steps: [],
+  finalAnswer: '',
+  pageNumber: psadMay2022SolutionPage(situation),
+  pageNumberEnd: psadMay2022SolutionPageEnd(situation),
+  images: psadMay2022SolutionImages(situation),
+});
+
+const opt = (a: string, b: string, c: string, d: string) => [
+  { label: 'A' as const, text: a },
+  { label: 'B' as const, text: b },
+  { label: 'C' as const, text: c },
+  { label: 'D' as const, text: d },
+];
+
+const SITUATION_1 =
+  'Situation 1 — The portable seat shown is braced by a cable FG.\n\nGiven the following data:\nDimensions:\n  x = 0.80 m;  x₁ = 0.30 m;  x₂ = 0.40 m\n  H₁ = 0.40 m;  H₂ = 0.20 m;  H₃ = 0.20 m\nLoad W = 2300 N\nCoefficient of friction at surfaces C and E = 0.25\nNeglect friction at D.';
+
+const SITUATION_2 =
+  'Situation 2 — Refer to the truss shown.\n\nGiven:  s = 1.5 m;  h = 3 m\n  P₁ = 13 kN;  P₂ = 6.5 kN';
+
+const SITUATION_3 =
+  'Situation 3 — Classify each of the following structures as statically determinate, indeterminate, or unstable. Indicate the degree of indeterminacy for statically indeterminate structures.';
+
+const SITUATION_4 =
+  'Situation 4 — The 630-N ceiling shown is in the form of an isosceles triangle with two angles equal to 60° and an altitude to A of 1.5 m. It is supported by three vertical cables at each.';
+
+const SITUATION_5 =
+  'Situation 5 — Refer to the connection shown.\n\nThe lap connection shown shows nine 20-mm-diameter A325 bolts spaced as follows:\n  s₁ = 50 mm;  s₂ = 80 mm\n  s₃ = 50 mm;  s₄ = 100 mm\nThickness of plates, t = 25 mm\nBolt hole diameter = 23 mm\nTensile strength and stresses:\n  Yield strength, Fy = 248 MPa\n  Tensile strength of steel, Fu = 400 MPa\n  Allowable tensile stress on gross area = 0.6Fy\n  Allowable tensile stress on net area = 0.5Fu\n  Allowable bolt shear stress = 120 MPa\n  Allowable bolt bearing strength = 480 MPa\n\nCalculate the allowable tensile load (kN) based on the following conditions:';
+
+const SITUATION_6 =
+  'Situation 6 — The stresses acting on the element is presented in the Mohr circle as shown.\n\nGiven:  a = 30 MPa;  b = 15 MPa\n  c = 45 MPa;  d = 40 MPa';
+
+export const PSAD_MAY2022_PART1: Question[] = [
+  // --- SITUATION 1 (Items 1 - 3) ---
+  {
+    id: 'psad-may2022-q1',
+    number: 1,
+    pageNumber: 436,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 1 — Portable Seat: Reactions and Friction',
+    text: `${SITUATION_1}\n\n1. How much is the reaction at D (N)?`,
+    figureSvg: psadFigure(1, 'Situation 1: portable seat braced by cable FG'),
+    figureCaption: 'Situation 1: portable seat braced by cable FG',
+    options: opt('956.5', '1343.5', '862.5', '1437.5'),
+    correctAnswer: 'C',
+    solution: { ...sol(1), finalAnswer: '862.5 N (Option C)' },
+  },
+  {
+    id: 'psad-may2022-q2',
+    number: 2,
+    pageNumber: 436,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 1 — Portable Seat: Cable Tension',
+    text: '2. Compute the tensile force of the cable FG.',
+    options: opt('3881', '4365', '3917', '4169'),
+    correctAnswer: 'D',
+    solution: { ...sol(1), finalAnswer: '4169 N (Option D)' },
+  },
+  {
+    id: 'psad-may2022-q3',
+    number: 3,
+    pageNumber: 436,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 1 — Portable Seat: Reaction at E',
+    text: '3. Compute the reaction (N) at E.',
+    options: opt('1524', '1481', '1384', '1454'),
+    correctAnswer: 'D',
+    solution: { ...sol(1), finalAnswer: '1454 N (Option D)' },
+  },
+
+  // --- SITUATION 2 (Items 4 - 6) ---
+  {
+    id: 'psad-may2022-q4',
+    number: 4,
+    pageNumber: 437,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 2 — Truss: Horizontal Reaction at C',
+    text: `${SITUATION_2}\n\n4. Compute the horizontal reaction (kN) at C.`,
+    figureSvg: psadFigure(2, 'Situation 2: truss elevation with loads P1 and P2'),
+    figureCaption: 'Situation 2: truss elevation with loads P₁ and P₂',
+    options: opt('28.65', '23.26', '30.25', '36.87'),
+    correctAnswer: 'B',
+    solution: { ...sol(2), finalAnswer: '23.26 kN (Option B)' },
+  },
+  {
+    id: 'psad-may2022-q5',
+    number: 5,
+    pageNumber: 437,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 2 — Truss: Total Reaction at A',
+    text: '5. Compute the total reaction (kN) at A.',
+    options: opt('31.98', '25.41', '26.89', '20.45'),
+    correctAnswer: 'A',
+    solution: { ...sol(2), finalAnswer: '31.98 kN (Option A)' },
+  },
+  {
+    id: 'psad-may2022-q6',
+    number: 6,
+    pageNumber: 437,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 2 — Truss: Axial Force in Member BD',
+    text: '6. If a vertical load of 25 kN is applied at joint B, how much is the axial force (kN) in member BD.',
+    options: opt('20', '0', '25', '22'),
+    correctAnswer: 'C',
+    solution: { ...sol(2), finalAnswer: '25 kN (Option C)' },
+  },
+
+  // --- SITUATION 3 (Items 7 - 9) ---
+  {
+    id: 'psad-may2022-q7',
+    number: 7,
+    pageNumber: 437,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 3 — Static Determinacy and Indeterminacy',
+    text: `${SITUATION_3}\n\n7. The structure in Figure A is:`,
+    figureSvg: psadFigure(3, 'Situation 3: structures A, B and C'),
+    figureCaption: 'Situation 3: structures A, B and C',
+    options: opt('determinate', 'indeterminate to the second degree', 'indeterminate to the first degree', 'indeterminate to the third degree'),
+    correctAnswer: 'D',
+    solution: { ...sol(3), finalAnswer: 'Indeterminate to the third degree (Option D)' },
+  },
+  {
+    id: 'psad-may2022-q8',
+    number: 8,
+    pageNumber: 437,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 3 — Static Determinacy and Indeterminacy',
+    text: '8. The structure in Figure B is:',
+    options: opt('indeterminate to the second degree', 'indeterminate to the third degree', 'indeterminate to the first degree', 'determinate'),
+    correctAnswer: 'A',
+    solution: { ...sol(3), finalAnswer: 'Indeterminate to the second degree (Option A)' },
+  },
+  {
+    id: 'psad-may2022-q9',
+    number: 9,
+    pageNumber: 438,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 3 — Static Determinacy and Indeterminacy',
+    text: '9. The structure in Figure C is:',
+    options: opt('unstable', 'determinate', 'indeterminate to the first degree', 'indeterminate to the second degree'),
+    correctAnswer: 'C',
+    solution: { ...sol(3), finalAnswer: 'Indeterminate to the first degree (Option C)' },
+  },
+
+  // --- SITUATION 4 (Items 10 - 12) ---
+  {
+    id: 'psad-may2022-q10',
+    number: 10,
+    pageNumber: 438,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 4 — Triangular Ceiling: Cable Tension at A',
+    text: `${SITUATION_4}\n\n10. Compute the tension (N) in the cable at A.`,
+    figureSvg: psadFigure(4, 'Situation 4: triangular ceiling suspended by three cables'),
+    figureCaption: 'Situation 4: triangular ceiling suspended by three cables',
+    options: opt('210', '140', '260', '180'),
+    correctAnswer: 'A',
+    solution: { ...sol(4), finalAnswer: '210 N (Option A)' },
+  },
+  {
+    id: 'psad-may2022-q11',
+    number: 11,
+    pageNumber: 438,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 4 — Triangular Ceiling: Cable Tension at B',
+    text: '11. How much is the tension (N) in the cable at B?',
+    options: opt('180', '210', '140', '260'),
+    correctAnswer: 'B',
+    solution: { ...sol(4), finalAnswer: '210 N (Option B)' },
+  },
+  {
+    id: 'psad-may2022-q12',
+    number: 12,
+    pageNumber: 438,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 4 — Triangular Ceiling: Cable Stress at C',
+    text: '12. What is the stress (MPa) of the cable at C if it has a cross-sectional area of 12.5 mm²?',
+    options: opt('15.2', '12.4', '16.8', '24.6'),
+    correctAnswer: 'C',
+    solution: { ...sol(4), finalAnswer: '16.8 MPa (Option C)' },
+  },
+
+  // --- SITUATION 5 (Items 13 - 15) ---
+  {
+    id: 'psad-may2022-q13',
+    number: 13,
+    pageNumber: 438,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 5 — Lap Connection: Bearing Strength of Bolts',
+    text: `${SITUATION_5}\n\n13. Based on bearing strength of bolt.`,
+    figureSvg: psadFigure(5, 'Situation 5: nine-bolt lap connection'),
+    figureCaption: 'Situation 5: nine-bolt lap connection',
+    options: opt('2475', '4320', '2387', '2160'),
+    correctAnswer: 'D',
+    solution: { ...sol(5), finalAnswer: '2160 kN (Option D)' },
+  },
+  {
+    id: 'psad-may2022-q14',
+    number: 14,
+    pageNumber: 439,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 5 — Lap Connection: Shearing Strength of Bolts',
+    text: '14. Based on shearing strength of bolts.',
+    options: opt('339', '368', '415', '524'),
+    correctAnswer: 'A',
+    solution: { ...sol(5), finalAnswer: '339 kN (Option A)' },
+  },
+  {
+    id: 'psad-may2022-q15',
+    number: 15,
+    pageNumber: 439,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 5 — Lap Connection: Tensile Strength of Plate',
+    text: '15. Based on tensile strength of plate.',
+    options: opt('958', '1116', '1155', '1325'),
+    correctAnswer: 'B',
+    solution: { ...sol(5), finalAnswer: '1116 kN (Option B)' },
+  },
+
+  // --- SITUATION 6 (Items 16 - 18) ---
+  {
+    id: 'psad-may2022-q16',
+    number: 16,
+    pageNumber: 439,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 6 — Mohr Circle: Normal Stress',
+    text: `${SITUATION_6}\n\n16. What is the value (MPa) of the normal stress σy?`,
+    figureSvg: psadFigure(6, 'Situation 6: stress element and Mohr circle'),
+    figureCaption: 'Situation 6: stress element and Mohr circle',
+    options: opt('15', '30', '60', '45'),
+    correctAnswer: 'B',
+    solution: { ...sol(6), finalAnswer: 'σy = 30 MPa (Option B)' },
+  },
+  {
+    id: 'psad-may2022-q17',
+    number: 17,
+    pageNumber: 439,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 6 — Mohr Circle: Maximum Principal Stress',
+    text: '17. Compute the maximum principal stress (MPa).',
+    options: opt('75.2', '86.9', '66.6', '58.7'),
+    correctAnswer: 'A',
+    solution: { ...sol(6), finalAnswer: '75.2 MPa (Option A)' },
+  },
+  {
+    id: 'psad-may2022-q18',
+    number: 18,
+    pageNumber: 439,
+    subject: 'PSAD',
+    year: 2022,
+    month: 'May',
+    category: 'Situation 6 — Mohr Circle: Maximum Shearing Stress',
+    text: '18. How much is the maximum shearing stress (MPa) on the element.',
+    options: opt('72.8', '54.8', '65.3', '60.2'),
+    correctAnswer: 'D',
+    solution: { ...sol(6), finalAnswer: '60.2 MPa (Option D)' },
+  },
+];

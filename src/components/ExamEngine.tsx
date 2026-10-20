@@ -628,7 +628,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                     <div className="flex items-center justify-between text-amber-400 font-semibold border-b border-slate-800 pb-2">
                       <span className="font-arnie text-sm">
                         {currentQuestion.solution.images?.length
-                          ? `Worked Solution • Booklet p. ${currentQuestion.solution.pageNumber ?? '—'}`
+                          ? `Worked Solution • ${currentQuestion.solution.pageNumberEnd && currentQuestion.solution.pageNumberEnd !== currentQuestion.solution.pageNumber ? `Booklet pp. ${currentQuestion.solution.pageNumber}–${currentQuestion.solution.pageNumberEnd}` : `Booklet p. ${currentQuestion.solution.pageNumber ?? '—'}`}`
                           : `Page ${currentQuestion.solution.pageNumber || 11} Solution`}
                       </span>
                       <span className="font-tech-mono">

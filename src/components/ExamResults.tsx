@@ -75,7 +75,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
    */
   const solutionPageRange = (() => {
     const pages = questions
-      .map((q) => q.solution?.pageNumber)
+      .flatMap((q) => [q.solution?.pageNumber, q.solution?.pageNumberEnd])
       .filter((p): p is number => typeof p === 'number');
     if (!pages.length) return null;
     const min = Math.min(...pages);
@@ -617,13 +617,17 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                         <Lightbulb className="w-4 h-4" />
                         <span className="font-arnie text-sm">
                           {q.solution.images?.length
-                            ? `Worked Solution • Booklet p. ${q.solution.pageNumber ?? '—'}`
+                            ? `Worked Solution • ${q.solution.pageNumberEnd && q.solution.pageNumberEnd !== q.solution.pageNumber ? `Booklet pp. ${q.solution.pageNumber}–${q.solution.pageNumberEnd}` : `Booklet p. ${q.solution.pageNumber ?? '—'}`}`
                             : 'Step-by-Step Solution Breakdown'}
                         </span>
                       </div>
 
                       {q.solution.images?.length ? (
-                        <SolutionFigures images={q.solution.images} alt={`${q.category} solution`} />
+                        <SolutionFigures
+                          images={q.solution.images}
+                          alt={`${q.category} solution`}
+                          collapsible
+                        />
                       ) : (
                         <>
                           <div className="text-xs text-slate-300 leading-relaxed italic bg-slate-900/50 p-3 rounded-lg border border-slate-800">
