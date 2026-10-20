@@ -800,7 +800,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         </div>
       )}
 
-      {/* Engineereya's Vlog Flashcards & Terms Quiz Quick Access */}
+      {/* Formula Deck & Term Quiz Quick Access (live from ce-formula-cards) */}
       {onNavigateToFlashcards && (
         <div className="bg-slate-900/80 border border-amber-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
           <div className="flex items-start space-x-3.5">
@@ -810,17 +810,17 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
-                  Engineereya&apos;s Vlog
+                  Formula Deck &amp; Term Quiz
                 </span>
                 <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  New Flashcards &amp; 4-Choice Quizzes
+                  971 Cards &middot; 1,059 Terms
                 </span>
               </div>
               <h4 className="text-base font-bold text-white mt-0.5">
-                Master CE Board Exam Terms &amp; Mnemonics
+                Flip Formula Cards &amp; Drill CE Terms
               </h4>
               <p className="text-xs text-slate-400 mt-0.5">
-                Practice with active recall flashcards (sort cards you know vs need review) and customizable 4-choice terms quizzes with randomized choices every attempt!
+                Every formula card is a real crop from Engr. APJO's RCE deck, plus 4-choice term quizzes and a full glossary. Mark cards you know vs need review — all pulled live from ce-formula-cards.
               </p>
             </div>
           </div>
@@ -831,7 +831,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-500/40 text-xs font-bold font-arnie tracking-wider transition-all flex items-center justify-center space-x-2 shrink-0 cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>OPEN FLASHCARDS &amp; QUIZ</span>
+            <span>OPEN FORMULA CARDS</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

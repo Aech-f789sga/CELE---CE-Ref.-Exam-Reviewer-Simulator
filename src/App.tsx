@@ -41,7 +41,7 @@ import { CyberdeckAudioProvider } from './context/CyberdeckAudioContext';
 import { cyberdeckAudio } from './audio/cyberdeckAudio';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
 import { ScratchpadHub } from './components/ScratchpadHub';
-import { FlashcardsAndQuizHub } from './components/FlashcardsAndQuizHub';
+import { FormulaCardsHub } from './components/FormulaCardsHub';
 import { syncExamScratchpadRecord } from './utils/scratchpadStorage';
 import {
   Sparkles,
@@ -530,7 +530,7 @@ function MainApp() {
                 />
               )}
 
-              {currentTab === 'flashcards' && <FlashcardsAndQuizHub />}
+              {currentTab === 'flashcards' && <FormulaCardsHub />}
 
               {currentTab === 'admin' && (
                 <AdminPanel

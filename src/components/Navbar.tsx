@@ -62,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'performance', label: 'Performance', icon: BarChart3 },
     { id: 'scratchpad', label: 'Scratchpads', icon: PenTool },
-    { id: 'flashcards', label: 'Flashcards', icon: Layers },
+    { id: 'flashcards', label: 'Formula Cards', icon: Layers },
     ...(isAdmin ? [{ id: 'admin' as const, label: 'Admin', icon: ShieldCheck }] : []),
   ];
 
@@ -197,10 +197,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     backgroundColor: currentTab === 'flashcards' ? themeConfig.accent : 'transparent',
                     color: currentTab === 'flashcards' ? themeConfig.accentText : themeConfig.textSecondary,
                   }}
-                  title="Engineereya's Vlog Terms Flashcards and 4-Choice Quizzes"
+                  title="Formula Deck & Term Quiz — 971 formula cards and 1,059 terms, synced live from ce-formula-cards"
                 >
                   <Layers className="w-4 h-4" />
-                  <span className="hidden xl:inline">Flashcards</span>
+                  <span className="hidden xl:inline">Cards</span>
                 </button>
 
                 {/* Admin Tab (Only visible to admin) */}
