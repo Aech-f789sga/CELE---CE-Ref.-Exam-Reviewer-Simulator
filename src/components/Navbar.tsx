@@ -20,6 +20,7 @@ import {
   Layers,
   Menu,
   X,
+  Compass,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +33,7 @@ interface NavbarProps {
   onSubjectChange?: (subject: SubjectArea) => void;
   isExamRunning: boolean;
   onOpenThemeModal: () => void;
+  onOpenTour?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -41,6 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSubjectChange,
   isExamRunning,
   onOpenThemeModal,
+  onOpenTour,
 }) => {
   const { themeConfig, fontId, setThemeId } = useTheme();
   const { user, profile, isAdmin, openAuthModal, signOut, loading: authLoading } = useAuth();
@@ -68,21 +71,42 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className="border-b sticky top-0 z-40 transition-colors backdrop-blur-md"
-      style={{
-        backgroundColor: isAurora
-          ? 'rgba(15, 23, 42, 0.75)'
-          : isTerrarium
-          ? 'rgba(11, 24, 21, 0.82)'
-          : isMatilda
-          ? 'rgba(36, 26, 32, 0.85)'
-          : isParticle
-          ? 'rgba(10, 16, 38, 0.85)'
-          : themeConfig.bgCard,
-        borderColor: themeConfig.border,
-      }}
+      className={`sticky top-0 z-40 transition-all ${
+        isAurora ? 'pt-3 px-3 sm:px-6 lg:px-8' : 'border-b backdrop-blur-md'
+      }`}
+      style={
+        isAurora
+          ? undefined
+          : {
+              backgroundColor: isTerrarium
+                ? 'rgba(11, 24, 21, 0.82)'
+                : isMatilda
+                ? 'rgba(36, 26, 32, 0.85)'
+                : isParticle
+                ? 'rgba(10, 16, 38, 0.85)'
+                : themeConfig.bgCard,
+              borderColor: themeConfig.border,
+            }
+      }
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        className={`max-w-7xl mx-auto transition-all ${
+          isAurora
+            ? 'rounded-full px-4 sm:px-6 border shadow-[0_20px_40px_rgba(0,0,0,0.2)]'
+            : 'px-4 sm:px-6 lg:px-8'
+        }`}
+        style={
+          isAurora
+            ? {
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderColor: 'rgba(255, 255, 255, 0.18)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25)',
+              }
+            : undefined
+        }
+      >
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Title */}
           <div className="flex items-center space-x-3 shrink-0">
@@ -110,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Center Navigation Tabs (Only when NOT actively taking exam) */}
-          <div className="hidden md:flex items-center justify-start space-x-0.5 min-w-0 overflow-x-auto no-scrollbar px-1">
+          <div data-tour="portal-nav" className="hidden md:flex items-center justify-start space-x-0.5 min-w-0 overflow-x-auto no-scrollbar px-1">
             {!isExamRunning && (
               <>
                 <button
@@ -174,6 +198,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
                 <button
+                  data-tour="scratchpad-tab"
                   onClick={() => setCurrentTab('scratchpad')}
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'scratchpad' ? 'shadow-md font-semibold' : 'hover:opacity-80'
@@ -189,6 +214,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
                 <button
+                  data-tour="flashcards-tab"
                   onClick={() => setCurrentTab('flashcards')}
                   className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer relative ${
                     currentTab === 'flashcards' ? 'shadow-md font-semibold' : 'hover:opacity-80'
@@ -254,8 +280,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
 
+            {/* Interactive Tour & Capabilities Guide Button */}
+            {onOpenTour && !isExamRunning && (
+              <button
+                type="button"
+                onClick={onOpenTour}
+                title="Interactive Guide & Tour (CE Reference Vol 4-6)"
+                className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer"
+                style={{
+                  backgroundColor: themeConfig.bgCardSubtle,
+                  borderColor: 'rgba(245, 158, 11, 0.45)',
+                  color: '#fbbf24',
+                }}
+              >
+                <Compass className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Tour &amp; Guide</span>
+              </button>
+            )}
+
             {/* Theme & Fonts Customizer Trigger */}
             <button
+              data-tour="theme-trigger"
               onClick={onOpenThemeModal}
               title="Customize Theme & Typography"
               className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer"
@@ -275,7 +320,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Google Authentication Control */}
             {activeUser ? (
-              <div className="flex items-center space-x-1.5 pl-1">
+              <div data-tour="auth-trigger" className="flex items-center space-x-1.5 pl-1">
                 <button
                   type="button"
                   onClick={openAuthModal}
@@ -331,6 +376,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : (
               <button
+                data-tour="auth-trigger"
                 type="button"
                 onClick={openAuthModal}
                 disabled={authLoading}
@@ -348,7 +394,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile navigation panel (the tab strip is hidden below md) */}
       {mobileNavOpen && !isExamRunning && (
-        <div className="md:hidden border-t px-3 py-3" style={{ borderColor: themeConfig.border }}>
+        <div
+          className={`md:hidden px-3 py-3 mt-2 ${
+            isAurora
+              ? 'rounded-2xl border shadow-xl'
+              : 'border-t'
+          }`}
+          style={{
+            borderColor: isAurora ? 'rgba(255, 255, 255, 0.18)' : themeConfig.border,
+            backgroundColor: isAurora ? 'rgba(255, 255, 255, 0.08)' : undefined,
+            backdropFilter: isAurora ? 'blur(16px)' : undefined,
+            WebkitBackdropFilter: isAurora ? 'blur(16px)' : undefined,
+          }}
+        >
           <div className="grid grid-cols-2 gap-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -376,6 +434,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               );
             })}
           </div>
+
+          {onOpenTour && (
+            <div className="pt-2 mt-2 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenTour();
+                  setMobileNavOpen(false);
+                }}
+                className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all cursor-pointer"
+              >
+                <Compass className="w-4 h-4 text-amber-400" />
+                <span>Interactive Web Tour &amp; Function Guide</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
     </header>

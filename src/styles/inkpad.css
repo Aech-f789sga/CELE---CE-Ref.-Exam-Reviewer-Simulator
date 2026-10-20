@@ -1,0 +1,475 @@
+/* =========================================================================
+   INKPAD - Handwritten Notes & Professional Drafting Suite Styles
+   ========================================================================= */
+
+.inkpad-root {
+  --bg: #1a1a1c;
+  --sf: #2a2a2d;
+  --tx: #f2f2f5;
+  --mu: #9a9aa0;
+  --ac: #5b8cff;
+  --bd: #3d3d42;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--tx);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.inkpad-root[data-inkpad-theme="light"] {
+  --bg: #e6e9ef;
+  --sf: #ffffff;
+  --tx: #1c1c1e;
+  --mu: #6e6e73;
+  --ac: #2f6df6;
+  --bd: #d9d9de;
+}
+
+.inkpad-root button {
+  font: inherit;
+  color: inherit;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inkpad-root button:hover {
+  border-color: var(--ac);
+}
+
+.inkpad-root button.on {
+  background: var(--ac);
+  color: #ffffff;
+  border-color: var(--ac);
+}
+
+.inkpad-root .ic {
+  border-color: transparent !important;
+  background: transparent;
+  padding: 6px 8px;
+  line-height: 0;
+  border-radius: 8px;
+}
+
+.inkpad-root .ic:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+.inkpad-root .ic.on {
+  background: color-mix(in srgb, var(--ac) 18%, transparent);
+  color: var(--ac);
+}
+
+/* Library View */
+.inkpad-root #lib {
+  height: 100%;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.inkpad-root #nav {
+  width: 210px;
+  flex: none;
+  padding: 24px 14px;
+  background: var(--sf);
+  border-right: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inkpad-root #nav b {
+  font-size: 22px;
+  margin-bottom: 16px;
+  padding: 0 10px;
+  letter-spacing: -0.02em;
+}
+
+.inkpad-root #nav a {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--tx);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.inkpad-root #nav a:hover {
+  background: rgba(127, 127, 127, 0.1);
+}
+
+.inkpad-root #nav a.on {
+  background: color-mix(in srgb, var(--ac) 15%, transparent);
+  color: var(--ac);
+  font-weight: 600;
+}
+
+.inkpad-root #libm {
+  flex: 1;
+  overflow: auto;
+  padding: 28px;
+}
+
+@media (max-width: 640px) {
+  .inkpad-root #lib {
+    flex-direction: column;
+  }
+  .inkpad-root #nav {
+    width: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--bd);
+  }
+  .inkpad-root #nav b {
+    display: none;
+  }
+  .inkpad-root #libm {
+    padding: 16px;
+  }
+}
+
+.inkpad-root #lib h1 {
+  margin: 0 0 20px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.inkpad-root .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.inkpad-root .card {
+  cursor: pointer;
+}
+
+.inkpad-root .cv {
+  position: relative;
+  aspect-ratio: 3/4;
+  border-radius: 4px 12px 12px 4px;
+  background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 65%, #000));
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22), inset 6px 0 8px -4px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inkpad-root .card:hover .cv {
+  transform: translateY(-4px);
+}
+
+.inkpad-root .cv canvas {
+  position: absolute;
+  left: 14%;
+  top: 10%;
+  width: 78%;
+  height: 80%;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  background: #fff;
+}
+
+.inkpad-root .card .nm {
+  margin-top: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+.inkpad-root .card .sub {
+  color: var(--mu);
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.inkpad-root .card .sub button {
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.inkpad-root .new {
+  aspect-ratio: 3/4;
+  border: 2px dashed var(--bd);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ac);
+  font-size: 40px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.inkpad-root .new:hover {
+  border-color: var(--ac);
+  background: color-mix(in srgb, var(--ac) 8%, transparent);
+}
+
+/* Modal Dialog */
+.inkpad-root #md {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+  backdrop-filter: blur(4px);
+}
+
+.inkpad-root #md.on {
+  display: flex;
+}
+
+.inkpad-root #md .box {
+  background: var(--sf);
+  border-radius: 18px;
+  padding: 22px;
+  width: min(92vw, 380px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--bd);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.inkpad-root #md input[type="text"] {
+  font: inherit;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--bd);
+  background: var(--bg);
+  color: var(--tx);
+}
+
+/* Editor View */
+.inkpad-root #ed {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.inkpad-root #bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 10px 12px 0;
+  padding: 6px 10px;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  flex: none;
+  z-index: 20;
+}
+
+.inkpad-root #bar input[type="text"] {
+  font: inherit;
+  font-weight: 600;
+  background: transparent;
+  color: var(--tx);
+  border: 0;
+  border-bottom: 1px solid var(--bd);
+  width: 150px;
+  padding: 4px;
+}
+
+.inkpad-root #bar input[type="text"]:focus {
+  outline: none;
+  border-bottom-color: var(--ac);
+}
+
+.inkpad-root .sep {
+  width: 1px;
+  height: 24px;
+  background: var(--bd);
+  flex: none;
+  margin: 0 2px;
+}
+
+.inkpad-root .sw {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 0;
+  border: 2px solid var(--bd);
+  flex: none;
+  cursor: pointer;
+}
+
+.inkpad-root .sw.on {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}
+
+.inkpad-root select,
+.inkpad-root input[type="range"] {
+  font: inherit;
+  background: var(--sf);
+  color: var(--tx);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.inkpad-root input[type="range"] {
+  width: 80px;
+  padding: 0;
+}
+
+.inkpad-root #bar label {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.inkpad-root #main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  position: relative;
+}
+
+.inkpad-root #side {
+  width: 120px;
+  overflow: auto;
+  background: var(--sf);
+  border-right: 1px solid var(--bd);
+  padding: 8px;
+  display: none;
+  flex: none;
+}
+
+.inkpad-root #side canvas {
+  width: 100%;
+  display: block;
+  margin-bottom: 8px;
+  border: 2px solid var(--bd);
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+
+.inkpad-root #side canvas.on {
+  border-color: var(--ac);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ac) 40%, transparent);
+}
+
+.inkpad-root #stage {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.inkpad-root #wrap {
+  position: relative;
+  margin: 0 auto;
+  flex: none;
+}
+
+.inkpad-root #cv {
+  width: 100%;
+  display: block;
+  aspect-ratio: 800/1100;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  touch-action: none;
+  cursor: crosshair;
+  border-radius: 3px;
+}
+
+.inkpad-root #tx {
+  position: absolute;
+  display: none;
+  background: rgba(255, 255, 190, 0.5);
+  border: 1px dashed var(--ac);
+  outline: 0;
+  resize: none;
+  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.3;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.inkpad-root #pg {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: var(--sf);
+  border-top: 1px solid var(--bd);
+  flex: none;
+  font-size: 13px;
+}
+
+/* Floating Selection Bar */
+.inkpad-root #sbar {
+  position: fixed;
+  bottom: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 6px;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  padding: 6px 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  z-index: 25;
+}
+
+/* Print Styling */
+@media print {
+  body {
+    overflow: visible;
+  }
+  body > *:not(#pr) {
+    display: none !important;
+  }
+  #pr {
+    display: block !important;
+  }
+  #pr img {
+    width: 100%;
+    display: block;
+    page-break-after: always;
+  }
+}

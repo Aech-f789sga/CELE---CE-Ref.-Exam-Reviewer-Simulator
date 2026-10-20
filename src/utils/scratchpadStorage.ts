@@ -1,6 +1,6 @@
 import { SubjectArea, ExamMonth } from '../types/exam';
 
-export type PaperTexture = 'blueprint' | 'graph' | 'lined' | 'blank' | 'dot' | 'cornell';
+export type PaperTexture = 'blueprint' | 'graph' | 'grid' | 'lined' | 'blank' | 'dot' | 'cornell';
 export type DpiMode = 600 | 720 | 1200 | 300;
 
 export interface ScratchpadPageData {
@@ -143,22 +143,74 @@ export const idbDeleteCanvas = async (key: string): Promise<void> => {
 // ----------------------------------------------------
 // Metadata Management (Synchronous LocalStorage + Events)
 // ----------------------------------------------------
+// Metadata Management (Synchronous LocalStorage + Events)
+// ----------------------------------------------------
 export const getAllScratchpads = (): ScratchpadMetadata[] => {
+  const result: ScratchpadMetadata[] = [];
+  const seenIds = new Set<string>();
+
+  // 1. Load standalone / exam records from META_STORAGE_KEY
   try {
     const raw = localStorage.getItem(META_STORAGE_KEY);
-    if (!raw) return [];
-    const list: ScratchpadMetadata[] = JSON.parse(raw);
-    return list.sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
-  } catch {
-    return [];
+    if (raw) {
+      const list: ScratchpadMetadata[] = JSON.parse(raw);
+      if (Array.isArray(list)) {
+        for (const item of list) {
+          if (item && item.id && !seenIds.has(item.id)) {
+            seenIds.add(item.id);
+            result.push(item);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Failed to parse scratchpad metadata', e);
   }
+
+  // 2. Load all saved notebooks from Inkpad Studio ('inkpad' key)
+  try {
+    const inkpadRaw = localStorage.getItem('inkpad');
+    if (inkpadRaw) {
+      const inkpadList = JSON.parse(inkpadRaw);
+      if (Array.isArray(inkpadList)) {
+        for (const n of inkpadList) {
+          if (!n || n.del) continue; // Skip deleted items
+          const formattedId = `inkpad_${n.id}`;
+          // If not already in result
+          if (!seenIds.has(formattedId) && !seenIds.has(String(n.id))) {
+            seenIds.add(formattedId);
+            const totalPages = Array.isArray(n.pages) && n.pages.length > 0 ? n.pages.length : 1;
+            const updatedDate = n.upd ? new Date(n.upd).toISOString() : new Date().toISOString();
+            result.push({
+              id: formattedId,
+              title: n.name || 'CE Board Notes',
+              createdAt: updatedDate,
+              updatedAt: updatedDate,
+              type: 'standalone',
+              paperTexture: (n.pages?.[0]?.tpl || 'blank') as PaperTexture,
+              paperBgColor: n.pages?.[0]?.col || n.cover || '#06131c',
+              dpi: 600,
+              notesText: `${totalPages} page${totalPages > 1 ? 's' : ''} • Inkpad Handwritten Notes`,
+              totalPages,
+              thumbnail: n.thumbnail || undefined,
+              sessionKey: formattedId,
+            });
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Failed to parse inkpad storage', e);
+  }
+
+  return result.sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  );
 };
 
 export const getScratchpadById = (id: string): ScratchpadMetadata | null => {
   const all = getAllScratchpads();
-  return all.find((s) => s.id === id) || null;
+  return all.find((s) => s.id === id || s.id === `inkpad_${id}` || s.id.replace(/^inkpad_/, '') === id) || null;
 };
 
 export const getScratchpadBySessionKey = (sessionKey: string): ScratchpadMetadata | null => {
@@ -168,7 +220,8 @@ export const getScratchpadBySessionKey = (sessionKey: string): ScratchpadMetadat
 
 export const saveScratchpadMeta = (meta: ScratchpadMetadata): void => {
   try {
-    const all = getAllScratchpads();
+    const raw = localStorage.getItem(META_STORAGE_KEY);
+    const all: ScratchpadMetadata[] = raw ? JSON.parse(raw) : [];
     const index = all.findIndex((s) => s.id === meta.id);
     if (index >= 0) {
       all[index] = { ...all[index], ...meta, updatedAt: new Date().toISOString() };
@@ -190,6 +243,7 @@ export const saveScratchpadMeta = (meta: ScratchpadMetadata): void => {
 
 export const deleteScratchpadRecord = async (id: string): Promise<void> => {
   try {
+    // 1. Delete associated IndexedDB canvases
     const meta = getScratchpadById(id);
     if (meta) {
       const prefix = meta.sessionKey || `scratchpad_${id}_`;
@@ -200,10 +254,35 @@ export const deleteScratchpadRecord = async (id: string): Promise<void> => {
       localStorage.removeItem(`${prefix}ce_scratchpad_notes_v2`);
     }
 
-    const all = getAllScratchpads().filter((s) => s.id !== id);
-    localStorage.setItem(META_STORAGE_KEY, JSON.stringify(all));
+    // 2. Delete from META_STORAGE_KEY list
+    try {
+      const raw = localStorage.getItem(META_STORAGE_KEY);
+      if (raw) {
+        const list: ScratchpadMetadata[] = JSON.parse(raw);
+        const filtered = list.filter((s) => s.id !== id && s.id !== `inkpad_${id}`);
+        localStorage.setItem(META_STORAGE_KEY, JSON.stringify(filtered));
+      }
+    } catch {}
+
+    // 3. Delete from inkpad list (if it is an Inkpad notebook)
+    try {
+      const inkpadRaw = localStorage.getItem('inkpad');
+      if (inkpadRaw) {
+        const inkpadList = JSON.parse(inkpadRaw);
+        if (Array.isArray(inkpadList)) {
+          const rawId = id.replace(/^inkpad_/, '');
+          const filtered = inkpadList.filter((n: any) => String(n.id) !== rawId && String(n.id) !== id);
+          localStorage.setItem('inkpad', JSON.stringify(filtered));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to remove from inkpad', e);
+    }
+
+    // 4. Dispatch events so all listeners refresh instantly
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('ce_scratchpad_records_updated'));
+      window.dispatchEvent(new CustomEvent('inkpad_updated'));
     }
   } catch (e) {
     console.error('Failed to delete scratchpad record', e);
@@ -322,9 +401,38 @@ export const exportScratchpadBundle = async (id: string): Promise<ScratchpadExpo
   const meta = getScratchpadById(id);
   if (!meta) return null;
 
-  const prefix = meta.sessionKey || `scratchpad_${id}_`;
   const pages: ScratchpadPageData[] = [];
 
+  // 1. Check if this is an Inkpad notebook in localStorage('inkpad')
+  try {
+    const inkpadRaw = localStorage.getItem('inkpad');
+    if (inkpadRaw) {
+      const list = JSON.parse(inkpadRaw);
+      const rawId = id.replace(/^inkpad_/, '');
+      const nb = list.find((n: any) => String(n.id) === rawId || n.name === meta.title);
+      if (nb && Array.isArray(nb.pages)) {
+        for (let i = 0; i < nb.pages.length; i++) {
+          pages.push({
+            page: i + 1,
+            dataUrl: i === 0 && nb.thumbnail ? nb.thumbnail : '',
+            updatedAt: new Date(nb.upd || Date.now()).toISOString(),
+          });
+        }
+        return {
+          format: 'ce-scratchpad-bundle',
+          version: '2.0',
+          deviceCompat: 'Universal Canvas / Tablet / Web (.cescratch)',
+          metadata: meta,
+          pages,
+        };
+      }
+    }
+  } catch (e) {
+    console.error('Failed to export inkpad notebook bundle', e);
+  }
+
+  // 2. Standard exam session scratchpad sheets
+  const prefix = meta.sessionKey || `scratchpad_${id}_`;
   for (let p = 1; p <= meta.totalPages; p++) {
     const key = `${prefix}ce_scratchpad_canvas_page_${p}`;
     const dataUrl = await idbLoadCanvas(key);

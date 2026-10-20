@@ -640,6 +640,17 @@ export const AuthModal: React.FC = () => {
                 </svg>
                 <span>{loading ? 'Connecting to Google...' : 'Sign In with Google Popup'}</span>
               </button>
+
+              {/* Privacy and Security Guarantee Notice */}
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-[11px] text-slate-400 space-y-1.5 mt-2">
+                <div className="flex items-center space-x-1.5 font-bold text-emerald-400">
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                  <span>Privacy &amp; Security Guarantee</span>
+                </div>
+                <p className="leading-relaxed text-[11px] text-slate-300">
+                  Your email address and password are <strong>never accessible to platform administrators</strong> or instructors. All account credentials are encrypted and authenticated directly by Google Cloud Firebase. Only your chosen public display username and exam scores are visible on the leaderboard.
+                </p>
+              </div>
             </div>
           </div>
         )}

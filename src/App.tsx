@@ -27,6 +27,8 @@ import { LeaderboardView } from './components/LeaderboardView';
 import { AnnouncementSection } from './components/AnnouncementSection';
 import { ThemeModal } from './components/ThemeModal';
 import { AuthModal } from './components/AuthModal';
+import { InteractiveTourModal } from './components/InteractiveTourModal';
+import { CustomCursor } from './components/CustomCursor';
 import { useTheme } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
@@ -95,6 +97,7 @@ function MainApp() {
   >('setup');
   const [selectedScratchpadId, setSelectedScratchpadId] = useState<string | undefined>(undefined);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
+  const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [latestAnnouncement, setLatestAnnouncement] = useState<SystemAnnouncement | null>(null);
   const { themeConfig } = useTheme();
   const particleTheme = useParticleTheme();
@@ -121,7 +124,7 @@ function MainApp() {
   // Stored attempts
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
 
-  // Load stored attempts and announcements on mount
+  // Load stored attempts, announcements, and register tour listener on mount
   useEffect(() => {
     setAttempts(getStoredAttempts());
     fetchAnnouncements(true)
@@ -131,6 +134,10 @@ function MainApp() {
         }
       })
       .catch(() => {});
+
+    const handleOpenTour = () => setIsTourOpen(true);
+    window.addEventListener('open_ce_tour', handleOpenTour);
+    return () => window.removeEventListener('open_ce_tour', handleOpenTour);
   }, []);
 
   // Sync default timer duration when subject changes
@@ -394,6 +401,7 @@ function MainApp() {
           onSubjectChange={handleSubjectChange}
           isExamRunning={isExamRunning}
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
+          onOpenTour={() => setIsTourOpen(true)}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
@@ -486,6 +494,7 @@ function MainApp() {
                   onStartExam={handleStartExam}
                   onResumeExam={handleResumeExam}
                   onNavigateToFlashcards={() => setCurrentTab('flashcards')}
+                  onOpenTour={() => setIsTourOpen(true)}
                 />
               )}
 
@@ -552,6 +561,22 @@ function MainApp() {
           isOpen={isThemeModalOpen}
           onClose={() => setIsThemeModalOpen(false)}
         />
+
+        {/* Dynamic & Animated Web Tour / Walkthrough Guide */}
+        <InteractiveTourModal
+          isOpen={isTourOpen}
+          onClose={() => setIsTourOpen(false)}
+          onNavigateTab={(tab) => {
+            setCurrentTab(tab);
+          }}
+          onSelectSubject={(sub) => {
+            handleSubjectChange(sub);
+          }}
+          onOpenThemeModal={() => setIsThemeModalOpen(true)}
+        />
+
+        {/* Smooth Transparent Negative-Filter Custom Cursor */}
+        <CustomCursor />
 
         {/* Floating Quick Particle Controller for the Theme (Available from any tab or during exams) */}
         {isParticle && (

@@ -54,6 +54,8 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
   const [newTitle, setNewTitle] = useState('');
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [exportMenuPadId, setExportMenuPadId] = useState<string | null>(null);
+  const [padToDelete, setPadToDelete] = useState<ScratchpadMetadata | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -65,7 +67,22 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
     refreshList();
     const handleUpdate = () => refreshList();
     window.addEventListener('ce_scratchpad_records_updated', handleUpdate);
-    return () => window.removeEventListener('ce_scratchpad_records_updated', handleUpdate);
+    window.addEventListener('inkpad_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data && (e.data.type === 'INKPAD_NOTEBOOK_SAVED' || e.data.type === 'INKPAD_SAVED')) {
+        refreshList();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('ce_scratchpad_records_updated', handleUpdate);
+      window.removeEventListener('inkpad_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   useEffect(() => {
@@ -92,15 +109,24 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
     setIsEditorOpen(true);
   };
 
-  const handleDeletePad = async (pad: ScratchpadMetadata, e: React.MouseEvent) => {
+  const handleDeleteClick = (pad: ScratchpadMetadata, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${pad.title}"? This will permanently remove its 5 sheets and rough notes.`)) {
-      await deleteScratchpadRecord(pad.id);
+    setPadToDelete(pad);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!padToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteScratchpadRecord(padToDelete.id);
       refreshList();
-      if (activePad?.id === pad.id) {
+      if (activePad?.id === padToDelete.id) {
         setIsEditorOpen(false);
         setActivePad(null);
       }
+    } finally {
+      setIsDeleting(false);
+      setPadToDelete(null);
     }
   };
 
@@ -138,9 +164,51 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
     setExportMenuPadId(null);
   };
 
+  const handleExportPdf = async (pad: ScratchpadMetadata) => {
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: [800, 1100] });
+      let hasImage = false;
+
+      // Check if inkpad notebook thumbnail or sheets
+      if (pad.thumbnail) {
+        doc.addImage(pad.thumbnail, 'JPEG', 0, 0, 800, 1100);
+        hasImage = true;
+      }
+
+      const prefix = pad.sessionKey || `scratchpad_${pad.id}_`;
+      for (let p = 1; p <= pad.totalPages; p++) {
+        const dataUrl = await idbLoadCanvas(`${prefix}ce_scratchpad_canvas_page_${p}`);
+        if (dataUrl) {
+          if (hasImage) doc.addPage([800, 1100], 'p');
+          doc.addImage(dataUrl, 'PNG', 0, 0, 800, 1100);
+          hasImage = true;
+        }
+      }
+
+      if (!hasImage) {
+        // Draw blank page with title
+        doc.setFillColor(pad.paperBgColor || '#06131c');
+        doc.rect(0, 0, 800, 1100, 'F');
+        doc.setTextColor(56, 189, 248);
+        doc.setFontSize(22);
+        doc.text(pad.title, 40, 80);
+      }
+
+      const cleanTitle = pad.title.replace(/[^a-zA-Z0-9_-]/g, '_');
+      doc.save(`${cleanTitle}.pdf`);
+    } catch (err) {
+      console.error('Failed to export PDF', err);
+    }
+    setExportMenuPadId(null);
+  };
+
   const handleExportSvg = async (pad: ScratchpadMetadata) => {
-    const prefix = pad.sessionKey || `scratchpad_${pad.id}_`;
-    const sheet1Data = (await idbLoadCanvas(`${prefix}ce_scratchpad_canvas_page_1`)) || undefined;
+    let sheet1Data = pad.thumbnail;
+    if (!sheet1Data) {
+      const prefix = pad.sessionKey || `scratchpad_${pad.id}_`;
+      sheet1Data = (await idbLoadCanvas(`${prefix}ce_scratchpad_canvas_page_1`)) || undefined;
+    }
     const svgStr = generateScratchpadSvg(pad, 1, sheet1Data);
     const cleanTitle = pad.title.replace(/[^a-zA-Z0-9_-]/g, '_');
     downloadFile(svgStr, `${cleanTitle}_Sheet1.svg`, 'image/svg+xml');
@@ -148,17 +216,47 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
   };
 
   const handleExportPng = async (pad: ScratchpadMetadata) => {
-    const prefix = pad.sessionKey || `scratchpad_${pad.id}_`;
-    const sheet1Data = await idbLoadCanvas(`${prefix}ce_scratchpad_canvas_page_1`);
+    let sheet1Data = pad.thumbnail;
     if (!sheet1Data) {
-      alert('Sheet 1 is empty or has no drawing yet.');
-      return;
+      const prefix = pad.sessionKey || `scratchpad_${pad.id}_`;
+      sheet1Data = (await idbLoadCanvas(`${prefix}ce_scratchpad_canvas_page_1`)) || undefined;
     }
-    const cleanTitle = pad.title.replace(/[^a-zA-Z0-9_-]/g, '_');
-    const a = document.createElement('a');
-    a.download = `${cleanTitle}_Sheet1_${pad.dpi}DPI.png`;
-    a.href = sheet1Data;
-    a.click();
+    // Check localStorage inkpad
+    if (!sheet1Data && pad.id.startsWith('inkpad_')) {
+      try {
+        const raw = localStorage.getItem('inkpad');
+        if (raw) {
+          const list = JSON.parse(raw);
+          const rawId = pad.id.replace(/^inkpad_/, '');
+          const nb = list.find((n: any) => String(n.id) === rawId || n.name === pad.title);
+          if (nb && nb.thumbnail) {
+            sheet1Data = nb.thumbnail;
+          }
+        }
+      } catch {}
+    }
+    if (!sheet1Data) {
+      // Fallback: generate a styled canvas preview
+      const c = document.createElement('canvas');
+      c.width = 800;
+      c.height = 1100;
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = pad.paperBgColor || '#06131c';
+        ctx.fillRect(0, 0, 800, 1100);
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(pad.title, 40, 60);
+        sheet1Data = c.toDataURL('image/png');
+      }
+    }
+    if (sheet1Data) {
+      const cleanTitle = pad.title.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const a = document.createElement('a');
+      a.download = `${cleanTitle}_Sheet1_${pad.dpi || 600}DPI.png`;
+      a.href = sheet1Data;
+      a.click();
+    }
     setExportMenuPadId(null);
   };
 
@@ -222,11 +320,16 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
 
             <button
               type="button"
-              onClick={() => setIsNewModalOpen(true)}
+              onClick={() => {
+                const pad = createStandaloneScratchpad('CE Board Inkpad');
+                refreshList();
+                setActivePad(pad);
+                setIsEditorOpen(true);
+              }}
               className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all shadow-lg shadow-cyan-500/25 cursor-pointer hover:scale-105"
             >
-              <Plus className="w-4 h-4" />
-              <span>New Scratchpad</span>
+              <PenTool className="w-4 h-4" />
+              <span>Open Inkpad Studio</span>
             </button>
           </div>
         </div>
@@ -421,13 +524,25 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
 
                           <button
                             type="button"
+                            onClick={() => handleExportPdf(pad)}
+                            className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-rose-400" />
+                            <div>
+                              <div className="font-semibold text-[11px]">.pdf (Document / All Pages)</div>
+                              <div className="text-[9px] text-slate-500">Universal multi-page PDF document</div>
+                            </div>
+                          </button>
+
+                          <button
+                            type="button"
                             onClick={() => handleExportCescratch(pad)}
                             className="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-200 flex items-center space-x-2 cursor-pointer transition-colors"
                           >
                             <Tablet className="w-3.5 h-3.5 text-cyan-400" />
                             <div>
                               <div className="font-semibold text-[11px]">.cescratch (Universal)</div>
-                              <div className="text-[9px] text-slate-500">All 5 sheets + notes, cross-device</div>
+                              <div className="text-[9px] text-slate-500">All sheets + notes, cross-device</div>
                             </div>
                           </button>
 
@@ -451,7 +566,7 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
                             <ImageIcon className="w-3.5 h-3.5 text-emerald-400" />
                             <div>
                               <div className="font-semibold text-[11px]">.png (600+ DPI Archival)</div>
-                              <div className="text-[9px] text-slate-500">Ultra-HD with pHYs metadata</div>
+                              <div className="text-[9px] text-slate-500">Ultra-HD image export</div>
                             </div>
                           </button>
                         </div>
@@ -460,7 +575,7 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
                       {/* Delete Button */}
                       <button
                         type="button"
-                        onClick={(e) => handleDeletePad(pad, e)}
+                        onClick={(e) => handleDeleteClick(pad, e)}
                         className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
                         title="Delete this scratchpad"
                       >
@@ -525,6 +640,52 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
                 className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-all shadow-lg shadow-cyan-500/20 cursor-pointer"
               >
                 Create & Open
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Confirm Deletion (Replaces window.confirm for iframe reliability) */}
+      {padToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5 animate-in zoom-in-95">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-arnie text-lg font-bold text-white">Delete Scratchpad</h3>
+                <p className="text-xs text-slate-400">Permanently remove this notebook and rough sheets</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-1">
+              <div className="text-xs font-semibold text-slate-200">
+                Are you sure you want to delete <span className="text-cyan-300 font-bold">"{padToDelete.title}"</span>?
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                This will permanently remove all sheets, ink strokes, and formula rough notes from both Scratchpad Hub and Inkpad Studio. This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end space-x-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setPadToDelete(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white text-xs font-bold transition-all shadow-lg shadow-rose-600/30 cursor-pointer flex items-center space-x-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isDeleting ? 'Deleting...' : 'Delete Permanently'}</span>
               </button>
             </div>
           </div>

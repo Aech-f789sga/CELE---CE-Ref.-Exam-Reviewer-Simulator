@@ -35,6 +35,7 @@ import {
   Trash2,
   ArrowRight,
   PenTool,
+  BookOpen,
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
 import { TerrariumOrb3D } from './TerrariumOrb3D';
@@ -66,6 +67,7 @@ interface SubjectSelectorProps {
   onStartExam: () => void;
   onResumeExam: (session: PausedExamSession) => void;
   onNavigateToFlashcards?: () => void;
+  onOpenTour?: () => void;
 }
 
 export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
@@ -84,6 +86,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onStartExam,
   onResumeExam,
   onNavigateToFlashcards,
+  onOpenTour,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
   const [pausedSessionsList, setPausedSessionsList] = useState<PausedExamSession[]>(() => getAllPausedSessions());
@@ -187,7 +190,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
       {/* STEP 1: Select Area / Subject */}
       <div className="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-4">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
               Step 01
@@ -196,12 +199,25 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               Select Examination Area
             </h2>
           </div>
+
+          {onOpenTour && (
+            <button
+              type="button"
+              onClick={onOpenTour}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm"
+              title="Launch dynamic animated tour of all web functions and capabilities"
+            >
+              <Compass className="w-3.5 h-3.5 text-amber-400" />
+              <span>Interactive Tour &amp; Guide</span>
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* MSTC Card */}
           <Tilt3D>
           <button
+            data-tour="subject-mstc"
             type="button"
             onClick={() => onSubjectChange('MSTC')}
             className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
@@ -224,6 +240,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <p className="text-xs text-white font-semibold mt-0.5">
                 Mathematics, Surveying &amp; Transportation
               </p>
+              <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-300 font-semibold">
+                <BookOpen className="w-3 h-3 text-amber-400 shrink-0" />
+                <span>Ref: CE Reference Vol 4–6</span>
+              </div>
               <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
                 Calculus, Economy, Surveying, Highway Curves, Superelevation &amp; Wave Mechanics.
               </p>
@@ -240,6 +260,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           {/* HPGE Card */}
           <Tilt3D>
           <button
+            data-tour="subject-hpge"
             type="button"
             onClick={() => onSubjectChange('HPGE')}
             className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
@@ -262,6 +283,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <p className="text-xs text-white font-semibold mt-0.5">
                 Hydraulics &amp; Geotechnical Engineering
               </p>
+              <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-[10px] text-cyan-300 font-semibold">
+                <BookOpen className="w-3 h-3 text-cyan-400 shrink-0" />
+                <span>Ref: CE Reference Vol 4–6</span>
+              </div>
               <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
                 Fluid Statics, Darcy Pipe Flow, Soil Void Ratio, Lateral Earth Pressure &amp; Permeability.
               </p>
@@ -278,6 +303,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           {/* PSAD Card */}
           <Tilt3D>
           <button
+            data-tour="subject-psad"
             type="button"
             onClick={() => onSubjectChange('PSAD')}
             className={`text-left p-5 rounded-xl border-2 transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
@@ -300,6 +326,10 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <p className="text-xs text-white font-semibold mt-0.5">
                 Principles of Structural Analysis &amp; Design
               </p>
+              <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-300 font-semibold">
+                <BookOpen className="w-3 h-3 text-emerald-400 shrink-0" />
+                <span>Ref: CE Reference Vol 4–6</span>
+              </div>
               <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
                 Shear &amp; Moment, NSCP 2015 RC Beams, Footing Punching, Welded Joints &amp; Steel Columns.
               </p>
@@ -313,10 +343,29 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </button>
           </Tilt3D>
         </div>
+
+        {/* Curriculum Reference Book Standard Callout */}
+        <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-300">
+          <div className="flex items-start sm:items-center space-x-2.5">
+            <BookOpen className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5 sm:mt-0" />
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              <strong className="text-white">Curriculum Reference Standard:</strong> Reference of the MSTC, HPGE, and PSAD is <strong>CE Reference Volume 4-6 books</strong> (Gillesania / Besavilla review standards).
+            </p>
+          </div>
+          {onOpenTour && (
+            <button
+              type="button"
+              onClick={onOpenTour}
+              className="text-[11px] text-amber-400 hover:text-amber-300 font-semibold underline shrink-0 cursor-pointer self-end sm:self-auto"
+            >
+              Learn More in Tour →
+            </button>
+          )}
+        </div>
       </div>
 
       {/* STEP 2: Select Past Board Exam Year & Month */}
-      <div className="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-5">
+      <div data-tour="exam-year-month" className="bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-5">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
             Step 02
@@ -434,7 +483,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
         <aside className="space-y-5 xl:sticky xl:top-20">
           {/* STEP 3: Timer & Simulation Mode */}
-          <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-xl">
+          <div data-tour="timer-mode" className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-xl">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
                 Step 03
@@ -652,6 +701,17 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Privacy & Security Guarantee Note */}
+          <div data-tour="privacy-shield" className="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/30 shadow-lg text-[11px] text-slate-300 space-y-1.5">
+            <div className="flex items-center space-x-1.5 text-emerald-400 font-bold">
+              <Lock className="w-3.5 h-3.5 shrink-0" />
+              <span>Google Identity &amp; Privacy Shield</span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-relaxed">
+              Reviewee passwords and emails are <strong>never accessible to administrators</strong> or instructors. All accounts are managed directly and securely by Google Cloud Firebase. Only your chosen public display username and exam scores are shown on the leaderboard.
+            </p>
           </div>
         </aside>
       </div>

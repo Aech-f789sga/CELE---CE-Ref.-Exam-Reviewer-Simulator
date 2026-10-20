@@ -292,20 +292,31 @@ html[data-theme="aurora_glass"] body {
 }
 .app-above-scene { position: relative; z-index: 1; }
 
-/* ---- glass surfaces: remap the hard-coded slate cards ---- */
+/* ---- glass surfaces: modern Glassmorphism design system ---- */
 html[data-theme="aurora_glass"] .bg-slate-900,
 html[data-theme="aurora_glass"] .bg-slate-900\/90,
 html[data-theme="aurora_glass"] .bg-slate-900\/95,
 html[data-theme="aurora_glass"] .bg-slate-900\/80,
 html[data-theme="aurora_glass"] .app-card-bg {
-  background: linear-gradient(150deg, rgba(40, 44, 110, 0.50), rgba(12, 15, 44, 0.62)) !important;
-  border-color: rgba(167, 155, 255, 0.24) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  backdrop-filter: blur(16px) saturate(150%);
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
   box-shadow:
-    0 24px 60px -24px rgba(0, 0, 0, 0.75),
-    0 0 0 1px rgba(255, 255, 255, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    0 20px 40px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+html[data-theme="aurora_glass"] .bg-slate-900:hover,
+html[data-theme="aurora_glass"] .app-card-bg:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(167, 155, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.40) !important;
 }
 
 html[data-theme="aurora_glass"] .bg-slate-950,
@@ -314,35 +325,39 @@ html[data-theme="aurora_glass"] .bg-slate-950\/80,
 html[data-theme="aurora_glass"] .bg-slate-950\/70,
 html[data-theme="aurora_glass"] .bg-slate-950\/60,
 html[data-theme="aurora_glass"] .app-card-subtle-bg {
-  background-color: rgba(10, 12, 38, 0.55) !important;
-  border-color: rgba(139, 123, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 html[data-theme="aurora_glass"] .bg-slate-800,
 html[data-theme="aurora_glass"] .bg-slate-800\/60,
 html[data-theme="aurora_glass"] .bg-slate-800\/80 {
-  background-color: rgba(48, 54, 130, 0.45) !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 html[data-theme="aurora_glass"] .border-slate-800,
 html[data-theme="aurora_glass"] .border-slate-700,
 html[data-theme="aurora_glass"] .border-slate-700\/80,
 html[data-theme="aurora_glass"] .border-slate-900 {
-  border-color: rgba(139, 123, 255, 0.26) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
-/* header + footer become translucent glass bars */
+/* header + footer become translucent frosted glass bars */
 html[data-theme="aurora_glass"] header {
-  background: rgba(7, 10, 31, 0.62) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
-  border-color: rgba(167, 155, 255, 0.22) !important;
-  box-shadow: 0 10px 40px -18px rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 html[data-theme="aurora_glass"] footer {
-  background: rgba(7, 10, 31, 0.55) !important;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* hero panel: aurora gradient with the 3D canvas on the right */
@@ -364,11 +379,14 @@ html[data-theme="aurora_glass"] .hero-aurora h1 {
 
 /* gradient accent buttons get lift + glow */
 html[data-theme="aurora_glass"] .bg-amber-500:not(span),
-html[data-theme="aurora_glass"] button.bg-amber-500 {
-  background-image: linear-gradient(135deg, #a99bff, #6f5cf0) !important;
+html[data-theme="aurora_glass"] button.bg-amber-500,
+html[data-theme="aurora_glass"] .btn-primary-cta {
+  background-image: linear-gradient(135deg, #a99bff 0%, #6f5cf0 50%, #06b6d4 100%) !important;
   background-color: #8b7bff !important;
   color: #0b0720 !important;
-  box-shadow: 0 10px 28px -8px rgba(139, 123, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 30px -8px rgba(111, 92, 240, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border-radius: 9999px;
+  font-weight: 700;
 }
 
 html[data-theme="aurora_glass"] main button:not(:disabled) {
@@ -1972,3 +1990,31 @@ html[data-theme='cyberdeck_2077'] .max-w-3xl.rounded-3xl {
   pointer-events: none;
   opacity: 0.5;
 }
+
+/* =========================================================================
+   SMOOTH NEGATIVE-FILTER CIRCLE CURSOR
+   Transparent circular follower with optical inversion backdrop filter.
+   ========================================================================= */
+.custom-cursor-negative {
+  backdrop-filter: invert(100%) contrast(110%);
+  -webkit-backdrop-filter: invert(100%) contrast(110%);
+  mix-blend-mode: difference;
+}
+
+/* =========================================================================
+   ANIMATED WALKTHROUGH CONNECTING LASER LINE
+   Smooth glowing dash animation flowing from floating card to target function
+   ========================================================================= */
+@keyframes tourDash {
+  0% {
+    stroke-dashoffset: 28;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-tour-dash {
+  animation: tourDash 1.2s linear infinite;
+}
+
