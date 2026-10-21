@@ -137,7 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Center Navigation Tabs (Only when NOT actively taking exam) */}
-          <div data-tour="portal-nav" className="hidden md:flex items-center justify-start space-x-0.5 min-w-0 overflow-x-auto no-scrollbar px-1">
+          <div data-tour="portal-nav" className="hidden xl:flex items-center justify-center space-x-1 min-w-0 px-2 shrink">
             {!isExamRunning && (
               <>
                 <button
@@ -153,7 +153,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span className="hidden xl:inline">Exam Portal</span>
+                  <span>Exam Portal</span>
                 </button>
 
                 <button
@@ -169,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <Trophy className="w-4 h-4" />
-                  <span className="hidden xl:inline">Leaderboard</span>
+                  <span>Leaderboard</span>
                 </button>
 
                 <button
@@ -185,7 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <Megaphone className="w-4 h-4" />
-                  <span className="hidden xl:inline">Announcements</span>
+                  <span>Announcements</span>
                 </button>
 
                 <button
@@ -201,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }}
                 >
                   <BarChart3 className="w-4 h-4" />
-                  <span className="hidden xl:inline">Performance</span>
+                  <span>Performance</span>
                 </button>
 
                 <button
@@ -217,13 +217,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   title="View, edit, and export rough sheets, calculations, and standalone notebooks"
                 >
                   <PenTool className="w-4 h-4" />
-                  <span className="hidden xl:inline">Scratchpads</span>
+                  <span>Scratchpads</span>
                 </button>
 
                 <button
                   data-tour="flashcards-tab"
                   onClick={() => setCurrentTab('flashcards')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer relative ${
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'flashcards' ? 'shadow-md font-semibold' : 'hover:opacity-80'
                   }`}
                   style={{
@@ -233,7 +233,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   title="Formula Deck & Term Quiz — 971 formula cards and 1,059 terms, synced live from ce-formula-cards"
                 >
                   <Layers className="w-4 h-4" />
-                  <span className="hidden xl:inline">Cards</span>
+                  <span>Cards</span>
                 </button>
 
                 {/* Admin Tab (Only visible to admin) */}
@@ -247,7 +247,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }`}
                   >
                     <ShieldCheck className="w-4 h-4" />
-                    <span className="hidden xl:inline font-tech-mono font-bold">Admin</span>
+                    <span className="font-tech-mono font-bold">Admin</span>
                   </button>
                 )}
               </>
@@ -270,11 +270,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-            {/* Mobile menu trigger */}
+            {/* Tablet Portrait & Mobile drawer trigger (three lines) */}
             <button
               type="button"
               onClick={() => setMobileNavOpen((v) => !v)}
-              className="md:hidden p-2 rounded-lg border transition-colors cursor-pointer"
+              className="xl:hidden p-2 rounded-lg border transition-colors cursor-pointer"
               style={{
                 backgroundColor: themeConfig.bgCardSubtle,
                 borderColor: themeConfig.border,
@@ -293,15 +293,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onClick={onOpenContactAdmin}
                 title="Message the Administrator / Send Request"
-                className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer"
+                className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer whitespace-nowrap shrink-0"
                 style={{
                   backgroundColor: themeConfig.bgCardSubtle,
                   borderColor: themeConfig.border,
                   color: themeConfig.textPrimary,
                 }}
               >
-                <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden lg:inline">Message Admin</span>
+                <MessageSquare className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="hidden 2xl:inline">Message Admin</span>
               </button>
             )}
 
@@ -399,22 +399,22 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Mobile navigation panel (the tab strip is hidden below md) */}
+      {/* Tablet Portrait & Mobile drawer navigation panel */}
       {mobileNavOpen && !isExamRunning && (
         <div
-          className={`md:hidden px-3 py-3 mt-2 ${
+          className={`xl:hidden px-3 sm:px-4 py-3 sm:py-4 mt-2 ${
             isAurora
               ? 'rounded-2xl border shadow-xl'
-              : 'border-t'
+              : 'rounded-2xl border shadow-xl bg-slate-900/95'
           }`}
           style={{
             borderColor: isAurora ? 'rgba(255, 255, 255, 0.18)' : themeConfig.border,
-            backgroundColor: isAurora ? 'rgba(255, 255, 255, 0.08)' : undefined,
-            backdropFilter: isAurora ? 'blur(16px)' : undefined,
-            WebkitBackdropFilter: isAurora ? 'blur(16px)' : undefined,
+            backgroundColor: isAurora ? 'rgba(255, 255, 255, 0.08)' : themeConfig.bgCard,
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
           }}
         >
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = currentTab === item.id;
@@ -426,8 +426,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setCurrentTab(item.id);
                     setMobileNavOpen(false);
                   }}
-                  className={`flex items-center space-x-2 px-3 py-2.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
-                    active ? 'shadow-md' : 'hover:opacity-85'
+                  className={`flex items-center space-x-2 px-3 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                    active ? 'shadow-md font-bold' : 'hover:opacity-85'
                   }`}
                   style={{
                     backgroundColor: active ? themeConfig.accent : themeConfig.bgCardSubtle,
@@ -448,10 +448,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onOpenContactAdmin();
                   setMobileNavOpen(false);
                 }}
-                className="col-span-2 flex items-center justify-center space-x-2 px-3 py-2 rounded-lg border text-xs font-bold transition-colors cursor-pointer bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20"
+                className="col-span-2 sm:col-span-3 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all hover:scale-102 cursor-pointer bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25 shadow-sm"
               >
-                <MessageSquare className="w-4 h-4 text-amber-400" />
-                <span>Message Admin / Send Request</span>
+                <MessageSquare className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Message Administrator / Send Request</span>
               </button>
             )}
           </div>

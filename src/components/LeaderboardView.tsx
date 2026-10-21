@@ -453,13 +453,13 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
 
                             <td className="py-3.5 px-4 text-center">
                               <div className="flex items-center justify-center gap-1.5 font-mono text-[11px]">
-                                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30" title="MSTC (35%)">
+                                <span className="inline-block whitespace-nowrap px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30" title="MSTC (35%)">
                                   MSTC: {entry.subjectBreakdown.MSTC.ratingPercentage.toFixed(1)}%
                                 </span>
-                                <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" title="HPGE (30%)">
+                                <span className="inline-block whitespace-nowrap px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30" title="HPGE (30%)">
                                   HPGE: {entry.subjectBreakdown.HPGE.ratingPercentage.toFixed(1)}%
                                 </span>
-                                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" title="PSAD (35%)">
+                                <span className="inline-block whitespace-nowrap px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" title="PSAD (35%)">
                                   PSAD: {entry.subjectBreakdown.PSAD.ratingPercentage.toFixed(1)}%
                                 </span>
                               </div>

@@ -2021,3 +2021,13 @@ html[data-theme='cyberdeck_2077'] .max-w-3xl.rounded-3xl {
   animation: tourDash 1.2s linear infinite;
 }
 
+/* =========================================================================
+   HIDE DEFAULT OS MOUSE CURSOR ARROW ACROSS ENTIRE WEBSITE
+   Ensures that only the custom optical circular reticle is visible.
+   ========================================================================= */
+@media (pointer: fine) {
+  *, *::before, *::after, html, body, button, a, input, select, textarea, [role="button"], label, .cursor-pointer {
+    cursor: none !important;
+  }
+}
+

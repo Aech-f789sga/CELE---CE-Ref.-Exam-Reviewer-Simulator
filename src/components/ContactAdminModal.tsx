@@ -139,14 +139,6 @@ export const ContactAdminModal: React.FC<ContactAdminModalProps> = ({ isOpen, on
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3.5">
-              {/* Mission Note Banner */}
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start space-x-2.5 text-amber-200/90 text-[11px] leading-relaxed">
-                <Heart className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-amber-300">Free Educational Platform:</strong> This web is 100% free and non-profit, built to help engineering students who are struggling financially or striving to top the board exams.
-                </div>
-              </div>
-
               {errorMsg && (
                 <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[11px] flex items-center space-x-2">
                   <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
@@ -195,7 +187,6 @@ export const ContactAdminModal: React.FC<ContactAdminModalProps> = ({ isOpen, on
                   className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-amber-400 transition-colors"
                 >
                   <option value="Question Bank Request">Question Bank / Topic Addition Request</option>
-                  <option value="Financial / Review Material">Financial Assistance / Free Review Material</option>
                   <option value="Bug Report">Bug Report / Technical Correction</option>
                   <option value="Feature Suggestion">Feature Suggestion / Improvement Idea</option>
                   <option value="General Message">General Inquiry or Feedback to Admin</option>

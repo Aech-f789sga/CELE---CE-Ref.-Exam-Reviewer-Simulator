@@ -537,19 +537,92 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
           </div>
         ) : (
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-            <div className="overflow-x-auto">
+            {/* Mobile & Tablet Card Layout (Automatically arranges for phone/tablet so badges & details never get cut or cramped) */}
+            <div className="lg:hidden divide-y divide-slate-800/80">
+              {attempts.map((att) => {
+                const isPassed = att.ratingPercentage >= 50.0;
+                const padId = att.scratchpadId || `exam_${att.subject}_${att.year}_${att.month}`;
+                return (
+                  <div key={att.id} className="p-4 space-y-3 hover:bg-slate-800/30 transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border whitespace-nowrap shadow-sm inline-block ${
+                          att.subject === 'MSTC'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                            : att.subject === 'HPGE'
+                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
+                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                        }`}>
+                          {att.subject}
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-300 bg-slate-800/90 px-2 py-0.5 rounded-md border border-slate-700/80 whitespace-nowrap inline-block">
+                          Attempt #{att.attemptIndexInSubject}
+                        </span>
+                        <span className="text-xs text-slate-400 font-mono">
+                          {att.month} {att.year}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-base font-black font-arnie ${isPassed ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          {att.ratingPercentage.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs font-mono text-slate-300">
+                      <div className="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-500 block">Score</span>
+                        <strong className="text-white">{att.score} / {att.totalQuestions}</strong>
+                      </div>
+                      <div className="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-500 block">Status</span>
+                        <strong className={isPassed ? 'text-emerald-400' : 'text-rose-400'}>
+                          {isPassed ? 'Passed (≥50%)' : 'Failed (<50%)'}
+                        </strong>
+                      </div>
+                      <div className="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-500 block">Time Spent</span>
+                        <span>{formatTime(att.timeSpentSeconds)}</span>
+                      </div>
+                      <div className="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-500 block">Date</span>
+                        <span className="truncate block">{formatDate(att.date)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[11px] text-slate-500 font-mono">
+                        Mode: {att.isInteractive ? 'Interactive Review' : 'PRC Board Simulation'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => onOpenScratchpad?.(padId)}
+                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all hover:scale-105 cursor-pointer"
+                        title="View and edit rough calculation sheets from this session"
+                      >
+                        <PenTool className="w-3.5 h-3.5" />
+                        <span>Scratchpad</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View (Lg and above) */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-950 text-slate-400 uppercase font-tech-mono text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
-                    <th className="p-4">Date Taken</th>
-                    <th className="p-4">Area / Subject</th>
-                    <th className="p-4">Board Paper</th>
-                    <th className="p-4">Score</th>
-                    <th className="p-4">Rating %</th>
-                    <th className="p-4">PRC Area Status</th>
-                    <th className="p-4">Time Spent</th>
-                    <th className="p-4">Mode</th>
-                    <th className="p-4 text-right">Rough Sheets</th>
+                    <th className="p-4 whitespace-nowrap">Date Taken</th>
+                    <th className="p-4 whitespace-nowrap">Subject Area &amp; Attempt</th>
+                    <th className="p-4 whitespace-nowrap">Board Paper</th>
+                    <th className="p-4 whitespace-nowrap">Score</th>
+                    <th className="p-4 whitespace-nowrap">Rating %</th>
+                    <th className="p-4 whitespace-nowrap">PRC Area Status</th>
+                    <th className="p-4 whitespace-nowrap">Time Spent</th>
+                    <th className="p-4 whitespace-nowrap">Mode</th>
+                    <th className="p-4 text-right whitespace-nowrap">Rough Sheets</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800 font-tech-mono">
@@ -558,51 +631,56 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                     const padId = att.scratchpadId || `exam_${att.subject}_${att.year}_${att.month}`;
                     return (
                       <tr key={att.id} className="hover:bg-slate-800/40 transition-colors">
-                        <td className="p-4 text-slate-300">
+                        <td className="p-4 text-slate-300 whitespace-nowrap">
                           {formatDate(att.date)}
                         </td>
-                        <td className="p-4 font-bold">
-                          <span className={`px-2 py-0.5 rounded text-xs ${
-                            att.subject === 'MSTC'
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : att.subject === 'HPGE'
-                              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                              : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          }`}>
-                            {att.subject} (Attempt #{att.attemptIndexInSubject})
-                          </span>
+                        <td className="p-4 font-bold whitespace-nowrap">
+                          <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                            <span className={`px-2.5 py-1 rounded-md text-xs font-bold border whitespace-nowrap shadow-sm inline-block ${
+                              att.subject === 'MSTC'
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                                : att.subject === 'HPGE'
+                                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
+                                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                            }`}>
+                              {att.subject}
+                            </span>
+                            <span className="text-[11px] font-mono text-slate-300 bg-slate-800/90 px-2 py-0.5 rounded-md border border-slate-700/80 whitespace-nowrap inline-block">
+                              Attempt #{att.attemptIndexInSubject}
+                            </span>
+                          </div>
                         </td>
-                        <td className="p-4 text-slate-300">
+                        <td className="p-4 text-slate-300 whitespace-nowrap">
                           {att.month} {att.year}
                         </td>
-                        <td className="p-4 text-slate-200">
+                        <td className="p-4 text-slate-200 whitespace-nowrap">
                           {att.score} / {att.totalQuestions}
                         </td>
-                        <td className="p-4 font-bold text-sm">
+                        <td className="p-4 font-bold text-sm whitespace-nowrap">
                           <span className={isPassed ? 'text-emerald-400' : 'text-rose-400'}>
                             {att.ratingPercentage.toFixed(1)}%
                           </span>
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 whitespace-nowrap">
                           {isPassed ? (
-                            <span className="inline-flex items-center space-x-1 text-emerald-400 text-[11px] font-semibold">
+                            <span className="inline-flex items-center space-x-1 text-emerald-400 text-[11px] font-semibold whitespace-nowrap">
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               <span>Passed (≥50%)</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center space-x-1 text-rose-400 text-[11px] font-semibold">
+                            <span className="inline-flex items-center space-x-1 text-rose-400 text-[11px] font-semibold whitespace-nowrap">
                               <XCircle className="w-3.5 h-3.5" />
                               <span>Failed (&lt;50%)</span>
                             </span>
                           )}
                         </td>
-                        <td className="p-4 text-slate-400">
+                        <td className="p-4 text-slate-400 whitespace-nowrap">
                           {formatTime(att.timeSpentSeconds)}
                         </td>
-                        <td className="p-4 text-slate-400 text-[11px]">
+                        <td className="p-4 text-slate-400 text-[11px] whitespace-nowrap">
                           {att.isInteractive ? 'Interactive' : 'Simulation'}
                         </td>
-                        <td className="p-4 text-right">
+                        <td className="p-4 text-right whitespace-nowrap">
                           <button
                             type="button"
                             onClick={() => onOpenScratchpad?.(padId)}

@@ -104,27 +104,31 @@ export const CustomCursor: React.FC = () => {
         Negative Effect Circle:
         Positioned with -top-4 -left-4 (-16px, -16px) on a 32px (w-8 h-8) circle,
         so (0,0) of this container is precisely at the center of the circle.
-        True negative inversion is achieved via mix-blend-mode: difference + backdrop-filter: invert(100%).
-        Scales symmetrically around origin-center (50% 50%) so it never shifts away from the cursor.
+        Inside the circle is 100% TRANSPARENT, filtering all pixels underneath with
+        a true negative optical inversion (backdrop-filter: invert(100%)).
       */}
       <div
         ref={circleRef}
-        className={`absolute -top-4 -left-4 w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-100 ease-out origin-center ${
+        className={`absolute -top-4 -left-4 w-8 h-8 rounded-full pointer-events-none flex items-center justify-center transition-transform duration-100 ease-out origin-center ${
           isMouseDown ? 'scale-75' : isHovering ? 'scale-125' : 'scale-100'
         }`}
         style={{
-          backgroundColor: '#ffffff',
-          mixBlendMode: 'difference',
+          backgroundColor: 'transparent',
           backdropFilter: 'invert(100%)',
           WebkitBackdropFilter: 'invert(100%)',
-          border: '1.5px solid #ffffff',
-          boxShadow: '0 0 4px rgba(255,255,255,0.4)',
+          border: '1.5px solid rgba(255, 255, 255, 0.85)',
+          boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 8px rgba(255, 255, 255, 0.25)',
         }}
       >
-        {/* Tiny central pinpoint reticle dot */}
+        {/* Precise central cross reticle dot */}
         <span
-          className="w-1 h-1 rounded-full bg-white opacity-90 pointer-events-none"
-          style={{ mixBlendMode: 'difference' }}
+          className="w-1 h-1 rounded-full pointer-events-none"
+          style={{
+            backgroundColor: 'transparent',
+            backdropFilter: 'invert(100%)',
+            WebkitBackdropFilter: 'invert(100%)',
+            border: '1px solid rgba(255, 255, 255, 0.95)',
+          }}
         />
       </div>
     </div>
