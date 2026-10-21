@@ -1490,14 +1490,6 @@ export const FormulaCardsHub: React.FC = () => {
           {tab === 'glossary' && <GlossaryView book={book!} t={t} />}
         </>
       )}
-
-      {/* footer credit ------------------------------------------------------ */}
-      <p className="mt-6 text-center text-[11px] leading-relaxed" style={{ color: t.textMuted }}>
-        Formulas — Engr. Aleah Pearl Javier Once, RCE 2024 (Engr. APJO). Terms — Engineereya&apos;s Vlog.
-        <br />
-        Served live from <a href={`https://github.com/${CARD_REPO}`} target="_blank" rel="noreferrer" style={{ color: t.accent }}>{CARD_REPO}</a>
-        {' '}— updates appear here automatically.
-      </p>
     </div>
   );
 };

@@ -103,26 +103,16 @@ export const CustomCursor: React.FC = () => {
         guaranteeing the circle NEVER shifts or moves away from the mouse pointer.
       */}
       <div
-        className={`w-9 h-9 rounded-full flex items-center justify-center transition-transform duration-200 ease-out origin-center ${
-          isMouseDown ? 'scale-80' : isHovering ? 'scale-130' : 'scale-100'
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-200 ease-out origin-center ${
+          isMouseDown ? 'scale-75' : isHovering ? 'scale-135' : 'scale-100'
         }`}
         style={{
-          backdropFilter: 'invert(100%) contrast(115%)',
-          WebkitBackdropFilter: 'invert(100%) contrast(115%)',
+          backgroundColor: '#ffffff',
           mixBlendMode: 'difference',
-          border: '1.5px solid rgba(255, 255, 255, 0.9)',
-          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 0 10px rgba(255, 255, 255, 0.3)',
+          borderRadius: '9999px',
+          border: '1.5px solid #ffffff',
         }}
-      >
-        {/* Precision center dot indicating exact mouse hot-spot */}
-        <div
-          className="w-1.5 h-1.5 rounded-full bg-white opacity-90 transition-transform duration-200"
-          style={{
-            mixBlendMode: 'difference',
-          }}
-        />
-      </div>
+      />
     </div>
   );
 };

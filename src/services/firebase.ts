@@ -707,6 +707,100 @@ export async function deleteAnnouncement(id: string): Promise<boolean> {
 /**
  * Fetches all announcements from Firestore
  */
+export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
+  {
+    id: 'ann-prc-rules',
+    title: 'Official PRC Licensure Rating System & Paired Cycles (70.00% GWA Rule)',
+    message:
+      'In accordance with PRC regulations, examination attempts are paired sequentially across all three subjects (Attempt 1 of MSTC, HPGE, and PSAD form Cycle #1). A candidate passes the licensure exam only when their General Weighted Average (GWA) reaches ≥ 70.00% with no single subject rating falling below 50.00%. Subject weights are: MSTC 35%, HPGE 30%, and PSAD 35%. Overall Leaderboard rankings are earned after completing and being graded across all three areas.',
+    category: 'PRC Advisory',
+    priority: 'important',
+    isPinned: true,
+    authorEmail: 'board@prc.gov.ph',
+    authorName: 'PRC Licensure Board Committee',
+    createdAt: '2025-01-15T08:00:00Z',
+    isActive: true,
+  },
+  {
+    id: 'ann-security-privacy',
+    title: 'Google Cloud Firebase Identity Shield & Reviewee Privacy Guarantee',
+    message:
+      'Reviewee credentials and email addresses are 100% confidential and secure. Reviewee passwords and email addresses are NEVER accessible to administrators, instructors, or teachers. All authentication is handled directly and securely by Google Cloud Firebase. Only your chosen public display username, avatar badge, and exam performance scores appear on the community leaderboards and review analytics.',
+    category: 'General',
+    priority: 'important',
+    isPinned: true,
+    authorEmail: 'security@cloud.google.com',
+    authorName: 'System Security Administrator',
+    createdAt: '2025-01-10T09:00:00Z',
+    isActive: true,
+  },
+  {
+    id: 'ann-curriculum-references',
+    title: 'Review Curriculum Breakdown & Reference Standards (CE Reference Vol 4–6)',
+    message:
+      'The examination question banks and solution methodologies are rigorously aligned with CE Reference Volumes 4, 5, and 6 standard review books (Gillesania / Besavilla) and the National Structural Code of the Philippines (NSCP 2015):\n\n• MSTC (35% Weight): Higher Engineering Mathematics, Differential & Integral Calculus, Engineering Economy (Annuities, Depreciation, Capitalized Cost), Advanced Surveying, Highway Horizontal & Vertical Curves, Superelevation, Wave Mechanics, and Traffic Engineering.\n\n• HPGE (30% Weight): Fluid Statics, Hydrostatic Forces on Plane and Curved Surfaces, Gate Equilibrium, Darcy-Weisbach Pipe Flow, Open Channel Hydraulics, Soil Classification (USCS & AASHTO), Void Ratio, Effective Stress, Consolidation, Lateral Earth Pressure, and Ultimate Bearing Capacity.\n\n• PSAD (35% Weight): Statics, Strength of Materials, Indeterminate Structural Analysis, Ultimate Strength Design (USD) for Reinforced Concrete Beams and Slabs, Column Interaction, Footing Punching Shear, and AISC 360 Structural Steel & Welded Connections.',
+    category: 'Exam Notice',
+    priority: 'important',
+    isPinned: false,
+    authorEmail: 'curriculum@ceboard.ph',
+    authorName: 'Academic Review Director',
+    createdAt: '2025-01-05T10:00:00Z',
+    isActive: true,
+  },
+  {
+    id: 'ann-past-exam-data',
+    title: 'PRC Past Board Exam Question Sets (2011 – 2025 Availability)',
+    message:
+      'The question bank includes authenticated past examination sets from 2011 to 2025 for April and November schedules. Each problem provides full step-by-step KaTeX mathematical solutions, standard formulas, and dynamic SVG engineering figures. Examination years and months without uploaded board data remain unavailable until authentic historical test papers are uploaded.',
+    category: 'Schedule',
+    priority: 'normal',
+    isPinned: false,
+    authorEmail: 'archive@ceboard.ph',
+    authorName: 'Exam Archive Team',
+    createdAt: '2025-01-01T12:00:00Z',
+    isActive: true,
+  },
+  {
+    id: 'ann-formula-deck-repo',
+    title: 'Formula Deck & 4-Choice Terminology Quizzes (ce-formula-cards)',
+    message:
+      "The Flashcards and Recall Hub features 971 high-resolution formula card crops prepared by Engr. Aleah Pearl Javier Once, RCE 2024 (Engr. APJO), together with 1,059 rapid-recall Civil Engineering terminology definitions and 4-choice quizzes from Engineereya’s Vlog. All formula card assets are synchronized live from the open-source repository Aech-f789sga/ce-formula-cards.",
+    category: 'Tip',
+    priority: 'normal',
+    isPinned: false,
+    authorEmail: 'resources@ceboard.ph',
+    authorName: 'Resource Coordination Desk',
+    createdAt: '2024-12-28T14:00:00Z',
+    isActive: true,
+  },
+];
+
+function mergeAnnouncements(firebaseList: SystemAnnouncement[], onlyActive = true): SystemAnnouncement[] {
+  const map = new Map<string, SystemAnnouncement>();
+  // Official permanent references first
+  OFFICIAL_DEFAULT_ANNOUNCEMENTS.forEach((item) => {
+    if (!onlyActive || item.isActive !== false) {
+      map.set(item.id, item);
+    }
+  });
+  // Custom announcements from Firestore override or add
+  firebaseList.forEach((item) => {
+    if (!onlyActive || item.isActive !== false) {
+      map.set(item.id, item);
+    }
+  });
+
+  const list = Array.from(map.values());
+  return list.sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return (b.createdAt || '').localeCompare(a.createdAt || '');
+  });
+}
+
+/**
+ * Fetches all announcements from Firestore merged with official bulletins
+ */
 export async function fetchAnnouncements(onlyActive = true): Promise<SystemAnnouncement[]> {
   try {
     const colRef = collection(db, 'announcements');
@@ -719,15 +813,10 @@ export async function fetchAnnouncements(onlyActive = true): Promise<SystemAnnou
       }
     });
 
-    // Sort: pinned first, then newest
-    return list.sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      return (b.createdAt || '').localeCompare(a.createdAt || '');
-    });
+    return mergeAnnouncements(list, onlyActive);
   } catch (e) {
     console.error('Failed to fetch announcements:', e);
-    return [];
+    return mergeAnnouncements([], onlyActive);
   }
 }
 
@@ -749,18 +838,15 @@ export function subscribeAnnouncements(
             list.push(data);
           }
         });
-        list.sort((a, b) => {
-          if (a.isPinned && !b.isPinned) return -1;
-          if (!a.isPinned && b.isPinned) return 1;
-          return (b.createdAt || '').localeCompare(a.createdAt || '');
-        });
-        callback(list);
+        callback(mergeAnnouncements(list, true));
       },
       (err) => {
         console.warn('Realtime announcements subscription fallback:', err);
+        callback(mergeAnnouncements([], true));
       }
     );
   } catch (e) {
+    callback(mergeAnnouncements([], true));
     return () => {};
   }
 }

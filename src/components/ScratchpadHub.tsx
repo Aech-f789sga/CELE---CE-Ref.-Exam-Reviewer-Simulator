@@ -301,9 +301,6 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
               <PenTool className="w-8 h-8 text-cyan-400" />
               <span>Scratchpad Hub & Rough Sheets</span>
             </h1>
-            <p className="text-slate-400 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              Archived calculation sheets from exam sessions, standalone engineering sketchbooks, formula notes, and universal files for tablets and third-party note apps.
-            </p>
           </div>
 
           {/* Action Buttons */}

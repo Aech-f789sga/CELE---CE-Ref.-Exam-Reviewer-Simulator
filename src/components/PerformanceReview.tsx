@@ -105,9 +105,6 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
             <h1 className="font-arnie text-3xl sm:text-4xl font-bold text-white tracking-wide">
               Performance Review &amp; Paired Cycles
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl font-light leading-relaxed">
-              In accordance with PRC regulations, attempts are paired sequentially (<strong className="text-amber-400">Attempt 1</strong> across MSTC, HPGE, and PSAD form <strong className="text-amber-400">Cycle #1</strong>). The overall rating requires <strong className="text-emerald-400">≥ 70.00% GWA</strong> with <strong className="text-rose-400">no rating below 50.00%</strong> in any area.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

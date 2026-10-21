@@ -149,7 +149,7 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Real-time advisories, review tips, exam timetable announcements, and PRC licensure updates posted by the designated System Administrator.
+              Official broadcasts, syllabus references, and licensure exam guidelines.
             </p>
           </div>
 

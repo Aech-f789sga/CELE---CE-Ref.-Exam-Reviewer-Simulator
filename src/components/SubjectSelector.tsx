@@ -244,9 +244,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 <BookOpen className="w-3 h-3 text-amber-400 shrink-0" />
                 <span>Ref: CE Reference Vol 4–6</span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
-                Calculus, Economy, Surveying, Highway Curves, Superelevation &amp; Wave Mechanics.
-              </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
               <span className="text-amber-400 font-tech-mono">Std. Time: 5 Hours</span>
@@ -287,9 +284,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 <BookOpen className="w-3 h-3 text-cyan-400 shrink-0" />
                 <span>Ref: CE Reference Vol 4–6</span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
-                Fluid Statics, Darcy Pipe Flow, Soil Void Ratio, Lateral Earth Pressure &amp; Permeability.
-              </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
               <span className="text-cyan-400 font-tech-mono">Std. Time: 4 Hours</span>
@@ -330,9 +324,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 <BookOpen className="w-3 h-3 text-emerald-400 shrink-0" />
                 <span>Ref: CE Reference Vol 4–6</span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-2 line-clamp-2">
-                Shear &amp; Moment, NSCP 2015 RC Beams, Footing Punching, Welded Joints &amp; Steel Columns.
-              </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
               <span className="text-emerald-400 font-tech-mono">Std. Time: 5 Hours</span>
@@ -382,9 +373,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <Calendar className="w-3.5 h-3.5 text-amber-400" />
               <span>Examination Year (2011 – 2025)</span>
             </span>
-            <span className="text-[10px] text-slate-400 normal-case">
-              Years without uploaded data are unavailable
-            </span>
           </label>
           <div className="grid grid-cols-5 sm:grid-cols-8 gap-1.5">
             {ALL_YEARS.map((yr) => {
@@ -430,9 +418,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <span className="flex items-center space-x-2">
               <Layers className="w-3.5 h-3.5 text-amber-400" />
               <span>Examination Month</span>
-            </span>
-            <span className="text-[10px] text-slate-400 normal-case">
-              Months without uploaded data are unavailable
             </span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -703,16 +688,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </div>
           </div>
 
-          {/* Privacy & Security Guarantee Note */}
-          <div data-tour="privacy-shield" className="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/30 shadow-lg text-[11px] text-slate-300 space-y-1.5">
-            <div className="flex items-center space-x-1.5 text-emerald-400 font-bold">
-              <Lock className="w-3.5 h-3.5 shrink-0" />
-              <span>Google Identity &amp; Privacy Shield</span>
-            </div>
-            <p className="text-[10px] text-slate-400 leading-relaxed">
-              Reviewee passwords and emails are <strong>never accessible to administrators</strong> or instructors. All accounts are managed directly and securely by Google Cloud Firebase. Only your chosen public display username and exam scores are shown on the leaderboard.
-            </p>
-          </div>
         </aside>
       </div>
 
@@ -879,9 +854,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <h4 className="text-base font-bold text-white mt-0.5">
                 Flip Formula Cards &amp; Drill CE Terms
               </h4>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Every formula card is a real crop from Engr. APJO's RCE deck, plus 4-choice term quizzes and a full glossary. Mark cards you know vs need review — all pulled live from ce-formula-cards.
-              </p>
             </div>
           </div>
 

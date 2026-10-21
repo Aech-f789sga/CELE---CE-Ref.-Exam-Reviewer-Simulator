@@ -173,10 +173,6 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
             <h1 className="text-2xl sm:text-3xl font-black font-arnie text-white tracking-tight">
               Civil Engineering Examinee Leaderboards
             </h1>
-
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Official rankings for PRC Civil Engineering Licensure Exam candidates. Compare overall General Weighted Average (GWA) and subject-specific mastery across Mathematics, Surveying, Hydraulics, Geotechnical, and Structural Design.
-            </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -357,9 +353,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
               <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
                 <Trophy className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white">No Fully Completed Attempts Yet</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
-                As per examination rules, users only appear on the Overall Leaderboard after completing and being graded in all three areas (MSTC, HPGE, PSAD).
+              <h3 className="text-base font-bold text-white">No Completed Attempts Yet</h3>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Complete and submit exam attempts to appear on the leaderboards.
               </p>
               {onTakeExamArea && (
                 <button

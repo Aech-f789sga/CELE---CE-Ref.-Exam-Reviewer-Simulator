@@ -197,7 +197,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
     },
     {
       id: 'privacy-shield',
-      targetSelector: '[data-tour="privacy-shield"]',
+      targetSelector: '[data-tour="auth-trigger"]',
       tab: 'setup',
       badge: 'Step 10 · Security & Privacy',
       title: '100% Google Cloud Firebase Security',
