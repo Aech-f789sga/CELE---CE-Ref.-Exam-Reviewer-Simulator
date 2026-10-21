@@ -130,7 +130,7 @@ export const MSTE_MAY2019_PART1: Question[] = [
     pageNumber: 2,
     category: 'Algebra — Arithmetic Sequence',
     text:
-      'Suppose you receive $x$ dollars in January. Each month thereafter you receive \\$100 more than you received the month before. Write a factored polynomial that describes the total dollar amount you received from January through April.',
+      'Suppose you receive $x$ dollars in January. Each month thereafter you receive $100 more than you received the month before. Write a factored polynomial that describes the total dollar amount you received from January through April.',
     options: opt('$x + 150$', '$x + 100$', '$4(x + 150)$', '$4(x + 100)$'),
     correctAnswer: 'C',
     solution: { ...sol(9), finalAnswer: '$4(x + 150)$ (Option C)' },

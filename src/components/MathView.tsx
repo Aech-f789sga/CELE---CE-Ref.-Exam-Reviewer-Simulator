@@ -189,8 +189,12 @@ function isLegitimateMath(str: string): boolean {
   if (!trimmed) return false;
   // Delimiters with spaces adjacent are not valid inline math (standard LaTeX convention)
   if (str.startsWith(' ') || str.endsWith(' ')) return false;
-  // If it's a bare number or currency (e.g. 50, 1.50, 50,000)
-  if (/^(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(k|M|B)?(\/\w+)?$/.test(trimmed)) return false;
+  // If it's a bare number, currency or currency-with-unit (e.g. 50, 1.50, 50,000, 2/kg)
+  // Note: a `/` followed by letters means a unit, but a `/` followed by digits is a
+  // fraction ($2/3$), so the trailing part deliberately requires letters.
+  if (/^\d[\d,]*(\.\d+)?\s*(k|M|B)?\s*(\/[A-Za-z][A-Za-z/]*)?$/.test(trimmed)) return false;
+  // A currency amount followed by prose ("50 or ", "100 more ") is not math either.
+  if (/^\d[\d,]*(\.\d+)?\s+[A-Za-z]/.test(trimmed)) return false;
 
   const hasBackslash = trimmed.includes('\\');
   const hasMathSymbols = /[=^_{}∫√±≤≥≠×÷+\-*]/.test(trimmed);
@@ -204,48 +208,30 @@ function isLegitimateMath(str: string): boolean {
 }
 
 /**
- * Currency amount pattern (e.g. $50, $1.50, $677, $50,000, $120,000, $50/share, $75k)
- */
-const CURRENCY_REGEX = /\$(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:k|K|M|B)?(?:\/(?:share|unit|month|yr|year|week|hr|hour|day|package|lb|lane|wk|wks))?(?=[^a-zA-Z0-9_\\]|$)/g;
-
-/**
  * Parses markdown inline formatting and $math$ into React elements.
+ *
+ * Math pairing is decided BEFORE any currency handling, so `$56^\circ$`,
+ * `$4(x + 150)$` and `$2/3$` are recognised as maths rather than having their
+ * opening delimiter eaten by the currency guard. A lone `$` with no partner on
+ * the same line ("$14/hr") simply renders as text, as before. Because the math
+ * pattern rejects newlines, pairing can never cross a line or table row.
  */
 function renderInlineContent(text: string): React.ReactNode {
   if (!text) return null;
 
-  // Step 1: Temporarily protect currency amounts so $50 or $100,000 are never mistaken for LaTeX delimiters
-  const currencyMatches: string[] = [];
-  const textWithCurrencyProtected = text.replace(CURRENCY_REGEX, (m) => {
-    const placeholder = `___CURR_TOKEN_${currencyMatches.length}___`;
-    currencyMatches.push(m);
-    return placeholder;
-  });
-
-  // Step 2: Match candidate inline math $...$
   const parts: React.ReactNode[] = [];
   const mathRegex = /(?<!\\)\$([^\$\n]+?)(?<!\\)\$/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
-  const restoreTokens = (str: string): string => {
-    let out = str;
-    currencyMatches.forEach((curr, idx) => {
-      out = out.split(`___CURR_TOKEN_${idx}___`).join(curr);
-    });
-    return out;
-  };
-
-  while ((match = mathRegex.exec(textWithCurrencyProtected)) !== null) {
+  while ((match = mathRegex.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      const textChunk = restoreTokens(textWithCurrencyProtected.slice(lastIndex, match.index));
-      parts.push(...renderFormattedText(textChunk, `txt-${lastIndex}`));
+      parts.push(...renderFormattedText(text.slice(lastIndex, match.index), `txt-${lastIndex}`));
     }
 
     const rawCandidate = match[1];
     if (isLegitimateMath(rawCandidate)) {
-      const latex = restoreTokens(rawCandidate);
-      const html = renderKatex(latex, false);
+      const html = renderKatex(rawCandidate, false);
       parts.push(
         <span
           key={`math-${match.index}`}
@@ -254,17 +240,15 @@ function renderInlineContent(text: string): React.ReactNode {
         />
       );
     } else {
-      // It's not legitimate math (e.g. regular words) - render as normal formatted text!
-      const plainChunk = restoreTokens(match[0]);
-      parts.push(...renderFormattedText(plainChunk, `txt-raw-${match.index}`));
+      // It's not legitimate math (e.g. regular words or a currency amount) - render as plain text
+      parts.push(...renderFormattedText(match[0], `txt-raw-${match.index}`));
     }
 
     lastIndex = match.index + match[0].length;
   }
 
-  if (lastIndex < textWithCurrencyProtected.length) {
-    const textChunk = restoreTokens(textWithCurrencyProtected.slice(lastIndex));
-    parts.push(...renderFormattedText(textChunk, `txt-${lastIndex}`));
+  if (lastIndex < text.length) {
+    parts.push(...renderFormattedText(text.slice(lastIndex), `txt-${lastIndex}`));
   }
 
   return parts;
