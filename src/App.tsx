@@ -29,6 +29,7 @@ import { ThemeModal } from './components/ThemeModal';
 import { AuthModal } from './components/AuthModal';
 import { InteractiveTourModal } from './components/InteractiveTourModal';
 import { CustomCursor } from './components/CustomCursor';
+import { ContactAdminModal } from './components/ContactAdminModal';
 import { useTheme } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
@@ -98,6 +99,7 @@ function MainApp() {
   const [selectedScratchpadId, setSelectedScratchpadId] = useState<string | undefined>(undefined);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
+  const [isContactAdminOpen, setIsContactAdminOpen] = useState<boolean>(false);
   const [latestAnnouncement, setLatestAnnouncement] = useState<SystemAnnouncement | null>(null);
   const { themeConfig } = useTheme();
   const particleTheme = useParticleTheme();
@@ -402,6 +404,7 @@ function MainApp() {
           isExamRunning={isExamRunning}
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
           onOpenTour={() => setIsTourOpen(true)}
+          onOpenContactAdmin={() => setIsContactAdminOpen(true)}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
@@ -511,6 +514,9 @@ function MainApp() {
                 <AnnouncementSection
                   onNavigateToAdmin={() => setCurrentTab('admin')}
                   onTakeExam={() => setCurrentTab('setup')}
+                  onNavigateTab={(tab) => setCurrentTab(tab)}
+                  onOpenThemeModal={() => setIsThemeModalOpen(true)}
+                  onOpenContactAdmin={() => setIsContactAdminOpen(true)}
                 />
               )}
 
@@ -562,6 +568,12 @@ function MainApp() {
           onClose={() => setIsThemeModalOpen(false)}
         />
 
+        {/* Message the Administrator Modal */}
+        <ContactAdminModal
+          isOpen={isContactAdminOpen}
+          onClose={() => setIsContactAdminOpen(false)}
+        />
+
         {/* Dynamic & Animated Web Tour / Walkthrough Guide */}
         <InteractiveTourModal
           isOpen={isTourOpen}
@@ -573,6 +585,7 @@ function MainApp() {
             handleSubjectChange(sub);
           }}
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
+          onOpenContactAdmin={() => setIsContactAdminOpen(true)}
         />
 
         {/* Smooth Transparent Negative-Filter Custom Cursor */}

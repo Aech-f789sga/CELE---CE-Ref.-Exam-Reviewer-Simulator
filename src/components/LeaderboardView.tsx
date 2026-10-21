@@ -142,7 +142,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
+    <div data-tour="leaderboard-content" className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
       {/* Header Banner */}
       <div
         className="rounded-3xl p-6 sm:p-8 border shadow-2xl relative overflow-hidden"

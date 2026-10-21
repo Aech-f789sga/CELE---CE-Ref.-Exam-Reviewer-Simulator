@@ -2,15 +2,16 @@ import React, { useEffect, useState, useRef } from 'react';
 
 /**
  * CustomCursor
- * Creates a smooth, transparent circular cursor follower with an optical negative filter
- * (backdrop invert + difference blend mode).
+ * Creates a smooth circular cursor follower with a true optical negative effect
+ * (inversion backdrop filter + difference blend mode).
  * 
  * Perfect Centering Guarantee:
- * - Position is updated directly via pointer coordinates with translate3d(x, y, 0) translate(-50%, -50%).
- * - No CSS transitions are applied to the coordinate transform, ensuring zero lag and zero drift.
- * - Expanding when hovering over clickable panels / tabs is applied strictly to an inner wrapper
- *   using `transform-origin: center center` (scale only), so it NEVER moves away from the mouse point.
- * - Position is kept in a mutable ref and not overwritten by React re-renders.
+ * - Position is updated directly via pointer coordinates: translate3d(clientX px, clientY px, 0)
+ * - The circle is fixed at w-8 h-8 with exact negative margins (-top-4 -left-4 or -ml-4 -mt-4),
+ *   guaranteeing that (clientX, clientY) is ALWAYS mathematically the dead center of the circle.
+ * - Zero lag, zero displacement, zero magnetic offset when hovering tabs or clickable panels.
+ * - Uses backdrop-filter: invert(100%) and mix-blend-mode: difference with #ffffff background
+ *   for a true photographic negative effect that inverts all pixels beneath the circle.
  */
 export const CustomCursor: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
@@ -19,6 +20,7 @@ export const CustomCursor: React.FC = () => {
   const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
 
   const cursorRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
   const posRef = useRef<{ x: number; y: number }>({ x: -100, y: -100 });
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export const CustomCursor: React.FC = () => {
       posRef.current.x = clientX;
       posRef.current.y = clientY;
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${clientX}px, ${clientY}px, 0) translate(-50%, -50%)`;
+        cursorRef.current.style.transform = `translate3d(${clientX}px, ${clientY}px, 0)`;
       }
     };
 
@@ -48,7 +50,8 @@ export const CustomCursor: React.FC = () => {
         const clickable = target.closest(
           'a, button, input, textarea, select, [role="button"], label, [data-clickable="true"], .cursor-pointer'
         );
-        setIsHovering(!!clickable);
+        const hovering = !!clickable;
+        setIsHovering(hovering);
       }
     };
 
@@ -79,7 +82,7 @@ export const CustomCursor: React.FC = () => {
   // Re-apply position after any React re-render so it never gets wiped out
   useEffect(() => {
     if (cursorRef.current && posRef.current.x >= 0 && posRef.current.y >= 0) {
-      cursorRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0) translate(-50%, -50%)`;
+      cursorRef.current.style.transform = `translate3d(${posRef.current.x}px, ${posRef.current.y}px, 0)`;
     }
   });
 
@@ -88,31 +91,42 @@ export const CustomCursor: React.FC = () => {
   return (
     <div
       ref={cursorRef}
-      className={`fixed top-0 left-0 pointer-events-none z-[999999] transition-opacity duration-150 ease-out ${
+      className={`fixed top-0 left-0 pointer-events-none z-[9999999] transition-opacity duration-150 ease-out ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
       style={{
         willChange: 'transform',
+        transform: 'translate3d(-100px, -100px, 0)',
       }}
       aria-hidden="true"
     >
       {/* 
-        Inner Circle with Negative Inversion Filter:
-        backdropFilter: invert(100%) and mixBlendMode: difference.
-        Scale transition occurs smoothly around origin-center (50% 50%),
-        guaranteeing the circle NEVER shifts or moves away from the mouse pointer.
+        Negative Effect Circle:
+        Positioned with -top-4 -left-4 (-16px, -16px) on a 32px (w-8 h-8) circle,
+        so (0,0) of this container is precisely at the center of the circle.
+        True negative inversion is achieved via mix-blend-mode: difference + backdrop-filter: invert(100%).
+        Scales symmetrically around origin-center (50% 50%) so it never shifts away from the cursor.
       */}
       <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-200 ease-out origin-center ${
-          isMouseDown ? 'scale-75' : isHovering ? 'scale-135' : 'scale-100'
+        ref={circleRef}
+        className={`absolute -top-4 -left-4 w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-100 ease-out origin-center ${
+          isMouseDown ? 'scale-75' : isHovering ? 'scale-125' : 'scale-100'
         }`}
         style={{
           backgroundColor: '#ffffff',
           mixBlendMode: 'difference',
-          borderRadius: '9999px',
+          backdropFilter: 'invert(100%)',
+          WebkitBackdropFilter: 'invert(100%)',
           border: '1.5px solid #ffffff',
+          boxShadow: '0 0 4px rgba(255,255,255,0.4)',
         }}
-      />
+      >
+        {/* Tiny central pinpoint reticle dot */}
+        <span
+          className="w-1 h-1 rounded-full bg-white opacity-90 pointer-events-none"
+          style={{ mixBlendMode: 'difference' }}
+        />
+      </div>
     </div>
   );
 };

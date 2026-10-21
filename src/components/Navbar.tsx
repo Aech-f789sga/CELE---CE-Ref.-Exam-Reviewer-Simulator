@@ -21,6 +21,7 @@ import {
   Menu,
   X,
   Compass,
+  MessageSquare,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +35,7 @@ interface NavbarProps {
   isExamRunning: boolean;
   onOpenThemeModal: () => void;
   onOpenTour?: () => void;
+  onOpenContactAdmin?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -44,6 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   isExamRunning,
   onOpenThemeModal,
   onOpenTour,
+  onOpenContactAdmin,
 }) => {
   const { themeConfig, fontId, setThemeId } = useTheme();
   const { user, profile, isAdmin, openAuthModal, signOut, loading: authLoading } = useAuth();
@@ -138,6 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {!isExamRunning && (
               <>
                 <button
+                  data-tour="tab-setup"
                   onClick={() => setCurrentTab('setup')}
                   title="Exam Portal"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -153,6 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
                 <button
+                  data-tour="tab-leaderboard"
                   onClick={() => setCurrentTab('leaderboard')}
                   title="Leaderboard"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -168,6 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
                 <button
+                  data-tour="tab-announcements"
                   onClick={() => setCurrentTab('announcements')}
                   title="Announcements"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -183,6 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
                 <button
+                  data-tour="tab-performance"
                   onClick={() => setCurrentTab('performance')}
                   title="Performance"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -263,7 +270,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
 
-
             {/* Mobile menu trigger */}
             <button
               type="button"
@@ -280,21 +286,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
 
-            {/* Interactive Tour & Capabilities Guide Button */}
-            {onOpenTour && !isExamRunning && (
+            {/* Message Admin Trigger */}
+            {onOpenContactAdmin && (
               <button
+                data-tour="contact-admin-trigger"
                 type="button"
-                onClick={onOpenTour}
-                title="Interactive Guide & Tour (CE Reference Vol 4-6)"
+                onClick={onOpenContactAdmin}
+                title="Message the Administrator / Send Request"
                 className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer"
                 style={{
                   backgroundColor: themeConfig.bgCardSubtle,
-                  borderColor: 'rgba(245, 158, 11, 0.45)',
-                  color: '#fbbf24',
+                  borderColor: themeConfig.border,
+                  color: themeConfig.textPrimary,
                 }}
               >
-                <Compass className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden sm:inline">Tour &amp; Guide</span>
+                <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden lg:inline">Message Admin</span>
               </button>
             )}
 
@@ -433,23 +440,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               );
             })}
-          </div>
 
-          {onOpenTour && (
-            <div className="pt-2 mt-2 border-t border-slate-800">
+            {onOpenContactAdmin && (
               <button
                 type="button"
                 onClick={() => {
-                  onOpenTour();
+                  onOpenContactAdmin();
                   setMobileNavOpen(false);
                 }}
-                className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all cursor-pointer"
+                className="col-span-2 flex items-center justify-center space-x-2 px-3 py-2 rounded-lg border text-xs font-bold transition-colors cursor-pointer bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20"
               >
-                <Compass className="w-4 h-4 text-amber-400" />
-                <span>Interactive Web Tour &amp; Function Guide</span>
+                <MessageSquare className="w-4 h-4 text-amber-400" />
+                <span>Message Admin / Send Request</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
     </header>

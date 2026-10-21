@@ -14,6 +14,14 @@ import {
   Plus,
   RefreshCw,
   Clock,
+  MessageSquare,
+  PenTool,
+  Trophy,
+  BarChart3,
+  Layers,
+  Palette,
+  Heart,
+  BookOpen as BookIcon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -26,11 +34,17 @@ import {
 interface AnnouncementSectionProps {
   onNavigateToAdmin?: () => void;
   onTakeExam?: () => void;
+  onNavigateTab?: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'scratchpad' | 'flashcards') => void;
+  onOpenThemeModal?: () => void;
+  onOpenContactAdmin?: () => void;
 }
 
 export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
   onNavigateToAdmin,
   onTakeExam,
+  onNavigateTab,
+  onOpenThemeModal,
+  onOpenContactAdmin,
 }) => {
   const { themeConfig } = useTheme();
   const { isAdmin, designatedAdminEmail } = useAuth();
@@ -153,7 +167,19 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            {onOpenContactAdmin && (
+              <button
+                type="button"
+                onClick={onOpenContactAdmin}
+                className="px-3.5 py-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 transition-colors border border-amber-500/35 cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-sm"
+                title="Send a message or material request to the administrator"
+              >
+                <MessageSquare className="w-4 h-4 text-amber-400" />
+                <span>Message Admin</span>
+              </button>
+            )}
+
             <button
               onClick={loadAnnouncements}
               className="p-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 cursor-pointer flex items-center gap-1.5 text-xs font-bold"
@@ -304,7 +330,7 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
       </div>
 
       {/* Announcement List */}
-      <div className="space-y-4">
+      <div data-tour="announcements-content" className="space-y-4">
         {loading ? (
           <div className="p-12 text-center text-slate-400 text-sm flex flex-col items-center justify-center space-y-3">
             <RefreshCw className="w-6 h-6 animate-spin text-amber-400" />
@@ -374,6 +400,136 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                 <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line mb-4 font-sans">
                   {ann.message}
                 </p>
+
+                {/* Feature testing grid for capabilities announcement */}
+                {ann.id === 'ann-capabilities-directory' && (
+                  <div className="mt-4 mb-4 p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Interactive Feature Tester — Click to Test
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => (onNavigateTab ? onNavigateTab('setup') : onTakeExam?.())}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-amber-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <BookIcon className="w-3.5 h-3.5" />
+                          <span>Exam Portal</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">2011–2025 sets &amp; KaTeX</p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateTab?.('leaderboard')}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-amber-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <Trophy className="w-3.5 h-3.5" />
+                          <span>Leaderboard</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">Real-time GWA rankings</p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateTab?.('performance')}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-amber-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <BarChart3 className="w-3.5 h-3.5" />
+                          <span>Performance</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">Paired cycles &amp; 70% threshold</p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateTab?.('scratchpad')}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-emerald-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <PenTool className="w-3.5 h-3.5" />
+                          <span>Scratchpad Hub</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">Canvas drawing &amp; PDF</p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateTab?.('flashcards')}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-purple-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <Layers className="w-3.5 h-3.5" />
+                          <span>Formula Cards</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">971 APJO formula cards</p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onNavigateTab?.('flashcards')}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-cyan-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-cyan-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Term Quiz</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">1,059 speed drill terms</p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onOpenThemeModal?.()}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-pink-400 text-left transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2 text-pink-400 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                          <Palette className="w-3.5 h-3.5" />
+                          <span>Themes &amp; 3D</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">10 themes &amp; soundscapes</p>
+                      </button>
+
+                      {onOpenContactAdmin && (
+                        <button
+                          type="button"
+                          onClick={onOpenContactAdmin}
+                          className="p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-400 text-left transition-all cursor-pointer group"
+                        >
+                          <div className="flex items-center space-x-2 text-amber-300 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                            <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                            <span>Message Admin</span>
+                          </div>
+                          <p className="text-[10px] text-slate-400 mt-1">Send request or material</p>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Free platform assurance + Message Admin quick button */}
+                {ann.id === 'ann-dev-mission-references' && onOpenContactAdmin && (
+                  <div className="mt-3 pt-3 border-t border-slate-800/60 flex items-center justify-between flex-wrap gap-2">
+                    <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 font-medium">
+                      <Heart className="w-3.5 h-3.5 fill-emerald-500/20" />
+                      100% Free Educational Reviewer — No Ads, No Fees, No Commercial Gain
+                    </span>
+                    <button
+                      type="button"
+                      onClick={onOpenContactAdmin}
+                      className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Message Admin with Request</span>
+                    </button>
+                  </div>
+                )}
 
                 <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
                   <div className="flex items-center space-x-2 text-slate-400">

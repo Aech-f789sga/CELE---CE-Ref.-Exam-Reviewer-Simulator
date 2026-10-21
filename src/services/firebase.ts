@@ -707,7 +707,47 @@ export async function deleteAnnouncement(id: string): Promise<boolean> {
 /**
  * Fetches all announcements from Firestore
  */
+export interface UserAdminMessage {
+  id: string;
+  senderName: string;
+  senderEmail?: string;
+  category: 'Question Bank Request' | 'Bug Report' | 'Feature Suggestion' | 'Financial / Review Material' | 'General Message';
+  subject: string;
+  message: string;
+  createdAt: string;
+  status: 'unread' | 'read' | 'resolved';
+  userId?: string;
+  adminReply?: string;
+  repliedAt?: string;
+}
+
 export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
+  {
+    id: 'ann-dev-mission-references',
+    title: 'Web in Development: Dedicated Free Educational Platform for CE Reviewees',
+    message:
+      'Notice from the Administrator: This website is actively in development, and we are dedicated to continuously improving and expanding it along the way with more board exam questions, updated solutions, and features in the future.\n\nAll contents, formulas, and mock problems here are officially referenced from standard review literature:\n• CE Reference Books Volume 4, 5, and 6 (Gillesania / Besavilla review standards)\n• National Structural Code of the Philippines (NSCP 2015)\n• Official PRC Civil Engineering Board Examination Question Sets (2011 – 2025)\n• High-resolution formula cards by Engr. Aleah Pearl Javier Once, RCE 2024 (Engr. APJO)\n• Core terminology from Engineereya’s Vlog\n\nMission & Non-Profit Notice: This platform is 100% free to use and will never be used to gain profit. It was created as a humble way to help civil engineering students who are struggling financially or who want to challenge themselves to excel and pass the board examinations. If you have questions, material requests, or want to report an issue, please use the "Message Admin" feature.',
+    category: 'General',
+    priority: 'urgent',
+    isPinned: true,
+    authorEmail: 'derrickdarrack@gmail.com',
+    authorName: 'System Administrator & CE Mentor',
+    createdAt: '2026-10-21T08:00:00Z',
+    isActive: true,
+  },
+  {
+    id: 'ann-capabilities-directory',
+    title: 'Platform Capabilities & Interactive Feature Directory',
+    message:
+      'Explore all functions and capabilities of the CE Board Exam Reviewer & Simulator. You can test each feature directly from here:\n\n• 🎯 Exam Simulator: Past board exams (2011–2025) with KaTeX solutions and dynamic SVG diagrams.\n• 🏆 Examinee Leaderboards: Track real-time rankings and General Weighted Average (GWA) percentiles.\n• 📊 Performance Review & Paired Cycles: Track Attempt 1 across MSTC, HPGE, and PSAD forming Cycle #1 against the 70.00% GWA passing threshold.\n• ✍️ Scratchpad Hub & Inkpad Studio: Full engineering sketchpad with pen tools, rulers, grid lines, and high-res PDF/PNG export.\n• 🗂️ Formula Cards & Quizzes: 971 interactive formula cards and 1,059 4-choice recall questions.\n• 🎨 Themes & 3D WebGL Environments: 10 visual themes, Cyberdeck 2077 with audio, and webcam hand gesture particle controls.\n• 📬 Message the Admin: Send requests, suggestions, or material requests directly to the system administrator.',
+    category: 'Tip',
+    priority: 'important',
+    isPinned: true,
+    authorEmail: 'derrickdarrack@gmail.com',
+    authorName: 'Platform Director',
+    createdAt: '2026-10-18T10:00:00Z',
+    isActive: true,
+  },
   {
     id: 'ann-prc-rules',
     title: 'Official PRC Licensure Rating System & Paired Cycles (70.00% GWA Rule)',
@@ -715,23 +755,10 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
       'In accordance with PRC regulations, examination attempts are paired sequentially across all three subjects (Attempt 1 of MSTC, HPGE, and PSAD form Cycle #1). A candidate passes the licensure exam only when their General Weighted Average (GWA) reaches ≥ 70.00% with no single subject rating falling below 50.00%. Subject weights are: MSTC 35%, HPGE 30%, and PSAD 35%. Overall Leaderboard rankings are earned after completing and being graded across all three areas.',
     category: 'PRC Advisory',
     priority: 'important',
-    isPinned: true,
+    isPinned: false,
     authorEmail: 'board@prc.gov.ph',
     authorName: 'PRC Licensure Board Committee',
-    createdAt: '2025-01-15T08:00:00Z',
-    isActive: true,
-  },
-  {
-    id: 'ann-security-privacy',
-    title: 'Google Cloud Firebase Identity Shield & Reviewee Privacy Guarantee',
-    message:
-      'Reviewee credentials and email addresses are 100% confidential and secure. Reviewee passwords and email addresses are NEVER accessible to administrators, instructors, or teachers. All authentication is handled directly and securely by Google Cloud Firebase. Only your chosen public display username, avatar badge, and exam performance scores appear on the community leaderboards and review analytics.',
-    category: 'General',
-    priority: 'important',
-    isPinned: true,
-    authorEmail: 'security@cloud.google.com',
-    authorName: 'System Security Administrator',
-    createdAt: '2025-01-10T09:00:00Z',
+    createdAt: '2026-10-15T09:00:00Z',
     isActive: true,
   },
   {
@@ -744,7 +771,20 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     isPinned: false,
     authorEmail: 'curriculum@ceboard.ph',
     authorName: 'Academic Review Director',
-    createdAt: '2025-01-05T10:00:00Z',
+    createdAt: '2026-10-10T14:00:00Z',
+    isActive: true,
+  },
+  {
+    id: 'ann-security-privacy',
+    title: 'Google Cloud Firebase Identity Shield & Reviewee Privacy Guarantee',
+    message:
+      'Reviewee credentials and email addresses are 100% confidential and secure. Reviewee passwords and email addresses are NEVER accessible to administrators, instructors, or teachers. All authentication is handled directly and securely by Google Cloud Firebase. Only your chosen public display username, avatar badge, and exam performance scores appear on the community leaderboards and review analytics.',
+    category: 'General',
+    priority: 'normal',
+    isPinned: false,
+    authorEmail: 'security@cloud.google.com',
+    authorName: 'System Security Administrator',
+    createdAt: '2026-10-05T11:00:00Z',
     isActive: true,
   },
   {
@@ -757,20 +797,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     isPinned: false,
     authorEmail: 'archive@ceboard.ph',
     authorName: 'Exam Archive Team',
-    createdAt: '2025-01-01T12:00:00Z',
-    isActive: true,
-  },
-  {
-    id: 'ann-formula-deck-repo',
-    title: 'Formula Deck & 4-Choice Terminology Quizzes (ce-formula-cards)',
-    message:
-      "The Flashcards and Recall Hub features 971 high-resolution formula card crops prepared by Engr. Aleah Pearl Javier Once, RCE 2024 (Engr. APJO), together with 1,059 rapid-recall Civil Engineering terminology definitions and 4-choice quizzes from Engineereya’s Vlog. All formula card assets are synchronized live from the open-source repository Aech-f789sga/ce-formula-cards.",
-    category: 'Tip',
-    priority: 'normal',
-    isPinned: false,
-    authorEmail: 'resources@ceboard.ph',
-    authorName: 'Resource Coordination Desk',
-    createdAt: '2024-12-28T14:00:00Z',
+    createdAt: '2026-10-01T08:00:00Z',
     isActive: true,
   },
 ];
@@ -848,6 +875,122 @@ export function subscribeAnnouncements(
   } catch (e) {
     callback(mergeAnnouncements([], true));
     return () => {};
+  }
+}
+
+/* ==========================================================================
+   USER REQUESTS & MESSAGES TO ADMIN
+   ========================================================================== */
+
+/**
+ * Sends a message or request from a reviewee to the system administrator
+ */
+export async function sendMessageToAdmin(
+  msg: Omit<UserAdminMessage, 'id' | 'createdAt' | 'status'>
+): Promise<string> {
+  const id = `msg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const now = new Date().toISOString();
+  const payload: UserAdminMessage = {
+    ...msg,
+    id,
+    createdAt: now,
+    status: 'unread',
+  };
+
+  try {
+    const docRef = doc(db, 'userMessages', id);
+    await setDoc(docRef, payload);
+    return id;
+  } catch (e) {
+    console.error('Failed to send message to admin in Firestore, saving locally:', e);
+    // Local fallback
+    try {
+      const local = JSON.parse(localStorage.getItem('ce_local_user_messages') || '[]');
+      local.unshift(payload);
+      localStorage.setItem('ce_local_user_messages', JSON.stringify(local));
+    } catch {}
+    return id;
+  }
+}
+
+/**
+ * Fetches all reviewee messages (Admin only)
+ */
+export async function fetchUserAdminMessages(): Promise<UserAdminMessage[]> {
+  try {
+    const colRef = collection(db, 'userMessages');
+    const snap = await getDocs(colRef);
+    const list: UserAdminMessage[] = [];
+    snap.forEach((d) => {
+      const data = d.data() as UserAdminMessage;
+      if (data) list.push(data);
+    });
+
+    // Also include any offline local messages
+    try {
+      const local = JSON.parse(localStorage.getItem('ce_local_user_messages') || '[]');
+      local.forEach((m: UserAdminMessage) => {
+        if (!list.some((existing) => existing.id === m.id)) {
+          list.push(m);
+        }
+      });
+    } catch {}
+
+    return list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  } catch (e) {
+    console.error('Failed to fetch messages for admin:', e);
+    try {
+      const local = JSON.parse(localStorage.getItem('ce_local_user_messages') || '[]');
+      return local;
+    } catch {
+      return [];
+    }
+  }
+}
+
+/**
+ * Updates a reviewee message status or records admin reply
+ */
+export async function updateAdminMessage(
+  id: string,
+  updates: Partial<UserAdminMessage>
+): Promise<boolean> {
+  try {
+    const docRef = doc(db, 'userMessages', id);
+    await setDoc(docRef, updates, { merge: true });
+    return true;
+  } catch (e) {
+    console.error('Failed to update message:', e);
+    try {
+      const local = JSON.parse(localStorage.getItem('ce_local_user_messages') || '[]');
+      const idx = local.findIndex((m: UserAdminMessage) => m.id === id);
+      if (idx >= 0) {
+        local[idx] = { ...local[idx], ...updates };
+        localStorage.setItem('ce_local_user_messages', JSON.stringify(local));
+      }
+      return true;
+    } catch {}
+    return false;
+  }
+}
+
+/**
+ * Deletes a reviewee message
+ */
+export async function deleteAdminMessage(id: string): Promise<boolean> {
+  try {
+    const docRef = doc(db, 'userMessages', id);
+    await deleteDoc(docRef);
+    return true;
+  } catch (e) {
+    console.error('Failed to delete message:', e);
+    try {
+      const local = JSON.parse(localStorage.getItem('ce_local_user_messages') || '[]');
+      const filtered = local.filter((m: UserAdminMessage) => m.id !== id);
+      localStorage.setItem('ce_local_user_messages', JSON.stringify(filtered));
+      return true;
+    } catch {}
+    return false;
   }
 }
 

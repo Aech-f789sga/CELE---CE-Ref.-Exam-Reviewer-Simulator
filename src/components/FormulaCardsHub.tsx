@@ -1444,6 +1444,7 @@ export const FormulaCardsHub: React.FC = () => {
           {tabs.map((item) => (
             <button
               key={item.id}
+              data-tour={item.id === 'deck' ? 'formula-deck-tab' : item.id === 'quiz' ? 'term-quiz-tab' : undefined}
               type="button"
               onClick={() => setTab(item.id)}
               style={tab === item.id ? { backgroundColor: withAlpha(t.accent, 0.16), color: t.accent } : { color: t.textMuted }}

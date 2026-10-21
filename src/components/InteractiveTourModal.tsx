@@ -14,6 +14,11 @@ import {
   Sparkles,
   Zap,
   Lock,
+  Trophy,
+  BarChart3,
+  Megaphone,
+  MessageSquare,
+  Heart,
 } from 'lucide-react';
 import { SubjectArea } from '../types/exam';
 
@@ -41,6 +46,7 @@ interface InteractiveTourModalProps {
   ) => void;
   onSelectSubject?: (subject: SubjectArea) => void;
   onOpenThemeModal?: () => void;
+  onOpenContactAdmin?: () => void;
 }
 
 export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
@@ -49,6 +55,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
   onNavigateTab,
   onSelectSubject,
   onOpenThemeModal,
+  onOpenContactAdmin,
 }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
@@ -68,7 +75,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
       title: 'Portal Navigation Tabs',
       subtitle: 'Seamless Switching Across the Entire Licensure Suite',
       description:
-        'Easily switch between the Exam Portal, Reviewee Leaderboard, Announcements, Performance Analytics, Scratchpad Notebooks, and Active Recall Flashcards without losing your progress.',
+        'Easily switch between the Exam Portal, Reviewee Leaderboard, Announcements, Performance Analytics, Scratchpad Hub, and Formula Cards without losing your session progress.',
       accentColor: '#f59e0b',
       preferredPlacement: 'bottom',
     },
@@ -148,64 +155,124 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
       preferredPlacement: 'left',
     },
     {
-      id: 'scratchpad-tab',
-      targetSelector: '[data-tour="scratchpad-tab"]',
-      tab: 'setup',
-      badge: 'Step 07 · In-Exam Scratchpad',
-      title: 'Draggable & Minimizable Scratchpad Studio',
-      subtitle: 'Solve Calculations Side-by-Side with Exam Problems',
+      id: 'leaderboard-walkthrough',
+      targetSelector: '[data-tour="leaderboard-content"]',
+      tab: 'leaderboard',
+      badge: 'Step 07 · Inside Leaderboards',
+      title: 'Examinee Leaderboards & Rankings',
+      subtitle: 'Real-Time General Weighted Average (GWA) Rankings',
       description:
-        'Open the scratchpad during any exam, freely drag it across your screen so it never blocks problem figures, minimize it to a floating bar, use engineering grid rules, and export multi-page notebooks to high-res PDF or PNG.',
+        'Inspect community rankings computed across paired attempts. See where you stand overall and per-area (MSTC, HPGE, PSAD) against the official PRC 70.00% GWA passing threshold.',
+      accentColor: '#f59e0b',
+      preferredPlacement: 'bottom',
+      referenceBadge: 'PRC Rule: Pass requires ≥70.00% GWA with no single subject below 50.00%',
+    },
+    {
+      id: 'announcements-walkthrough',
+      targetSelector: '[data-tour="announcements-content"]',
+      tab: 'announcements',
+      badge: 'Step 08 · Inside Announcements',
+      title: 'Free Non-Profit Mission & References',
+      subtitle: 'Continuous Development & Interactive Feature Tester',
+      description:
+        'Notice: This website is in active development with continuous updates for more board exam questions. Built 100% free with no profit to support students struggling financially or challenging themselves. All items cite CE Reference Books Volume 4-6, NSCP 2015, Engr. APJO, and Engineereya.',
+      accentColor: '#38bdf8',
+      preferredPlacement: 'bottom',
+      referenceBadge: '100% Free Educational Platform · All Review Literature Officially Referenced',
+    },
+    {
+      id: 'performance-walkthrough',
+      targetSelector: '[data-tour="performance-content"]',
+      tab: 'performance',
+      badge: 'Step 09 · Inside Performance',
+      title: 'Performance Review & Paired Cycles',
+      subtitle: 'Sequential Attempt Pairing (MSTC + HPGE + PSAD)',
+      description:
+        'Examine your paired examination cycles. Attempt 1 across all three subjects creates Cycle #1 to compute your true licensure rating. Analyze score distributions, passing percentages, and subject strengths.',
       accentColor: '#10b981',
       preferredPlacement: 'bottom',
-      actionLabel: 'Open Scratchpad Hub',
-      onAction: () => {
-        onNavigateTab('scratchpad');
-      },
     },
     {
-      id: 'flashcards-tab',
-      targetSelector: '[data-tour="flashcards-tab"]',
-      tab: 'setup',
-      badge: 'Step 08 · Flashcards & Quizzes',
-      title: 'Flashcards & 4-Choice Recall Quizzes',
-      subtitle: 'Engineereya’s Vlog Terms & Core Code Provisions',
+      id: 'scratchpad-walkthrough',
+      targetSelector: '[data-tour="scratchpad-hub"]',
+      tab: 'scratchpad',
+      badge: 'Step 10 · Inside Scratchpads',
+      title: 'Scratchpad Hub & Rough Sheets',
+      subtitle: 'Multi-Page Engineering Calculation Notebooks',
       description:
-        'Master essential structural provisions, soil terminology, and hydraulic formulas with interactive 3D card flips and rapid 4-choice recall quizzes.',
-      accentColor: '#a855f7',
-      preferredPlacement: 'bottom',
-      actionLabel: 'Go to Flashcards',
-      onAction: () => {
-        onNavigateTab('flashcards');
-      },
-    },
-    {
-      id: 'theme-trigger',
-      targetSelector: '[data-tour="theme-trigger"]',
-      tab: 'setup',
-      badge: 'Step 09 · Themes & 3D Environments',
-      title: 'Themes, 3D WebGL Scenes & Audio',
-      subtitle: 'Blueprint, Cyberdeck 2077, 3D Terrarium & Particle Remote',
-      description:
-        'Personalize your study atmosphere with 10 visual themes, interactive 3D WebGL backdrops, webcam gesture particle controls, and the Cyberdeck 2077 atmospheric soundtrack.',
+        'Manage standalone sketchpads and in-exam calculation sheets. Import and export notebook bundles (.cescratch), view thumbnails, and organize your problem solutions by subject.',
       accentColor: '#06b6d4',
       preferredPlacement: 'bottom',
-      actionLabel: 'Open Theme Palette',
+    },
+    {
+      id: 'inkpad-studio-walkthrough',
+      targetSelector: '[data-tour="open-inkpad-button"]',
+      tab: 'scratchpad',
+      badge: 'Step 11 · Inside Inkpad Studio',
+      title: 'Inkpad Studio Drawing Canvas',
+      subtitle: '600+ DPI Precision Engine & Multi-Page Export',
+      description:
+        'Open the high-resolution drawing studio equipped with pen tools, highlighters, eraser, grid graph rules, multi-page sheets, and one-click PDF, PNG, and SVG vector exports.',
+      accentColor: '#10b981',
+      preferredPlacement: 'bottom',
+    },
+    {
+      id: 'formula-deck-walkthrough',
+      targetSelector: '[data-tour="formula-deck-tab"]',
+      tab: 'flashcards',
+      badge: 'Step 12 · Inside Formula Deck',
+      title: 'Formula Flashcards Deck',
+      subtitle: '971 Real Engr. APJO Civil Engineering Cards',
+      description:
+        'Master essential engineering formulas with real crops from Engr. APJO’s RCE reviewer. Flip cards to reveal back-side solutions, mark items as Known vs. Need Review, and filter by subject.',
+      accentColor: '#a855f7',
+      preferredPlacement: 'bottom',
+      referenceBadge: 'Sourced from Engr. APJO RCE 2024 High-Resolution Formula Deck',
+    },
+    {
+      id: 'term-quiz-walkthrough',
+      targetSelector: '[data-tour="term-quiz-tab"]',
+      tab: 'flashcards',
+      badge: 'Step 13 · Inside Term Quiz',
+      title: '4-Choice Terminology Speed Drills',
+      subtitle: '1,059 Civil Engineering Terms & Vlog Mnemonics',
+      description:
+        'Accelerate recall for board exam definition questions. Practice 4-choice timed quizzes with instant feedback, distractors, and mnemonics from Engineereya’s Vlog review materials.',
+      accentColor: '#ec4899',
+      preferredPlacement: 'bottom',
+      referenceBadge: 'Aligned with Engineereya’s Vlog Terminology & PRC Board Trends',
+    },
+    {
+      id: 'theme-trigger-walkthrough',
+      targetSelector: '[data-tour="theme-trigger"]',
+      tab: 'setup',
+      badge: 'Step 14 · Inside Theme Studio',
+      title: 'Themes, 3D WebGL Scenes & Audio',
+      subtitle: '10 Visual Environments & Cyberdeck Soundtrack',
+      description:
+        'Personalize your review environment with 10 hand-crafted themes (Obsidian, Cyberdeck 2077, Aurora Glass, Terrarium Orb, Matilda 3D, Particle Flow), typography fonts, and study soundtracks.',
+      accentColor: '#06b6d4',
+      preferredPlacement: 'bottom',
+      actionLabel: 'Open Theme Customizer',
       onAction: () => {
         if (onOpenThemeModal) onOpenThemeModal();
       },
     },
     {
-      id: 'privacy-shield',
-      targetSelector: '[data-tour="auth-trigger"]',
+      id: 'message-admin-walkthrough',
+      targetSelector: '[data-tour="contact-admin-trigger"]',
       tab: 'setup',
-      badge: 'Step 10 · Security & Privacy',
-      title: '100% Google Cloud Firebase Security',
-      subtitle: 'Your Emails & Passwords Are Strictly Isolated',
+      badge: 'Step 15 · Message the Admin',
+      title: 'Direct Requests & Reviewee Support',
+      subtitle: 'Send Question Requests, Notes, or Ask for Help',
       description:
-        'Privacy Reassurance: Reviewee passwords and email addresses are NEVER accessible to administrators or instructors. All authentication is executed directly and securely by Google Cloud Firebase. Only your chosen public display username and exam scores are shown on the leaderboard.',
-      accentColor: '#22c55e',
-      preferredPlacement: 'left',
+        'Need specific exam questions uploaded, review materials, or have feedback? Reviewees can message the administrator directly anytime. All accounts remain confidential and password-protected by Google Cloud Firebase.',
+      accentColor: '#f59e0b',
+      preferredPlacement: 'bottom',
+      actionLabel: 'Open Message Admin Modal',
+      onAction: () => {
+        if (onOpenContactAdmin) onOpenContactAdmin();
+      },
       securityBadge: 'Google Identity Shield: Admins cannot view passwords or private emails',
     },
   ];
@@ -219,13 +286,19 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
     const selector = currentStepData.targetSelector;
     let el = document.querySelector(selector) as HTMLElement | null;
 
-    // Fallback: If element not found directly, try finding by text or generic selector
-    if (!el && currentStepData.id === 'privacy-shield') {
-      el = document.querySelector('[data-tour="auth-trigger"]') as HTMLElement | null;
+    // Fallbacks
+    if (!el && currentStepData.id === 'inkpad-studio-walkthrough') {
+      el = document.querySelector('[data-tour="scratchpad-hub"]') as HTMLElement | null;
+    }
+    if (!el && (currentStepData.id === 'formula-deck-walkthrough' || currentStepData.id === 'term-quiz-walkthrough')) {
+      el = document.querySelector('[data-tour="cards-hub-root"]') as HTMLElement | null;
+    }
+    if (!el && currentStepData.tab) {
+      el = document.querySelector(`[data-tour="tab-${currentStepData.tab}"]`) as HTMLElement | null;
     }
 
     if (!el) {
-      // If still not found, center on screen
+      // Center gracefully on screen
       setTargetRect(null);
       setCardPos({
         x: Math.max(16, (window.innerWidth - 380) / 2),
@@ -240,7 +313,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
 
     // Compute ideal placement for the floating card
     const cardWidth = Math.min(380, window.innerWidth - 32);
-    const cardHeight = 280; // approximate
+    const cardHeight = 280;
     const margin = 20;
 
     let placement = currentStepData.preferredPlacement || 'bottom';
@@ -292,7 +365,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
         el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
       }
       updateTargetPosition();
-    }, 120);
+    }, 150);
 
     return () => clearTimeout(timer);
   }, [isOpen, currentStep, currentStepData, onNavigateTab, updateTargetPosition]);
@@ -308,7 +381,6 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleScroll);
 
-    // Run animation frame for smooth tracking during scroll
     let rafId: number;
     const loop = () => {
       updateTargetPosition();
@@ -351,7 +423,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
     };
   }
 
-  // Floating card anchor point (closest to target)
+  // Floating card anchor point (closest edge to target)
   const cardWidth = cardRef.current ? cardRef.current.offsetWidth : 360;
   const cardHeight = cardRef.current ? cardRef.current.offsetHeight : 280;
 
@@ -382,14 +454,40 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
   return (
     <div className="fixed inset-0 z-[9990] pointer-events-none select-none">
       {/* 
-        1. AMBIENT BACKDROP: 
-        Subtle dark veil to dim other UI while keeping the web visible beneath
+        1. AMBIENT BACKDROP WITH CUTOUT PUNCH-HOLE: 
+        Dimmers the surrounding screen with rgba(2, 6, 23, 0.65), BUT cuts out a hole
+        right over targetRect using an SVG mask so that the section where the guide is pointing at
+        has ZERO dimming and ZERO blur! It is 100% crystal clear, legible, and unblurred.
       */}
-      <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-auto" />
+      <svg className="fixed inset-0 w-full h-full pointer-events-auto z-[9990]">
+        <defs>
+          <mask id="tourSpotlightMask">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            {targetRect && (
+              <rect
+                x={Math.max(0, targetRect.left - 8)}
+                y={Math.max(0, targetRect.top - 8)}
+                width={targetRect.width + 16}
+                height={targetRect.height + 16}
+                rx="16"
+                fill="black"
+              />
+            )}
+          </mask>
+        </defs>
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="rgba(2, 6, 23, 0.65)"
+          mask="url(#tourSpotlightMask)"
+        />
+      </svg>
 
       {/* 
-        2. DYNAMIC SPOTLIGHT HALO AROUND TARGET FUNCTION:
-        A luminous glowing boundary surrounding the real UI element
+        2. DYNAMIC SPOTLIGHT BOUNDING BORDER AROUND TARGET FUNCTION:
+        A crisp luminous boundary surrounding the real UI element with pulsing anchors
       */}
       {targetRect && (
         <div
@@ -400,7 +498,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
             width: targetRect.width + 16,
             height: targetRect.height + 16,
             border: `2px solid ${currentStepData.accentColor}`,
-            boxShadow: `0 0 25px ${currentStepData.accentColor}70, inset 0 0 15px ${currentStepData.accentColor}30`,
+            boxShadow: `0 0 25px ${currentStepData.accentColor}70, inset 0 0 15px ${currentStepData.accentColor}25`,
           }}
         >
           {/* Pulsing corner anchors */}
@@ -533,7 +631,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
           </div>
 
           {/* Description */}
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-300 leading-relaxed font-sans">
             {currentStepData.description}
           </p>
 

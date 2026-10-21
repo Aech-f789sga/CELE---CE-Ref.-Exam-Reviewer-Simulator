@@ -93,7 +93,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-24">
+    <div data-tour="performance-content" className="max-w-6xl mx-auto space-y-8 pb-24">
       {/* Header Banner */}
       <div className="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden bg-blueprint-grid">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">

@@ -215,7 +215,6 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* MSTC Card */}
-          <Tilt3D>
           <button
             data-tour="subject-mstc"
             type="button"
@@ -252,10 +251,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </button>
-          </Tilt3D>
 
           {/* HPGE Card */}
-          <Tilt3D>
           <button
             data-tour="subject-hpge"
             type="button"
@@ -292,10 +289,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </button>
-          </Tilt3D>
 
           {/* PSAD Card */}
-          <Tilt3D>
           <button
             data-tour="subject-psad"
             type="button"
@@ -332,26 +327,12 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </button>
-          </Tilt3D>
         </div>
 
-        {/* Curriculum Reference Book Standard Callout */}
-        <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-300">
-          <div className="flex items-start sm:items-center space-x-2.5">
-            <BookOpen className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5 sm:mt-0" />
-            <p className="text-[11px] text-slate-300 leading-relaxed">
-              <strong className="text-white">Curriculum Reference Standard:</strong> Reference of the MSTC, HPGE, and PSAD is <strong>CE Reference Volume 4-6 books</strong> (Gillesania / Besavilla review standards).
-            </p>
-          </div>
-          {onOpenTour && (
-            <button
-              type="button"
-              onClick={onOpenTour}
-              className="text-[11px] text-amber-400 hover:text-amber-300 font-semibold underline shrink-0 cursor-pointer self-end sm:self-auto"
-            >
-              Learn More in Tour →
-            </button>
-          )}
+        {/* Reference Citation Only */}
+        <div className="flex items-center space-x-2 text-xs text-slate-400 pt-1">
+          <BookOpen className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span>Reference: <strong className="font-semibold text-slate-300">CE Reference Book Volume 4-6</strong></span>
         </div>
       </div>
 

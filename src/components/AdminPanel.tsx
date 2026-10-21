@@ -22,6 +22,7 @@ import {
   Eye,
   EyeOff,
   AlertTriangle,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -33,9 +34,12 @@ import {
   updateAnnouncement,
   deleteAnnouncement,
   fetchAnnouncements,
+  fetchUserAdminMessages,
+  updateAdminMessage,
   UserProfile,
   CloudExamAttempt,
   SystemAnnouncement,
+  UserAdminMessage,
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
 
@@ -50,6 +54,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [usersList, setUsersList] = useState<UserProfile[]>([]);
   const [attemptsList, setAttemptsList] = useState<CloudExamAttempt[]>([]);
   const [announcementsList, setAnnouncementsList] = useState<SystemAnnouncement[]>([]);
+  const [messagesList, setMessagesList] = useState<UserAdminMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState<boolean>(false);
@@ -70,18 +75,31 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [allUsers, allAttempts, allAnnouncements] = await Promise.all([
+      const [allUsers, allAttempts, allAnnouncements, allMessages] = await Promise.all([
         fetchAllUsers(),
         fetchExamAttempts(undefined, true),
         fetchAnnouncements(false),
+        fetchUserAdminMessages(),
       ]);
       setUsersList(allUsers);
       setAttemptsList(allAttempts);
       setAnnouncementsList(allAnnouncements);
+      setMessagesList(allMessages);
     } catch (e) {
       console.error('Error loading admin data:', e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateMessageStatus = async (id: string, status: 'read' | 'resolved') => {
+    try {
+      await updateAdminMessage(id, { status });
+      setMessagesList((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status } : m))
+      );
+    } catch (err) {
+      console.error('Failed to update message status:', err);
     }
   };
 
@@ -617,6 +635,125 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Reviewee Messages & Material Requests Inbox */}
+      <div
+        className="rounded-3xl border p-6 shadow-xl space-y-6"
+        style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="font-bold text-white text-lg">Reviewee Messages &amp; Requests</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  {messagesList.filter((m) => m.status === 'unread').length} Unread
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">
+                Direct questions, question bank requests, financial assistance notes, and feedback
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={loadData}
+            className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh Inbox</span>
+          </button>
+        </div>
+
+        {messagesList.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 text-xs bg-slate-900/40 rounded-2xl border border-slate-800/80">
+            <MessageSquare className="w-8 h-8 text-slate-500 mx-auto mb-2 opacity-60" />
+            <p className="font-semibold text-slate-300">No Reviewee Messages Received Yet</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Messages submitted through the &quot;Message Admin&quot; feature appear here in real time.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+            {messagesList.map((msg) => (
+              <div
+                key={msg.id}
+                className={`p-4 rounded-2xl border transition-all space-y-2.5 ${
+                  msg.status === 'unread'
+                    ? 'bg-amber-500/5 border-amber-500/30 shadow-md'
+                    : msg.status === 'resolved'
+                    ? 'bg-slate-950/40 border-slate-800/60 opacity-70'
+                    : 'bg-slate-900/60 border-slate-800'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        msg.status === 'unread'
+                          ? 'bg-amber-500 text-slate-950'
+                          : msg.status === 'resolved'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          : 'bg-slate-800 text-slate-300'
+                      }`}
+                    >
+                      {msg.status.toUpperCase()}
+                    </span>
+
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                      {msg.category}
+                    </span>
+
+                    <span className="text-[11px] font-mono text-slate-400">
+                      From: <strong className="text-white">{msg.senderName}</strong>
+                      {msg.senderEmail && (
+                        <span className="text-slate-400 ml-1">({msg.senderEmail})</span>
+                      )}
+                    </span>
+                  </div>
+
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    {new Date(msg.createdAt).toLocaleDateString()} {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold text-white">{msg.subject}</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
+                    {msg.message}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1 text-xs">
+                  {msg.status !== 'read' && (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateMessageStatus(msg.id, 'read')}
+                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                    >
+                      Mark as Read
+                    </button>
+                  )}
+                  {msg.status !== 'resolved' && (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateMessageStatus(msg.id, 'resolved')}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span>Mark Resolved</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Add User Modal */}

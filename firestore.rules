@@ -103,5 +103,14 @@ service cloud.firestore {
       allow create, update: if isValidId(announcementId) && isValidAnnouncement(incoming());
       allow delete: if true;
     }
+
+    // Reviewee Requests & Messages to Admin
+    match /userMessages/{messageId} {
+      allow create: if isValidId(messageId) &&
+                    incoming().senderName is string && incoming().senderName.size() <= 128 &&
+                    incoming().message is string && incoming().message.size() <= 5000 &&
+                    incoming().createdAt is string;
+      allow read, update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
   }
 }

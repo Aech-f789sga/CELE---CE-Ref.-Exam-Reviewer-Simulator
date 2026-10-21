@@ -262,6 +262,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
   return (
     <div
+      data-tour="inkpad-studio"
       className={`fixed z-50 flex flex-col rounded-2xl overflow-hidden shadow-2xl border transition-all ${
         isDocked
           ? 'right-0 top-0 bottom-0 w-[580px] rounded-none border-l'
