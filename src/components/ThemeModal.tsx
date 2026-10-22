@@ -24,6 +24,10 @@ import {
   Image,
   Layers,
   Upload,
+  Minus,
+  Plus,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 
 interface ThemeModalProps {
@@ -36,12 +40,17 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
     themeId,
     fontId,
     fontSizeId,
+    fontScale,
     isHighContrastFigures,
     textOutlineMode,
     themeConfig,
     setThemeId,
     setFontId,
     setFontSizeId,
+    setFontScale,
+    increaseFontScale,
+    decreaseFontScale,
+    resetFontScale,
     setIsHighContrastFigures,
     setTextOutlineMode,
     resetToDefaults,
@@ -179,7 +188,7 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
             style={{ color: activeTab === 'display' ? themeConfig.accent : themeConfig.textSecondary }}
           >
             <Sliders className="w-4 h-4" />
-            <span>Contrast Outline & Scale</span>
+            <span>Font Scale ({fontScale}%) & Outline</span>
           </button>
 
           <button
@@ -396,7 +405,10 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
           {/* TAB 2: FONTS */}
           {activeTab === 'fonts' && (
             <div className="space-y-5">
-              <div className="flex items-center justify-between">
+              <div
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border"
+                style={{ backgroundColor: themeConfig.bgCardSubtle, borderColor: themeConfig.border }}
+              >
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: themeConfig.textMuted }}>
                     Choose Primary Reading & Exam Typeface
@@ -404,6 +416,34 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                   <p className="text-xs mt-0.5" style={{ color: themeConfig.textSecondary }}>
                     Includes classic <strong>Arial</strong>, modern geometric sans, official formal serifs, and technical engineering monospaces.
                   </p>
+                </div>
+
+                {/* Quick font scale stepper */}
+                <div className="flex items-center space-x-2 self-start sm:self-auto flex-shrink-0">
+                  <span className="text-[11px] font-semibold" style={{ color: themeConfig.textMuted }}>Global Scale:</span>
+                  <div className="flex items-center space-x-1 p-1 rounded-lg border shadow-sm" style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}>
+                    <button
+                      type="button"
+                      onClick={decreaseFontScale}
+                      disabled={fontScale <= 80}
+                      className="w-6 h-6 flex items-center justify-center rounded hover:opacity-80 disabled:opacity-30 cursor-pointer"
+                      title="Decrease font scale (A-)"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="text-xs font-bold font-tech-mono px-2" style={{ color: themeConfig.accent }}>
+                      {fontScale}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={increaseFontScale}
+                      disabled={fontScale >= 140}
+                      className="w-6 h-6 flex items-center justify-center rounded hover:opacity-80 disabled:opacity-30 cursor-pointer"
+                      title="Increase font scale (A+)"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -547,38 +587,160 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Font Size Scaling */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: themeConfig.textMuted }}>
-                    Question & Problem Statement Font Size
-                  </h3>
-                  <span className="text-xs font-tech-mono font-bold" style={{ color: themeConfig.accent }}>
-                    Scale: {FONT_SIZE_OPTIONS.find((s) => s.id === fontSizeId)?.scalePercent}%
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {FONT_SIZE_OPTIONS.map((size) => {
-                    const isSelected = fontSizeId === size.id;
-                    return (
-                      <button
-                        key={size.id}
-                        onClick={() => setFontSizeId(size.id)}
-                        className={`p-3.5 rounded-xl border text-center transition-all ${
-                          isSelected ? 'ring-2 font-bold shadow-sm' : 'hover:opacity-90'
-                        }`}
+              {/* Global Font Size Scaling (--app-font-scale) */}
+              <div
+                className="p-5 rounded-2xl border space-y-4 shadow-sm"
+                style={{
+                  backgroundColor: themeConfig.bgCardSubtle,
+                  borderColor: themeConfig.border,
+                }}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center space-x-2">
+                      <Sliders className="w-4 h-4" style={{ color: themeConfig.accent }} />
+                      <h3 className="text-sm font-bold tracking-tight">Global Font Size Scaling</h3>
+                      <span
+                        className="text-[10px] font-mono px-2 py-0.5 rounded-md border font-semibold"
                         style={{
-                          backgroundColor: themeConfig.bgCardSubtle,
-                          borderColor: isSelected ? themeConfig.accent : themeConfig.border,
-                          color: isSelected ? themeConfig.accent : themeConfig.textPrimary,
+                          backgroundColor: themeConfig.accentBadge,
+                          borderColor: `${themeConfig.accent}50`,
+                          color: themeConfig.accent,
                         }}
                       >
-                        <div className="text-base font-bold">{size.name}</div>
-                        <div className="text-xs opacity-75 mt-0.5">{size.scalePercent}%</div>
-                      </button>
-                    );
-                  })}
+                        --app-font-scale: {fontScale}%
+                      </span>
+                    </div>
+                    <p className="text-xs" style={{ color: themeConfig.textMuted }}>
+                      Dynamically updates the <code className="font-mono text-[11px] px-1 py-0.5 rounded bg-black/20">--app-font-scale</code> CSS variable across all exam questions, formulas, cards, and navigation.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={resetFontScale}
+                    disabled={fontScale === 100}
+                    className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer self-start sm:self-auto"
+                    style={{
+                      borderColor: themeConfig.border,
+                      backgroundColor: themeConfig.bgCard,
+                      color: themeConfig.textSecondary,
+                    }}
+                    title="Reset to 100% standard font scale"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset 100%</span>
+                  </button>
+                </div>
+
+                {/* Stepper Buttons & Large Readout */}
+                <div
+                  className="p-3.5 rounded-xl border flex items-center justify-between gap-3"
+                  style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+                >
+                  <button
+                    type="button"
+                    onClick={decreaseFontScale}
+                    disabled={fontScale <= 80}
+                    className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all hover:scale-105 active:scale-95 disabled:opacity-35 disabled:hover:scale-100 cursor-pointer"
+                    style={{
+                      backgroundColor: themeConfig.bgCardSubtle,
+                      borderColor: themeConfig.border,
+                      color: themeConfig.textPrimary,
+                    }}
+                    title="Decrease font scale by 5% (A-)"
+                  >
+                    <Minus className="w-4 h-4" />
+                    <span>Smaller (A-)</span>
+                  </button>
+
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <span className="text-2xl font-black font-tech-mono tracking-tight" style={{ color: themeConfig.accent }}>
+                      {fontScale}%
+                    </span>
+                    <span className="text-[10px] font-medium" style={{ color: themeConfig.textMuted }}>
+                      {fontScale === 100
+                        ? 'Standard (Default)'
+                        : fontScale < 100
+                        ? `${100 - fontScale}% Smaller`
+                        : `+${fontScale - 100}% Larger`}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={increaseFontScale}
+                    disabled={fontScale >= 140}
+                    className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all hover:scale-105 active:scale-95 disabled:opacity-35 disabled:hover:scale-100 cursor-pointer"
+                    style={{
+                      backgroundColor: themeConfig.bgCardSubtle,
+                      borderColor: themeConfig.border,
+                      color: themeConfig.textPrimary,
+                    }}
+                    title="Increase font scale by 5% (A+)"
+                  >
+                    <span>Larger (A+)</span>
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Range Slider for granular control */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between text-[11px]" style={{ color: themeConfig.textMuted }}>
+                    <span>80% Compact</span>
+                    <span className="font-tech-mono">Continuous Scaling Slider</span>
+                    <span>140% Maximum</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="80"
+                    max="140"
+                    step="5"
+                    value={fontScale}
+                    onChange={(e) => setFontScale(Number(e.target.value))}
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-slate-700/50"
+                    style={{ accentColor: themeConfig.accent }}
+                    title={`Current scale: ${fontScale}%`}
+                  />
+                </div>
+
+                {/* Quick Preset Buttons */}
+                <div className="space-y-2 pt-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: themeConfig.textMuted }}>
+                    Scale Presets:
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { id: 'small', name: 'Compact', scale: 88, desc: 'Laptops & Split screens' },
+                      { id: 'medium', name: 'Standard', scale: 100, desc: 'Balanced default' },
+                      { id: 'large', name: 'Comfortable', scale: 112, desc: 'Relaxed reading' },
+                      { id: 'xlarge', name: 'High Visibility', scale: 125, desc: 'Formulas & indices' },
+                    ].map((preset) => {
+                      const isSelected = fontScale === preset.scale;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => setFontScale(preset.scale)}
+                          className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                            isSelected ? 'ring-2 font-bold shadow-md' : 'hover:opacity-90 hover:scale-[1.02]'
+                          }`}
+                          style={{
+                            backgroundColor: isSelected ? themeConfig.bgCard : themeConfig.bgCardSubtle,
+                            borderColor: isSelected ? themeConfig.accent : themeConfig.border,
+                            color: isSelected ? themeConfig.accent : themeConfig.textPrimary,
+                          }}
+                        >
+                          <div className="text-xs font-bold flex items-center justify-center space-x-1">
+                            <span>{preset.name}</span>
+                            {isSelected && <Check className="w-3 h-3" />}
+                          </div>
+                          <div className="text-[11px] font-tech-mono opacity-80 mt-0.5">{preset.scale}%</div>
+                          <div className="text-[9px] opacity-60 mt-0.5 line-clamp-1">{preset.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -615,28 +777,45 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Live Preview Box with Outline Contrast demonstration */}
+              {/* Live Preview Box with Outline Contrast & Scaling demonstration */}
               <div
-                className="p-4 rounded-2xl border space-y-2"
+                className="p-4 rounded-2xl border space-y-2.5 transition-all"
                 style={{
                   backgroundColor: themeConfig.bgCard,
                   borderColor: themeConfig.border,
                 }}
               >
                 <div className="flex items-center justify-between text-xs" style={{ color: themeConfig.textMuted }}>
-                  <span>Live Simulator Preview</span>
-                  <span className="font-tech-mono">Contrast Outline: {textOutlineMode ? 'ON' : 'OFF'}</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: themeConfig.accent }} />
+                    <span className="font-semibold">Live Scaling Preview (Applies Globally)</span>
+                  </div>
+                  <span className="font-tech-mono">Scale: {fontScale}% · Outline: {textOutlineMode ? 'ON' : 'OFF'}</span>
                 </div>
                 <div
-                  className={`text-sm font-semibold leading-relaxed ${textOutlineMode ? 'text-contrast-outline' : ''}`}
+                  className={`text-sm font-semibold leading-relaxed transition-all ${textOutlineMode ? 'text-contrast-outline' : ''}`}
                 >
                   Situation 1 - A force P is applied to move a crate weighing 30 kg.
                 </div>
                 <div
-                  className="text-xs leading-relaxed opacity-90"
+                  className="text-xs leading-relaxed opacity-90 transition-all"
                   style={{ color: themeConfig.textSecondary }}
                 >
                   Given: w = 1.2 m; h = 0.5 m; Coefficient of static friction μ = 0.25. Determine the maximum force P (N) to maintain equilibrium.
+                </div>
+                <div className="pt-1 flex flex-wrap gap-2 text-xs">
+                  <span className="px-2.5 py-1 rounded-md border" style={{ borderColor: themeConfig.border, backgroundColor: themeConfig.bgCardSubtle, color: themeConfig.textPrimary }}>
+                    A. 73.58 N
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md border font-bold" style={{ borderColor: themeConfig.accent, backgroundColor: themeConfig.accentBadge, color: themeConfig.accent }}>
+                    B. 85.40 N (Selected)
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md border" style={{ borderColor: themeConfig.border, backgroundColor: themeConfig.bgCardSubtle, color: themeConfig.textPrimary }}>
+                    C. 98.10 N
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md border" style={{ borderColor: themeConfig.border, backgroundColor: themeConfig.bgCardSubtle, color: themeConfig.textPrimary }}>
+                    D. 112.50 N
+                  </span>
                 </div>
               </div>
             </div>

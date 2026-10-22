@@ -13,12 +13,17 @@ interface ThemeContextType {
   themeId: AppThemeId;
   fontId: FontFamilyId;
   fontSizeId: FontSizeId;
+  fontScale: number;
   isHighContrastFigures: boolean;
   textOutlineMode: boolean; // Enables crisp contrast edge outline on problem text & headings
   themeConfig: ThemeConfig;
   setThemeId: (id: AppThemeId) => void;
   setFontId: (id: FontFamilyId) => void;
   setFontSizeId: (id: FontSizeId) => void;
+  setFontScale: (scale: number | ((prev: number) => number)) => void;
+  increaseFontScale: () => void;
+  decreaseFontScale: () => void;
+  resetFontScale: () => void;
   setIsHighContrastFigures: (val: boolean) => void;
   setTextOutlineMode: (val: boolean) => void;
   resetToDefaults: () => void;
@@ -27,6 +32,7 @@ interface ThemeContextType {
 const STORAGE_KEY_THEME = 'ce_board_theme_id';
 const STORAGE_KEY_FONT = 'ce_board_font_id';
 const STORAGE_KEY_FONT_SIZE = 'ce_board_font_size_id';
+const STORAGE_KEY_FONT_SCALE = 'ce_board_font_scale';
 const STORAGE_KEY_FIGURE_CONTRAST = 'ce_board_fig_contrast';
 const STORAGE_KEY_TEXT_OUTLINE = 'ce_board_text_outline';
 
@@ -46,6 +52,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [fontSizeId, setFontSizeIdState] = useState<FontSizeId>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_FONT_SIZE) as FontSizeId;
     return saved && FONT_SIZE_OPTIONS.some((s) => s.id === saved) ? saved : 'medium';
+  });
+
+  const [fontScale, setFontScaleState] = useState<number>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_FONT_SCALE);
+    if (saved) {
+      const parsed = Number(saved);
+      if (!isNaN(parsed) && parsed >= 75 && parsed <= 150) return parsed;
+    }
+    const savedSize = localStorage.getItem(STORAGE_KEY_FONT_SIZE) as FontSizeId;
+    const match = FONT_SIZE_OPTIONS.find((s) => s.id === savedSize);
+    return match ? match.scalePercent : 100;
   });
 
   const [isHighContrastFigures, setIsHighContrastFiguresState] = useState<boolean>(() => {
@@ -73,6 +90,40 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const setFontSizeId = (id: FontSizeId) => {
     setFontSizeIdState(id);
     localStorage.setItem(STORAGE_KEY_FONT_SIZE, id);
+    const sizeObj = FONT_SIZE_OPTIONS.find((s) => s.id === id);
+    if (sizeObj) {
+      setFontScaleState(sizeObj.scalePercent);
+      localStorage.setItem(STORAGE_KEY_FONT_SCALE, String(sizeObj.scalePercent));
+    }
+  };
+
+  const setFontScale = (scale: number | ((prev: number) => number)) => {
+    setFontScaleState((prev) => {
+      const next = typeof scale === 'function' ? scale(prev) : scale;
+      const clamped = Math.min(140, Math.max(80, Math.round(next)));
+      localStorage.setItem(STORAGE_KEY_FONT_SCALE, String(clamped));
+      // Sync matching preset id if exact match
+      const matchingPreset = FONT_SIZE_OPTIONS.find((s) => s.scalePercent === clamped);
+      if (matchingPreset) {
+        setFontSizeIdState(matchingPreset.id);
+        localStorage.setItem(STORAGE_KEY_FONT_SIZE, matchingPreset.id);
+      }
+      return clamped;
+    });
+  };
+
+  const increaseFontScale = () => {
+    setFontScale((prev) => Math.min(140, prev + 5));
+  };
+
+  const decreaseFontScale = () => {
+    setFontScale((prev) => Math.max(80, prev - 5));
+  };
+
+  const resetFontScale = () => {
+    setFontScale(100);
+    setFontSizeIdState('medium');
+    localStorage.setItem(STORAGE_KEY_FONT_SIZE, 'medium');
   };
 
   const setIsHighContrastFigures = (val: boolean) => {
@@ -89,6 +140,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setThemeId('aurora_glass');
     setFontId('arial');
     setFontSizeId('medium');
+    setFontScale(100);
     setIsHighContrastFigures(true);
     setTextOutlineMode(true);
   };
@@ -99,11 +151,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const body = document.body;
 
     const fontObj = FONT_OPTIONS.find((f) => f.id === fontId) || FONT_OPTIONS[0];
-    const sizeObj = FONT_SIZE_OPTIONS.find((s) => s.id === fontSizeId) || FONT_SIZE_OPTIONS[1];
 
-    // Set font family
+    // Set font family and scaling variables
     root.style.setProperty('--app-font-family', fontObj.familyCss);
-    root.style.setProperty('--app-font-scale', `${sizeObj.scalePercent}%`);
+    root.style.setProperty('--app-font-scale', `${fontScale}%`);
+    root.style.fontSize = `${fontScale}%`;
 
     // Set theme colors
     root.style.setProperty('--app-bg-page', themeConfig.bgPage);
@@ -121,7 +173,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Apply font family and font size to body
     body.style.fontFamily = fontObj.familyCss;
-    body.style.fontSize = `${sizeObj.scalePercent}%`;
+    body.style.fontSize = `${fontScale}%`;
     body.style.backgroundColor = themeConfig.bgPage;
     body.style.color = themeConfig.textPrimary;
 
@@ -143,7 +195,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Set theme attribute
     root.setAttribute('data-theme', themeConfig.id);
-  }, [themeConfig, fontId, fontSizeId, textOutlineMode]);
+  }, [themeConfig, fontId, fontSizeId, fontScale, textOutlineMode]);
 
   return (
     <ThemeContext.Provider
@@ -151,12 +203,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         themeId,
         fontId,
         fontSizeId,
+        fontScale,
         isHighContrastFigures,
         textOutlineMode,
         themeConfig,
         setThemeId,
         setFontId,
         setFontSizeId,
+        setFontScale,
+        increaseFontScale,
+        decreaseFontScale,
+        resetFontScale,
         setIsHighContrastFigures,
         setTextOutlineMode,
         resetToDefaults,
