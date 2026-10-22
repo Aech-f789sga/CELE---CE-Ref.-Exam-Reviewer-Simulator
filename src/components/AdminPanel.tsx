@@ -23,6 +23,11 @@ import {
   EyeOff,
   AlertTriangle,
   MessageSquare,
+  Inbox,
+  CornerDownRight,
+  Send,
+  Heart,
+  QrCode,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -36,6 +41,7 @@ import {
   fetchAnnouncements,
   fetchUserAdminMessages,
   updateAdminMessage,
+  deleteAdminMessage,
   UserProfile,
   CloudExamAttempt,
   SystemAnnouncement,
@@ -72,6 +78,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [isPostingAnn, setIsPostingAnn] = useState<boolean>(false);
   const [annSuccessMsg, setAnnSuccessMsg] = useState<string | null>(null);
 
+  // Admin section navigation
+  const [adminSection, setAdminSection] = useState<'inbox' | 'users' | 'announcements' | 'all'>('inbox');
+
+  // Inbox reply & filter states
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState<string>('');
+  const [isSubmittingReply, setIsSubmittingReply] = useState<boolean>(false);
+  const [inboxCategoryFilter, setInboxCategoryFilter] = useState<'all' | 'unread' | 'Admin Donation' | 'replied'>('all');
+  const [inboxSearch, setInboxSearch] = useState<string>('');
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -100,6 +116,42 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
       );
     } catch (err) {
       console.error('Failed to update message status:', err);
+    }
+  };
+
+  const handleSendReply = async (messageId: string) => {
+    if (!replyText.trim()) return;
+    setIsSubmittingReply(true);
+    try {
+      const now = new Date().toISOString();
+      await updateAdminMessage(messageId, {
+        adminReply: replyText.trim(),
+        repliedAt: now,
+        status: 'resolved',
+      });
+      setMessagesList((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, adminReply: replyText.trim(), repliedAt: now, status: 'resolved' }
+            : m
+        )
+      );
+      setReplyingToId(null);
+      setReplyText('');
+    } catch (err) {
+      console.error('Failed to submit reply:', err);
+    } finally {
+      setIsSubmittingReply(false);
+    }
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this message from the inbox?')) return;
+    try {
+      await deleteAdminMessage(id);
+      setMessagesList((prev) => prev.filter((m) => m.id !== id));
+    } catch (err) {
+      console.error('Failed to delete message:', err);
     }
   };
 
@@ -205,6 +257,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   ).length;
   const standardUsersCount = totalUsers - adminUsersCount;
 
+  const unreadMessagesCount = messagesList.filter((m) => m.status === 'unread').length;
+  const donationMessagesCount = messagesList.filter((m) => m.category === 'Admin Donation').length;
+  const repliedMessagesCount = messagesList.filter((m) => Boolean(m.adminReply)).length;
+
+  const filteredMessages = messagesList.filter((m) => {
+    const q = inboxSearch.toLowerCase();
+    const matchesSearch =
+      !q ||
+      (m.senderName || '').toLowerCase().includes(q) ||
+      (m.senderEmail || '').toLowerCase().includes(q) ||
+      (m.subject || '').toLowerCase().includes(q) ||
+      (m.message || '').toLowerCase().includes(q);
+
+    if (!matchesSearch) return false;
+
+    if (inboxCategoryFilter === 'unread') return m.status === 'unread';
+    if (inboxCategoryFilter === 'Admin Donation') return m.category === 'Admin Donation';
+    if (inboxCategoryFilter === 'replied') return Boolean(m.adminReply);
+    return true;
+  });
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20">
       {/* Top Banner */}
@@ -285,8 +358,428 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
         </div>
       </div>
 
-      {/* Metrics Row (Community & Examination Participation Statistics) */}
-      <CommunityStatsCards
+      {/* Admin Management Section Tabs */}
+      <div className="flex items-center justify-between border-b border-slate-800 pb-2 gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setAdminSection('inbox')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              adminSection === 'inbox'
+                ? 'bg-amber-500 text-slate-950 shadow-lg scale-102 font-black'
+                : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+            }`}
+          >
+            <Inbox className="w-4 h-4" />
+            <span>Admin Inbox</span>
+            {messagesList.filter((m) => m.status === 'unread').length > 0 && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                adminSection === 'inbox' ? 'bg-slate-950 text-amber-300' : 'bg-amber-500 text-slate-950'
+              }`}>
+                {messagesList.filter((m) => m.status === 'unread').length} New
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminSection('users')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              adminSection === 'users'
+                ? 'bg-amber-500 text-slate-950 shadow-lg scale-102 font-black'
+                : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>User Accounts Roster</span>
+            <span className="text-[10px] opacity-75 font-mono">({usersList.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminSection('announcements')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              adminSection === 'announcements'
+                ? 'bg-amber-500 text-slate-950 shadow-lg scale-102 font-black'
+                : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+            }`}
+          >
+            <Megaphone className="w-4 h-4" />
+            <span>Announcements</span>
+            <span className="text-[10px] opacity-75 font-mono">({announcementsList.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminSection('all')}
+            className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              adminSection === 'all'
+                ? 'bg-slate-800 text-white border border-slate-700'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <span>All Sections</span>
+          </button>
+        </div>
+
+        <div className="text-xs text-slate-500 font-mono hidden sm:block">
+          Reviewee messages appear in real time
+        </div>
+      </div>
+
+      {/* SECTION 1: Admin Inbox (Examinee Messages & Material Requests & GCash Donations) */}
+      {(adminSection === 'inbox' || adminSection === 'all') && (
+        <div
+          className="rounded-3xl border p-6 shadow-xl space-y-6 animate-in fade-in"
+          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+        >
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold">
+                <Inbox className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-bold text-white text-lg">Admin Inbox</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    {unreadMessagesCount} Unread
+                  </span>
+                  {donationMessagesCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 flex items-center gap-1">
+                      <Heart className="w-3 h-3 text-rose-400" />
+                      {donationMessagesCount} GCash Donation{donationMessagesCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400">
+                  Examinee inquiries, Gillesania review question bank requests, GCash donation notes &amp; replies
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={loadData}
+              disabled={loading}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Refresh Inbox</span>
+            </button>
+          </div>
+
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
+              <input
+                type="text"
+                value={inboxSearch}
+                onChange={(e) => setInboxSearch(e.target.value)}
+                placeholder="Search messages by sender, email, subject, or message text..."
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setInboxCategoryFilter('all')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  inboxCategoryFilter === 'all'
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                }`}
+              >
+                All ({messagesList.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setInboxCategoryFilter('unread')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  inboxCategoryFilter === 'unread'
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'bg-slate-900 text-amber-400 hover:text-amber-300 border border-amber-500/30'
+                }`}
+              >
+                Unread ({unreadMessagesCount})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setInboxCategoryFilter('Admin Donation')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                  inboxCategoryFilter === 'Admin Donation'
+                    ? 'bg-pink-500 text-white font-bold'
+                    : 'bg-slate-900 text-pink-300 hover:text-white border border-pink-500/30'
+                }`}
+              >
+                <Heart className="w-3 h-3 text-rose-400" />
+                <span>GCash ({donationMessagesCount})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setInboxCategoryFilter('replied')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  inboxCategoryFilter === 'replied'
+                    ? 'bg-emerald-500 text-slate-950 font-bold'
+                    : 'bg-slate-900 text-emerald-400 hover:text-white border border-emerald-500/30'
+                }`}
+              >
+                Replied ({repliedMessagesCount})
+              </button>
+            </div>
+          </div>
+
+          {/* Messages List */}
+          {filteredMessages.length === 0 ? (
+            <div className="p-8 text-center text-slate-400 text-xs bg-slate-900/40 rounded-2xl border border-slate-800/80">
+              <Inbox className="w-8 h-8 text-slate-500 mx-auto mb-2 opacity-60" />
+              <p className="font-semibold text-slate-300">No Messages Found</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                {messagesList.length === 0
+                  ? 'Messages submitted by examinees appear here in real time.'
+                  : 'No messages match your current search or filter criteria.'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3.5 max-h-[580px] overflow-y-auto pr-1">
+              {filteredMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all space-y-3 ${
+                    msg.status === 'unread'
+                      ? 'bg-amber-500/5 border-amber-500/40 shadow-lg'
+                      : msg.status === 'resolved'
+                      ? 'bg-slate-950/40 border-slate-800/60'
+                      : 'bg-slate-900/60 border-slate-800'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`px-2.5 py-0.5 rounded text-[10px] font-bold ${
+                          msg.status === 'unread'
+                            ? 'bg-amber-500 text-slate-950'
+                            : msg.status === 'resolved'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-slate-800 text-slate-300'
+                        }`}
+                      >
+                        {msg.status.toUpperCase()}
+                      </span>
+
+                      {msg.category === 'Admin Donation' ? (
+                        <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 flex items-center gap-1">
+                          <Heart className="w-3 h-3 text-rose-400" />
+                          <span>Admin Donation (GCash)</span>
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                          {msg.category}
+                        </span>
+                      )}
+
+                      <span className="text-[11px] font-mono text-slate-300">
+                        From: <strong className="text-white">{msg.senderName}</strong>
+                        {msg.senderEmail && (
+                          <span className="text-slate-400 ml-1">({msg.senderEmail})</span>
+                        )}
+                      </span>
+                    </div>
+
+                    <span className="text-[11px] text-slate-500 font-mono">
+                      {new Date(msg.createdAt).toLocaleDateString()} {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <span>{msg.subject}</span>
+                    </h4>
+                    <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-line bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 font-sans">
+                      {msg.message}
+                    </p>
+                  </div>
+
+                  {/* Admin Reply Card (when a reply already exists) */}
+                  {msg.adminReply && replyingToId !== msg.id && (
+                    <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-1.5 animate-in fade-in">
+                      <div className="flex items-center justify-between text-xs text-emerald-300 font-bold">
+                        <span className="flex items-center gap-1.5">
+                          <CornerDownRight className="w-4 h-4 text-emerald-400" />
+                          <span>Your Reply to {msg.senderName}:</span>
+                        </span>
+                        {msg.repliedAt && (
+                          <span className="text-[10px] font-mono text-emerald-400/80">
+                            {new Date(msg.repliedAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-emerald-100 whitespace-pre-line leading-relaxed pl-5 font-sans">
+                        {msg.adminReply}
+                      </p>
+                      <div className="pt-1 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyingToId(msg.id);
+                            setReplyText(msg.adminReply || '');
+                          }}
+                          className="text-[11px] text-emerald-300 hover:text-emerald-100 font-semibold underline underline-offset-2 cursor-pointer"
+                        >
+                          Edit Reply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Reply Form */}
+                  {replyingToId === msg.id && (
+                    <div className="p-4 rounded-xl bg-slate-950 border border-amber-500/40 space-y-3 animate-in fade-in">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Reply to {msg.senderName} ({msg.senderEmail || 'In-App User'}):</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyingToId(null);
+                            setReplyText('');
+                          }}
+                          className="text-slate-400 hover:text-white p-1 rounded cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* Quick snippets */}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[10px] text-slate-400 font-mono">Quick replies:</span>
+                        <button
+                          type="button"
+                          onClick={() => setReplyText('Thank you for reaching out! We have noted your request and will incorporate more Gillesania CE Reference Volume 4-6 questions soon.')}
+                          className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer"
+                        >
+                          Question Request
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setReplyText('Thank you for reporting this issue. We have reviewed the problem and verified the solution.')}
+                          className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer"
+                        >
+                          Bug Fix
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setReplyText('Thank you so much for your voluntary support and GCash donation! It directly helps maintain the platform hosting.')}
+                          className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer"
+                        >
+                          GCash Thanks
+                        </button>
+                      </div>
+
+                      <textarea
+                        rows={3}
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder={`Write your reply to ${msg.senderName}...`}
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 resize-none font-sans leading-relaxed"
+                      />
+
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <span className="text-[10px] text-slate-500">
+                          Examinee will see your reply in their &quot;Replies&quot; tab.
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReplyingToId(null);
+                              setReplyText('');
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white text-xs cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isSubmittingReply || !replyText.trim()}
+                            onClick={() => handleSendReply(msg.id)}
+                            className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer disabled:opacity-50"
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                            <span>{isSubmittingReply ? 'Sending...' : 'Send Reply'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions Footer */}
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-800/60 flex-wrap gap-2">
+                    <div>
+                      {replyingToId !== msg.id && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyingToId(msg.id);
+                            setReplyText(msg.adminReply || '');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                        >
+                          <CornerDownRight className="w-3.5 h-3.5" />
+                          <span>{msg.adminReply ? 'Edit Reply' : 'Reply'}</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs">
+                      {msg.status !== 'read' && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateMessageStatus(msg.id, 'read')}
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold transition-colors cursor-pointer"
+                        >
+                          Mark as Read
+                        </button>
+                      )}
+                      {msg.status !== 'resolved' && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateMessageStatus(msg.id, 'resolved')}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span>Mark Resolved</span>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        title="Delete message from inbox"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SECTION 2: User Accounts Directory */}
+      {(adminSection === 'users' || adminSection === 'all') && (
+        <div className="space-y-6 animate-in fade-in">
+          {/* Metrics Row (Community & Examination Participation Statistics) */}
+          <CommunityStatsCards
         totalUsers={totalUsers}
         standardUsersCount={standardUsersCount}
         adminUsersCount={adminUsersCount}
@@ -426,12 +919,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
           </table>
         </div>
       </div>
+      </div>
+      )}
 
       {/* Official Broadcast Announcements Section */}
-      <div
-        className="rounded-3xl p-6 border shadow-2xl space-y-6"
-        style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-      >
+      {(adminSection === 'announcements' || adminSection === 'all') && (
+        <div
+          className="rounded-3xl p-6 border shadow-2xl space-y-6 animate-in fade-in"
+          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+        >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
           <div>
             <h2 className="text-lg font-bold font-arnie text-white flex items-center space-x-2">
@@ -636,125 +1132,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
           )}
         </div>
       </div>
-
-      {/* Reviewee Messages & Material Requests Inbox */}
-      <div
-        className="rounded-3xl border p-6 shadow-xl space-y-6"
-        style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold">
-              <MessageSquare className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-white text-lg">Reviewee Messages &amp; Requests</h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  {messagesList.filter((m) => m.status === 'unread').length} Unread
-                </span>
-              </div>
-              <p className="text-xs text-slate-400">
-                Direct questions, question bank requests, financial assistance notes, and feedback
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={loadData}
-            className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh Inbox</span>
-          </button>
-        </div>
-
-        {messagesList.length === 0 ? (
-          <div className="p-8 text-center text-slate-400 text-xs bg-slate-900/40 rounded-2xl border border-slate-800/80">
-            <MessageSquare className="w-8 h-8 text-slate-500 mx-auto mb-2 opacity-60" />
-            <p className="font-semibold text-slate-300">No Reviewee Messages Received Yet</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Messages submitted through the &quot;Message Admin&quot; feature appear here in real time.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
-            {messagesList.map((msg) => (
-              <div
-                key={msg.id}
-                className={`p-4 rounded-2xl border transition-all space-y-2.5 ${
-                  msg.status === 'unread'
-                    ? 'bg-amber-500/5 border-amber-500/30 shadow-md'
-                    : msg.status === 'resolved'
-                    ? 'bg-slate-950/40 border-slate-800/60 opacity-70'
-                    : 'bg-slate-900/60 border-slate-800'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        msg.status === 'unread'
-                          ? 'bg-amber-500 text-slate-950'
-                          : msg.status === 'resolved'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          : 'bg-slate-800 text-slate-300'
-                      }`}
-                    >
-                      {msg.status.toUpperCase()}
-                    </span>
-
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                      {msg.category}
-                    </span>
-
-                    <span className="text-[11px] font-mono text-slate-400">
-                      From: <strong className="text-white">{msg.senderName}</strong>
-                      {msg.senderEmail && (
-                        <span className="text-slate-400 ml-1">({msg.senderEmail})</span>
-                      )}
-                    </span>
-                  </div>
-
-                  <span className="text-[11px] text-slate-500 font-mono">
-                    {new Date(msg.createdAt).toLocaleDateString()} {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-white">{msg.subject}</h4>
-                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
-                    {msg.message}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-1 text-xs">
-                  {msg.status !== 'read' && (
-                    <button
-                      type="button"
-                      onClick={() => handleUpdateMessageStatus(msg.id, 'read')}
-                      className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-semibold transition-colors cursor-pointer"
-                    >
-                      Mark as Read
-                    </button>
-                  )}
-                  {msg.status !== 'resolved' && (
-                    <button
-                      type="button"
-                      onClick={() => handleUpdateMessageStatus(msg.id, 'resolved')}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1"
-                    >
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      <span>Mark Resolved</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Add User Modal */}
       {isAddUserModalOpen && (

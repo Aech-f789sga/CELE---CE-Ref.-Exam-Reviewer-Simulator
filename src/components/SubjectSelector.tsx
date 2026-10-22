@@ -241,7 +241,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               </p>
               <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-300 font-semibold">
                 <BookOpen className="w-3 h-3 text-amber-400 shrink-0" />
-                <span>Ref: CE Reference Vol 4–6</span>
+                <span>Ref: Gillesania CE Reference Vol 4–6</span>
               </div>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
@@ -279,7 +279,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               </p>
               <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-[10px] text-cyan-300 font-semibold">
                 <BookOpen className="w-3 h-3 text-cyan-400 shrink-0" />
-                <span>Ref: CE Reference Vol 4–6</span>
+                <span>Ref: Gillesania CE Reference Vol 4–6</span>
               </div>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
@@ -317,7 +317,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               </p>
               <div className="mt-2 inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-300 font-semibold">
                 <BookOpen className="w-3 h-3 text-emerald-400 shrink-0" />
-                <span>Ref: CE Reference Vol 4–6</span>
+                <span>Ref: Gillesania CE Reference Vol 4–6</span>
               </div>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
@@ -332,7 +332,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         {/* Reference Citation Only */}
         <div className="flex items-center space-x-2 text-xs text-slate-400 pt-1">
           <BookOpen className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-          <span>Reference: <strong className="font-semibold text-slate-300">CE Reference Book Volume 4-6</strong></span>
+          <span>Reference: <strong className="font-semibold text-slate-300">Gillesania CE Reference Book Volume 4-6</strong></span>
         </div>
       </div>
 
@@ -816,7 +816,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
         </div>
       )}
 
-      {/* Formula Deck & Term Quiz Quick Access (live from ce-formula-cards) */}
+      {/* Formula Deck & Term Quiz Quick Access */}
       {onNavigateToFlashcards && (
         <div className="bg-slate-900/80 border border-amber-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
           <div className="flex items-start space-x-3.5">

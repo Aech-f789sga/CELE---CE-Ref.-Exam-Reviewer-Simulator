@@ -31,7 +31,6 @@ import { useTheme } from '../context/ThemeContext';
 import { ThemeConfig } from '../types/theme';
 import {
   CARD_SITE,
-  CARD_REPO,
   SOURCES,
   FormulaCard,
   FormulaDeck,
@@ -42,7 +41,6 @@ import {
   imageUrl,
   loadFormulaDeck,
   loadTermBook,
-  sourceLabel,
 } from '../services/formulaCards';
 
 /* -------------------------------------------------------------------------- */
@@ -1384,8 +1382,7 @@ export const FormulaCardsHub: React.FC = () => {
                 </h1>
                 <p className="mt-0.5 text-[12px]" style={{ color: t.textMuted }}>
                   {deck ? `${deck.cards.length} formula cards` : 'Formula cards'} ·{' '}
-                  {book ? `${book.items.length} terms` : 'terms'} · live from{' '}
-                  <span style={{ color: t.textSecondary }}>{CARD_REPO}</span>
+                  {book ? `${book.items.length} terms` : 'terms'}
                 </p>
               </div>
             </div>
@@ -1394,7 +1391,6 @@ export const FormulaCardsHub: React.FC = () => {
               <div
                 className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px]"
                 style={{ borderColor: withAlpha(t.border, 0.6), color: t.textSecondary, backgroundColor: withAlpha(t.bgCardSubtle, 0.4) }}
-                title={`Content is read from ${base}`}
               >
                 {status === 'offline' ? (
                   <CloudOff className="h-3.5 w-3.5" style={{ color: '#fbbf24' }} />
@@ -1409,8 +1405,6 @@ export const FormulaCardsHub: React.FC = () => {
                   {status === 'syncing' && 'Syncing…'}
                   {(status === 'ready' || status === 'error') && syncedAt && `Synced ${formatSyncedAt(syncedAt)}`}
                 </span>
-                <span className="opacity-50">·</span>
-                <span className="opacity-80">{sourceLabel(base)}</span>
               </div>
 
               <button
@@ -1419,22 +1413,11 @@ export const FormulaCardsHub: React.FC = () => {
                 disabled={status === 'syncing' || status === 'loading'}
                 className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-50 ${focusRing}`}
                 style={{ borderColor: withAlpha(t.border, 0.6), color: t.textSecondary }}
-                title="Check the repo for a newer copy"
+                title="Refresh cards and terms"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${status === 'syncing' ? 'animate-spin' : ''}`} />
                 Sync
               </button>
-
-              <a
-                href={CARD_SITE}
-                target="_blank"
-                rel="noreferrer"
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-colors hover:opacity-80 ${focusRing}`}
-                style={{ borderColor: withAlpha(t.accent, 0.5), color: t.accent, backgroundColor: withAlpha(t.accent, 0.1) }}
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                Standalone
-              </a>
             </div>
           </div>
         </div>
@@ -1468,7 +1451,7 @@ export const FormulaCardsHub: React.FC = () => {
             Could not load the formula deck
           </h3>
           <p className="mx-auto mt-1 max-w-md text-[12px]" style={{ color: t.textMuted }}>
-            {error}. Check that {CARD_SITE} is reachable, then retry.
+            {error}. Please check your connection and retry.
           </p>
           <div className="mt-4 flex justify-center">
             <GhostButton onClick={() => setTick((v) => v + 1)} t={t}>
@@ -1481,7 +1464,7 @@ export const FormulaCardsHub: React.FC = () => {
         <div className="rounded-3xl border p-14 text-center" style={glass(t)}>
           <Loader2 className="mx-auto mb-3 h-9 w-9 animate-spin" style={{ color: t.accent }} />
           <p className="text-[12px]" style={{ color: t.textMuted }}>
-            Pulling {`${'the'} deck`} from {sourceLabel(base)}…
+            Loading formula deck and terms…
           </p>
         </div>
       ) : (

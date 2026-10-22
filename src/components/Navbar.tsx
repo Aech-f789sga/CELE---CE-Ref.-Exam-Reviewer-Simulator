@@ -22,6 +22,7 @@ import {
   X,
   Compass,
   MessageSquare,
+  Inbox,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -230,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     backgroundColor: currentTab === 'flashcards' ? themeConfig.accent : 'transparent',
                     color: currentTab === 'flashcards' ? themeConfig.accentText : themeConfig.textSecondary,
                   }}
-                  title="Formula Deck & Term Quiz — 971 formula cards and 1,059 terms, synced live from ce-formula-cards"
+                  title="Formula Deck & Term Quiz — 971 formula cards and 1,059 terms"
                 >
                   <Layers className="w-4 h-4" />
                   <span>Cards</span>
@@ -286,8 +287,23 @@ export const Navbar: React.FC<NavbarProps> = ({
               {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
 
-            {/* Message Admin Trigger */}
-            {onOpenContactAdmin && (
+            {/* Inbox for Admin, or Message Admin for Examinees */}
+            {isAdmin ? (
+              <button
+                type="button"
+                onClick={() => setCurrentTab('admin')}
+                title="Admin Inbox — Reviewee Messages & Requests"
+                className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer whitespace-nowrap shrink-0"
+                style={{
+                  backgroundColor: currentTab === 'admin' ? themeConfig.accent : themeConfig.bgCardSubtle,
+                  borderColor: currentTab === 'admin' ? themeConfig.accent : themeConfig.border,
+                  color: currentTab === 'admin' ? themeConfig.accentText : themeConfig.textPrimary,
+                }}
+              >
+                <Inbox className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="hidden 2xl:inline">Inbox</span>
+              </button>
+            ) : onOpenContactAdmin ? (
               <button
                 data-tour="contact-admin-trigger"
                 type="button"
@@ -303,7 +319,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <MessageSquare className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span className="hidden 2xl:inline">Message Admin</span>
               </button>
-            )}
+            ) : null}
 
             {/* Theme & Fonts Customizer Trigger */}
             <button
@@ -441,7 +457,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               );
             })}
 
-            {onOpenContactAdmin && (
+            {isAdmin ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentTab('admin');
+                  setMobileNavOpen(false);
+                }}
+                className="col-span-2 sm:col-span-3 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all hover:scale-102 cursor-pointer bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25 shadow-sm"
+              >
+                <Inbox className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Admin Inbox (User Messages &amp; Replies)</span>
+              </button>
+            ) : onOpenContactAdmin ? (
               <button
                 type="button"
                 onClick={() => {
@@ -453,7 +481,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <MessageSquare className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>Message Administrator / Send Request</span>
               </button>
-            )}
+            ) : null}
           </div>
         </div>
       )}

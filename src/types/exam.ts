@@ -28,7 +28,7 @@ export const SUBJECT_CONFIGS: Record<SubjectArea, SubjectConfig> = {
     name: 'Mathematics, Surveying & Transportation',
     fullName: 'Mathematics, Surveying and Transportation Engineering',
     description: 'Algebra, Calculus, Economy, Surveying, Highway, Traffic & Transportation',
-    referenceBook: 'CE Reference Volume 4-6 Books (Gillesania / Besavilla)',
+    referenceBook: 'Gillesania CE Reference Book Volume 4-6',
     weight: 0.35,
     weightPercent: 35,
     defaultMinutes: 300, // 5 hours
@@ -43,7 +43,7 @@ export const SUBJECT_CONFIGS: Record<SubjectArea, SubjectConfig> = {
     name: 'Hydraulics & Geotechnical Engineering',
     fullName: 'Hydraulics and Geotechnical Engineering',
     description: 'Fluid Mechanics, Pipe Flow, Open Channel, Soil Mechanics & Foundation',
-    referenceBook: 'CE Reference Volume 4-6 Books (Gillesania / Besavilla)',
+    referenceBook: 'Gillesania CE Reference Book Volume 4-6',
     weight: 0.30,
     weightPercent: 30,
     defaultMinutes: 240, // 4 hours
@@ -58,7 +58,7 @@ export const SUBJECT_CONFIGS: Record<SubjectArea, SubjectConfig> = {
     name: 'Structural Analysis & Design',
     fullName: 'Principles of Structural Analysis and Design',
     description: 'Statics, Strength of Materials, Concrete NSCP 2015, Steel AISC, Timber',
-    referenceBook: 'CE Reference Volume 4-6 Books (Gillesania / Besavilla)',
+    referenceBook: 'Gillesania CE Reference Book Volume 4-6',
     weight: 0.35,
     weightPercent: 35,
     defaultMinutes: 360, // 6 hours

@@ -217,7 +217,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                         cycle.isPassed ? (
                           <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold text-xs font-tech-mono shadow-md">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                            <span>PASSED — LICENSED CIVIL ENGINEER</span>
+                            <span>PASSED</span>
                           </div>
                         ) : (
                           <div className="flex items-center space-x-2 px-3.5 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 font-bold text-xs font-tech-mono shadow-md">

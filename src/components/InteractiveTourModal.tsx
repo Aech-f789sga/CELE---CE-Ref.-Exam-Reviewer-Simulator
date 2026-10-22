@@ -90,7 +90,7 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
         'Differential & Integral Calculus, Higher Engineering Mathematics, Engineering Economy (Annuities, Depreciation), Advanced Surveying, Highway Curves, Superelevation, and Wave Mechanics. Fully referenced from CE Reference Volume 4-6 review books.',
       accentColor: '#f59e0b',
       preferredPlacement: 'bottom',
-      referenceBadge: 'Curriculum Core: CE Reference Volume 4-6 Books (Gillesania / Besavilla)',
+      referenceBadge: 'Curriculum Core: Gillesania CE Reference Book Volume 4-6',
       actionLabel: 'Select MSTC Subject',
       onAction: () => {
         if (onSelectSubject) onSelectSubject('MSTC');
