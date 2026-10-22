@@ -377,9 +377,6 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                         <h3 className="font-bold text-sm tracking-wide flex items-center space-x-1.5">
                           <span>{item.name}</span>
                         </h3>
-                        <p className="text-xs mt-1 leading-relaxed opacity-85" style={{ color: item.textSecondary }}>
-                          {item.description}
-                        </p>
                       </div>
 
                       {/* Accent pill bottom */}
@@ -531,9 +528,6 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                         Requested Feature
                       </span>
                     </div>
-                    <p className="text-xs leading-relaxed max-w-lg" style={{ color: themeConfig.textMuted }}>
-                      Adds an adaptive anti-glare contrast shadow/outline behind problem statements, titles, and mathematical formulas so letters remain razor-sharp and pop out cleanly regardless of the selected theme background color.
-                    </p>
                   </div>
 
                   <button
@@ -582,9 +576,6 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                       >
                         <div className="text-base font-bold">{size.name}</div>
                         <div className="text-xs opacity-75 mt-0.5">{size.scalePercent}%</div>
-                        <p className="text-[11px] mt-2 opacity-65 leading-tight" style={{ color: themeConfig.textMuted }}>
-                          {size.description}
-                        </p>
                       </button>
                     );
                   })}
@@ -605,9 +596,6 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                       <Eye className="w-4 h-4" style={{ color: themeConfig.accent }} />
                       <span className="text-sm font-bold">High-Contrast Drafting Backplate</span>
                     </div>
-                    <p className="text-xs leading-relaxed max-w-lg" style={{ color: themeConfig.textMuted }}>
-                      Enforces a clean white architectural card backing on all diagram figures and postimg illustrations for maximum line clarity regardless of your dark theme selection.
-                    </p>
                   </div>
 
                   <button

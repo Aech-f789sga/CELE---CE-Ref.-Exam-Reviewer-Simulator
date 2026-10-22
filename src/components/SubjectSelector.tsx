@@ -169,12 +169,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
               <span>3D Particle Theme • Reactive Background &amp; Hand Gestures Active</span>
             </div>
-          ) : (
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>PRC Board Exam Questions • 2024 &amp; 2025 Official Question Sets</span>
-            </div>
-          )}
+          ) : null}
           <h1 className="font-arnie text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
             Civil Engineering Board Examination
           </h1>

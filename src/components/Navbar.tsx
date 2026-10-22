@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       }
     >
       <div
-        className={`max-w-7xl mx-auto transition-all ${
+        className={`max-w-[1720px] w-full mx-auto transition-all ${
           isAurora
             ? 'rounded-full px-4 sm:px-6 border shadow-[0_20px_40px_rgba(0,0,0,0.2)]'
             : 'px-4 sm:px-6 lg:px-8'
@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Center Navigation Tabs (Only when NOT actively taking exam) */}
-          <div data-tour="portal-nav" className="hidden xl:flex items-center justify-center space-x-1 min-w-0 px-2 shrink">
+          <div data-tour="portal-nav" className="hidden min-[1360px]:flex items-center justify-center space-x-1 min-w-0 px-2 shrink-0">
             {!isExamRunning && (
               <>
                 <button
@@ -275,7 +275,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => setMobileNavOpen((v) => !v)}
-              className="xl:hidden p-2 rounded-lg border transition-colors cursor-pointer"
+              className="min-[1360px]:hidden p-2 rounded-lg border transition-colors cursor-pointer"
               style={{
                 backgroundColor: themeConfig.bgCardSubtle,
                 borderColor: themeConfig.border,
@@ -301,7 +301,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
               >
                 <Inbox className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span className="hidden 2xl:inline">Inbox</span>
+                <span className="hidden min-[1580px]:inline">Inbox</span>
               </button>
             ) : onOpenContactAdmin ? (
               <button
@@ -317,7 +317,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
               >
                 <MessageSquare className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span className="hidden 2xl:inline">Message Admin</span>
+                <span className="hidden min-[1580px]:inline">Message Admin</span>
               </button>
             ) : null}
 
@@ -418,7 +418,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Tablet Portrait & Mobile drawer navigation panel */}
       {mobileNavOpen && !isExamRunning && (
         <div
-          className={`xl:hidden px-3 sm:px-4 py-3 sm:py-4 mt-2 ${
+          className={`min-[1360px]:hidden px-3 sm:px-4 py-3 sm:py-4 mt-2 ${
             isAurora
               ? 'rounded-2xl border shadow-xl'
               : 'rounded-2xl border shadow-xl bg-slate-900/95'
