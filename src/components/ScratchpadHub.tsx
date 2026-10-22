@@ -21,7 +21,9 @@ import {
   Monitor,
   Tablet,
   FolderOpen,
+  Lock,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import {
   ScratchpadMetadata,
   getAllScratchpads,
@@ -57,6 +59,9 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
   const [padToDelete, setPadToDelete] = useState<ScratchpadMetadata | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const { user, profile, openAuthModal } = useAuth();
+  const activeUser = profile || user;
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const refreshList = () => {
@@ -87,15 +92,23 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
 
   useEffect(() => {
     if (initialOpenPadId) {
+      if (!activeUser) {
+        openAuthModal('Please sign in or create an account first to view and save scratchpads.');
+        return;
+      }
       const pad = scratchpads.find((s) => s.id === initialOpenPadId);
       if (pad) {
         setActivePad(pad);
         setIsEditorOpen(true);
       }
     }
-  }, [initialOpenPadId, scratchpads]);
+  }, [initialOpenPadId, scratchpads, activeUser, openAuthModal]);
 
   const handleCreateNew = () => {
+    if (!activeUser) {
+      openAuthModal('Please sign in or create an account first to create and save scratchpads.');
+      return;
+    }
     const created = createStandaloneScratchpad(newTitle.trim() || undefined);
     setNewTitle('');
     setIsNewModalOpen(false);
@@ -105,6 +118,10 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
   };
 
   const handleOpenPad = (pad: ScratchpadMetadata) => {
+    if (!activeUser) {
+      openAuthModal('Please sign in or create an account first to edit and save scratchpads.');
+      return;
+    }
     setActivePad(pad);
     setIsEditorOpen(true);
   };
@@ -307,7 +324,13 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                if (!activeUser) {
+                  openAuthModal('Please sign in or create an account first to import and save scratchpads.');
+                  return;
+                }
+                fileInputRef.current?.click();
+              }}
               className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all cursor-pointer shadow-sm hover:text-white"
               title="Import an existing .cescratch or .json file from another device or tablet"
             >
@@ -318,6 +341,10 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
             <button
               type="button"
               onClick={() => {
+                if (!activeUser) {
+                  openAuthModal('Please sign in or create an account first to create and save scratchpad drawings.');
+                  return;
+                }
                 const pad = createStandaloneScratchpad('CE Board Inkpad');
                 refreshList();
                 setActivePad(pad);
@@ -330,6 +357,30 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Guest / Visitor Auth Banner */}
+        {!activeUser && (
+          <div className="mt-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
+            <div className="flex items-center space-x-2.5">
+              <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
+                <Lock className="w-4 h-4" />
+              </span>
+              <div>
+                <span className="font-bold text-white block">Sign In Required to Save Scratchpads</span>
+                <span className="text-[11px] text-slate-300">
+                  Please sign up or log in first so your rough calculations and engineering drawings are permanently saved.
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => openAuthModal('Please sign in or create an account first to save scratchpads.')}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 cursor-pointer shadow-md transition-all"
+            >
+              Sign In / Register
+            </button>
+          </div>
+        )}
 
         {/* Import Banner Status */}
         {importStatus && (
@@ -410,7 +461,13 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
           </div>
           <button
             type="button"
-            onClick={() => setIsNewModalOpen(true)}
+            onClick={() => {
+              if (!activeUser) {
+                openAuthModal('Please sign in or create an account first to create and save new scratchpads.');
+                return;
+              }
+              setIsNewModalOpen(true);
+            }}
             className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 text-xs font-bold shadow-lg shadow-cyan-500/20 cursor-pointer hover:bg-cyan-400"
           >
             <Plus className="w-4 h-4" />
@@ -701,7 +758,13 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
           storageKeyPrefix={activePad.sessionKey || `scratchpad_${activePad.id}_`}
           title={activePad.title}
           documentId={activePad.id}
-          onSaveBundle={() => refreshList()}
+          onSaveBundle={() => {
+            if (!activeUser) {
+              openAuthModal('Please sign in or create an account first to save scratchpad progress.');
+              return;
+            }
+            refreshList();
+          }}
         />
       )}
     </div>

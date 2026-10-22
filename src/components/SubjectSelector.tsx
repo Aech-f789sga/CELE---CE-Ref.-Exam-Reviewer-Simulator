@@ -44,6 +44,7 @@ import { ParticleSystem3D } from './ParticleSystem3D';
 import { SubmergedEra3D } from './SubmergedEra3D';
 import { Tilt3D } from './Tilt3D';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import {
   getPausedSession,
   getAllPausedSessions,
@@ -105,6 +106,8 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
   const [sessionToDiscard, setSessionToDiscard] = useState<PausedExamSession | 'ALL' | null>(null);
   const { themeConfig } = useTheme();
+  const { user, profile, openAuthModal } = useAuth();
+  const activeUser = profile || user;
   const isAurora = themeConfig.id === 'aurora_glass';
   const isTerrarium = themeConfig.id === 'terrarium_orb';
   const isMatilda = themeConfig.id === 'matilda_3d';
@@ -627,15 +630,34 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 <>
                   <button
                     type="button"
-                    onClick={() => onResumeExam(currentPausedSession)}
+                    onClick={() => {
+                      if (!activeUser) {
+                        openAuthModal('Please sign in or create an account first to resume an exam session.');
+                        return;
+                      }
+                      onResumeExam(currentPausedSession);
+                    }}
                     className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider bg-slate-950 hover:bg-slate-900 text-amber-400 hover:scale-[1.02] cursor-pointer"
                   >
-                    <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
-                    <span>RESUME SESSION</span>
+                    {activeUser ? (
+                      <>
+                        <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        <span>RESUME SESSION</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-4 h-4 text-amber-400" />
+                        <span>SIGN IN TO RESUME</span>
+                      </>
+                    )}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
+                      if (!activeUser) {
+                        openAuthModal('Please sign in or create an account first to start the examination.');
+                        return;
+                      }
                       deletePausedSession(selectedSubject, selectedYear, selectedMonth);
                       setPausedSessionsList(getAllPausedSessions());
                       onStartExam();
@@ -649,7 +671,13 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               ) : (
                 <button
                   type="button"
-                  onClick={onStartExam}
+                  onClick={() => {
+                    if (!activeUser) {
+                      openAuthModal('Please sign in or create an account first to start the examination.');
+                      return;
+                    }
+                    onStartExam();
+                  }}
                   disabled={!hasSelectedData}
                   className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 shadow-xl transition-all font-arnie tracking-wider ${
                     hasSelectedData
@@ -657,9 +685,25 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                       : 'bg-slate-950/50 text-slate-500 cursor-not-allowed opacity-60'
                   }`}
                 >
-                  <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
-                  <span>START EXAMINATION</span>
+                  {activeUser ? (
+                    <>
+                      <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
+                      <span>START EXAMINATION</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4 text-amber-400" />
+                      <span>SIGN IN TO START EXAM</span>
+                    </>
+                  )}
                 </button>
+              )}
+
+              {!activeUser && (
+                <p className="text-[10px] text-slate-950 font-semibold text-center flex items-center justify-center gap-1 pt-1 opacity-90">
+                  <Lock className="w-3 h-3 text-slate-950 shrink-0" />
+                  <span>Sign up or log in first to begin official exam simulation</span>
+                </p>
               )}
             </div>
           </div>
@@ -741,11 +785,26 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
               <button
                 type="button"
-                onClick={() => onResumeExam(currentPausedSession)}
+                onClick={() => {
+                  if (!activeUser) {
+                    openAuthModal('Please sign in or create an account first to resume an exam session.');
+                    return;
+                  }
+                  onResumeExam(currentPausedSession);
+                }}
                 className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm font-arnie tracking-wider flex items-center space-x-2 shadow-lg shadow-amber-500/20 hover:scale-105 transition-all cursor-pointer"
               >
-                <Play className="w-4 h-4 fill-slate-950" />
-                <span>RESUME STUDY (Q#{currentPausedSession.currentIndex + 1})</span>
+                {activeUser ? (
+                  <>
+                    <Play className="w-4 h-4 fill-slate-950" />
+                    <span>RESUME STUDY (Q#{currentPausedSession.currentIndex + 1})</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4 text-slate-950" />
+                    <span>SIGN IN TO RESUME</span>
+                  </>
+                )}
               </button>
 
               <button

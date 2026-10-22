@@ -23,9 +23,11 @@ interface AuthContextValue {
   loading: boolean;
   authError: string | null;
   isAuthModalOpen: boolean;
+  authModalReason: string | null;
   designatedAdminEmail: string;
-  openAuthModal: () => void;
+  openAuthModal: (reason?: string | unknown) => void;
   closeAuthModal: () => void;
+  setAuthModalReason: (reason: string | null) => void;
   clearAuthError: () => void;
   signIn: () => Promise<void>;
   signInWithPassword: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
@@ -52,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [authModalReason, setAuthModalReason] = useState<string | null>(null);
 
   useEffect(() => {
     // Initial connection test
@@ -272,9 +275,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         authError,
         isAuthModalOpen,
+        authModalReason,
         designatedAdminEmail: DESIGNATED_ADMIN_EMAIL,
-        openAuthModal: () => setIsAuthModalOpen(true),
-        closeAuthModal: () => setIsAuthModalOpen(false),
+        openAuthModal: (reason?: string | unknown) => {
+          if (typeof reason === 'string') {
+            setAuthModalReason(reason);
+          } else {
+            setAuthModalReason(null);
+          }
+          setIsAuthModalOpen(true);
+        },
+        closeAuthModal: () => {
+          setIsAuthModalOpen(false);
+          setAuthModalReason(null);
+        },
+        setAuthModalReason,
         clearAuthError: () => setAuthError(null),
         signIn: handleSignIn,
         signInWithPassword: handleSignInWithPassword,

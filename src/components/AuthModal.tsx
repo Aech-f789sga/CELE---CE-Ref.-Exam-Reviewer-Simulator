@@ -39,6 +39,7 @@ export const AuthModal: React.FC = () => {
     updateUsername,
     checkUsernameCooldown,
     signOut,
+    authModalReason,
   } = useAuth();
 
   const { themeConfig } = useTheme();
@@ -429,6 +430,23 @@ export const AuthModal: React.FC = () => {
         ) : (
           /* LOGGED OUT VIEW: Sign In with Password & Google Popup */
           <div className="p-6 space-y-5 max-h-[84vh] overflow-y-auto">
+            {/* Feature Access Requirement Notice */}
+            {authModalReason && (
+              <div className="p-4 rounded-2xl bg-amber-500/15 border-2 border-amber-500/40 text-amber-200 text-xs flex items-start space-x-3 shadow-lg shadow-amber-500/5 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="p-2 rounded-xl bg-amber-500/25 text-amber-300 shrink-0 mt-0.5 border border-amber-500/40">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="font-bold text-white text-[13px] flex items-center space-x-2">
+                    <span>Sign In or Sign Up Required</span>
+                  </div>
+                  <p className="text-slate-300 text-xs leading-relaxed">
+                    {authModalReason}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Mode Switcher Tabs */}
             <div className="grid grid-cols-2 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
               <button

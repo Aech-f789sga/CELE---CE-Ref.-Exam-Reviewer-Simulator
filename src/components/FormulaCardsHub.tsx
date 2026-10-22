@@ -26,8 +26,10 @@ import {
   Sparkles,
   ListFilter,
   BookMarked,
+  Lock,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { ThemeConfig } from '../types/theme';
 import {
   CARD_SITE,
@@ -170,6 +172,17 @@ const GhostButton: React.FC<{
 type DeckFilter = 'all' | 'unseen' | 'review' | 'known';
 
 const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = ({ deck, base, t }) => {
+  const { user, profile, openAuthModal } = useAuth();
+  const activeUser = profile || user;
+
+  const requireAuth = (msg = 'Please sign in or create an account first to interact with formula cards.') => {
+    if (!activeUser) {
+      openAuthModal(msg);
+      return false;
+    }
+    return true;
+  };
+
   const [cat, setCat] = useState<string>('all');
   const [filter, setFilter] = useState<DeckFilter>('all');
   const [query, setQuery] = useState('');
@@ -234,25 +247,29 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
   }, [catCards, marks]);
 
   const goNext = useCallback(() => {
+    if (!requireAuth()) return;
     if (pool.length === 0) return;
     setIndex((i) => (i + 1) % pool.length);
-  }, [pool.length]);
+  }, [pool.length, activeUser]);
 
   const goPrev = useCallback(() => {
+    if (!requireAuth()) return;
     if (pool.length === 0) return;
     setIndex((i) => (i - 1 + pool.length) % pool.length);
-  }, [pool.length]);
+  }, [pool.length, activeUser]);
 
   const markCurrent = useCallback(
     (value: CardMark) => {
+      if (!requireAuth('Please sign in or create an account first to mark card mastery.')) return;
       if (!card) return;
       setMarks((prev) => ({ ...prev, [card.id]: value }));
       goNext();
     },
-    [card, goNext],
+    [card, goNext, activeUser],
   );
 
   const toggleShuffle = useCallback(() => {
+    if (!requireAuth()) return;
     if (shuffled) {
       setShuffled(null);
       setIndex(0);
@@ -265,10 +282,11 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
     }
     setShuffled(copy);
     setIndex(0);
-  }, [catCards, shuffled]);
+  }, [catCards, shuffled, activeUser]);
 
   const jumpTo = useCallback(
     (target: FormulaCard) => {
+      if (!requireAuth()) return;
       const list = cat === target.cat ? catCards : deck.cards.filter((c) => c.cat === target.cat);
       setCat(target.cat);
       setShuffled(null);
@@ -282,7 +300,7 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
         setIndex(at >= 0 ? at : 0);
       }, 0);
     },
-    [cat, catCards, deck.cards],
+    [cat, catCards, deck.cards, activeUser],
   );
 
   const copyLink = useCallback(async () => {
@@ -302,6 +320,14 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
+
+      if (!activeUser) {
+        if (['Space', 'ArrowRight', 'ArrowLeft', 'KeyK', 'KeyR', 'KeyS', 'KeyB'].includes(e.code)) {
+          e.preventDefault();
+          openAuthModal('Please sign in or create an account first to interact with formula cards.');
+          return;
+        }
+      }
 
       if (zoomOpen) {
         if (e.key === 'Escape') setZoomOpen(false);
@@ -343,7 +369,7 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goNext, goPrev, markCurrent, toggleShuffle, zoomOpen, browseOpen]);
+  }, [goNext, goPrev, markCurrent, toggleShuffle, zoomOpen, browseOpen, activeUser, openAuthModal]);
 
   /* browse drawer data --------------------------------------------------- */
   const browseGroups = useMemo(() => {
@@ -376,6 +402,30 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
 
   return (
     <div className="space-y-3">
+      {/* Auth Requirement Notice Banner */}
+      {!activeUser && (
+        <div className="mx-auto w-full max-w-4xl rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-xs text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg animate-in fade-in">
+          <div className="flex items-center space-x-2.5">
+            <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
+              <Lock className="w-4 h-4" />
+            </span>
+            <div>
+              <span className="font-bold text-white block">Sign In to Interact with Formula Cards</span>
+              <span className="text-[11px] text-slate-300">
+                You must sign up or log in first to reveal formulas, flip cards, zoom, and track your study mastery.
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openAuthModal('Please sign in or create an account first to interact with formula cards.')}
+            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 cursor-pointer shadow-md transition-all"
+          >
+            Sign In / Register
+          </button>
+        </div>
+      )}
+
       {/* deck switcher ---------------------------------------------------- */}
       <div className="flex flex-wrap items-center gap-2">
         <Chip active={cat === 'all'} onClick={() => { setCat('all'); setShuffled(null); setIndex(0); }} t={t} count={deck.cards.length}>
@@ -394,7 +444,10 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
           </Chip>
         ))}
         <div className="ml-auto flex items-center gap-2">
-          <GhostButton onClick={() => setBrowseOpen(true)} t={t} title="Browse sections (B)">
+          <GhostButton onClick={() => {
+            if (!requireAuth()) return;
+            setBrowseOpen(true);
+          }} t={t} title="Browse sections (B)">
             <PanelRightOpen className="h-3.5 w-3.5" />
             Browse
           </GhostButton>
@@ -497,7 +550,13 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
                 {/* FRONT — topic title */}
                 <button
                   type="button"
-                  onClick={() => setFlipped(true)}
+                  onClick={() => {
+                    if (!activeUser) {
+                      openAuthModal('Please sign in or create an account first to interact with formula cards and reveal formulas.');
+                      return;
+                    }
+                    setFlipped(true);
+                  }}
                   className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-[28px] border p-7 text-left transition-shadow ${focusRing}`}
                   style={{ ...glass(t, 0.82), backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                 >
@@ -529,10 +588,17 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
                     </h2>
                   </div>
 
-                  <div className="relative flex items-center justify-center gap-2 text-[11px]" style={{ color: t.textMuted }}>
-                    <MousePointerClick className="h-3.5 w-3.5" />
-                    Click or press <kbd className="rounded border px-1.5 py-0.5 text-[10px]" style={{ borderColor: withAlpha(t.border, 0.7) }}>Space</kbd> to reveal the formula
-                  </div>
+                  {activeUser ? (
+                    <div className="relative flex items-center justify-center gap-2 text-[11px]" style={{ color: t.textMuted }}>
+                      <MousePointerClick className="h-3.5 w-3.5" />
+                      Click or press <kbd className="rounded border px-1.5 py-0.5 text-[10px]" style={{ borderColor: withAlpha(t.border, 0.7) }}>Space</kbd> to reveal the formula
+                    </div>
+                  ) : (
+                    <div className="relative mx-auto flex items-center justify-center gap-2 text-[11px] font-semibold text-amber-300 bg-amber-500/15 py-1.5 px-4 rounded-full border border-amber-500/40 shadow-sm">
+                      <Lock className="h-3.5 w-3.5" />
+                      Click to sign in and reveal formula
+                    </div>
+                  )}
                 </button>
 
                 {/* BACK — the cropped formula */}
@@ -758,6 +824,17 @@ function shuffle<T>(input: T[]): T[] {
 }
 
 const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => {
+  const { user, profile, openAuthModal } = useAuth();
+  const activeUser = profile || user;
+
+  const requireAuth = (msg = 'Please sign in or create an account first to interact with the term quiz.') => {
+    if (!activeUser) {
+      openAuthModal(msg);
+      return false;
+    }
+    return true;
+  };
+
   const [mode, setMode] = useState<QuizMode>('mcq');
   const [cat, setCat] = useState<string>('all');
   const [seed, setSeed] = useState(0);
@@ -801,6 +878,7 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
 
   const answer = useCallback(
     (choice: string) => {
+      if (!requireAuth('Please sign in or create an account first to answer term quiz questions.')) return;
       if (!current || picked !== null) return;
       setPicked(options.indexOf(choice));
       if (choice === current.t) {
@@ -814,7 +892,7 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
         setMissed((m) => (m.includes(currentIdx) ? m : [...m, currentIdx]));
       }
     },
-    [current, picked, options, order.length, currentIdx],
+    [current, picked, options, order.length, currentIdx, activeUser],
   );
 
   useEffect(() => () => { if (advanceTimer.current) window.clearTimeout(advanceTimer.current); }, []);
@@ -839,16 +917,19 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
   const qItem: TermItem | undefined = qIdx !== undefined ? book.items[qIdx] : undefined;
 
   const nextCard = useCallback(() => {
+    if (!requireAuth('Please sign in or create an account first to practice term flashcards.')) return;
     setFlipped(false);
     setQpos((p) => (queue.length === 0 ? 0 : (p + 1) % queue.length));
-  }, [queue.length]);
+  }, [queue.length, activeUser]);
 
   const prevCard = useCallback(() => {
+    if (!requireAuth('Please sign in or create an account first to practice term flashcards.')) return;
     setFlipped(false);
     setQpos((p) => (queue.length === 0 ? 0 : (p - 1 + queue.length) % queue.length));
-  }, [queue.length]);
+  }, [queue.length, activeUser]);
 
   const cardKnow = useCallback(() => {
+    if (!requireAuth('Please sign in or create an account first to practice term flashcards.')) return;
     if (qIdx === undefined) return;
     setKnown((k) => new Set(k).add(qIdx));
     setReview((r) => { const n = new Set(r); n.delete(qIdx); return n; });
@@ -858,9 +939,10 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
     });
     setQpos((p) => (p >= queue.length - 1 ? 0 : p));
     setFlipped(false);
-  }, [qIdx, qpos, queue.length]);
+  }, [qIdx, qpos, queue.length, activeUser]);
 
   const cardDontKnow = useCallback(() => {
+    if (!requireAuth('Please sign in or create an account first to practice term flashcards.')) return;
     if (qIdx === undefined) return;
     setReview((r) => new Set(r).add(qIdx));
     setQueue((q) => {
@@ -872,13 +954,21 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
     });
     setQpos((p) => (p + 1 < queue.length ? p + 1 : 0));
     setFlipped(false);
-  }, [qIdx, qpos, queue.length]);
+  }, [qIdx, qpos, queue.length, activeUser]);
 
   /* ---------------- keyboard ---------------- */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
+
+      if (!activeUser) {
+        if (['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Space', 'ArrowRight', 'ArrowLeft', 'KeyK', 'KeyX'].includes(e.code)) {
+          e.preventDefault();
+          openAuthModal('Please sign in or create an account first to interact with the term quiz.');
+          return;
+        }
+      }
 
       if (mode === 'mcq') {
         if (['Digit1', 'Digit2', 'Digit3', 'Digit4'].includes(e.code)) {
@@ -917,12 +1007,36 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [mode, options, answer, picked, order.length, nextCard, prevCard, cardKnow, cardDontKnow]);
+  }, [mode, options, answer, picked, order.length, nextCard, prevCard, cardKnow, cardDontKnow, activeUser, openAuthModal]);
 
   const total = poolIdx.length;
 
   return (
     <div className="space-y-3">
+      {/* Auth Requirement Notice Banner */}
+      {!activeUser && (
+        <div className="mx-auto w-full max-w-3xl rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-xs text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg animate-in fade-in">
+          <div className="flex items-center space-x-2.5">
+            <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
+              <Lock className="w-4 h-4" />
+            </span>
+            <div>
+              <span className="font-bold text-white block">Sign In to Take Term Quiz</span>
+              <span className="text-[11px] text-slate-300">
+                You must sign up or sign in first to answer multiple-choice questions, flip cards, and track your engineering term scores.
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openAuthModal('Please sign in or create an account first to interact with the term quiz.')}
+            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 cursor-pointer shadow-md transition-all"
+          >
+            Sign In / Register
+          </button>
+        </div>
+      )}
+
       {/* mode + deck -------------------------------------------------------- */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1 rounded-full border p-1" style={{ borderColor: withAlpha(t.border, 0.6) }}>
@@ -1133,7 +1247,10 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
                       <button
                         key={face}
                         type="button"
-                        onClick={() => setFlipped((f) => !f)}
+                        onClick={() => {
+                          if (!requireAuth('Please sign in or create an account first to flip term flashcards.')) return;
+                          setFlipped((f) => !f);
+                        }}
                         className={`absolute inset-0 flex flex-col justify-between overflow-hidden rounded-[28px] border p-7 text-left ${focusRing}`}
                         style={{
                           ...glass(t, face === 0 ? 0.8 : 0.9),
@@ -1299,6 +1416,8 @@ type Tab = 'deck' | 'quiz' | 'glossary';
 
 export const FormulaCardsHub: React.FC = () => {
   const { themeConfig: t } = useTheme();
+  const { user, profile, openAuthModal } = useAuth();
+  const activeUser = profile || user;
 
   const [tab, setTab] = useState<Tab>('deck');
   const [deck, setDeck] = useState<FormulaDeck | null>(null);
@@ -1418,6 +1537,18 @@ export const FormulaCardsHub: React.FC = () => {
                 <RefreshCw className={`h-3.5 w-3.5 ${status === 'syncing' ? 'animate-spin' : ''}`} />
                 Sync
               </button>
+
+              {!activeUser && (
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('Please sign in or create an account first to interact with formula cards and term quiz.')}
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-all cursor-pointer bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25"
+                  title="Sign In to unlock full interactive formulas and quizzes"
+                >
+                  <Lock className="h-3.5 w-3.5" />
+                  Sign In to Unlock
+                </button>
+              )}
             </div>
           </div>
         </div>

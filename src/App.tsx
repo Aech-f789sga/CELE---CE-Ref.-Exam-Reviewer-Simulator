@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import {
   SubjectArea,
   ExamMonth,
@@ -104,7 +105,7 @@ function MainApp() {
   const { themeConfig } = useTheme();
   const particleTheme = useParticleTheme();
   const [isParticleRemoteOpen, setIsParticleRemoteOpen] = useState<boolean>(false);
-  const { user, profile } = useAuth();
+  const { user, profile, openAuthModal } = useAuth();
   const activeUser = profile || user;
 
   // Selection states
@@ -156,6 +157,10 @@ function MainApp() {
   };
 
   const handleStartExam = () => {
+    if (!activeUser) {
+      openAuthModal('Please sign in or create an account first to start the examination.');
+      return;
+    }
     setResumedSession(null);
     const qList = getQuestionsForExam(selectedSubject, selectedYear, selectedMonth);
     setActiveQuestions(qList);
@@ -164,6 +169,10 @@ function MainApp() {
   };
 
   const handleResumeExam = (session: PausedExamSession) => {
+    if (!activeUser) {
+      openAuthModal('Please sign in or create an account first to resume your exam session.');
+      return;
+    }
     setSelectedSubject(session.subject);
     setSelectedYear(session.year);
     setSelectedMonth(session.month);
@@ -757,6 +766,7 @@ export default function App() {
   return (
     <AuthProvider>
       <MainApp />
+      <Analytics />
     </AuthProvider>
   );
 }

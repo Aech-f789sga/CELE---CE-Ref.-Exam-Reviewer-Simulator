@@ -346,7 +346,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div data-tour="auth-trigger" className="flex items-center space-x-1.5 pl-1">
                 <button
                   type="button"
-                  onClick={openAuthModal}
+                  onClick={() => openAuthModal()}
                   title="Manage Profile & Username"
                   className="flex items-center space-x-2 px-2.5 py-1 rounded-xl border text-xs transition-all hover:scale-102 cursor-pointer"
                   style={{
@@ -401,7 +401,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 data-tour="auth-trigger"
                 type="button"
-                onClick={openAuthModal}
+                onClick={() => openAuthModal()}
                 disabled={authLoading}
                 className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-400 shadow-md transition-all hover:scale-105 cursor-pointer ml-1 whitespace-nowrap shrink-0"
                 title="Sign in with Password or Google"
