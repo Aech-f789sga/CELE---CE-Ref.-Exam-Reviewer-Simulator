@@ -44,6 +44,16 @@ import {
   loadFormulaDeck,
   loadTermBook,
 } from '../services/formulaCards';
+import {
+  loadCardsActivity,
+  saveCardsActivity,
+  saveCardMark,
+  saveDeckPosition,
+  saveMcqQuizState,
+  resetMcqQuizSession,
+  saveTermCardsState,
+  resetTermCardsSession,
+} from '../utils/cardsStorage';
 
 /* -------------------------------------------------------------------------- */
 /* local persistence                                                          */
@@ -183,21 +193,20 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
     return true;
   };
 
-  const [cat, setCat] = useState<string>('all');
-  const [filter, setFilter] = useState<DeckFilter>('all');
+  const initialSaved = useMemo(() => loadCardsActivity(activeUser?.uid), [activeUser?.uid]);
+
+  const [cat, setCat] = useState<string>(() => initialSaved.deckActivity.cat || 'all');
+  const [filter, setFilter] = useState<DeckFilter>(() => initialSaved.deckActivity.filter || 'all');
   const [query, setQuery] = useState('');
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() => initialSaved.deckActivity.index || 0);
   const [flipped, setFlipped] = useState(false);
-  const [marks, setMarks] = useState<Record<string, CardMark>>(() => readJson<Record<string, CardMark>>(MARK_KEY, {}));
+  const [marks, setMarks] = useState<Record<string, CardMark>>(() => initialSaved.marks || {});
   const [shuffled, setShuffled] = useState<FormulaCard[] | null>(null);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [browseOpen, setBrowseOpen] = useState(false);
   const [browseQuery, setBrowseQuery] = useState('');
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    writeJson(MARK_KEY, marks);
-  }, [marks]);
+  const hasRestoredCard = useRef(false);
 
   const catCards = useMemo(
     () => (cat === 'all' ? deck.cards : deck.cards.filter((c) => c.cat === cat)),
@@ -217,6 +226,23 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
     });
   }, [catCards, shuffled, query, filter, marks]);
 
+  // Restore exact card position by ID on initial mount if saved
+  useEffect(() => {
+    if (!hasRestoredCard.current && pool.length > 0) {
+      hasRestoredCard.current = true;
+      if (initialSaved.deckActivity.cardId) {
+        const found = pool.findIndex((c) => c.id === initialSaved.deckActivity.cardId);
+        if (found >= 0) {
+          setIndex(found);
+          return;
+        }
+      }
+      if (typeof initialSaved.deckActivity.index === 'number' && initialSaved.deckActivity.index < pool.length) {
+        setIndex(initialSaved.deckActivity.index);
+      }
+    }
+  }, [pool, initialSaved.deckActivity.cardId, initialSaved.deckActivity.index]);
+
   // Keep the cursor inside the pool whenever the filters change under it.
   useEffect(() => {
     setIndex((i) => (pool.length === 0 ? 0 : Math.min(i, pool.length - 1)));
@@ -235,6 +261,11 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
   }, [index, pool, base]);
 
   const card = pool[index] ?? null;
+
+  // Persist current card position, category and filter
+  useEffect(() => {
+    saveDeckPosition(cat, filter, index, card?.id, activeUser?.uid);
+  }, [cat, filter, index, card?.id, activeUser?.uid]);
 
   const progress = useMemo(() => {
     let known = 0;
@@ -262,7 +293,11 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
     (value: CardMark) => {
       if (!requireAuth('Please sign in or create an account first to mark card mastery.')) return;
       if (!card) return;
-      setMarks((prev) => ({ ...prev, [card.id]: value }));
+      setMarks((prev) => {
+        const next = { ...prev, [card.id]: value };
+        saveCardMark(card.id, value, activeUser?.uid);
+        return next;
+      });
       goNext();
     },
     [card, goNext, activeUser],
@@ -835,16 +870,24 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
     return true;
   };
 
-  const [mode, setMode] = useState<QuizMode>('mcq');
-  const [cat, setCat] = useState<string>('all');
+  const initialSaved = useMemo(() => loadCardsActivity(activeUser?.uid), [activeUser?.uid]);
+
+  const [mode, setMode] = useState<QuizMode>(() => initialSaved.quizMode || 'mcq');
+  const [cat, setCat] = useState<string>(() => initialSaved.mcqActivity?.cat || initialSaved.termCardsActivity?.cat || 'all');
   const [seed, setSeed] = useState(0);
 
   /* ---------------- multiple choice ---------------- */
-  const [order, setOrder] = useState<number[]>([]);
-  const [pos, setPos] = useState(0);
+  const hasRestoredMcq = useRef(false);
+  const [order, setOrder] = useState<number[]>(() => {
+    if (initialSaved.mcqActivity && Array.isArray(initialSaved.mcqActivity.order) && initialSaved.mcqActivity.order.length > 0) {
+      return initialSaved.mcqActivity.order;
+    }
+    return [];
+  });
+  const [pos, setPos] = useState<number>(() => initialSaved.mcqActivity?.pos ?? 0);
   const [picked, setPicked] = useState<number | null>(null);
-  const [score, setScore] = useState({ right: 0, wrong: 0 });
-  const [missed, setMissed] = useState<number[]>([]);
+  const [score, setScore] = useState<{ right: number; wrong: number }>(() => initialSaved.mcqActivity?.score ?? { right: 0, wrong: 0 });
+  const [missed, setMissed] = useState<number[]>(() => initialSaved.mcqActivity?.missed ?? []);
   const advanceTimer = useRef<number | null>(null);
 
   const poolIdx = useMemo(
@@ -852,13 +895,53 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
     [book, cat],
   );
 
+  // Manage MCQ order and restore
   useEffect(() => {
-    setOrder(shuffle(poolIdx));
-    setPos(0);
-    setPicked(null);
-    setScore({ right: 0, wrong: 0 });
-    setMissed([]);
+    // If not yet restored and saved session matches category, use saved session
+    if (!hasRestoredMcq.current) {
+      hasRestoredMcq.current = true;
+      if (
+        initialSaved.mcqActivity &&
+        initialSaved.mcqActivity.cat === cat &&
+        Array.isArray(initialSaved.mcqActivity.order) &&
+        initialSaved.mcqActivity.order.length > 0
+      ) {
+        setOrder(initialSaved.mcqActivity.order);
+        setPos(Math.min(initialSaved.mcqActivity.pos ?? 0, initialSaved.mcqActivity.order.length - 1));
+        setScore(initialSaved.mcqActivity.score ?? { right: 0, wrong: 0 });
+        setMissed(initialSaved.mcqActivity.missed ?? []);
+        return;
+      }
+    }
+
+    // Only generate new shuffle on category change or explicit seed restart
+    if (poolIdx.length > 0) {
+      const newOrder = shuffle(poolIdx);
+      setOrder(newOrder);
+      setPos(0);
+      setPicked(null);
+      setScore({ right: 0, wrong: 0 });
+      setMissed([]);
+    }
   }, [poolIdx, seed]);
+
+  // Persist MCQ state on progress updates
+  useEffect(() => {
+    if (order.length > 0) {
+      saveMcqQuizState(
+        {
+          cat,
+          order,
+          pos,
+          score,
+          missed,
+          completed: pos >= order.length - 1,
+          updatedAt: new Date().toISOString(),
+        },
+        activeUser?.uid,
+      );
+    }
+  }, [order, pos, score, missed, cat, activeUser?.uid]);
 
   const currentIdx = order[pos];
   const current: TermItem | undefined = currentIdx !== undefined ? book.items[currentIdx] : undefined;
@@ -898,20 +981,63 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
   useEffect(() => () => { if (advanceTimer.current) window.clearTimeout(advanceTimer.current); }, []);
 
   /* ---------------- flashcards ---------------- */
-  const [queue, setQueue] = useState<number[]>([]);
-  const [qpos, setQpos] = useState(0);
-  const [dir, setDir] = useState<'term' | 'def'>('term');
+  const hasRestoredCards = useRef(false);
+  const [queue, setQueue] = useState<number[]>(() => {
+    if (initialSaved.termCardsActivity && Array.isArray(initialSaved.termCardsActivity.queue)) {
+      return initialSaved.termCardsActivity.queue;
+    }
+    return [];
+  });
+  const [qpos, setQpos] = useState<number>(() => initialSaved.termCardsActivity?.qpos ?? 0);
+  const [dir, setDir] = useState<'term' | 'def'>(() => initialSaved.termCardsActivity?.dir || 'term');
   const [flipped, setFlipped] = useState(false);
-  const [known, setKnown] = useState<Set<number>>(new Set());
-  const [review, setReview] = useState<Set<number>>(new Set());
+  const [known, setKnown] = useState<Set<number>>(() => new Set(initialSaved.termCardsActivity?.known || []));
+  const [review, setReview] = useState<Set<number>>(() => new Set(initialSaved.termCardsActivity?.review || []));
 
   useEffect(() => {
-    setQueue(shuffle(poolIdx));
-    setQpos(0);
-    setFlipped(false);
-    setKnown(new Set());
-    setReview(new Set());
+    if (!hasRestoredCards.current) {
+      hasRestoredCards.current = true;
+      if (
+        initialSaved.termCardsActivity &&
+        initialSaved.termCardsActivity.cat === cat &&
+        Array.isArray(initialSaved.termCardsActivity.queue) &&
+        initialSaved.termCardsActivity.queue.length > 0
+      ) {
+        setQueue(initialSaved.termCardsActivity.queue);
+        setQpos(Math.min(initialSaved.termCardsActivity.qpos ?? 0, initialSaved.termCardsActivity.queue.length - 1));
+        setDir(initialSaved.termCardsActivity.dir || 'term');
+        setKnown(new Set(initialSaved.termCardsActivity.known || []));
+        setReview(new Set(initialSaved.termCardsActivity.review || []));
+        return;
+      }
+    }
+
+    if (poolIdx.length > 0) {
+      setQueue(shuffle(poolIdx));
+      setQpos(0);
+      setFlipped(false);
+      setKnown(new Set());
+      setReview(new Set());
+    }
   }, [poolIdx, seed]);
+
+  // Persist flashcards changes
+  useEffect(() => {
+    if (queue.length > 0 || known.size > 0 || review.size > 0) {
+      saveTermCardsState(
+        {
+          cat,
+          queue,
+          qpos,
+          known: Array.from(known),
+          review: Array.from(review),
+          dir,
+          updatedAt: new Date().toISOString(),
+        },
+        activeUser?.uid,
+      );
+    }
+  }, [queue, qpos, known, review, dir, cat, activeUser?.uid]);
 
   const qIdx = queue[qpos];
   const qItem: TermItem | undefined = qIdx !== undefined ? book.items[qIdx] : undefined;
@@ -955,6 +1081,26 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
     setQpos((p) => (p + 1 < queue.length ? p + 1 : 0));
     setFlipped(false);
   }, [qIdx, qpos, queue.length, activeUser]);
+
+  const handleRestartQuiz = () => {
+    if (mode === 'mcq') {
+      resetMcqQuizSession(activeUser?.uid);
+    } else {
+      resetTermCardsSession(activeUser?.uid);
+    }
+    setSeed((s) => s + 1);
+  };
+
+  const handleModeChange = (newMode: QuizMode) => {
+    setMode(newMode);
+    saveCardsActivity({ quizMode: newMode }, activeUser?.uid);
+  };
+
+  const handleCatChange = (newCat: string) => {
+    setCat(newCat);
+    hasRestoredMcq.current = false;
+    hasRestoredCards.current = false;
+  };
 
   /* ---------------- keyboard ---------------- */
   useEffect(() => {
@@ -1044,7 +1190,7 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
             <button
               key={id}
               type="button"
-              onClick={() => setMode(id)}
+              onClick={() => handleModeChange(id)}
               style={mode === id ? { backgroundColor: t.accent, color: t.accentText } : { color: t.textMuted }}
               className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-colors ${focusRing}`}
             >
@@ -1055,28 +1201,44 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
 
         <div className="ml-auto flex items-center gap-2">
           {mode === 'mcq' ? (
-            <span className="text-[11px] tabular-nums" style={{ color: t.textMuted }}>
+            <div className="flex items-center gap-2 text-[11px] tabular-nums" style={{ color: t.textMuted }}>
+              <span
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium border"
+                style={{ borderColor: withAlpha(t.border, 0.6), backgroundColor: withAlpha(t.bgCardSubtle, 0.4) }}
+                title="Your quiz progress and scores are automatically saved to your session"
+              >
+                <Check className="w-2.5 h-2.5 text-emerald-400" />
+                <span>Auto-saved</span>
+              </span>
               <span style={{ color: '#34d399' }}>{score.right}</span> right ·{' '}
               <span style={{ color: '#fb7185' }}>{score.wrong}</span> wrong
-            </span>
+            </div>
           ) : (
-            <span className="text-[11px] tabular-nums" style={{ color: t.textMuted }}>
-              {known.size}/{total} known
-            </span>
+            <div className="flex items-center gap-2 text-[11px] tabular-nums" style={{ color: t.textMuted }}>
+              <span
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium border"
+                style={{ borderColor: withAlpha(t.border, 0.6), backgroundColor: withAlpha(t.bgCardSubtle, 0.4) }}
+                title="Your flashcard progress and known terms are automatically saved to your session"
+              >
+                <Check className="w-2.5 h-2.5 text-emerald-400" />
+                <span>Auto-saved</span>
+              </span>
+              <span>{known.size}/{total} known</span>
+            </div>
           )}
-          <GhostButton onClick={() => setSeed((s) => s + 1)} t={t} title="New shuffled session">
+          <GhostButton onClick={handleRestartQuiz} t={t} title="Restart / Shuffle fresh session">
             <RotateCcw className="h-3.5 w-3.5" />
-            New set
+            Restart
           </GhostButton>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        <Chip active={cat === 'all'} onClick={() => setCat('all')} t={t} count={book.items.length}>
+        <Chip active={cat === 'all'} onClick={() => handleCatChange('all')} t={t} count={book.items.length}>
           All decks
         </Chip>
         {book.cats.map((c) => (
-          <Chip key={c.id} active={cat === c.id} onClick={() => setCat(c.id)} t={t} count={c.count}>
+          <Chip key={c.id} active={cat === c.id} onClick={() => handleCatChange(c.id)} t={t} count={c.count}>
             {c.name}
           </Chip>
         ))}
@@ -1092,10 +1254,10 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
                 Session complete
               </h3>
               <p className="mt-1 text-[12px]" style={{ color: t.textMuted }}>
-                {score.right} right · {score.wrong} wrong
+                {score.right} right · {score.wrong} wrong · Score: {Math.round((score.right / Math.max(1, score.right + score.wrong)) * 100)}%
               </p>
               <div className="mt-4 flex justify-center">
-                <GhostButton onClick={() => setSeed((s) => s + 1)} t={t}>
+                <GhostButton onClick={handleRestartQuiz} t={t}>
                   <RotateCcw className="h-3.5 w-3.5" />
                   Start a new set
                 </GhostButton>
@@ -1419,7 +1581,20 @@ export const FormulaCardsHub: React.FC = () => {
   const { user, profile, openAuthModal } = useAuth();
   const activeUser = profile || user;
 
-  const [tab, setTab] = useState<Tab>('deck');
+  const [tab, setTab] = useState<Tab>(() => {
+    try {
+      const saved = loadCardsActivity(activeUser?.uid).activeTab;
+      if (saved && ['deck', 'quiz', 'glossary'].includes(saved)) {
+        return saved as Tab;
+      }
+    } catch {}
+    return 'deck';
+  });
+
+  const handleTabChange = (nextTab: Tab) => {
+    setTab(nextTab);
+    saveCardsActivity({ activeTab: nextTab }, activeUser?.uid);
+  };
   const [deck, setDeck] = useState<FormulaDeck | null>(null);
   const [book, setBook] = useState<TermBook | null>(null);
   const [base, setBase] = useState<string>(CARD_SITE);
@@ -1560,7 +1735,7 @@ export const FormulaCardsHub: React.FC = () => {
               key={item.id}
               data-tour={item.id === 'deck' ? 'formula-deck-tab' : item.id === 'quiz' ? 'term-quiz-tab' : undefined}
               type="button"
-              onClick={() => setTab(item.id)}
+              onClick={() => handleTabChange(item.id)}
               style={tab === item.id ? { backgroundColor: withAlpha(t.accent, 0.16), color: t.accent } : { color: t.textMuted }}
               className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-[12px] font-semibold transition-colors ${focusRing}`}
             >

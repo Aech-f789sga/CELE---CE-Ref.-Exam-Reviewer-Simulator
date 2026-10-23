@@ -96,7 +96,26 @@ function CustomBgLayer() {
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<
     'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards'
-  >('setup');
+  >(() => {
+    try {
+      const saved = localStorage.getItem('ce_board_current_tab');
+      if (
+        saved &&
+        ['setup', 'leaderboard', 'announcements', 'performance', 'admin', 'scratchpad', 'flashcards'].includes(saved)
+      ) {
+        return saved as any;
+      }
+    } catch {}
+    return 'setup';
+  });
+
+  // Persist active tab so page refresh or re-entry keeps user on CARDS or active section
+  useEffect(() => {
+    try {
+      localStorage.setItem('ce_board_current_tab', currentTab);
+    } catch {}
+  }, [currentTab]);
+
   const [selectedScratchpadId, setSelectedScratchpadId] = useState<string | undefined>(undefined);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);

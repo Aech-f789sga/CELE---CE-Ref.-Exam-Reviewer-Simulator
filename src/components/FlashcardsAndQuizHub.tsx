@@ -62,7 +62,18 @@ export const FlashcardsAndQuizHub: React.FC = () => {
   const [flashcardDeck, setFlashcardDeck] = useState<EngineereyaTerm[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
-  const [cardStatusMap, setCardStatusMap] = useState<Record<string, FlashcardStatus>>({});
+  const [cardStatusMap, setCardStatusMap] = useState<Record<string, FlashcardStatus>>(() => {
+    try {
+      const saved = localStorage.getItem('ce_eng_card_status_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ce_eng_card_status_map', JSON.stringify(cardStatusMap));
+    } catch {}
+  }, [cardStatusMap]);
   const [flashcardFilter, setFlashcardFilter] = useState<'all' | 'learning' | 'known'>('all');
   const [flashcardOrderMode, setFlashcardOrderMode] = useState<'term_first' | 'definition_first'>('term_first');
   const [isAutoSpeech, setIsAutoSpeech] = useState<boolean>(false);
