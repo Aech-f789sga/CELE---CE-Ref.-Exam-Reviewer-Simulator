@@ -606,11 +606,41 @@ function symCopy(o,f){const c={...o};if(o.p)c.p=o.p.map(q=>q.length>2?[...f(q),q
 function symAdd(o){if(symOK(o))symFns().forEach(f=>pg().strokes.push(symCopy(o,f)))}
 function symLive(o){return symOK(o)?symFns().map(f=>({...symCopy(o,f),_lv:1})):[]}
 /* snapping to ruler, circle and perspective lines */
-function gdTool(){SNL=null;return['pen','hl','line','arrow','hid'].includes(tool)&&(GD.g==='ruler'||GD.g==='circle'||GD.p!=='none')}
-function gSnap(q){gdInit();if(SNL===null){const th=16*W/cv.getBoundingClientRect().width;let best=null,bd=th;
- if(GD.g==='ruler'){const r=GD.r,d=[Math.cos(r.a),Math.sin(r.a)],hl=r.l/2,t=Math.max(-hl,Math.min(hl,(q[0]-r.x)*d[0]+(q[1]-r.y)*d[1])),dist=Math.hypot(q[0]-(r.x+d[0]*t),q[1]-(r.y+d[1]*t));if(dist<bd){bd=dist;best={t:'l',p:[r.x,r.y],d,hl}}}
- if(GD.g==='circle'){const r=GD.r,dist=Math.abs(Math.hypot(q[0]-r.x,q[1]-r.y)-r.l/2);if(dist<bd){bd=dist;best={t:'c',p:[r.x,r.y],r:r.l/2}}}
- if(GD.p!=='none')for(let i=0;i<+GD.p;i++){const v=GD.vp[i],dx=q[0]-v[0],dy=q[1]-v[1],L=Math.hypot(dx,dy);if(L<1)continue;const st=Math.PI/24,a=Math.atan2(dy,dx),a2=Math.round(a/st)*st,dist=L*Math.abs(Math.sin(a-a2));if(dist<bd){bd=dist;best={t:'l',p:v,d:[Math.cos(a2),Math.sin(a2)],hl:1e9}}}
+function gdTool(){SNL=null;return['pen','hl','line','arrow','hid'].includes(tool)&&(GD.g!=='none'||GD.p!=='none')}
+function gSnap(q){gdInit();if(SNL===null){const k=W/cv.getBoundingClientRect().width;const th=38*k;let best=null,bd=th;
+ if(GD.g==='ruler'){const r=GD.r,ca=Math.cos(r.a),sa=Math.sin(r.a),d=[ca,sa],n=[-sa,ca],hw=22*k,hl=r.l/2;
+  const cands=[{p:[r.x+n[0]*hw,r.y+n[1]*hw]},{p:[r.x-n[0]*hw,r.y-n[1]*hw]},{p:[r.x,r.y]}];
+  for(const c of cands){const t=(q[0]-c.p[0])*d[0]+(q[1]-c.p[1])*d[1];
+   if(t>=-hl-40*k&&t<=hl+40*k){const proj=[c.p[0]+d[0]*t,c.p[1]+d[1]*t],dist=Math.hypot(q[0]-proj[0],q[1]-proj[1]);
+    if(dist<bd){bd=dist;best={t:'l',p:c.p,d,hl:hl+60*k}}}}
+ }
+ if(GD.g==='circle'){const r=GD.r,rad=r.l/2,dist=Math.abs(Math.hypot(q[0]-r.x,q[1]-r.y)-rad);if(dist<bd){bd=dist;best={t:'c',p:[r.x,r.y],r:rad}}}
+ if(GD.g==='grid'){const gx=Math.round(q[0]/32)*32,gy=Math.round(q[1]/32)*32,dx=Math.abs(q[0]-gx),dy=Math.abs(q[1]-gy);
+  if(dx<bd&&dx<=dy){bd=dx;best={t:'l',p:[gx,0],d:[0,1],hl:1e9}}else if(dy<bd){bd=dy;best={t:'l',p:[0,gy],d:[1,0],hl:1e9}}}
+ if(GD.g==='third'){const xs=[W/3,W/2,2*W/3],ys=[H/3,H/2,2*H/3];
+  for(const lx of xs){const dist=Math.abs(q[0]-lx);if(dist<bd){bd=dist;best={t:'l',p:[lx,0],d:[0,1],hl:1e9}}}
+  for(const ly of ys){const dist=Math.abs(q[1]-ly);if(dist<bd){bd=dist;best={t:'l',p:[0,ly],d:[1,0],hl:1e9}}}
+ }
+ if(GD.g==='iso'){const gx=Math.round(q[0]/32)*32,dx=Math.abs(q[0]-gx);
+  if(dx<bd){bd=dx;best={t:'l',p:[gx,0],d:[0,1],hl:1e9}}
+  const T=H*1.732,hlen=Math.hypot(T,H)||1;
+  for(let x=-T;x<W+T;x+=64){
+   const d1=[T/hlen,H/hlen],t1=(q[0]-x)*d1[0]+q[1]*d1[1],proj1=[x+d1[0]*t1,d1[1]*t1],dist1=Math.hypot(q[0]-proj1[0],q[1]-proj1[1]);
+   if(dist1<bd){bd=dist1;best={t:'l',p:[x,0],d:d1,hl:1e9}}
+   const d2=[-T/hlen,H/hlen],t2=(q[0]-x)*d2[0]+q[1]*d2[1],proj2=[x+d2[0]*t2,d2[1]*t2],dist2=Math.hypot(q[0]-proj2[0],q[1]-proj2[1]);
+   if(dist2<bd){bd=dist2;best={t:'l',p:[x,0],d:d2,hl:1e9}}
+  }
+ }
+ if(GD.p!=='none'){const n=+GD.p,v0=GD.vp[0];
+  if(n===1){const distH=Math.abs(q[1]-v0[1]);if(distH<bd){bd=distH;best={t:'l',p:[0,v0[1]],d:[1,0],hl:1e9}}}
+  else if(n>=2){const v1=GD.vp[1],dx=v1[0]-v0[0],dy=v1[1]-v0[1],L=Math.hypot(dx,dy)||1,d=[dx/L,dy/L],t=(q[0]-v0[0])*d[0]+(q[1]-v0[1])*d[1],distH=Math.hypot(q[0]-(v0[0]+d[0]*t),q[1]-(v0[1]+d[1]*t));
+   if(distH<bd){bd=distH;best={t:'l',p:v0,d,hl:1e9}}
+  }
+  for(let i=0;i<n;i++){const v=GD.vp[i],dx=q[0]-v[0],dy=q[1]-v[1],L=Math.hypot(dx,dy);if(L<1)continue;
+   const st=Math.PI/24,a=Math.atan2(dy,dx),a2=Math.round(a/st)*st,dist=L*Math.abs(Math.sin(a-a2));
+   if(dist<bd){bd=dist;best={t:'l',p:v,d:[Math.cos(a2),Math.sin(a2)],hl:1e9}}
+  }
+ }
  SNL=best||0}
  const s=SNL;if(!s)return q;
  if(s.t==='l'){const t=Math.max(-s.hl,Math.min(s.hl,(q[0]-s.p[0])*s.d[0]+(q[1]-s.p[1])*s.d[1]));return[s.p[0]+s.d[0]*t,s.p[1]+s.d[1]*t]}

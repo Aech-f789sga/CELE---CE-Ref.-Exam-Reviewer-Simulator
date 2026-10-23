@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useTheme } from '../context/ThemeContext';
 import {
   Minus,
@@ -263,13 +264,25 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     };
   }, [isResizing, pos.x, pos.y]);
 
+  useEffect(() => {
+    // Notify iframe of resize so it recalibrates canvas viewport fit
+    const timer = setTimeout(() => {
+      if (iframeRef.current?.contentWindow) {
+        try {
+          iframeRef.current.contentWindow.dispatchEvent(new Event('resize'));
+        } catch {}
+      }
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [isMaximized]);
+
   if (!isOpen) return null;
 
   // Render: Minimized Floating Pill Button
   if (isMinimized) {
-    return (
+    const pill = (
       <div
-        className="fixed z-50 bottom-6 right-6 flex items-center gap-2 p-2 px-3 rounded-full shadow-2xl border backdrop-blur-md cursor-pointer hover:scale-105 transition-all select-none animate-in fade-in"
+        className="fixed z-[999] bottom-6 right-6 flex items-center gap-2 p-2 px-3 rounded-full shadow-2xl border backdrop-blur-md cursor-pointer hover:scale-105 transition-all select-none animate-in fade-in"
         style={{
           backgroundColor: adaptToTheme ? 'rgba(15, 23, 42, 0.92)' : 'rgba(26, 26, 28, 0.95)',
           borderColor: adaptToTheme ? themeConfig.accent : '#5b8cff',
@@ -303,23 +316,26 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         </button>
       </div>
     );
+    return !isDocked && typeof document !== 'undefined' ? createPortal(pill, document.body) : pill;
   }
 
   // Render: Draggable Window or Docked Panel
   const isWindowed = !isDocked && !isMaximized;
 
-  return (
+  const windowClasses = isDocked
+    ? `relative w-full h-full flex flex-col rounded-2xl overflow-hidden shadow-xl border ${className}`
+    : isMaximized
+    ? `fixed inset-2 sm:inset-3 z-[999] flex flex-col rounded-2xl overflow-hidden shadow-2xl border ${
+        isDragging || isResizing ? 'transition-none select-none' : 'transition-[box-shadow,border-radius,inset,opacity] duration-150'
+      } ${className}`
+    : `fixed z-[100] flex flex-col rounded-2xl overflow-hidden shadow-2xl border ${
+        isDragging || isResizing ? 'transition-none select-none' : 'transition-[box-shadow,border-radius,inset,opacity] duration-150'
+      } ${className}`;
+
+  const windowContent = (
     <div
       data-tour="inkpad-studio"
-      className={`fixed z-50 flex flex-col rounded-2xl overflow-hidden shadow-2xl border ${
-        isDragging || isResizing ? 'transition-none select-none' : 'transition-[box-shadow,border-radius,inset,opacity] duration-150'
-      } ${
-        isDocked
-          ? 'right-0 top-0 bottom-0 w-[580px] rounded-none border-l'
-          : isMaximized
-          ? 'inset-2 rounded-2xl'
-          : ''
-      } ${className}`}
+      className={windowClasses}
       style={{
         ...(isWindowed
           ? {
@@ -333,7 +349,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
           : {}),
         backgroundColor: adaptToTheme ? themeConfig.bgCard : '#1a1a1c',
         borderColor: adaptToTheme ? themeConfig.border : '#3d3d42',
-        boxShadow: isWindowed
+        boxShadow: isMaximized
+          ? '0 25px 80px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.2)'
+          : isWindowed
           ? '0 24px 60px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.1)'
           : undefined,
       }}
@@ -463,7 +481,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       {/* Fullscreen Transparent Drag/Resize Overlay preventing iframe & document event drops */}
       {(isDragging || isResizing) && (
         <div
-          className={`fixed inset-0 z-50 ${
+          className={`fixed inset-0 z-[1000] ${
             isDragging ? 'cursor-grabbing' : 'cursor-nwse-resize'
           }`}
           style={{ userSelect: 'none', WebkitUserSelect: 'none', background: 'transparent' }}
@@ -471,4 +489,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       )}
     </div>
   );
+
+  return !isDocked && typeof document !== 'undefined'
+    ? createPortal(windowContent, document.body)
+    : windowContent;
 };
