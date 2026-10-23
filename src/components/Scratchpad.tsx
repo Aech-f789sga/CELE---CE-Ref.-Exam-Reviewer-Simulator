@@ -152,10 +152,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     return () => window.removeEventListener('message', handleMsg);
   }, [onSaveBundle]);
 
-  // Dragging handler
+  // Dragging handler with RAF
   const handleDragPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isMaximized || isDocked) return;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    if (e.button !== 0) return; // Only main mouse button
     setIsDragging(true);
     dragStartRef.current = {
       startX: e.clientX,
@@ -165,29 +165,53 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     };
   };
 
-  const handleDragPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  useEffect(() => {
     if (!isDragging) return;
-    const dx = e.clientX - dragStartRef.current.startX;
-    const dy = e.clientY - dragStartRef.current.startY;
-    const nextX = Math.max(10, Math.min(window.innerWidth - size.w - 10, dragStartRef.current.posX + dx));
-    const nextY = Math.max(10, Math.min(window.innerHeight - 60, dragStartRef.current.posY + dy));
-    setPos({ x: nextX, y: nextY });
-  };
 
-  const handleDragPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isDragging) {
-      try {
-        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch {}
+    let rafId: number | null = null;
+    let latestPos = { ...pos };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      const dx = e.clientX - dragStartRef.current.startX;
+      const dy = e.clientY - dragStartRef.current.startY;
+      const nextX = Math.max(10, Math.min(window.innerWidth - size.w - 10, dragStartRef.current.posX + dx));
+      const nextY = Math.max(10, Math.min(window.innerHeight - 60, dragStartRef.current.posY + dy));
+      latestPos = { x: nextX, y: nextY };
+
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          setPos(latestPos);
+          rafId = null;
+        });
+      }
+    };
+
+    const handlePointerUp = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      setPos(latestPos);
       setIsDragging(false);
-    }
-  };
+    };
 
-  // Resizing handler
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+  }, [isDragging, size.w]);
+
+  // Resizing handler with RAF
   const handleResizePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isMaximized || isDocked) return;
+    if (e.button !== 0) return;
     e.stopPropagation();
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
     setIsResizing(true);
     resizeStartRef.current = {
       startX: e.clientX,
@@ -197,23 +221,47 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
     };
   };
 
-  const handleResizePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  useEffect(() => {
     if (!isResizing) return;
-    const dw = e.clientX - resizeStartRef.current.startX;
-    const dh = e.clientY - resizeStartRef.current.startY;
-    const nextW = Math.max(360, Math.min(window.innerWidth - pos.x - 20, resizeStartRef.current.w + dw));
-    const nextH = Math.max(380, Math.min(window.innerHeight - pos.y - 20, resizeStartRef.current.h + dh));
-    setSize({ w: nextW, h: nextH });
-  };
 
-  const handleResizePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isResizing) {
-      try {
-        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch {}
+    let rafId: number | null = null;
+    let latestSize = { ...size };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      const dw = e.clientX - resizeStartRef.current.startX;
+      const dh = e.clientY - resizeStartRef.current.startY;
+      const nextW = Math.max(360, Math.min(window.innerWidth - pos.x - 20, resizeStartRef.current.w + dw));
+      const nextH = Math.max(380, Math.min(window.innerHeight - pos.y - 20, resizeStartRef.current.h + dh));
+      latestSize = { w: nextW, h: nextH };
+
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          setSize(latestSize);
+          rafId = null;
+        });
+      }
+    };
+
+    const handlePointerUp = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      setSize(latestSize);
       setIsResizing(false);
-    }
-  };
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+  }, [isResizing, pos.x, pos.y]);
 
   if (!isOpen) return null;
 
@@ -263,7 +311,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   return (
     <div
       data-tour="inkpad-studio"
-      className={`fixed z-50 flex flex-col rounded-2xl overflow-hidden shadow-2xl border transition-all ${
+      className={`fixed z-50 flex flex-col rounded-2xl overflow-hidden shadow-2xl border ${
+        isDragging || isResizing ? 'transition-none select-none' : 'transition-[box-shadow,border-radius,inset,opacity] duration-150'
+      } ${
         isDocked
           ? 'right-0 top-0 bottom-0 w-[580px] rounded-none border-l'
           : isMaximized
@@ -273,10 +323,12 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
       style={{
         ...(isWindowed
           ? {
-              left: `${pos.x}px`,
-              top: `${pos.y}px`,
+              left: 0,
+              top: 0,
+              transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
               width: `${size.w}px`,
               height: `${size.h}px`,
+              willChange: isDragging || isResizing ? 'transform, width, height' : undefined,
             }
           : {}),
         backgroundColor: adaptToTheme ? themeConfig.bgCard : '#1a1a1c',
@@ -296,8 +348,6 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
           borderColor: adaptToTheme ? themeConfig.border : '#3d3d42',
         }}
         onPointerDown={handleDragPointerDown}
-        onPointerMove={handleDragPointerMove}
-        onPointerUp={handleDragPointerUp}
       >
         {/* Left: Drag grip & Title */}
         <div className="flex items-center gap-2 min-w-0 pointer-events-none">
@@ -402,14 +452,22 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         <div
           className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-20 flex items-center justify-center select-none"
           onPointerDown={handleResizePointerDown}
-          onPointerMove={handleResizePointerMove}
-          onPointerUp={handleResizePointerUp}
           title="Drag to resize window"
         >
           <svg viewBox="0 0 10 10" className="w-2.5 h-2.5 text-slate-500 pointer-events-none">
             <path d="M9 1L1 9M9 5L5 9M9 9L9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
         </div>
+      )}
+
+      {/* Fullscreen Transparent Drag/Resize Overlay preventing iframe & document event drops */}
+      {(isDragging || isResizing) && (
+        <div
+          className={`fixed inset-0 z-50 ${
+            isDragging ? 'cursor-grabbing' : 'cursor-nwse-resize'
+          }`}
+          style={{ userSelect: 'none', WebkitUserSelect: 'none', background: 'transparent' }}
+        />
       )}
     </div>
   );
