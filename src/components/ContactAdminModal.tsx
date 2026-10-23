@@ -23,13 +23,24 @@ import {
 interface ContactAdminModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTab?: 'message' | 'donation' | 'my_messages';
 }
 
-export const ContactAdminModal: React.FC<ContactAdminModalProps> = ({ isOpen, onClose }) => {
+export const ContactAdminModal: React.FC<ContactAdminModalProps> = ({
+  isOpen,
+  onClose,
+  initialTab = 'message',
+}) => {
   const { user, profile } = useAuth();
   const activeUser = profile || user;
 
-  const [activeTab, setActiveTab] = useState<'message' | 'donation' | 'my_messages'>('message');
+  const [activeTab, setActiveTab] = useState<'message' | 'donation' | 'my_messages'>(initialTab);
+
+  useEffect(() => {
+    if (isOpen && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
   const [senderName, setSenderName] = useState<string>(activeUser?.displayName || '');
   const [senderEmail, setSenderEmail] = useState<string>(activeUser?.email || '');
   const [category, setCategory] = useState<UserAdminMessage['category']>(
@@ -201,7 +212,7 @@ export const ContactAdminModal: React.FC<ContactAdminModalProps> = ({ isOpen, on
                       Message Sent to Administrator!
                     </h3>
                     <p className="text-slate-300 text-xs max-w-sm mx-auto leading-relaxed">
-                      Thank you for reaching out. The administrator will review your message, request, or feedback. We continuously improve this free platform with Gillesania CE Reference Volume 4-6 questions.
+                      Thank you for reaching out. The administrator will review your message, request, or feedback. We continuously improve this free educational platform with more CE board exam practice questions.
                     </p>
                   </div>
 
@@ -356,9 +367,6 @@ export const ContactAdminModal: React.FC<ContactAdminModalProps> = ({ isOpen, on
                 <h3 className="font-arnie text-base sm:text-lg font-bold text-white">
                   Support Platform Server &amp; Review Question Expansion
                 </h3>
-                <p className="text-[11px] text-slate-400 max-w-sm mx-auto leading-relaxed">
-                  This educational simulator is 100% free and non-profit. Voluntary donations directly offset Google Cloud hosting and help us digitize more Gillesania CE Reference Volume 4-6 review materials.
-                </p>
               </div>
 
               {/* GCash QR Card */}

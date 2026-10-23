@@ -22,6 +22,7 @@ import {
   Tablet,
   FolderOpen,
   Lock,
+  Heart,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -41,11 +42,13 @@ import { SUBJECT_CONFIGS, SubjectArea } from '../types/exam';
 interface ScratchpadHubProps {
   onBackToPortal?: () => void;
   initialOpenPadId?: string;
+  onOpenDonation?: () => void;
 }
 
 export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
   onBackToPortal,
   initialOpenPadId,
+  onOpenDonation,
 }) => {
   const [scratchpads, setScratchpads] = useState<ScratchpadMetadata[]>([]);
   const [activeTab, setActiveTab] = useState<'all' | 'exam_session' | 'standalone'>('all');
@@ -322,6 +325,19 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                if (onOpenDonation) onOpenDonation();
+                else window.dispatchEvent(new CustomEvent('open-admin-donation'));
+              }}
+              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 hover:text-white border border-blue-500/40 text-xs font-bold transition-all cursor-pointer shadow-sm"
+              title="Admin Donation & Platform Support (GCash / InstaPay)"
+            >
+              <Heart className="w-4 h-4 text-rose-400 fill-rose-500/30" />
+              <span>Admin Donation</span>
+            </button>
+
             <button
               type="button"
               onClick={() => {

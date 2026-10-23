@@ -723,10 +723,23 @@ export interface UserAdminMessage {
 
 export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
   {
+    id: 'ann-origin-vision-notice',
+    title: 'Notice from Admin: Platform Origins, Vision & CELE Learning Mission',
+    message:
+      'Official Notice from the Administrator:\n\n• Initial Development: This website was initially developed starting October 1. Any similarities to other websites, review portals, or study materials is purely coincidental to the administrator’s vision for this website.\n\n• Unfunded Independent Project: This website is not funded and was initially created purely as a personal learning material and practice tool by the administrator for the upcoming Civil Engineering Licensure Examination (CELE).\n\n• 100% Free Educational Mission: This platform is provided 100% free of charge to help fellow reviewees and civil engineering students prepare effectively. Voluntary donations to support server hosting can be made via the donation icon across the portal.',
+    category: 'General',
+    priority: 'urgent',
+    isPinned: true,
+    authorEmail: 'derrickdarrack@gmail.com',
+    authorName: 'System Administrator (CELE Reviewee)',
+    createdAt: '2026-10-23T08:00:00Z',
+    isActive: true,
+  },
+  {
     id: 'ann-dev-mission-references',
     title: 'Web in Development: Dedicated Free Educational Platform for CE Reviewees',
     message:
-      'Notice from the Administrator: This website is actively in development, and we are dedicated to continuously improving and expanding it along the way with more board exam questions, updated solutions, and features in the future.\n\nAll contents, formulas, and mock problems here are officially referenced from standard review literature:\n• Gillesania CE Reference Books Volume 4, 5, and 6\n• National Structural Code of the Philippines (NSCP 2015)\n• Official PRC Civil Engineering Board Examination Question Sets (2011 – 2025)\n• High-resolution formula cards by Engr. Aleah Pearl Javier Once, RCE 2024 (Engr. APJO)\n• Core terminology from Engineereya’s Vlog\n\nMission & Non-Profit Notice: This platform is 100% free to use and will never be used to gain profit. It was created as a humble way to help civil engineering students who are struggling financially or who want to challenge themselves to excel and pass the board examinations. If you have questions, material requests, or want to report an issue, please use the "Message Admin" feature.',
+      'Notice from the Administrator: This website is actively in development, and we are dedicated to continuously improving and expanding it along the way with more board exam questions, updated solutions, and features in the future.\n\nAll contents, formulas, and mock problems here are officially referenced from standard civil engineering review literature:\n• Standard Civil Engineering Board Exam Reference Textbooks & Past Papers\n• National Structural Code of the Philippines (NSCP 2015)\n• Official PRC Civil Engineering Board Examination Question Sets (2011 – 2025)\n• High-resolution formula cards by Engr. Aleah Pearl Javier Once, RCE 2024 (Engr. APJO)\n• Core terminology from Engineereya’s Vlog\n\nMission & Non-Profit Notice: This platform is 100% free to use and will never be used to gain profit. It was created as a humble way to help civil engineering students who are struggling financially or who want to challenge themselves to excel and pass the board examinations. If you have questions, material requests, or want to report an issue, please use the "Message Admin" feature.',
     category: 'General',
     priority: 'urgent',
     isPinned: true,
@@ -763,9 +776,9 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
   },
   {
     id: 'ann-curriculum-references',
-    title: 'Review Curriculum Breakdown & Reference Standards (Gillesania CE Reference Vol 4–6)',
+    title: 'Review Curriculum Breakdown & Reference Standards (CE Board Examination Syllabus)',
     message:
-      'The examination question banks and solution methodologies are rigorously aligned with Gillesania CE Reference Books Volume 4, 5, and 6 and the National Structural Code of the Philippines (NSCP 2015):\n\n• MSTC (35% Weight): Higher Engineering Mathematics, Differential & Integral Calculus, Engineering Economy (Annuities, Depreciation, Capitalized Cost), Advanced Surveying, Highway Horizontal & Vertical Curves, Superelevation, Wave Mechanics, and Traffic Engineering.\n\n• HPGE (30% Weight): Fluid Statics, Hydrostatic Forces on Plane and Curved Surfaces, Gate Equilibrium, Darcy-Weisbach Pipe Flow, Open Channel Hydraulics, Soil Classification (USCS & AASHTO), Void Ratio, Effective Stress, Consolidation, Lateral Earth Pressure, and Ultimate Bearing Capacity.\n\n• PSAD (35% Weight): Statics, Strength of Materials, Indeterminate Structural Analysis, Ultimate Strength Design (USD) for Reinforced Concrete Beams and Slabs, Column Interaction, Footing Punching Shear, and AISC 360 Structural Steel & Welded Connections.',
+      'The examination question banks and solution methodologies are rigorously aligned with standard CE board licensure references and the National Structural Code of the Philippines (NSCP 2015):\n\n• MSTC (35% Weight): Higher Engineering Mathematics, Differential & Integral Calculus, Engineering Economy (Annuities, Depreciation, Capitalized Cost), Advanced Surveying, Highway Horizontal & Vertical Curves, Superelevation, Wave Mechanics, and Traffic Engineering.\n\n• HPGE (30% Weight): Fluid Statics, Hydrostatic Forces on Plane and Curved Surfaces, Gate Equilibrium, Darcy-Weisbach Pipe Flow, Open Channel Hydraulics, Soil Classification (USCS & AASHTO), Void Ratio, Effective Stress, Consolidation, Lateral Earth Pressure, and Ultimate Bearing Capacity.\n\n• PSAD (35% Weight): Statics, Strength of Materials, Indeterminate Structural Analysis, Ultimate Strength Design (USD) for Reinforced Concrete Beams and Slabs, Column Interaction, Footing Punching Shear, and AISC 360 Structural Steel & Welded Connections.',
     category: 'Exam Notice',
     priority: 'important',
     isPinned: false,

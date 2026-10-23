@@ -37,6 +37,7 @@ interface AnnouncementSectionProps {
   onNavigateTab?: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'scratchpad' | 'flashcards') => void;
   onOpenThemeModal?: () => void;
   onOpenContactAdmin?: () => void;
+  onOpenDonation?: () => void;
 }
 
 export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
@@ -45,6 +46,7 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
   onNavigateTab,
   onOpenThemeModal,
   onOpenContactAdmin,
+  onOpenDonation,
 }) => {
   const { themeConfig } = useTheme();
   const { isAdmin, designatedAdminEmail } = useAuth();
@@ -168,6 +170,19 @@ export const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
           </div>
 
           <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={() => {
+                if (onOpenDonation) onOpenDonation();
+                else window.dispatchEvent(new CustomEvent('open-admin-donation'));
+              }}
+              className="px-3.5 py-2 rounded-2xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 hover:text-white transition-colors border border-blue-500/40 cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-sm"
+              title="Admin Donation & Platform Support (GCash / InstaPay)"
+            >
+              <Heart className="w-4 h-4 text-rose-400 fill-rose-500/30" />
+              <span>Admin Donation</span>
+            </button>
+
             {onOpenContactAdmin && (
               <button
                 type="button"

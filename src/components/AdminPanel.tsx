@@ -662,7 +662,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                         <span className="text-[10px] text-slate-400 font-mono">Quick replies:</span>
                         <button
                           type="button"
-                          onClick={() => setReplyText('Thank you for reaching out! We have noted your request and will incorporate more Gillesania CE Reference Volume 4-6 questions soon.')}
+                          onClick={() => setReplyText('Thank you for reaching out! We have noted your request and will incorporate more board exam practice questions soon.')}
                           className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer"
                         >
                           Question Request

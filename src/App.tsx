@@ -120,6 +120,17 @@ function MainApp() {
   const [isThemeModalOpen, setIsThemeModalOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [isContactAdminOpen, setIsContactAdminOpen] = useState<boolean>(false);
+  const [contactAdminInitialTab, setContactAdminInitialTab] = useState<'message' | 'donation' | 'my_messages'>('message');
+
+  const handleOpenDonation = () => {
+    setContactAdminInitialTab('donation');
+    setIsContactAdminOpen(true);
+  };
+
+  const handleOpenContactAdmin = (tab: 'message' | 'donation' | 'my_messages' = 'message') => {
+    setContactAdminInitialTab(tab);
+    setIsContactAdminOpen(true);
+  };
   const [latestAnnouncement, setLatestAnnouncement] = useState<SystemAnnouncement | null>(null);
   const { themeConfig } = useTheme();
   const particleTheme = useParticleTheme();
@@ -146,7 +157,7 @@ function MainApp() {
   // Stored attempts
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
 
-  // Load stored attempts, announcements, and register tour listener on mount
+  // Load stored attempts, announcements, and register tour & donation listeners on mount
   useEffect(() => {
     setAttempts(getStoredAttempts());
     fetchAnnouncements(true)
@@ -158,8 +169,13 @@ function MainApp() {
       .catch(() => {});
 
     const handleOpenTour = () => setIsTourOpen(true);
+    const handleDonationEvent = () => handleOpenDonation();
     window.addEventListener('open_ce_tour', handleOpenTour);
-    return () => window.removeEventListener('open_ce_tour', handleOpenTour);
+    window.addEventListener('open-admin-donation', handleDonationEvent);
+    return () => {
+      window.removeEventListener('open_ce_tour', handleOpenTour);
+      window.removeEventListener('open-admin-donation', handleDonationEvent);
+    };
   }, []);
 
   // Sync default timer duration when subject changes
@@ -432,7 +448,7 @@ function MainApp() {
           isExamRunning={isExamRunning}
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
           onOpenTour={() => setIsTourOpen(true)}
-          onOpenContactAdmin={() => setIsContactAdminOpen(true)}
+          onOpenContactAdmin={() => handleOpenContactAdmin('message')}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
@@ -526,6 +542,7 @@ function MainApp() {
                   onResumeExam={handleResumeExam}
                   onNavigateToFlashcards={() => setCurrentTab('flashcards')}
                   onOpenTour={() => setIsTourOpen(true)}
+                  onOpenDonation={handleOpenDonation}
                 />
               )}
 
@@ -544,7 +561,8 @@ function MainApp() {
                   onTakeExam={() => setCurrentTab('setup')}
                   onNavigateTab={(tab) => setCurrentTab(tab)}
                   onOpenThemeModal={() => setIsThemeModalOpen(true)}
-                  onOpenContactAdmin={() => setIsContactAdminOpen(true)}
+                  onOpenContactAdmin={() => handleOpenContactAdmin('message')}
+                  onOpenDonation={handleOpenDonation}
                 />
               )}
 
@@ -560,6 +578,7 @@ function MainApp() {
                     setSelectedScratchpadId(padId);
                     setCurrentTab('scratchpad');
                   }}
+                  onOpenDonation={handleOpenDonation}
                 />
               )}
 
@@ -570,10 +589,13 @@ function MainApp() {
                     setCurrentTab('setup');
                   }}
                   initialOpenPadId={selectedScratchpadId}
+                  onOpenDonation={handleOpenDonation}
                 />
               )}
 
-              {currentTab === 'flashcards' && <FormulaCardsHub />}
+              {currentTab === 'flashcards' && (
+                <FormulaCardsHub onOpenDonation={handleOpenDonation} />
+              )}
 
               {currentTab === 'admin' && (
                 <AdminPanel
@@ -600,6 +622,7 @@ function MainApp() {
         <ContactAdminModal
           isOpen={isContactAdminOpen}
           onClose={() => setIsContactAdminOpen(false)}
+          initialTab={contactAdminInitialTab}
         />
 
         {/* Dynamic & Animated Web Tour / Walkthrough Guide */}
@@ -613,7 +636,7 @@ function MainApp() {
             handleSubjectChange(sub);
           }}
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
-          onOpenContactAdmin={() => setIsContactAdminOpen(true)}
+          onOpenContactAdmin={() => handleOpenContactAdmin('message')}
         />
 
         {/* Smooth Transparent Negative-Filter Custom Cursor */}

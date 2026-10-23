@@ -36,6 +36,7 @@ import {
   ArrowRight,
   PenTool,
   BookOpen,
+  Heart,
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
 import { TerrariumOrb3D } from './TerrariumOrb3D';
@@ -69,6 +70,7 @@ interface SubjectSelectorProps {
   onResumeExam: (session: PausedExamSession) => void;
   onNavigateToFlashcards?: () => void;
   onOpenTour?: () => void;
+  onOpenDonation?: () => void;
 }
 
 export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
@@ -88,6 +90,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onResumeExam,
   onNavigateToFlashcards,
   onOpenTour,
+  onOpenDonation,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
   const [pausedSessionsList, setPausedSessionsList] = useState<PausedExamSession[]>(() => getAllPausedSessions());
@@ -198,17 +201,31 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             </h2>
           </div>
 
-          {onOpenTour && (
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={onOpenTour}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm"
-              title="Launch dynamic animated tour of all web functions and capabilities"
+              onClick={() => {
+                if (onOpenDonation) onOpenDonation();
+                else window.dispatchEvent(new CustomEvent('open-admin-donation'));
+              }}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm"
+              title="Admin Donation & Platform Support (GCash / InstaPay)"
             >
-              <Compass className="w-3.5 h-3.5 text-amber-400" />
-              <span>Interactive Tour &amp; Guide</span>
+              <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-500/30" />
+              <span>Admin Donation</span>
             </button>
-          )}
+            {onOpenTour && (
+              <button
+                type="button"
+                onClick={onOpenTour}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm"
+                title="Launch dynamic animated tour of all web functions and capabilities"
+              >
+                <Compass className="w-3.5 h-3.5 text-amber-400" />
+                <span>Interactive Tour &amp; Guide</span>
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

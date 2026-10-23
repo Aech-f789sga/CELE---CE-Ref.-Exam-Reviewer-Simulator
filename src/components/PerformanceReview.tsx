@@ -22,6 +22,7 @@ import {
   Calculator,
   ChevronRight,
   PenTool,
+  Heart,
 } from 'lucide-react';
 
 interface PerformanceReviewProps {
@@ -29,6 +30,7 @@ interface PerformanceReviewProps {
   onAttemptsChange: (updated: ExamAttempt[]) => void;
   onTakeExamArea: (subject: SubjectArea) => void;
   onOpenScratchpad?: (padId?: string) => void;
+  onOpenDonation?: () => void;
 }
 
 export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
@@ -36,6 +38,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   onAttemptsChange,
   onTakeExamArea,
   onOpenScratchpad,
+  onOpenDonation,
 }) => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const cycles = computePairedCycles(attempts);
@@ -108,6 +111,19 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (onOpenDonation) onOpenDonation();
+                else window.dispatchEvent(new CustomEvent('open-admin-donation'));
+              }}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm"
+              title="Admin Donation & Platform Support (GCash / InstaPay)"
+            >
+              <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-500/30" />
+              <span>Admin Donation</span>
+            </button>
+
             {attempts.length === 0 ? (
               <button
                 type="button"
