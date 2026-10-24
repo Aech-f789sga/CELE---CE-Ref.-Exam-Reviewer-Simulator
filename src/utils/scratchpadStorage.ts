@@ -1,571 +1,365 @@
+/**
+ * Persistence, IndexedDB canvas storage, and bundle import/export manager
+ * for CE Board Scratchpad & Inkpad.
+ */
+
 import { SubjectArea, ExamMonth } from '../types/exam';
-
-export type PaperTexture = 'blueprint' | 'graph' | 'grid' | 'lined' | 'blank' | 'dot' | 'cornell';
-export type DpiMode = 600 | 720 | 1200 | 300;
-
-export interface ScratchpadPageData {
-  page: number;
-  dataUrl: string;
-  updatedAt: string;
-}
 
 export interface ScratchpadMetadata {
   id: string;
   title: string;
-  createdAt: string;
-  updatedAt: string;
   type: 'exam_session' | 'standalone';
   subject?: SubjectArea;
   year?: number;
   month?: ExamMonth;
+  sessionKey?: string;
+  totalPages: number;
+  createdAt: string;
+  updatedAt: string;
+  thumbnail?: string;
+  paperBgColor?: string;
+  paperTexture?: string;
+  dpi?: number;
+  notes?: string;
+  notesText?: string;
+  tags?: string[];
   attemptId?: string;
-  sessionKey?: string; // e.g. exam_MSTC_2024_November_
   score?: number;
   totalQuestions?: number;
   ratingPercentage?: number;
-  paperTexture: PaperTexture;
-  paperBgColor: string;
-  dpi: DpiMode;
-  notesText: string;
-  totalPages: number;
-  thumbnail?: string; // Data URL thumbnail of sheet 1
 }
 
-export interface ScratchpadExportBundle {
-  format: 'ce-scratchpad-bundle';
-  version: '2.0';
-  deviceCompat: 'Universal Canvas / Tablet / Web (.cescratch)';
-  metadata: ScratchpadMetadata;
-  pages: ScratchpadPageData[];
-}
-
-const META_STORAGE_KEY = 'ce_scratchpad_meta_list_v2';
-const IDB_NAME = 'ce_scratchpad_db_v2';
-const IDB_STORE = 'high_dpi_canvases';
+const SCRATCHPAD_RECORDS_KEY = 'ce_scratchpad_records_v1';
+const DB_NAME = 'ce_scratchpad_idb_v1';
+const DB_VERSION = 1;
+const STORE_NAME = 'canvases';
 
 // ----------------------------------------------------
-// IndexedDB Engine for High-DPI Storage
+// INDEXED DB ENGINE
 // ----------------------------------------------------
-export const getIDB = (): Promise<IDBDatabase> => {
+function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    if (typeof indexedDB === 'undefined') {
-      return reject(new Error('IndexedDB not supported'));
+    if (typeof window === 'undefined' || !window.indexedDB) {
+      reject(new Error('IndexedDB not available in current environment'));
+      return;
     }
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains(IDB_STORE)) {
-        db.createObjectStore(IDB_STORE);
+
+    const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
       }
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
-};
+}
 
-export const idbSaveCanvas = async (key: string, dataUrl: string): Promise<void> => {
-  // 1. Synchronous instant local storage cache
+export async function idbSaveCanvas(key: string, dataUrl: string): Promise<void> {
   try {
-    localStorage.setItem(key, dataUrl);
-  } catch {
-    // Quota reached or private mode; IndexedDB handles large canvases
-  }
-  // 2. High-capacity IndexedDB storage
-  try {
-    const db = await getIDB();
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    tx.objectStore(IDB_STORE).put(dataUrl, key);
-  } catch {
-    // Ignore IDB errors if already stored
-  }
-};
-
-export const idbLoadCanvas = async (key: string): Promise<string | null> => {
-  // 1. Check instant synchronous cache first
-  try {
-    const local = localStorage.getItem(key);
-    if (local && local.length > 50) {
-      return local;
+    const db = await openDatabase();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.put(dataUrl, key);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  } catch (err) {
+    try {
+      localStorage.setItem(`ce_canvas_fallback_${key}`, dataUrl);
+    } catch {
+      console.warn('Failed to store canvas in fallback storage:', err);
     }
-  } catch {
-    // Continue to IndexedDB
   }
+}
 
-  // 2. Load from IndexedDB
+export async function idbLoadCanvas(key: string): Promise<string | null> {
   try {
-    const db = await getIDB();
-    return new Promise((resolve) => {
-      const tx = db.transaction(IDB_STORE, 'readonly');
-      const req = tx.objectStore(IDB_STORE).get(key);
-      req.onsuccess = () => {
-        if (req.result) {
-          resolve(req.result);
-        } else {
-          try {
-            resolve(localStorage.getItem(key));
-          } catch {
-            resolve(null);
-          }
-        }
-      };
-      req.onerror = () => {
-        try {
-          resolve(localStorage.getItem(key));
-        } catch {
-          resolve(null);
-        }
-      };
+    const db = await openDatabase();
+    return await new Promise<string | null>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
     });
   } catch {
     try {
-      return localStorage.getItem(key);
+      return localStorage.getItem(`ce_canvas_fallback_${key}`);
     } catch {
       return null;
     }
   }
-};
+}
 
-export const idbDeleteCanvas = async (key: string): Promise<void> => {
+export async function idbDeleteCanvas(key: string): Promise<void> {
   try {
-    localStorage.removeItem(key);
-  } catch {
-    // Ignore
-  }
+    const db = await openDatabase();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.delete(key);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  } catch {}
   try {
-    const db = await getIDB();
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    tx.objectStore(IDB_STORE).delete(key);
-  } catch {
-    // Ignore
-  }
-};
+    localStorage.removeItem(`ce_canvas_fallback_${key}`);
+  } catch {}
+}
 
 // ----------------------------------------------------
-// Metadata Management (Synchronous LocalStorage + Events)
+// METADATA RECORDS MANAGEMENT
 // ----------------------------------------------------
-// Metadata Management (Synchronous LocalStorage + Events)
-// ----------------------------------------------------
-export const getAllScratchpads = (): ScratchpadMetadata[] => {
-  const result: ScratchpadMetadata[] = [];
-  const seenIds = new Set<string>();
 
-  // 1. Load standalone / exam records from META_STORAGE_KEY
+export function getAllScratchpads(): ScratchpadMetadata[] {
+  let records: ScratchpadMetadata[] = [];
   try {
-    const raw = localStorage.getItem(META_STORAGE_KEY);
+    const raw = localStorage.getItem(SCRATCHPAD_RECORDS_KEY);
     if (raw) {
-      const list: ScratchpadMetadata[] = JSON.parse(raw);
-      if (Array.isArray(list)) {
-        for (const item of list) {
-          if (item && item.id && !seenIds.has(item.id)) {
-            seenIds.add(item.id);
-            result.push(item);
-          }
-        }
-      }
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) records = parsed;
     }
   } catch (e) {
-    console.error('Failed to parse scratchpad metadata', e);
+    console.error('Failed to parse scratchpad records:', e);
   }
 
-  // 2. Load all saved notebooks from Inkpad Studio ('inkpad' key)
+  // Sync with Inkpad native localStorage notebooks if present
   try {
-    const inkpadRaw = localStorage.getItem('inkpad');
-    if (inkpadRaw) {
-      const inkpadList = JSON.parse(inkpadRaw);
+    const rawInkpad = localStorage.getItem('inkpad');
+    if (rawInkpad) {
+      const inkpadList = JSON.parse(rawInkpad);
       if (Array.isArray(inkpadList)) {
-        for (const n of inkpadList) {
-          if (!n || n.del) continue; // Skip deleted items
-          const formattedId = `inkpad_${n.id}`;
-          // If not already in result
-          if (!seenIds.has(formattedId) && !seenIds.has(String(n.id))) {
-            seenIds.add(formattedId);
-            const totalPages = Array.isArray(n.pages) && n.pages.length > 0 ? n.pages.length : 1;
-            const updatedDate = n.upd ? new Date(n.upd).toISOString() : new Date().toISOString();
-            result.push({
-              id: formattedId,
-              title: n.name || 'CE Board Notes',
-              createdAt: updatedDate,
-              updatedAt: updatedDate,
+        inkpadList.forEach((nb: any) => {
+          const mappedId = `inkpad_${nb.id}`;
+          const existing = records.find((r) => r.id === mappedId || r.id === nb.id);
+          if (!existing) {
+            records.push({
+              id: mappedId,
+              title: nb.name || 'CE Board Notes',
               type: 'standalone',
-              paperTexture: (n.pages?.[0]?.tpl || 'blank') as PaperTexture,
-              paperBgColor: n.pages?.[0]?.col || n.cover || '#06131c',
+              totalPages: Array.isArray(nb.sheets) ? nb.sheets.length : 1,
+              createdAt: nb.createdAt || new Date().toISOString(),
+              updatedAt: nb.updatedAt || new Date().toISOString(),
+              thumbnail: nb.thumbnail || undefined,
+              paperBgColor: '#06131c',
               dpi: 600,
-              notesText: `${totalPages} page${totalPages > 1 ? 's' : ''} • Inkpad Handwritten Notes`,
-              totalPages,
-              thumbnail: n.thumbnail || undefined,
-              sessionKey: formattedId,
+              notesText: '',
             });
+          } else if (nb.thumbnail && !existing.thumbnail) {
+            existing.thumbnail = nb.thumbnail;
           }
-        }
+        });
       }
     }
-  } catch (e) {
-    console.error('Failed to parse inkpad storage', e);
-  }
+  } catch {}
 
-  return result.sort(
+  // Sort by updatedAt descending
+  return records.sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
-};
+}
 
-export const getScratchpadById = (id: string): ScratchpadMetadata | null => {
-  const all = getAllScratchpads();
-  return all.find((s) => s.id === id || s.id === `inkpad_${id}` || s.id.replace(/^inkpad_/, '') === id) || null;
-};
-
-export const getScratchpadBySessionKey = (sessionKey: string): ScratchpadMetadata | null => {
-  const all = getAllScratchpads();
-  return all.find((s) => s.sessionKey === sessionKey) || null;
-};
-
-export const saveScratchpadMeta = (meta: ScratchpadMetadata): void => {
+function saveScratchpadRecords(records: ScratchpadMetadata[]): void {
   try {
-    const raw = localStorage.getItem(META_STORAGE_KEY);
-    const all: ScratchpadMetadata[] = raw ? JSON.parse(raw) : [];
-    const index = all.findIndex((s) => s.id === meta.id);
-    if (index >= 0) {
-      all[index] = { ...all[index], ...meta, updatedAt: new Date().toISOString() };
-    } else {
-      all.unshift({
-        ...meta,
-        createdAt: meta.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-    localStorage.setItem(META_STORAGE_KEY, JSON.stringify(all));
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('ce_scratchpad_records_updated'));
-    }
+    localStorage.setItem(SCRATCHPAD_RECORDS_KEY, JSON.stringify(records));
+    window.dispatchEvent(new CustomEvent('ce_scratchpad_records_updated'));
   } catch (e) {
-    console.error('Failed to save scratchpad metadata', e);
+    console.error('Failed to save scratchpad records:', e);
   }
-};
+}
 
-export const deleteScratchpadRecord = async (id: string): Promise<void> => {
-  try {
-    // 1. Delete associated IndexedDB canvases
-    const meta = getScratchpadById(id);
-    if (meta) {
-      const prefix = meta.sessionKey || `scratchpad_${id}_`;
-      for (let p = 1; p <= meta.totalPages; p++) {
-        await idbDeleteCanvas(`${prefix}ce_scratchpad_canvas_page_${p}`);
-      }
-      localStorage.removeItem(`${prefix}ce_scratchpad_state_v2`);
-      localStorage.removeItem(`${prefix}ce_scratchpad_notes_v2`);
-    }
-
-    // 2. Delete from META_STORAGE_KEY list
-    try {
-      const raw = localStorage.getItem(META_STORAGE_KEY);
-      if (raw) {
-        const list: ScratchpadMetadata[] = JSON.parse(raw);
-        const filtered = list.filter((s) => s.id !== id && s.id !== `inkpad_${id}`);
-        localStorage.setItem(META_STORAGE_KEY, JSON.stringify(filtered));
-      }
-    } catch {}
-
-    // 3. Delete from inkpad list (if it is an Inkpad notebook)
-    try {
-      const inkpadRaw = localStorage.getItem('inkpad');
-      if (inkpadRaw) {
-        const inkpadList = JSON.parse(inkpadRaw);
-        if (Array.isArray(inkpadList)) {
-          const rawId = id.replace(/^inkpad_/, '');
-          const filtered = inkpadList.filter((n: any) => String(n.id) !== rawId && String(n.id) !== id);
-          localStorage.setItem('inkpad', JSON.stringify(filtered));
-        }
-      }
-    } catch (e) {
-      console.error('Failed to remove from inkpad', e);
-    }
-
-    // 4. Dispatch events so all listeners refresh instantly
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('ce_scratchpad_records_updated'));
-      window.dispatchEvent(new CustomEvent('inkpad_updated'));
-    }
-  } catch (e) {
-    console.error('Failed to delete scratchpad record', e);
-  }
-};
-
-/**
- * Creates a new standalone scratchpad record ready for editing
- */
-export const createStandaloneScratchpad = (title?: string): ScratchpadMetadata => {
+export function createStandaloneScratchpad(title?: string): ScratchpadMetadata {
+  const current = getAllScratchpads();
   const id = `pad_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-  const sessionKey = `scratchpad_${id}_`;
-  const newMeta: ScratchpadMetadata = {
+  const count = current.filter((p) => p.type === 'standalone').length + 1;
+  const newPad: ScratchpadMetadata = {
     id,
-    title: title || `Engineering Draft Notebook #${new Date().toLocaleDateString()}`,
+    title: title && title.trim() ? title.trim() : `Engineering Scratchpad #${count}`,
+    type: 'standalone',
+    totalPages: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    type: 'standalone',
-    paperTexture: 'blueprint',
     paperBgColor: '#06131c',
     dpi: 600,
     notesText: '',
-    totalPages: 5,
-    sessionKey,
   };
-  saveScratchpadMeta(newMeta);
-  return newMeta;
-};
 
-/**
- * Synchronizes an active exam session scratchpad into the permanent record list.
- * Called automatically during exam, on close, on pause, and on submit.
- */
-export const syncExamScratchpadRecord = async (params: {
+  saveScratchpadRecords([newPad, ...current]);
+  return newPad;
+}
+
+export async function deleteScratchpadRecord(id: string): Promise<void> {
+  const current = getAllScratchpads();
+  const target = current.find((p) => p.id === id);
+  const updated = current.filter((p) => p.id !== id);
+  saveScratchpadRecords(updated);
+
+  // Clean up canvases
+  if (target) {
+    const prefix = target.sessionKey || `scratchpad_${target.id}_`;
+    for (let p = 1; p <= target.totalPages; p++) {
+      await idbDeleteCanvas(`${prefix}ce_scratchpad_canvas_page_${p}`);
+    }
+  }
+
+  // If inkpad notebook, remove from inkpad localStorage
+  try {
+    const rawInkpad = localStorage.getItem('inkpad');
+    if (rawInkpad) {
+      const list = JSON.parse(rawInkpad);
+      if (Array.isArray(list)) {
+        const rawId = id.replace(/^inkpad_/, '');
+        const filtered = list.filter((n: any) => String(n.id) !== rawId && String(n.id) !== id);
+        localStorage.setItem('inkpad', JSON.stringify(filtered));
+      }
+    }
+  } catch {}
+}
+
+export async function syncExamScratchpadRecord(params: {
   subject: SubjectArea;
   year: number;
   month: ExamMonth;
-  storageKeyPrefix: string;
+  storageKeyPrefix?: string;
   attemptId?: string;
   score?: number;
   totalQuestions?: number;
   ratingPercentage?: number;
-}): Promise<ScratchpadMetadata> => {
-  const { subject, year, month, storageKeyPrefix, attemptId, score, totalQuestions, ratingPercentage } = params;
-  const id = attemptId ? `exam_${attemptId}` : `exam_${subject}_${year}_${month}`;
+}): Promise<ScratchpadMetadata> {
+  const {
+    subject,
+    year,
+    month,
+    storageKeyPrefix,
+    attemptId,
+    score,
+    totalQuestions,
+    ratingPercentage,
+  } = params;
+  const examId = `exam_${subject}_${year}_${month}`;
+  const sessionKey = storageKeyPrefix || `${examId}_`;
 
-  let existing = getScratchpadById(id);
-  if (!existing) {
-    existing = getScratchpadBySessionKey(storageKeyPrefix);
-  }
+  const current = getAllScratchpads();
+  const existing = current.find((p) => p.id === examId);
 
-  // Read current sheet 1 data for thumbnail
-  const thumbKey = `${storageKeyPrefix}ce_scratchpad_canvas_page_1`;
-  const sheet1Data = await idbLoadCanvas(thumbKey);
-
-  // Read saved notes and settings
-  let notesText = '';
-  try {
-    notesText = localStorage.getItem(`${storageKeyPrefix}ce_scratchpad_notes_v2`) || '';
-  } catch {
-    // Ignore
-  }
-
-  let paperTexture: PaperTexture = 'blueprint';
-  let paperBgColor = '#06131c';
-  let dpi: DpiMode = 600;
-
-  try {
-    const rawState = localStorage.getItem(`${storageKeyPrefix}ce_scratchpad_state_v2`);
-    if (rawState) {
-      const parsed = JSON.parse(rawState);
-      if (parsed.paperTexture) paperTexture = parsed.paperTexture;
-      if (parsed.paperBgColor) paperBgColor = parsed.paperBgColor;
-      if (parsed.dpi) dpi = parsed.dpi;
-    }
-  } catch {
-    // Ignore
-  }
-
-  const updatedMeta: ScratchpadMetadata = {
-    id,
-    title: attemptId
-      ? `${subject} ${month} ${year} Exam Rough Sheets (${ratingPercentage ?? 0}%)`
-      : `${subject} ${month} ${year} Exam Session Rough Sheets`,
-    createdAt: existing?.createdAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+  const updatedPad: ScratchpadMetadata = {
+    id: examId,
+    title: `${subject} ${month} ${year} Exam Rough Sheets`,
     type: 'exam_session',
     subject,
     year,
     month,
-    attemptId,
-    sessionKey: storageKeyPrefix,
-    score,
-    totalQuestions,
-    ratingPercentage,
-    paperTexture,
-    paperBgColor,
-    dpi,
-    notesText,
-    totalPages: 5,
-    thumbnail: sheet1Data || existing?.thumbnail,
+    sessionKey,
+    totalPages: existing?.totalPages || 1,
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    thumbnail: existing?.thumbnail,
+    paperBgColor: '#06131c',
+    paperTexture: 'blueprint',
+    dpi: 600,
+    notesText: existing?.notesText || '',
+    attemptId: attemptId || existing?.attemptId,
+    score: score !== undefined ? score : existing?.score,
+    totalQuestions: totalQuestions !== undefined ? totalQuestions : existing?.totalQuestions,
+    ratingPercentage: ratingPercentage !== undefined ? ratingPercentage : existing?.ratingPercentage,
   };
 
-  saveScratchpadMeta(updatedMeta);
-  return updatedMeta;
-};
+  const filtered = current.filter((p) => p.id !== examId);
+  saveScratchpadRecords([updatedPad, ...filtered]);
+  return updatedPad;
+}
 
-// ----------------------------------------------------
-// Export Bundles (.cescratch / .json / .svg / .png)
-// ----------------------------------------------------
+export async function exportScratchpadBundle(id: string): Promise<any> {
+  const all = getAllScratchpads();
+  const pad = all.find((p) => p.id === id);
+  if (!pad) return null;
 
-/**
- * Bundles all pages, notes, and metadata into a single exportable object
- */
-export const exportScratchpadBundle = async (id: string): Promise<ScratchpadExportBundle | null> => {
-  const meta = getScratchpadById(id);
-  if (!meta) return null;
+  const prefix = pad.sessionKey || `scratchpad_${pad.id}_`;
+  const pages: { page: number; dataUrl: string | null }[] = [];
 
-  const pages: ScratchpadPageData[] = [];
-
-  // 1. Check if this is an Inkpad notebook in localStorage('inkpad')
-  try {
-    const inkpadRaw = localStorage.getItem('inkpad');
-    if (inkpadRaw) {
-      const list = JSON.parse(inkpadRaw);
-      const rawId = id.replace(/^inkpad_/, '');
-      const nb = list.find((n: any) => String(n.id) === rawId || n.name === meta.title);
-      if (nb && Array.isArray(nb.pages)) {
-        for (let i = 0; i < nb.pages.length; i++) {
-          pages.push({
-            page: i + 1,
-            dataUrl: i === 0 && nb.thumbnail ? nb.thumbnail : '',
-            updatedAt: new Date(nb.upd || Date.now()).toISOString(),
-          });
-        }
-        return {
-          format: 'ce-scratchpad-bundle',
-          version: '2.0',
-          deviceCompat: 'Universal Canvas / Tablet / Web (.cescratch)',
-          metadata: meta,
-          pages,
-        };
-      }
-    }
-  } catch (e) {
-    console.error('Failed to export inkpad notebook bundle', e);
-  }
-
-  // 2. Standard exam session scratchpad sheets
-  const prefix = meta.sessionKey || `scratchpad_${id}_`;
-  for (let p = 1; p <= meta.totalPages; p++) {
-    const key = `${prefix}ce_scratchpad_canvas_page_${p}`;
-    const dataUrl = await idbLoadCanvas(key);
-    if (dataUrl) {
-      pages.push({
-        page: p,
-        dataUrl,
-        updatedAt: new Date().toISOString(),
-      });
-    }
+  for (let p = 1; p <= pad.totalPages; p++) {
+    const dataUrl = await idbLoadCanvas(`${prefix}ce_scratchpad_canvas_page_${p}`);
+    pages.push({ page: p, dataUrl });
   }
 
   return {
-    format: 'ce-scratchpad-bundle',
-    version: '2.0',
-    deviceCompat: 'Universal Canvas / Tablet / Web (.cescratch)',
-    metadata: meta,
+    version: '1.0.0',
+    app: 'CE Board Exam Simulator Inkpad',
+    exportedAt: new Date().toISOString(),
+    metadata: pad,
     pages,
   };
-};
+}
 
-/**
- * Imports a .cescratch or .json bundle and restores all sheets and notes
- */
-export const importScratchpadBundle = async (bundle: ScratchpadExportBundle): Promise<ScratchpadMetadata> => {
-  if (!bundle || bundle.format !== 'ce-scratchpad-bundle') {
-    throw new Error('Invalid scratchpad file format. Expected .cescratch bundle.');
+export async function importScratchpadBundle(bundle: any): Promise<ScratchpadMetadata> {
+  if (!bundle || !bundle.metadata) {
+    throw new Error('Invalid bundle format: Missing scratchpad metadata.');
   }
 
-  const importedId = `imported_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-  const importedPrefix = `scratchpad_${importedId}_`;
-
-  const newMeta: ScratchpadMetadata = {
-    ...bundle.metadata,
-    id: importedId,
-    title: `${bundle.metadata.title || 'Imported Scratchpad'} (Imported)`,
-    createdAt: bundle.metadata.createdAt || new Date().toISOString(),
+  const origMeta = bundle.metadata;
+  const newId = `imported_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const importedPad: ScratchpadMetadata = {
+    ...origMeta,
+    id: newId,
+    title: `${origMeta.title || 'Imported Notes'} (Imported)`,
+    sessionKey: `scratchpad_${newId}_`,
     updatedAt: new Date().toISOString(),
-    sessionKey: importedPrefix,
-    type: 'standalone',
+    createdAt: new Date().toISOString(),
+    notesText: origMeta.notesText || '',
   };
 
-  // Restore canvas pages to IndexedDB
   if (Array.isArray(bundle.pages)) {
-    for (const p of bundle.pages) {
-      if (p.dataUrl) {
-        await idbSaveCanvas(`${importedPrefix}ce_scratchpad_canvas_page_${p.page}`, p.dataUrl);
+    for (const pageItem of bundle.pages) {
+      if (pageItem.dataUrl && pageItem.page) {
+        await idbSaveCanvas(
+          `${importedPad.sessionKey}ce_scratchpad_canvas_page_${pageItem.page}`,
+          pageItem.dataUrl
+        );
       }
     }
-    if (bundle.pages[0]?.dataUrl) {
-      newMeta.thumbnail = bundle.pages[0].dataUrl;
-    }
   }
 
-  // Restore state and notes
-  try {
-    const stateToSave = {
-      tool: 'pen',
-      color: '#38bdf8',
-      thickness: 3,
-      paperTexture: newMeta.paperTexture,
-      paperBgColor: newMeta.paperBgColor,
-      dpi: newMeta.dpi,
-    };
-    localStorage.setItem(`${importedPrefix}ce_scratchpad_state_v2`, JSON.stringify(stateToSave));
-    localStorage.setItem(`${importedPrefix}ce_scratchpad_notes_v2`, newMeta.notesText || '');
-  } catch {
-    // Ignore
+  const current = getAllScratchpads();
+  saveScratchpadRecords([importedPad, ...current]);
+  return importedPad;
+}
+
+export function generateScratchpadSvg(
+  pad: ScratchpadMetadata,
+  pageNumber: number = 1,
+  sheetDataUrl?: string
+): string {
+  const bg = pad.paperBgColor || '#06131c';
+  const width = 800;
+  const height = 1100;
+
+  if (sheetDataUrl) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+      <rect width="100%" height="100%" fill="${bg}"/>
+      <image href="${sheetDataUrl}" width="${width}" height="${height}" preserveAspectRatio="none"/>
+    </svg>`;
   }
 
-  saveScratchpadMeta(newMeta);
-  return newMeta;
-};
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+    <rect width="100%" height="100%" fill="${bg}"/>
+    <defs>
+      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.12)" stroke-width="0.7"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <text x="40" y="50" fill="#38bdf8" font-size="20" font-family="sans-serif" font-weight="bold">${pad.title}</text>
+    <text x="40" y="80" fill="#94a3b8" font-size="12" font-family="sans-serif">Page ${pageNumber} of ${pad.totalPages} • CE Board Examination Simulator</text>
+  </svg>`;
+}
 
-/**
- * Generates an SVG representation of a scratchpad page for vector/tablet software
- * (GoodNotes, Notability, Procreate, Illustrator, OneNote, etc.)
- */
-export const generateScratchpadSvg = (
-  meta: ScratchpadMetadata,
-  pageNumber: number,
-  dataUrl?: string,
-  width = 1920,
-  height = 1080
-): string => {
-  const bg = meta.paperBgColor || '#06131c';
-  const texture = meta.paperTexture || 'blueprint';
-
-  let gridDefs = '';
-  let gridRect = '';
-
-  if (texture === 'blueprint' || texture === 'graph') {
-    gridDefs = `
-      <defs>
-        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1"/>
-        </pattern>
-      </defs>
-    `;
-    gridRect = `<rect width="100%" height="100%" fill="url(#grid)" />`;
-  } else if (texture === 'lined') {
-    gridDefs = `
-      <defs>
-        <pattern id="ruled" width="100%" height="32" patternUnits="userSpaceOnUse">
-          <line x1="0" y1="31" x2="100%" y2="31" stroke="rgba(148, 163, 184, 0.2)" stroke-width="1"/>
-        </pattern>
-      </defs>
-    `;
-    gridRect = `<rect width="100%" height="100%" fill="url(#ruled)" />`;
-  }
-
-  const imageTag = dataUrl
-    ? `<image href="${dataUrl}" width="${width}" height="${height}" x="0" y="0" />`
-    : '';
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
-  <title>${meta.title} - Sheet ${pageNumber}</title>
-  <desc>CE Board Exam Scratchpad Vector Export - ${meta.dpi} DPI</desc>
-  ${gridDefs}
-  <!-- Sheet Background -->
-  <rect width="100%" height="100%" fill="${bg}" />
-  ${gridRect}
-  <!-- Drawing Surface Layer -->
-  ${imageTag}
-</svg>`;
-};
-
-/**
- * Browser download helper
- */
-export const downloadFile = (data: Blob | string, filename: string, mimeType = 'application/json'): void => {
-  const blob = typeof data === 'string' ? new Blob([data], { type: mimeType }) : data;
+export function downloadFile(content: string, filename: string, mimeType: string): void {
+  const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -573,5 +367,5 @@ export const downloadFile = (data: Blob | string, filename: string, mimeType = '
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-};
+  URL.revokeObjectURL(url);
+}

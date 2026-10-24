@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
 import { ParticleThemeProvider } from './context/ParticleThemeContext';
 import 'katex/dist/katex.min.css';
