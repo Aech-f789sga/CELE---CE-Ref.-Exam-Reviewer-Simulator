@@ -27,6 +27,7 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Cube3D } from './Cube3D';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface NavbarProps {
   currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards';
@@ -321,6 +322,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             ) : null}
 
+            {/* PWA Install Button */}
+            <PWAInstallButton variant="navbar" />
+
             {/* Theme & Fonts Customizer Trigger */}
             <button
               data-tour="theme-trigger"
@@ -482,6 +486,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Message Administrator / Send Request</span>
               </button>
             ) : null}
+
+            {/* PWA Install in mobile menu */}
+            <div className="col-span-2 sm:col-span-3 pt-1">
+              <PWAInstallButton variant="card" />
+            </div>
           </div>
         </div>
       )}

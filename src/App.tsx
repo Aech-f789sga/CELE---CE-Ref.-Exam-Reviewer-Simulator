@@ -46,6 +46,7 @@ import { cyberdeckAudio } from './audio/cyberdeckAudio';
 import { useParticleTheme, PARTICLE_COLOR_PRESETS } from './context/ParticleThemeContext';
 import { ScratchpadHub } from './components/ScratchpadHub';
 import { FormulaCardsHub } from './components/FormulaCardsHub';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { syncExamScratchpadRecord } from './utils/scratchpadStorage';
 import {
   Sparkles,
@@ -797,6 +798,9 @@ function MainApp() {
           </div>
         )}
       </div>
+
+      {/* Offline connectivity indicator */}
+      <OfflineIndicator />
 
       {/* Cyberdeck mod audio controls (music / SFX) */}
       {isCyberpunk && <CyberdeckAudioPanel />}

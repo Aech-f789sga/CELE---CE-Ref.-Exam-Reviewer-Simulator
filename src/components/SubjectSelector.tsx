@@ -46,6 +46,7 @@ import { SubmergedEra3D } from './SubmergedEra3D';
 import { Tilt3D } from './Tilt3D';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { PWAInstallButton } from './PWAInstallButton';
 import {
   getPausedSession,
   getAllPausedSessions,
@@ -724,6 +725,9 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               )}
             </div>
           </div>
+
+          {/* PWA Install Card for Offline Review */}
+          <PWAInstallButton variant="card" />
 
         </aside>
       </div>
