@@ -19,6 +19,7 @@ import { HPGE_NOV_2021_QUESTIONS } from './questionBanks/hpge/nov2021Questions';
 import { PSAD_NOV_2021_QUESTIONS } from './questionBanks/psad/nov2021Questions';
 import { MSTE_MAY2019_QUESTIONS } from './questionBanks/mstc/may2019Questions';
 import { HPGE_NOV_2019_QUESTIONS } from './questionBanks/hpge/nov2019Questions';
+import { HGE_MAY_2019_QUESTIONS } from './questionBanks/hpge/may2019Questions';
 import { PSAD_MAY_2019_QUESTIONS } from './questionBanks/psad/may2019Questions';
 import { MSTE_NOV2019_QUESTIONS } from './questionBanks/mstc/nov2019Questions';
 
@@ -45,6 +46,7 @@ export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
  * 15. HPGE of November 2019 (45 Items)
  * 16. PSAD (SEC) of May 2019 (69 Items)
  * 17. MSTC (MSTE) of November 2019 (44 Items)
+ * 18. HPGE (HGE) of May 2019 (47 Items)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -84,7 +86,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2019,
     month: 'May',
-    subjects: ['MSTC', 'PSAD'],
+    subjects: ['MSTC', 'PSAD', 'HPGE'],
   },
   {
     year: 2019,
@@ -186,6 +188,9 @@ function getBaseQuestions(subject: SubjectArea, year: number, month: ExamMonth):
   }
   if (subject === 'HPGE' && year === 2019 && month === 'November') {
     return HPGE_NOV_2019_QUESTIONS;
+  }
+  if (subject === 'HPGE' && year === 2019 && month === 'May') {
+    return HGE_MAY_2019_QUESTIONS;
   }
   if (subject === 'PSAD' && year === 2019 && month === 'May') {
     return PSAD_MAY_2019_QUESTIONS;
