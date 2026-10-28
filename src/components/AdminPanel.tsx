@@ -42,6 +42,7 @@ import {
   fetchUserAdminMessages,
   updateAdminMessage,
   deleteAdminMessage,
+  formatAnnouncerName,
   UserProfile,
   CloudExamAttempt,
   SystemAnnouncement,
@@ -75,6 +76,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [annCategory, setAnnCategory] = useState<'General' | 'Exam Notice' | 'PRC Advisory' | 'Schedule' | 'Tip'>('Exam Notice');
   const [annPriority, setAnnPriority] = useState<'normal' | 'important' | 'urgent'>('important');
   const [annPinned, setAnnPinned] = useState<boolean>(false);
+  const [annInCharge, setAnnInCharge] = useState<string>('');
   const [isPostingAnn, setIsPostingAnn] = useState<boolean>(false);
   const [annSuccessMsg, setAnnSuccessMsg] = useState<string | null>(null);
 
@@ -189,6 +191,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
     setIsPostingAnn(true);
     setAnnSuccessMsg(null);
     try {
+      const inChargeVal = annInCharge.trim();
       const createdId = await createAnnouncement({
         title: annTitle.trim(),
         message: annMessage.trim(),
@@ -197,13 +200,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
         isPinned: annPinned,
         isActive: true,
         authorEmail: designatedAdminEmail,
-        authorName: 'Derrick Darrack (Admin)',
+        authorName: inChargeVal ? `Admin (In Charge: ${inChargeVal})` : 'Admin',
+        inCharge: inChargeVal || undefined,
       });
 
       if (createdId) {
         setAnnSuccessMsg('Official announcement broadcasted to all examinees successfully!');
         setAnnTitle('');
         setAnnMessage('');
+        setAnnInCharge('');
         setAnnPinned(false);
         const updated = await fetchAnnouncements(false);
         setAnnAnnouncementsList(updated);
@@ -992,6 +997,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
             </div>
           </div>
 
+          <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>Announcer / In-Charge Delegation (Optional)</span>
+              </label>
+              <span className="text-[10px] font-mono text-amber-400/80">Default: Admin</span>
+            </div>
+            <input
+              type="text"
+              placeholder="Leave blank for 'Admin', or enter name of person in charge (e.g. Engr. Alex Santos)..."
+              value={annInCharge}
+              onChange={(e) => setAnnInCharge(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-sans"
+            />
+            <p className="text-[10px] text-slate-400">
+              All announcements are officially announced by <strong>Admin</strong> unless you specify a designated person in charge above.
+            </p>
+          </div>
+
           <div className="space-y-1.5">
             <label className="block text-xs font-medium text-slate-300">
               Announcement Message Body <span className="text-rose-400">*</span>
@@ -1090,6 +1115,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                         }`}
                       >
                         {ann.priority?.toUpperCase()}
+                      </span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                        Announcer: {formatAnnouncerName(ann)}
                       </span>
                       <span className="text-[11px] text-slate-500 font-mono">
                         {new Date(ann.createdAt).toLocaleDateString()}

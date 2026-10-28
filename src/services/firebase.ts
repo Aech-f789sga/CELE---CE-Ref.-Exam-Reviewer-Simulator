@@ -94,12 +94,36 @@ export interface SystemAnnouncement {
   message: string;
   authorEmail: string;
   authorName?: string;
+  inCharge?: string;
   category: 'General' | 'Exam Notice' | 'PRC Advisory' | 'Schedule' | 'Tip';
   priority: 'normal' | 'important' | 'urgent';
   isPinned?: boolean;
   createdAt: string;
   updatedAt?: string;
   isActive: boolean;
+}
+
+/**
+ * Normalizes and formats the announcer name for any announcement.
+ * Rule: All announcers should be named 'Admin' unless the admin explicitly put someone in charge.
+ */
+export function formatAnnouncerName(ann?: {
+  authorName?: string;
+  inCharge?: string;
+  inChargeName?: string;
+} | null): string {
+  if (!ann) return 'Admin';
+
+  const inCharge = (ann.inCharge || ann.inChargeName || '').trim();
+  if (inCharge) {
+    return `Admin (In Charge: ${inCharge})`;
+  }
+
+  if (ann.authorName && /in[- ]?charge/i.test(ann.authorName)) {
+    return ann.authorName;
+  }
+
+  return 'Admin';
 }
 
 /**
@@ -647,6 +671,9 @@ export async function createAnnouncement(
 ): Promise<string> {
   const id = `ann-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString();
+  const inCharge = (ann.inCharge || (ann as any).inChargeName || '').trim();
+  const authorName = inCharge ? `Admin (In Charge: ${inCharge})` : 'Admin';
+
   const payload: SystemAnnouncement = {
     ...ann,
     id,
@@ -655,6 +682,9 @@ export async function createAnnouncement(
     category: ann.category || 'General',
     priority: ann.priority || 'normal',
     isPinned: ann.isPinned ?? false,
+    authorEmail: ann.authorEmail || DESIGNATED_ADMIN_EMAIL,
+    authorName,
+    inCharge: inCharge || undefined,
   };
 
   try {
@@ -731,7 +761,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'urgent',
     isPinned: true,
     authorEmail: 'derrickdarrack@gmail.com',
-    authorName: 'System Administrator (CELE Reviewee)',
+    authorName: 'Admin',
     createdAt: '2026-10-23T08:00:00Z',
     isActive: true,
   },
@@ -744,7 +774,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'urgent',
     isPinned: true,
     authorEmail: 'derrickdarrack@gmail.com',
-    authorName: 'System Administrator & CE Mentor',
+    authorName: 'Admin',
     createdAt: '2026-10-21T08:00:00Z',
     isActive: true,
   },
@@ -757,7 +787,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'important',
     isPinned: true,
     authorEmail: 'derrickdarrack@gmail.com',
-    authorName: 'Platform Director',
+    authorName: 'Admin',
     createdAt: '2026-10-18T10:00:00Z',
     isActive: true,
   },
@@ -770,7 +800,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'important',
     isPinned: false,
     authorEmail: 'board@prc.gov.ph',
-    authorName: 'PRC Licensure Board Committee',
+    authorName: 'Admin',
     createdAt: '2026-10-15T09:00:00Z',
     isActive: true,
   },
@@ -783,7 +813,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'important',
     isPinned: false,
     authorEmail: 'curriculum@ceboard.ph',
-    authorName: 'Academic Review Director',
+    authorName: 'Admin',
     createdAt: '2026-10-10T14:00:00Z',
     isActive: true,
   },
@@ -796,7 +826,7 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'normal',
     isPinned: false,
     authorEmail: 'security@cloud.google.com',
-    authorName: 'System Security Administrator',
+    authorName: 'Admin',
     createdAt: '2026-10-05T11:00:00Z',
     isActive: true,
   },
@@ -809,22 +839,46 @@ export const OFFICIAL_DEFAULT_ANNOUNCEMENTS: SystemAnnouncement[] = [
     priority: 'normal',
     isPinned: false,
     authorEmail: 'archive@ceboard.ph',
-    authorName: 'Exam Archive Team',
+    authorName: 'Admin',
     createdAt: '2026-10-01T08:00:00Z',
     isActive: true,
   },
 ];
 
+/**
+ * Normalizes an announcement document to enforce the rule:
+ * All announcers are named 'Admin' unless the admin explicitly designated someone in charge.
+ */
+function normalizeAnnouncement(item: SystemAnnouncement): SystemAnnouncement {
+  const inCharge = (item.inCharge || (item as any).inChargeName || '').trim();
+  const hasInChargeInAuthor = item.authorName && /in[- ]?charge/i.test(item.authorName);
+
+  let formattedAuthor = 'Admin';
+  if (inCharge) {
+    formattedAuthor = `Admin (In Charge: ${inCharge})`;
+  } else if (hasInChargeInAuthor && item.authorName) {
+    formattedAuthor = item.authorName;
+  }
+
+  return {
+    ...item,
+    authorName: formattedAuthor,
+    inCharge: inCharge || undefined,
+  };
+}
+
 function mergeAnnouncements(firebaseList: SystemAnnouncement[], onlyActive = true): SystemAnnouncement[] {
   const map = new Map<string, SystemAnnouncement>();
   // Official permanent references first
-  OFFICIAL_DEFAULT_ANNOUNCEMENTS.forEach((item) => {
+  OFFICIAL_DEFAULT_ANNOUNCEMENTS.forEach((raw) => {
+    const item = normalizeAnnouncement(raw);
     if (!onlyActive || item.isActive !== false) {
       map.set(item.id, item);
     }
   });
   // Custom announcements from Firestore override or add
-  firebaseList.forEach((item) => {
+  firebaseList.forEach((raw) => {
+    const item = normalizeAnnouncement(raw);
     if (!onlyActive || item.isActive !== false) {
       map.set(item.id, item);
     }

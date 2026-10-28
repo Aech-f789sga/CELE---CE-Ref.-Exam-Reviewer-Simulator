@@ -62,7 +62,7 @@ import {
   Atom,
   Megaphone,
 } from 'lucide-react';
-import { recordExamAttempt, fetchAnnouncements, SystemAnnouncement } from './services/firebase';
+import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
 
 function CustomBgLayer() {
   const [bg, setBg] = useState<string | null>(null);
@@ -503,6 +503,9 @@ function MainApp() {
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white text-xs truncate">
                           {latestAnnouncement.title}
+                        </span>
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold shrink-0">
+                          Announcer: {formatAnnouncerName(latestAnnouncement)}
                         </span>
                         {latestAnnouncement.isPinned && (
                           <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold shrink-0">
