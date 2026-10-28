@@ -61,6 +61,39 @@
         "isActive": { "type": "boolean", "description": "Active status of the announcement." }
       },
       "required": ["id", "title", "message", "authorEmail", "createdAt", "isActive"]
+    },
+    "UserPresence": {
+      "title": "UserPresence",
+      "description": "Real-time user presence and active feature status.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Unique user ID." },
+        "email": { "type": "string", "format": "email", "description": "User email." },
+        "displayName": { "type": "string", "description": "User display name." },
+        "lastSeenAt": { "type": "string", "description": "ISO timestamp of last activity." },
+        "currentFeature": { "type": "string", "description": "Current active feature being used." },
+        "isOnline": { "type": "boolean", "description": "Whether the user is currently online." }
+      },
+      "required": ["userId", "lastSeenAt", "isOnline"]
+    },
+    "FeatureInteraction": {
+      "title": "FeatureInteraction",
+      "description": "Log record of user feature interaction with duration and timestamp.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique log record ID." },
+        "userId": { "type": "string", "description": "User ID who interacted with the feature." },
+        "userEmail": { "type": "string", "description": "User email address." },
+        "userDisplayName": { "type": "string", "description": "User display name." },
+        "featureId": { "type": "string", "description": "Feature identifier key." },
+        "featureName": { "type": "string", "description": "Human-readable feature name." },
+        "startTime": { "type": "string", "description": "ISO timestamp when interaction started." },
+        "endTime": { "type": "string", "description": "ISO timestamp when interaction ended." },
+        "durationSeconds": { "type": "number", "description": "Duration spent in seconds." },
+        "metadata": { "type": "string", "description": "Optional context details." },
+        "createdAt": { "type": "string", "description": "Creation timestamp." }
+      },
+      "required": ["id", "userId", "featureId", "featureName", "durationSeconds", "createdAt"]
     }
   },
   "firestore": {
@@ -79,6 +112,14 @@
     "/announcements/{announcementId}": {
       "schema": { "$ref": "entities/Announcement" },
       "description": "System announcements. All signed in users can read, only admins can create/update/delete."
+    },
+    "/userPresence/{userId}": {
+      "schema": { "$ref": "entities/UserPresence" },
+      "description": "User online presence and heartbeat status. Users update their own, admin can read all."
+    },
+    "/featureInteractions/{interactionId}": {
+      "schema": { "$ref": "entities/FeatureInteraction" },
+      "description": "Feature interaction history and durations. Users log interactions, admin can read all for analytics."
     }
   }
 }

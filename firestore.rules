@@ -69,6 +69,20 @@ service cloud.firestore {
              data.isActive is bool;
     }
 
+    function isValidPresence(data) {
+      return data.userId is string && data.userId.size() <= 128 &&
+             data.lastSeenAt is string && data.lastSeenAt.size() <= 64 &&
+             data.isOnline is bool;
+    }
+
+    function isValidFeatureInteraction(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.featureId is string && data.featureId.size() <= 128 &&
+             data.durationSeconds is number &&
+             data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
     // User profiles
     match /users/{userId} {
       allow get: if isValidId(userId);
@@ -111,6 +125,20 @@ service cloud.firestore {
                     incoming().message is string && incoming().message.size() <= 5000 &&
                     incoming().createdAt is string;
       allow read, update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    // User online presence and active feature tracking
+    match /userPresence/{userId} {
+      allow read: if true;
+      allow create, update: if isValidId(userId) && isValidPresence(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Feature interactions log for admin usage and analytics
+    match /featureInteractions/{interactionId} {
+      allow read: if true;
+      allow create: if isValidId(interactionId) && isValidFeatureInteraction(incoming());
+      allow update, delete: if isAdmin();
     }
   }
 }

@@ -48,6 +48,7 @@ import { ScratchpadHub } from './components/ScratchpadHub';
 import { FormulaCardsHub } from './components/FormulaCardsHub';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { syncExamScratchpadRecord } from './utils/scratchpadStorage';
+import { useUserActivityTracker } from './hooks/useUserActivityTracker';
 import {
   Sparkles,
   Sliders,
@@ -157,6 +158,21 @@ function MainApp() {
 
   // Stored attempts
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
+
+  // User activity & presence tracking (Admin feature usage analytics)
+  useUserActivityTracker({
+    user: activeUser,
+    currentTab,
+    isExamRunning,
+    isExamFinished,
+    examDetails: {
+      subject: selectedSubject,
+      year: selectedYear,
+      month: selectedMonth,
+    },
+    isThemeModalOpen,
+    isContactAdminOpen,
+  });
 
   // Load stored attempts, announcements, and register tour & donation listeners on mount
   useEffect(() => {

@@ -28,6 +28,18 @@ import {
   Send,
   Heart,
   QrCode,
+  Clock,
+  Activity,
+  BarChart3,
+  TrendingUp,
+  Radio,
+  History,
+  Layers,
+  PenTool,
+  BookOpen,
+  Trophy,
+  Palette,
+  Filter,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -43,10 +55,16 @@ import {
   updateAdminMessage,
   deleteAdminMessage,
   formatAnnouncerName,
+  fetchAllFeatureInteractions,
+  fetchAllUserPresence,
+  subscribeUserPresence,
+  isUserCurrentlyOnline,
   UserProfile,
   CloudExamAttempt,
   SystemAnnouncement,
   UserAdminMessage,
+  UserPresence,
+  FeatureInteraction,
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
 
@@ -80,8 +98,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [isPostingAnn, setIsPostingAnn] = useState<boolean>(false);
   const [annSuccessMsg, setAnnSuccessMsg] = useState<string | null>(null);
 
+  // New analytics & presence states
+  const [interactionsList, setInteractionsList] = useState<FeatureInteraction[]>([]);
+  const [presencesList, setPresencesList] = useState<UserPresence[]>([]);
+  const [selectedUserForHistory, setSelectedUserForHistory] = useState<string>('all');
+  const [selectedFeatureFilter, setSelectedFeatureFilter] = useState<string>('all');
+  const [activitySearchTerm, setActivitySearchTerm] = useState<string>('');
+
   // Admin section navigation
-  const [adminSection, setAdminSection] = useState<'inbox' | 'users' | 'announcements' | 'all'>('inbox');
+  const [adminSection, setAdminSection] = useState<'inbox' | 'users' | 'activity' | 'announcements' | 'all'>('inbox');
 
   // Inbox reply & filter states
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
@@ -93,22 +118,132 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [allUsers, allAttempts, allAnnouncements, allMessages] = await Promise.all([
+      const [allUsers, allAttempts, allAnnouncements, allMessages, allInteractions, allPresences] = await Promise.all([
         fetchAllUsers(),
         fetchExamAttempts(undefined, true),
         fetchAnnouncements(false),
         fetchUserAdminMessages(),
+        fetchAllFeatureInteractions(500),
+        fetchAllUserPresence(),
       ]);
       setUsersList(allUsers);
       setAttemptsList(allAttempts);
       setAnnouncementsList(allAnnouncements);
       setMessagesList(allMessages);
+      setInteractionsList(allInteractions);
+      setPresencesList(allPresences);
     } catch (e) {
       console.error('Error loading admin data:', e);
     } finally {
       setLoading(false);
     }
   };
+
+  const getUserPresence = (uid?: string, email?: string): UserPresence | undefined => {
+    if (!uid && !email) return undefined;
+    return presencesList.find(
+      (p) => (uid && p.userId === uid) || (email && p.email?.toLowerCase() === email?.toLowerCase())
+    );
+  };
+
+  const isUserOnline = (uid?: string, email?: string): boolean => {
+    const presence = getUserPresence(uid, email);
+    return isUserCurrentlyOnline(presence);
+  };
+
+  const onlineUsersCount = usersList.filter((u) => isUserOnline(u.uid, u.email)).length;
+
+  // Feature usage aggregation for admin analytics
+  const featureStats = React.useMemo(() => {
+    const statsMap: Record<
+      string,
+      {
+        featureId: string;
+        featureName: string;
+        visitCount: number;
+        totalDurationSeconds: number;
+        userCount: Set<string>;
+      }
+    > = {};
+
+    interactionsList.forEach((item) => {
+      const fId = item.featureId || 'other';
+      if (!statsMap[fId]) {
+        statsMap[fId] = {
+          featureId: fId,
+          featureName: item.featureName || fId,
+          visitCount: 0,
+          totalDurationSeconds: 0,
+          userCount: new Set<string>(),
+        };
+      }
+      statsMap[fId].visitCount += 1;
+      statsMap[fId].totalDurationSeconds += item.durationSeconds || 0;
+      if (item.userId) statsMap[fId].userCount.add(item.userId);
+    });
+
+    const list = Object.values(statsMap).map((s) => ({
+      featureId: s.featureId,
+      featureName: s.featureName,
+      visitCount: s.visitCount,
+      totalDurationSeconds: s.totalDurationSeconds,
+      uniqueUsers: s.userCount.size,
+      avgDurationSeconds: s.visitCount > 0 ? Math.round(s.totalDurationSeconds / s.visitCount) : 0,
+    }));
+
+    return list.sort((a, b) => b.totalDurationSeconds - a.totalDurationSeconds);
+  }, [interactionsList]);
+
+  const totalEngagementSeconds = React.useMemo(() => {
+    return interactionsList.reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0);
+  }, [interactionsList]);
+
+  const formatDurationDisplay = (seconds: number): string => {
+    if (!seconds || seconds <= 0) return '0s';
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) return `${hrs}h ${mins}m ${secs}s`;
+    if (mins > 0) return `${mins}m ${secs}s`;
+    return `${secs}s`;
+  };
+
+  const formatShortDuration = (seconds: number): string => {
+    if (!seconds || seconds <= 0) return '0s';
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    if (hrs > 0) return `${hrs}h ${mins}m`;
+    if (mins > 0) return `${mins}m`;
+    return `${seconds}s`;
+  };
+
+  const formatTimeAgo = (isoDate?: string): string => {
+    if (!isoDate) return 'Never';
+    const diffSec = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
+    if (diffSec < 60) return 'Just now';
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+    if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+    return `${Math.floor(diffSec / 86400)}d ago`;
+  };
+
+  const filteredInteractions = React.useMemo(() => {
+    return interactionsList.filter((item) => {
+      const matchesUser =
+        selectedUserForHistory === 'all' ||
+        item.userId === selectedUserForHistory ||
+        (item.userEmail && item.userEmail.toLowerCase() === selectedUserForHistory.toLowerCase());
+      const matchesFeature =
+        selectedFeatureFilter === 'all' || item.featureId === selectedFeatureFilter;
+      const q = activitySearchTerm.toLowerCase();
+      const matchesSearch =
+        !q ||
+        (item.userDisplayName || '').toLowerCase().includes(q) ||
+        (item.userEmail || '').toLowerCase().includes(q) ||
+        (item.featureName || '').toLowerCase().includes(q) ||
+        (item.metadata || '').toLowerCase().includes(q);
+      return matchesUser && matchesFeature && matchesSearch;
+    });
+  }, [interactionsList, selectedUserForHistory, selectedFeatureFilter, activitySearchTerm]);
 
   const handleUpdateMessageStatus = async (id: string, status: 'read' | 'resolved') => {
     try {
@@ -159,6 +294,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
 
   useEffect(() => {
     loadData();
+    const unsubPresence = subscribeUserPresence((updatedList) => {
+      setPresencesList(updatedList);
+    });
+    return () => unsubPresence();
   }, []);
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -398,6 +537,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
             <Users className="w-4 h-4" />
             <span>User Accounts Roster</span>
             <span className="text-[10px] opacity-75 font-mono">({usersList.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminSection('activity')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              adminSection === 'activity'
+                ? 'bg-amber-500 text-slate-950 shadow-lg scale-102 font-black'
+                : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+            }`}
+          >
+            <Activity className="w-4 h-4 text-emerald-400" />
+            <span>Feature Analytics &amp; Presence</span>
+            {onlineUsersCount > 0 ? (
+              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500 text-slate-950">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping" />
+                {onlineUsersCount} Online
+              </span>
+            ) : (
+              <span className="text-[10px] opacity-75 font-mono">({interactionsList.length})</span>
+            )}
           </button>
 
           <button
@@ -835,16 +995,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
             <thead className="bg-slate-900/80 text-slate-400 font-mono uppercase text-[10px] border-b border-slate-800">
               <tr>
                 <th className="py-3 px-4">Account / Display Name</th>
+                <th className="py-3 px-4">Live Status</th>
+                <th className="py-3 px-4">Current / Last Feature</th>
                 <th className="py-3 px-4">Google Email</th>
                 <th className="py-3 px-4">Assigned Role</th>
-                <th className="py-3 px-4">Permissions Access</th>
-                <th className="py-3 px-4">Last Active</th>
+                <th className="py-3 px-4">Feature History</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800 font-sans">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-slate-400">
                     No matching accounts found.
                   </td>
                 </tr>
@@ -852,11 +1013,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                 filteredUsers.map((u) => {
                   const isUserAdminAccount =
                     u.role === 'admin' || u.email.toLowerCase() === designatedAdminEmail.toLowerCase();
+                  const presence = getUserPresence(u.uid, u.email);
+                  const isOnline = isUserCurrentlyOnline(presence);
+                  const userInteractions = interactionsList.filter(
+                    (i) => i.userId === u.uid || (i.userEmail && i.userEmail.toLowerCase() === u.email.toLowerCase())
+                  );
+                  const userTotalSeconds = userInteractions.reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0);
+
                   return (
                     <tr
                       key={u.uid || u.email}
                       className={`transition-colors ${
-                        isUserAdminAccount ? 'bg-amber-500/5 hover:bg-amber-500/10' : 'hover:bg-slate-900/50'
+                        isOnline
+                          ? 'bg-emerald-500/5 hover:bg-emerald-500/10'
+                          : isUserAdminAccount
+                          ? 'bg-amber-500/5 hover:bg-amber-500/10'
+                          : 'hover:bg-slate-900/50'
                       }`}
                     >
                       <td className="py-3.5 px-4 flex items-center space-x-3">
@@ -864,12 +1036,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                           <img
                             src={u.photoURL}
                             alt={u.displayName}
-                            className="w-8 h-8 rounded-full"
+                            className={`w-8 h-8 rounded-full ${isOnline ? 'ring-2 ring-emerald-500' : ''}`}
                           />
                         ) : (
                           <div
                             className={`w-8 h-8 rounded-full font-bold flex items-center justify-center text-xs ${
-                              isUserAdminAccount
+                              isOnline
+                                ? 'bg-emerald-500 text-slate-950 ring-2 ring-emerald-400'
+                                : isUserAdminAccount
                                 ? 'bg-amber-500 text-slate-950'
                                 : 'bg-slate-800 text-slate-300'
                             }`}
@@ -878,9 +1052,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                           </div>
                         )}
                         <div>
-                          <span className="font-bold text-white block">
-                            {u.displayName || (isUserAdminAccount ? 'Derrick Darrack (Admin)' : 'Candidate Examinee')}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-white block">
+                              {u.displayName || (isUserAdminAccount ? 'Derrick Darrack (Admin)' : 'Candidate Examinee')}
+                            </span>
+                            {isOnline && (
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Online right now" />
+                            )}
+                          </div>
                           <span
                             className={`text-[10px] font-mono ${
                               isUserAdminAccount ? 'text-amber-400' : 'text-slate-400'
@@ -889,6 +1068,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                             UID: {u.uid.substring(0, 18)}...
                           </span>
                         </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {isOnline ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
+                            <span>ONLINE</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 inline-block" />
+                            <span>OFFLINE</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-xs">
+                        <span className={`font-semibold block ${isOnline ? 'text-emerald-300' : 'text-slate-200'}`}>
+                          {presence?.currentFeature || 'Portal Dashboard'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {isOnline ? 'Active right now' : `Last seen: ${formatTimeAgo(presence?.lastSeenAt || u.lastLoginAt)}`}
+                        </span>
                       </td>
                       <td className="py-3.5 px-4 font-mono font-medium">
                         <span className={isUserAdminAccount ? 'text-amber-300 font-bold' : 'text-slate-300'}>
@@ -908,13 +1108,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                           </span>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 text-[11px] text-slate-300">
-                        {isUserAdminAccount
-                          ? 'Super Admin • Manage System, User Accounts & PRC Exam Database'
-                          : 'Examinee • Take Board Exams, Save Attempts & Review Booklets'}
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-slate-400 text-[11px]">
-                        {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString() : 'Active'}
+                      <td className="py-3.5 px-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedUserForHistory(u.uid);
+                            setAdminSection('activity');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-slate-300 border border-slate-700 transition-all cursor-pointer flex items-center gap-1.5 font-bold text-[11px]"
+                          title="View detailed feature interaction history & time spent"
+                        >
+                          <History className="w-3.5 h-3.5 text-amber-400" />
+                          <span>{userTotalSeconds > 0 ? formatShortDuration(userTotalSeconds) : '0s'} ({userInteractions.length})</span>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -925,6 +1131,433 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
         </div>
       </div>
       </div>
+      )}
+
+      {/* SECTION: User Feature Interactions & Presence Analytics (ADMIN ONLY) */}
+      {(adminSection === 'activity' || adminSection === 'all') && (
+        <div className="space-y-6 animate-in fade-in">
+          {/* Top Banner */}
+          <div
+            className="rounded-3xl p-6 border shadow-2xl relative overflow-hidden"
+            style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+          >
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                    REAL-TIME FEATURE &amp; PRESENCE MONITOR
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">Admin Only</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black font-arnie text-white">
+                  Examinee Feature Usage &amp; Interaction Analytics
+                </h2>
+                <p className="text-xs text-slate-300 max-w-2xl">
+                  Analyze which review features (Exam Simulator, Scratchpad, Formula Cards, Performance Review, etc.) are most visited and used by reviewees, how long they stay on each feature, and whether they are online right now.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={loadData}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+                  title="Refresh activity logs and presence data"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  <span>Refresh Activity</span>
+                </button>
+              </div>
+            </div>
+
+            <div
+              className="absolute -right-8 -bottom-8 w-64 h-64 rounded-full blur-3xl opacity-15 pointer-events-none"
+              style={{ backgroundColor: themeConfig.accent }}
+            />
+          </div>
+
+          {/* 4 Analytics Overview Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Card 1: Live Online Now */}
+            <div
+              className="rounded-2xl p-5 border relative overflow-hidden flex flex-col justify-between"
+              style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                    Live Online Examinees
+                  </span>
+                  <span className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center">
+                    <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+                  </span>
+                </div>
+                <div className="text-3xl font-black font-arnie text-white mt-2 flex items-baseline gap-2">
+                  <span>{onlineUsersCount}</span>
+                  <span className="text-xs font-sans font-bold text-emerald-400">Online Now</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-800/80">
+                {onlineUsersCount > 0
+                  ? `${onlineUsersCount} examinee${onlineUsersCount > 1 ? 's' : ''} currently active on the platform`
+                  : 'No active examinees connected in the past 2 minutes'}
+              </p>
+            </div>
+
+            {/* Card 2: Total Engagement Time */}
+            <div
+              className="rounded-2xl p-5 border relative overflow-hidden flex flex-col justify-between"
+              style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                    Total Time Spent
+                  </span>
+                  <span className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-cyan-400" />
+                  </span>
+                </div>
+                <div className="text-3xl font-black font-arnie text-white mt-2">
+                  {formatShortDuration(totalEngagementSeconds)}
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-800/80">
+                Cumulative review session duration logged across all examinees
+              </p>
+            </div>
+
+            {/* Card 3: Total Feature Interactions */}
+            <div
+              className="rounded-2xl p-5 border relative overflow-hidden flex flex-col justify-between"
+              style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                    Total Feature Visits
+                  </span>
+                  <span className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-amber-400" />
+                  </span>
+                </div>
+                <div className="text-3xl font-black font-arnie text-white mt-2">
+                  {interactionsList.length}
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-800/80">
+                Recorded feature launches and focus intervals
+              </p>
+            </div>
+
+            {/* Card 4: Most Popular Feature */}
+            <div
+              className="rounded-2xl p-5 border relative overflow-hidden flex flex-col justify-between"
+              style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                    #1 Most Visited Feature
+                  </span>
+                  <span className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center">
+                    <Award className="w-4 h-4 text-purple-400" />
+                  </span>
+                </div>
+                <div className="text-base sm:text-lg font-black font-arnie text-amber-400 mt-2 truncate">
+                  {featureStats[0]?.featureName || 'Exam Simulator'}
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-800/80">
+                {featureStats[0]
+                  ? `${featureStats[0].visitCount} visits • ${formatShortDuration(featureStats[0].totalDurationSeconds)}`
+                  : 'Awaiting feature interactions'}
+              </p>
+            </div>
+          </div>
+
+          {/* Feature Popularity & Time Spent Ranking (Analysis Table) */}
+          <div
+            className="rounded-3xl p-6 border shadow-2xl space-y-4"
+            style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+              <div>
+                <h3 className="text-base font-bold font-arnie text-white flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-amber-400" />
+                  <span>Feature Popularity &amp; Usage Ranking (Most Used to Least Used)</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Ordered by cumulative time spent. Helps identify which tools reviewees rely on most for their CELE preparation.
+                </p>
+              </div>
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">
+                {featureStats.length} Unique Features Tracked
+              </span>
+            </div>
+
+            {featureStats.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-xs bg-slate-900/40 rounded-2xl border border-slate-800/80">
+                <Activity className="w-8 h-8 text-slate-500 mx-auto mb-2 opacity-60" />
+                <p className="font-semibold text-slate-300">No Feature Interactions Recorded Yet</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  When reviewees use the Exam Simulator, Scratchpad, Formula Cards, or other modules, interaction times are logged automatically.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {featureStats.map((stat, idx) => {
+                  const maxDuration = featureStats[0]?.totalDurationSeconds || 1;
+                  const percent = Math.min(100, Math.round((stat.totalDurationSeconds / maxDuration) * 100));
+
+                  return (
+                    <div
+                      key={stat.featureId}
+                      className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all space-y-2.5"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black font-mono shrink-0 ${
+                              idx === 0
+                                ? 'bg-amber-500 text-slate-950 shadow-md'
+                                : idx === 1
+                                ? 'bg-slate-300 text-slate-950'
+                                : idx === 2
+                                ? 'bg-amber-700 text-white'
+                                : 'bg-slate-800 text-slate-400'
+                            }`}
+                          >
+                            #{idx + 1}
+                          </span>
+                          <div>
+                            <span className="font-bold text-white text-sm block">
+                              {stat.featureName}
+                            </span>
+                            <span className="text-[11px] text-slate-400 font-mono">
+                              Feature ID: <code className="text-amber-400/90">{stat.featureId}</code>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-xs font-mono shrink-0 flex-wrap">
+                          <div className="px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-right">
+                            <span className="text-[9px] uppercase tracking-wider text-slate-500 block">Visits</span>
+                            <span className="font-bold text-white">{stat.visitCount} visits</span>
+                          </div>
+                          <div className="px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-right">
+                            <span className="text-[9px] uppercase tracking-wider text-slate-500 block">Total Time</span>
+                            <span className="font-bold text-cyan-300">{formatDurationDisplay(stat.totalDurationSeconds)}</span>
+                          </div>
+                          <div className="px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-right">
+                            <span className="text-[9px] uppercase tracking-wider text-slate-500 block">Avg Duration</span>
+                            <span className="font-bold text-amber-300">{formatDurationDisplay(stat.avgDurationSeconds)}</span>
+                          </div>
+                          <div className="px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-right">
+                            <span className="text-[9px] uppercase tracking-wider text-slate-500 block">Users</span>
+                            <span className="font-bold text-emerald-400">{stat.uniqueUsers} examinees</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Relative time progress bar */}
+                      <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800/80">
+                        <div
+                          className="h-full bg-gradient-to-r from-cyan-500 via-amber-500 to-emerald-400 rounded-full transition-all duration-500"
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Examinee Interaction History Log */}
+          <div
+            className="rounded-3xl p-6 border shadow-2xl space-y-5"
+            style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div>
+                <h3 className="text-base font-bold font-arnie text-white flex items-center gap-2">
+                  <History className="w-4 h-4 text-cyan-400" />
+                  <span>Detailed Interaction History &amp; Time Log</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Chronological audit of which user opened each feature, how long they stayed, and their online status.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-bold">
+                  {filteredInteractions.length} Sessions Matching
+                </span>
+                {selectedUserForHistory !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedUserForHistory('all')}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  >
+                    Clear User Filter
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Filter controls */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+              {/* Filter by User */}
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  Filter by Examinee
+                </label>
+                <select
+                  value={selectedUserForHistory}
+                  onChange={(e) => setSelectedUserForHistory(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-400"
+                >
+                  <option value="all">All Examinees ({usersList.length})</option>
+                  {usersList.map((u) => {
+                    const online = isUserOnline(u.uid, u.email);
+                    return (
+                      <option key={u.uid} value={u.uid}>
+                        {online ? '🟢 [ONLINE] ' : '⚪ '}
+                        {u.displayName || u.email}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Filter by Feature */}
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  Filter by Feature
+                </label>
+                <select
+                  value={selectedFeatureFilter}
+                  onChange={(e) => setSelectedFeatureFilter(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-amber-400"
+                >
+                  <option value="all">All Features</option>
+                  <option value="exam_portal">Exam Portal</option>
+                  <option value="exam_simulator">Exam Simulator</option>
+                  <option value="exam_results">Exam Results</option>
+                  <option value="scratchpad">Scratchpad Hub &amp; Inkpad</option>
+                  <option value="flashcards">Formula Cards &amp; Quizzes</option>
+                  <option value="performance">Performance Review</option>
+                  <option value="leaderboard">Examinee Leaderboard</option>
+                  <option value="announcements">Official Announcements</option>
+                  <option value="themes_3d">Themes &amp; 3D Environments</option>
+                  <option value="contact_admin">Message Admin &amp; Support</option>
+                  <option value="admin_panel">Admin Panel</option>
+                </select>
+              </div>
+
+              {/* Search text */}
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  Search Log
+                </label>
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    value={activitySearchTerm}
+                    onChange={(e) => setActivitySearchTerm(e.target.value)}
+                    placeholder="Search name, email, exam..."
+                    className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Interactions Timeline Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-900/80 text-slate-400 font-mono uppercase text-[10px] border-b border-slate-800">
+                  <tr>
+                    <th className="py-3 px-4">Examinee</th>
+                    <th className="py-3 px-4">Feature Interacted With</th>
+                    <th className="py-3 px-4">Duration Spent</th>
+                    <th className="py-3 px-4">Session Period</th>
+                    <th className="py-3 px-4">Context / Exam Details</th>
+                    <th className="py-3 px-4">Recorded</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800 font-sans">
+                  {filteredInteractions.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-10 text-center text-slate-400">
+                        No activity records found matching the selected filter.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredInteractions.map((item) => {
+                      const isOnline = isUserOnline(item.userId, item.userEmail);
+
+                      return (
+                        <tr key={item.id} className="hover:bg-slate-900/50 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              <span
+                                className={`w-2 h-2 rounded-full shrink-0 ${
+                                  isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'
+                                }`}
+                                title={isOnline ? 'Online now' : 'Offline'}
+                              />
+                              <div>
+                                <span className="font-bold text-white block">
+                                  {item.userDisplayName || 'Candidate'}
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-mono block">
+                                  {item.userEmail || item.userId}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="font-bold text-white text-xs block">
+                              {item.featureName}
+                            </span>
+                            <span className="text-[10px] font-mono text-slate-500">
+                              {item.featureId}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">
+                              <Clock className="w-3 h-3 text-cyan-400" />
+                              <span>{formatDurationDisplay(item.durationSeconds)}</span>
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 font-mono text-[11px] text-slate-400">
+                            <div>{new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</div>
+                            <div className="text-[10px] text-slate-500">to {new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</div>
+                          </td>
+                          <td className="py-3 px-4 text-xs text-slate-300">
+                            {item.metadata ? (
+                              <span className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-amber-300">
+                                {item.metadata}
+                              </span>
+                            ) : (
+                              <span className="text-slate-600 text-[11px] font-mono">—</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 font-mono text-[11px] text-slate-400 whitespace-nowrap">
+                            {formatTimeAgo(item.createdAt)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Official Broadcast Announcements Section */}

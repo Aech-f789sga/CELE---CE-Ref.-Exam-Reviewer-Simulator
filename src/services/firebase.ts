@@ -1464,3 +1464,210 @@ export async function updateUsernameWithWeeklyLimit(
 
   return { success: true, profile: finalProfile };
 }
+
+/* ==========================================================================
+   USER FEATURE INTERACTION & PRESENCE ANALYTICS (ADMIN ONLY)
+   ========================================================================== */
+
+export interface UserPresence {
+  userId: string;
+  email: string;
+  displayName: string;
+  lastSeenAt: string;
+  currentFeature: string;
+  isOnline: boolean;
+  userAgent?: string;
+}
+
+export interface FeatureInteraction {
+  id: string;
+  userId: string;
+  userEmail: string;
+  userDisplayName: string;
+  featureId: string;
+  featureName: string;
+  startTime: string;
+  endTime: string;
+  durationSeconds: number;
+  metadata?: string;
+  createdAt: string;
+}
+
+/**
+ * Updates a user's real-time online presence and currently active feature.
+ */
+export async function updateUserPresence(presence: {
+  userId: string;
+  email: string;
+  displayName: string;
+  currentFeature: string;
+  isOnline?: boolean;
+}): Promise<void> {
+  if (!presence.userId) return;
+  const now = new Date().toISOString();
+  const payload: UserPresence = {
+    userId: presence.userId,
+    email: presence.email || '',
+    displayName: presence.displayName || 'Candidate',
+    currentFeature: presence.currentFeature || 'Dashboard',
+    isOnline: presence.isOnline ?? true,
+    lastSeenAt: now,
+  };
+
+  try {
+    const docRef = doc(db, 'userPresence', presence.userId);
+    await setDoc(docRef, payload, { merge: true });
+  } catch {
+    // Non-blocking fallback
+  }
+
+  try {
+    localStorage.setItem(`ce_presence_${presence.userId}`, JSON.stringify(payload));
+  } catch {}
+}
+
+/**
+ * Sets user status to offline (e.g. on logout or before unload)
+ */
+export async function markUserOffline(userId: string): Promise<void> {
+  if (!userId) return;
+  try {
+    const docRef = doc(db, 'userPresence', userId);
+    await setDoc(docRef, { isOnline: false, lastSeenAt: new Date().toISOString() }, { merge: true });
+  } catch {}
+}
+
+/**
+ * Records a completed feature interaction (feature used and how long it was used)
+ */
+export async function recordFeatureInteraction(
+  interaction: Omit<FeatureInteraction, 'id' | 'createdAt'>
+): Promise<string> {
+  if (!interaction.userId || interaction.durationSeconds <= 0) return '';
+  const id = `int-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const now = new Date().toISOString();
+
+  const payload: FeatureInteraction = {
+    ...interaction,
+    id,
+    createdAt: now,
+  };
+
+  try {
+    const docRef = doc(db, 'featureInteractions', id);
+    await setDoc(docRef, payload);
+  } catch (err) {
+    console.warn('Failed to record feature interaction in Firestore, saving locally:', err);
+  }
+
+  // Persistent local cache backup
+  try {
+    const cachedStr = localStorage.getItem('ce_feature_interactions_cache') || '[]';
+    const list: FeatureInteraction[] = JSON.parse(cachedStr);
+    list.unshift(payload);
+    // Keep last 300 records in local cache
+    if (list.length > 300) list.length = 300;
+    localStorage.setItem('ce_feature_interactions_cache', JSON.stringify(list));
+  } catch {}
+
+  return id;
+}
+
+/**
+ * Fetches all feature interactions for analytics (Admin only)
+ */
+export async function fetchAllFeatureInteractions(limitCount = 500): Promise<FeatureInteraction[]> {
+  const interactionsMap = new Map<string, FeatureInteraction>();
+
+  // 1. Fetch from Firestore
+  try {
+    const colRef = collection(db, 'featureInteractions');
+    const q = query(colRef, limit(limitCount));
+    const snap = await getDocs(q);
+    snap.forEach((d) => {
+      const data = d.data() as FeatureInteraction;
+      if (data && data.id) {
+        interactionsMap.set(data.id, data);
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching feature interactions from Firestore:', err);
+  }
+
+  // 2. Merge local cache
+  try {
+    const cachedStr = localStorage.getItem('ce_feature_interactions_cache');
+    if (cachedStr) {
+      const list: FeatureInteraction[] = JSON.parse(cachedStr);
+      list.forEach((item) => {
+        if (item && item.id && !interactionsMap.has(item.id)) {
+          interactionsMap.set(item.id, item);
+        }
+      });
+    }
+  } catch {}
+
+  const result = Array.from(interactionsMap.values());
+  return result.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+}
+
+/**
+ * Fetches all user presences (Admin only)
+ */
+export async function fetchAllUserPresence(): Promise<UserPresence[]> {
+  const presencesMap = new Map<string, UserPresence>();
+
+  try {
+    const colRef = collection(db, 'userPresence');
+    const snap = await getDocs(colRef);
+    snap.forEach((d) => {
+      const data = d.data() as UserPresence;
+      if (data && data.userId) {
+        presencesMap.set(data.userId, data);
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching user presence:', err);
+  }
+
+  return Array.from(presencesMap.values());
+}
+
+/**
+ * Subscribes to real-time user presences
+ */
+export function subscribeUserPresence(callback: (presences: UserPresence[]) => void): () => void {
+  try {
+    const colRef = collection(db, 'userPresence');
+    return onSnapshot(
+      colRef,
+      (snapshot) => {
+        const list: UserPresence[] = [];
+        snapshot.forEach((d) => {
+          const data = d.data() as UserPresence;
+          if (data && data.userId) {
+            list.push(data);
+          }
+        });
+        callback(list);
+      },
+      (err) => {
+        console.warn('Real-time presence subscription warning:', err);
+      }
+    );
+  } catch {
+    return () => {};
+  }
+}
+
+/**
+ * Helper to compute whether a user is online right now based on heartbeat timestamp.
+ * Standard online threshold: lastSeenAt within the past 2 minutes.
+ */
+export function isUserCurrentlyOnline(presence?: UserPresence | null): boolean {
+  if (!presence) return false;
+  if (!presence.isOnline) return false;
+  if (!presence.lastSeenAt) return false;
+  const diffMs = Date.now() - new Date(presence.lastSeenAt).getTime();
+  return diffMs <= 2 * 60 * 1000; // 2 minutes threshold
+}
