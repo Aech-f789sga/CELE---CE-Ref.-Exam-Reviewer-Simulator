@@ -28,6 +28,8 @@ import {
   BookMarked,
   Lock,
   Heart,
+  Award,
+  Bookmark,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -462,6 +464,31 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
         </div>
       )}
 
+      {/* reference indicator */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border px-3.5 py-2 text-[12px] shadow-sm"
+        style={{
+          backgroundColor: withAlpha(t.accent, 0.08),
+          borderColor: withAlpha(t.accent, 0.28),
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <div
+            className="flex h-6 w-6 items-center justify-center rounded-lg"
+            style={{ backgroundColor: withAlpha(t.accent, 0.2), color: t.accent }}
+          >
+            <Award className="h-3.5 w-3.5" />
+          </div>
+          <span className="text-slate-400 font-medium">Reference for Formula Cards:</span>
+          <span className="font-bold tracking-tight" style={{ color: t.accent }}>
+            ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024
+          </span>
+        </div>
+        <span className="text-[11px] text-slate-400 hidden sm:inline">
+          Civil Engineering Licensure Examination Deck
+        </span>
+      </div>
+
       {/* deck switcher ---------------------------------------------------- */}
       <div className="flex flex-wrap items-center gap-2">
         <Chip active={cat === 'all'} onClick={() => { setCat('all'); setShuffled(null); setIndex(0); }} t={t} count={deck.cards.length}>
@@ -625,14 +652,24 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
                   </div>
 
                   {activeUser ? (
-                    <div className="relative flex items-center justify-center gap-2 text-[11px]" style={{ color: t.textMuted }}>
-                      <MousePointerClick className="h-3.5 w-3.5" />
-                      Click or press <kbd className="rounded border px-1.5 py-0.5 text-[10px]" style={{ borderColor: withAlpha(t.border, 0.7) }}>Space</kbd> to reveal the formula
+                    <div className="relative flex flex-col items-center gap-1.5">
+                      <div className="flex items-center justify-center gap-2 text-[11px]" style={{ color: t.textMuted }}>
+                        <MousePointerClick className="h-3.5 w-3.5" />
+                        Click or press <kbd className="rounded border px-1.5 py-0.5 text-[10px]" style={{ borderColor: withAlpha(t.border, 0.7) }}>Space</kbd> to reveal the formula
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-medium">
+                        Reference: <span className="text-slate-300 font-semibold">ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024</span>
+                      </div>
                     </div>
                   ) : (
-                    <div className="relative mx-auto flex items-center justify-center gap-2 text-[11px] font-semibold text-amber-300 bg-amber-500/15 py-1.5 px-4 rounded-full border border-amber-500/40 shadow-sm">
-                      <Lock className="h-3.5 w-3.5" />
-                      Click to sign in and reveal formula
+                    <div className="relative mx-auto flex flex-col items-center gap-1.5">
+                      <div className="flex items-center justify-center gap-2 text-[11px] font-semibold text-amber-300 bg-amber-500/15 py-1.5 px-4 rounded-full border border-amber-500/40 shadow-sm">
+                        <Lock className="h-3.5 w-3.5" />
+                        Click to sign in and reveal formula
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-medium">
+                        Reference: <span className="text-slate-300 font-semibold">ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024</span>
+                      </div>
                     </div>
                   )}
                 </button>
@@ -648,9 +685,14 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
                   }}
                 >
                   <div className="flex items-center justify-between gap-2 border-b px-4 py-2.5" style={{ borderColor: withAlpha(t.border, 0.45) }}>
-                    <span className="truncate text-[11px] font-semibold" style={{ color: t.textPrimary }}>
-                      {card.title}
-                    </span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="truncate text-[11px] font-semibold" style={{ color: t.textPrimary }}>
+                        {card.title}
+                      </span>
+                      <span className="hidden md:inline rounded border px-1.5 py-0.5 text-[9px] font-medium text-slate-400" style={{ borderColor: withAlpha(t.border, 0.5) }}>
+                        Ref: ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024
+                      </span>
+                    </div>
                     <div className="flex shrink-0 items-center gap-1">
                       <button
                         type="button"
@@ -757,8 +799,11 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
               onError={(e) => onImgError(e, card.img)}
               className="mx-auto max-h-[86vh] w-auto max-w-full rounded-2xl bg-white object-contain shadow-2xl"
             />
-            <div className="mt-3 text-[12px] text-white/70">
-              {deck.categories[card.cat]?.name ?? card.cat} · {card.section} · {card.title}
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[12px] text-white/70">
+              <span>{deck.categories[card.cat]?.name ?? card.cat} · {card.section} · {card.title}</span>
+              <span className="rounded border border-white/20 bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-white/90">
+                Ref: ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024
+              </span>
             </div>
           </div>
         </div>
@@ -775,9 +820,14 @@ const DeckView: React.FC<{ deck: FormulaDeck; base: string; t: ThemeConfig }> = 
             <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: withAlpha(t.border, 0.45) }}>
               <div className="flex items-center gap-2">
                 <BookMarked className="h-4 w-4" style={{ color: t.accent }} />
-                <span className="text-sm font-semibold" style={{ color: t.textPrimary }}>
-                  Browse sections
-                </span>
+                <div>
+                  <span className="text-sm font-semibold block leading-tight" style={{ color: t.textPrimary }}>
+                    Browse sections
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    Ref: ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024
+                  </span>
+                </div>
               </div>
               <button type="button" onClick={() => setBrowseOpen(false)} className="rounded-lg p-1.5 hover:opacity-70" style={{ color: t.textMuted }} aria-label="Close">
                 <X className="h-4 w-4" />
@@ -1184,6 +1234,30 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
         </div>
       )}
 
+      {/* reference indicator */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border px-3.5 py-2 text-[12px] shadow-sm"
+        style={{
+          backgroundColor: 'rgba(245, 158, 11, 0.08)',
+          borderColor: 'rgba(245, 158, 11, 0.28)',
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <div
+            className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400"
+          >
+            <Bookmark className="h-3.5 w-3.5" />
+          </div>
+          <span className="text-slate-400 font-medium">Reference for Terms:</span>
+          <span className="font-bold tracking-tight text-amber-300">
+            ENGINEEREYA&apos;S VLOG
+          </span>
+        </div>
+        <span className="text-[11px] text-slate-400 hidden sm:inline">
+          Civil Engineering Terms &amp; Definitions
+        </span>
+      </div>
+
       {/* mode + deck -------------------------------------------------------- */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1 rounded-full border p-1" style={{ borderColor: withAlpha(t.border, 0.6) }}>
@@ -1269,6 +1343,9 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
               <div className="flex items-center justify-between text-[11px]" style={{ color: t.textMuted }}>
                 <span className="rounded-full border px-2 py-0.5" style={{ borderColor: withAlpha(t.border, 0.7) }}>
                   {book.cats.find((c) => c.id === current.cat)?.name ?? current.cat} · {current.sec}
+                </span>
+                <span className="hidden sm:inline text-[10px] text-amber-400 font-semibold">
+                  Ref: ENGINEEREYA&apos;S VLOG
                 </span>
                 <span className="tabular-nums">
                   {pos + 1} / {order.length}
@@ -1440,8 +1517,9 @@ const QuizView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t }) => 
                             {text}
                           </p>
                         </div>
-                        <div className="text-center text-[11px]" style={{ color: t.textMuted }}>
-                          {face === 0 ? 'Click or Space to flip' : qItem.sec}
+                        <div className="flex items-center justify-between text-[11px] border-t pt-2" style={{ borderColor: withAlpha(t.border, 0.3), color: t.textMuted }}>
+                          <span className="text-[10px] text-amber-400 font-medium">Ref: ENGINEEREYA&apos;S VLOG</span>
+                          <span>{face === 0 ? 'Click or Space to flip' : qItem.sec}</span>
                         </div>
                       </button>
                     );
@@ -1515,6 +1593,30 @@ const GlossaryView: React.FC<{ book: TermBook; t: ThemeConfig }> = ({ book, t })
 
   return (
     <div className="space-y-3">
+      {/* reference indicator */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border px-3.5 py-2 text-[12px] shadow-sm"
+        style={{
+          backgroundColor: 'rgba(245, 158, 11, 0.08)',
+          borderColor: 'rgba(245, 158, 11, 0.28)',
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <div
+            className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400"
+          >
+            <Bookmark className="h-3.5 w-3.5" />
+          </div>
+          <span className="text-slate-400 font-medium">Reference for Terms:</span>
+          <span className="font-bold tracking-tight text-amber-300">
+            ENGINEEREYA&apos;S VLOG
+          </span>
+        </div>
+        <span className="text-[11px] text-slate-400 hidden sm:inline">
+          Civil Engineering Comprehensive Glossary
+        </span>
+      </div>
+
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative min-w-[220px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: t.textMuted }} />
@@ -1683,6 +1785,34 @@ export const FormulaCardsHub: React.FC<FormulaCardsHubProps> = ({ onOpenDonation
                   {deck ? `${deck.cards.length} formula cards` : 'Formula cards'} ·{' '}
                   {book ? `${book.items.length} terms` : 'terms'}
                 </p>
+                <div className="mt-2.5 flex flex-wrap items-center gap-2 text-[11px]">
+                  <div
+                    className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 shadow-sm"
+                    style={{
+                      backgroundColor: withAlpha(t.accent, 0.1),
+                      borderColor: withAlpha(t.accent, 0.35),
+                      color: t.accent,
+                    }}
+                    title="Formula Cards Reference"
+                  >
+                    <Award className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-semibold text-slate-400">Formula Cards Ref:</span>
+                    <span className="font-bold tracking-tight">ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024</span>
+                  </div>
+                  <div
+                    className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 shadow-sm"
+                    style={{
+                      backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                      borderColor: 'rgba(245, 158, 11, 0.35)',
+                      color: '#fbbf24',
+                    }}
+                    title="Terms Reference"
+                  >
+                    <Bookmark className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-semibold text-slate-400">Terms Ref:</span>
+                    <span className="font-bold tracking-tight">ENGINEEREYA&apos;S VLOG</span>
+                  </div>
+                </div>
               </div>
             </div>
 

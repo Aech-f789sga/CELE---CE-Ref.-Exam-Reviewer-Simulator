@@ -365,7 +365,7 @@ export const FlashcardsAndQuizHub: React.FC = () => {
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span
                 className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider border"
                 style={{
@@ -374,10 +374,10 @@ export const FlashcardsAndQuizHub: React.FC = () => {
                   color: themeConfig.accent,
                 }}
               >
-                Engineereya&apos;s Vlog Special
+                Formula Cards Ref: ENGR. ALEAH PEARL JAVIER ONCE, RCE 2024
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
-                Source: Engineereya Review Vlogs
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-mono font-bold">
+                Terms Ref: ENGINEEREYA&apos;S VLOG
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
