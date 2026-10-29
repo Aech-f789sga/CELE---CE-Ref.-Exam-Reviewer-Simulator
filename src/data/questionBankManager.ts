@@ -1,4 +1,4 @@
-import { Question, SubjectArea, ExamMonth } from '../types/exam';
+import { Question, SubjectArea, ExamMonth, ReferenceSource } from '../types/exam';
 import { MSTC_QUESTIONS } from './questionBanks/mstcQuestions';
 import { HPGE_QUESTIONS } from './questionBanks/hpgeQuestions';
 import { PSAD_QUESTIONS } from './questionBanks/psadQuestions';
@@ -22,13 +22,19 @@ import { HPGE_NOV_2019_QUESTIONS } from './questionBanks/hpge/nov2019Questions';
 import { HGE_MAY_2019_QUESTIONS } from './questionBanks/hpge/may2019Questions';
 import { PSAD_MAY_2019_QUESTIONS } from './questionBanks/psad/may2019Questions';
 import { MSTE_NOV2019_QUESTIONS } from './questionBanks/mstc/nov2019Questions';
+import { BESA_PSAD_NOV2025_QUESTIONS } from './questionBanks/psad/nov2025BesaQuestions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2025 - i); // 2025 down to 2011
 export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
 
 /**
  * Registry of available exam sets that contain actual verified question data.
- * Currently, data is provided for:
+ *
+ * Every entry names the review reference it was transcribed from, because the
+ * two references do not always cover the same sittings — and where they do
+ * (PSAD November 2025) the question sets are completely different papers.
+ *
+ * Gillesania (PRC compilations, printed keys):
  * 1. MSTC, HPGE, and PSAD of April 2024
  * 2. MSTC of November 2024 (66 Items)
  * 3. HPGE of November 2024 (46 Items)
@@ -47,51 +53,70 @@ export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
  * 16. PSAD (SEC) of May 2019 (69 Items)
  * 17. MSTC (MSTE) of November 2019 (44 Items)
  * 18. HPGE (HGE) of May 2019 (47 Items)
+ *
+ * Besavilla (solved-problem review book, reveal-and-self-mark):
+ * 19. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
+ *     plus 6 conceptual multiple-choice items)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
   month: ExamMonth;
   subjects: SubjectArea[];
+  source: ReferenceSource;
 }[] = [
   {
     year: 2024,
     month: 'April',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
   },
   {
     year: 2024,
     month: 'November',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
   },
   {
     year: 2025,
     month: 'April',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
   },
   {
     year: 2025,
     month: 'November',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
   },
   {
     year: 2022,
     month: 'May',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
   },
   {
     year: 2021,
     month: 'November',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
   },
   {
     year: 2019,
     month: 'May',
     subjects: ['MSTC', 'PSAD', 'HPGE'],
+    source: 'Gillesania',
   },
   {
     year: 2019,
     month: 'November',
     subjects: ['HPGE', 'MSTC'],
+    source: 'Gillesania',
+  },
+  {
+    year: 2025,
+    month: 'November',
+    subjects: ['PSAD'],
+    source: 'Besavilla',
   },
 ];
 
@@ -101,19 +126,29 @@ export const AVAILABLE_EXAM_SETS: {
 export function hasExamData(
   subject: SubjectArea,
   year: number,
-  month: ExamMonth
+  month: ExamMonth,
+  source: ReferenceSource = 'Gillesania'
 ): boolean {
   return AVAILABLE_EXAM_SETS.some(
-    (set) => set.year === year && set.month === month && set.subjects.includes(subject)
+    (set) =>
+      set.year === year &&
+      set.month === month &&
+      set.source === source &&
+      set.subjects.includes(subject)
   );
 }
 
 /**
  * Check if a specific year has any data available under any month/subject.
  */
-export function isYearAvailable(year: number, subject?: SubjectArea): boolean {
+export function isYearAvailable(
+  year: number,
+  subject?: SubjectArea,
+  source: ReferenceSource = 'Gillesania'
+): boolean {
   return AVAILABLE_EXAM_SETS.some((set) => {
     if (set.year !== year) return false;
+    if (set.source !== source) return false;
     if (subject && !set.subjects.includes(subject)) return false;
     return true;
   });
@@ -125,19 +160,58 @@ export function isYearAvailable(year: number, subject?: SubjectArea): boolean {
 export function isMonthAvailable(
   month: ExamMonth,
   year: number,
-  subject?: SubjectArea
+  subject?: SubjectArea,
+  source: ReferenceSource = 'Gillesania'
 ): boolean {
   return AVAILABLE_EXAM_SETS.some((set) => {
     if (set.year !== year || set.month !== month) return false;
+    if (set.source !== source) return false;
     if (subject && !set.subjects.includes(subject)) return false;
     return true;
   });
 }
 
 /**
+ * How many sittings a reference holds for a subject — shown on the source
+ * toggle so it is obvious that Besavilla currently only carries one paper.
+ */
+export function countSetsForSource(source: ReferenceSource, subject?: SubjectArea): number {
+  return AVAILABLE_EXAM_SETS.filter(
+    (set) => set.source === source && (!subject || set.subjects.includes(subject))
+  ).length;
+}
+
+/**
+ * First sitting available for a subject under a reference, used to snap the
+ * year/month selectors when the learner flips the reference toggle.
+ */
+export function firstAvailableSet(
+  source: ReferenceSource,
+  subject: SubjectArea
+): { year: number; month: ExamMonth } | null {
+  const matches = AVAILABLE_EXAM_SETS.filter(
+    (set) => set.source === source && set.subjects.includes(subject)
+  ).sort((a, b) => b.year - a.year || ALL_MONTHS.indexOf(a.month) - ALL_MONTHS.indexOf(b.month));
+  if (!matches.length) return null;
+  return { year: matches[0].year, month: matches[0].month };
+}
+
+/**
  * Key mapping for question sets based on subject, year, and month.
  */
-function getBaseQuestions(subject: SubjectArea, year: number, month: ExamMonth): Question[] {
+function getBaseQuestions(
+  subject: SubjectArea,
+  year: number,
+  month: ExamMonth,
+  source: ReferenceSource
+): Question[] {
+  if (source === 'Besavilla') {
+    if (subject === 'PSAD' && year === 2025 && month === 'November') {
+      return BESA_PSAD_NOV2025_QUESTIONS;
+    }
+    return [];
+  }
+
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
   }
@@ -217,28 +291,36 @@ function getBaseQuestions(subject: SubjectArea, year: number, month: ExamMonth):
 export function getQuestionsForExam(
   subject: SubjectArea,
   year: number,
-  month: ExamMonth
+  month: ExamMonth,
+  source: ReferenceSource = 'Gillesania'
 ): Question[] {
   // Only return questions if data actually exists for this exam set
-  if (!hasExamData(subject, year, month)) {
+  if (!hasExamData(subject, year, month, source)) {
     return [];
   }
 
-  const baseList = getBaseQuestions(subject, year, month);
-  
+  const baseList = getBaseQuestions(subject, year, month, source);
+  const sourceSlug = source === 'Besavilla' ? 'besa' : 'gil';
+
   return baseList.map((q, idx) => ({
     ...q,
-    id: `${subject.toLowerCase()}-${year}-${month.toLowerCase()}-q${idx + 1}`,
+    id: `${subject.toLowerCase()}-${year}-${month.toLowerCase()}-${sourceSlug}-q${idx + 1}`,
     year,
     month,
+    referenceSource: source,
   }));
 }
 
 /**
  * Get question bank statistics for a given subject (defaults to latest available set)
  */
-export function getSubjectStats(subject: SubjectArea, year: number = 2024, month: ExamMonth = 'April') {
-  const list = getBaseQuestions(subject, year, month);
+export function getSubjectStats(
+  subject: SubjectArea,
+  year: number = 2024,
+  month: ExamMonth = 'April',
+  source: ReferenceSource = 'Gillesania'
+) {
+  const list = getBaseQuestions(subject, year, month, source);
   const withFigures = list.filter((q) => !!q.figureSvg).length;
   const pagesCovered = Array.from(new Set(list.map((q) => q.pageNumber))).sort((a, b) => a - b);
   return {
@@ -246,4 +328,20 @@ export function getSubjectStats(subject: SubjectArea, year: number = 2024, month
     withFigures,
     pagesCovered,
   };
+}
+
+/**
+ * True when a sitting is made of reveal-and-self-mark worked examples rather
+ * than printed multiple-choice items. Used to steer the learner to Interactive
+ * Study mode, which is the only mode that can score those items.
+ */
+export function isWorkedSolutionSet(
+  subject: SubjectArea,
+  year: number,
+  month: ExamMonth,
+  source: ReferenceSource = 'Gillesania'
+): boolean {
+  if (!hasExamData(subject, year, month, source)) return false;
+  const list = getBaseQuestions(subject, year, month, source);
+  return list.length > 0 && list.every((q) => q.workedSolution);
 }

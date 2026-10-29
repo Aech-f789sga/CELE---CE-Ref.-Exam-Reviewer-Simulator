@@ -2,6 +2,38 @@ export type SubjectArea = 'MSTC' | 'HPGE' | 'PSAD';
 
 export type ExamMonth = 'May' | 'November' | 'April' | 'October';
 
+/**
+ * Which review reference a question set was transcribed from.
+ *
+ * - `Gillesania` — the PRC board-examination compilations (printed A–D choices
+ *   plus a printed answer key at the back of the booklet).
+ * - `Besavilla` — the solved-problem review books, where each "situation" is
+ *   split into a/b/c sub-parts and the worked solution is printed directly
+ *   underneath. Those items carry no choices, so they are answered by
+ *   self-marking after the scanned solution is revealed.
+ */
+export type ReferenceSource = 'Gillesania' | 'Besavilla';
+
+export const REFERENCE_SOURCES: ReferenceSource[] = ['Gillesania', 'Besavilla'];
+
+export const REFERENCE_SOURCE_META: Record<
+  ReferenceSource,
+  { label: string; author: string; blurb: string; badge: string }
+> = {
+  Gillesania: {
+    label: 'Gillesania',
+    author: 'Diego Inocencio T. Gillesania',
+    blurb: 'PRC board exam compilations with printed answer keys',
+    badge: 'Vol 4–6',
+  },
+  Besavilla: {
+    label: 'Besavilla',
+    author: 'Venancio I. Besavilla Jr.',
+    blurb: 'Solved-problem review book — reveal & self-mark',
+    badge: 'Solved Problems',
+  },
+};
+
 export type TimerMode = 'exam_timer' | 'stopwatch' | 'no_limit';
 
 export type ExamMode = 'interactive' | 'non_interactive';
@@ -106,9 +138,27 @@ export interface Question {
   figureCaption?: string;
   figureWidth?: number;
   options: QuestionOption[];
+  /**
+   * The printed key. Worked-solution items (Besavilla) have no choices, so the
+   * learner self-marks: {@link SELF_MARK_SOLVED} records "I solved it" and
+   * {@link SELF_MARK_MISSED} records "I missed it". Both are stored in the same
+   * answer map so scoring, the palette and paused sessions need no extra state.
+   */
   correctAnswer: 'A' | 'B' | 'C' | 'D';
+  /**
+   * `true` for Besavilla-style worked examples: no A–D choices, the scanned
+   * worked solution is revealed on demand and the learner marks themselves.
+   */
+  workedSolution?: boolean;
+  /** Which review reference the item was transcribed from. */
+  referenceSource?: ReferenceSource;
   solution: QuestionSolution;
 }
+
+/** Answer label written when the learner reports solving a worked item. */
+export const SELF_MARK_SOLVED = 'A';
+/** Answer label written when the learner reports missing a worked item. */
+export const SELF_MARK_MISSED = 'B';
 
 export interface ExamAttempt {
   id: string;
@@ -116,6 +166,8 @@ export interface ExamAttempt {
   subject: SubjectArea;
   year: number;
   month: ExamMonth;
+  /** Review reference the paper came from (absent on pre-Besavilla attempts). */
+  source?: ReferenceSource;
   date: string; // ISO string
   timeSpentSeconds: number;
   timerMode: TimerMode;
@@ -144,6 +196,8 @@ export interface PausedExamSession {
   subject: SubjectArea;
   year: number;
   month: ExamMonth;
+  /** Review reference the paused paper came from (defaults to Gillesania). */
+  source?: ReferenceSource;
   timerMode: 'stopwatch' | 'no_limit';
   examMode: 'interactive';
   currentIndex: number;

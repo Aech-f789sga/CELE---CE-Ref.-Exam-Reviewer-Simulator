@@ -7,16 +7,23 @@ import {
   ExamMode,
   Question,
   ExamAttempt,
+  ReferenceSource,
   SUBJECT_CONFIGS,
   PausedExamSession,
 } from './types/exam';
-import { getQuestionsForExam, hasExamData } from './data/questionBankManager';
+import {
+  getQuestionsForExam,
+  hasExamData,
+  firstAvailableSet,
+  isWorkedSolutionSet,
+} from './data/questionBankManager';
 import {
   getStoredAttempts,
   saveAttempt,
   savePausedSession,
   deletePausedSession,
   getSessionKey,
+  getExamStorageBase,
 } from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { SubjectSelector } from './components/SubjectSelector';
@@ -141,6 +148,7 @@ function MainApp() {
   const activeUser = profile || user;
 
   // Selection states
+  const [selectedSource, setSelectedSource] = useState<ReferenceSource>('Gillesania');
   const [selectedSubject, setSelectedSubject] = useState<SubjectArea>('MSTC'); // Default MSTC first
   const [selectedYear, setSelectedYear] = useState<number>(2024);
   const [selectedMonth, setSelectedMonth] = useState<ExamMonth>('April');
@@ -200,10 +208,26 @@ function MainApp() {
     setSelectedSubject(newSub);
     const config = SUBJECT_CONFIGS[newSub];
     setCustomMinutes(config.defaultMinutes);
-    // If current selected month has no data for the newly selected subject, adjust to an available month
-    if (!hasExamData(newSub, selectedYear, selectedMonth)) {
-      if (hasExamData(newSub, selectedYear, 'April')) {
-        setSelectedMonth('April');
+    // If the current sitting has no data for the newly selected subject, snap to
+    // the newest sitting that does.
+    if (!hasExamData(newSub, selectedYear, selectedMonth, selectedSource)) {
+      const fallback = firstAvailableSet(selectedSource, newSub);
+      if (fallback) {
+        setSelectedYear(fallback.year);
+        setSelectedMonth(fallback.month);
+      }
+    }
+  };
+
+  // Switching review reference changes which sittings exist, so re-snap the
+  // year/month selectors onto the newest sitting the new reference covers.
+  const handleSourceChange = (newSource: ReferenceSource) => {
+    setSelectedSource(newSource);
+    if (!hasExamData(selectedSubject, selectedYear, selectedMonth, newSource)) {
+      const fallback = firstAvailableSet(newSource, selectedSubject);
+      if (fallback) {
+        setSelectedYear(fallback.year);
+        setSelectedMonth(fallback.month);
       }
     }
   };
@@ -214,7 +238,12 @@ function MainApp() {
       return;
     }
     setResumedSession(null);
-    const qList = getQuestionsForExam(selectedSubject, selectedYear, selectedMonth);
+    // Worked-solution papers have no printed choices, so they can only be
+    // scored in Interactive Study mode.
+    if (isWorkedSolutionSet(selectedSubject, selectedYear, selectedMonth, selectedSource)) {
+      setExamMode('interactive');
+    }
+    const qList = getQuestionsForExam(selectedSubject, selectedYear, selectedMonth, selectedSource);
     setActiveQuestions(qList);
     setIsExamRunning(true);
     setIsExamFinished(false);
@@ -225,13 +254,15 @@ function MainApp() {
       openAuthModal('Please sign in or create an account first to resume your exam session.');
       return;
     }
+    const sessionSource = session.source ?? 'Gillesania';
+    setSelectedSource(sessionSource);
     setSelectedSubject(session.subject);
     setSelectedYear(session.year);
     setSelectedMonth(session.month);
     setTimerMode(session.timerMode);
     setExamMode('interactive');
     setResumedSession(session);
-    const qList = getQuestionsForExam(session.subject, session.year, session.month);
+    const qList = getQuestionsForExam(session.subject, session.year, session.month, sessionSource);
     setActiveQuestions(qList);
     setIsExamRunning(true);
     setIsExamFinished(false);
@@ -243,8 +274,8 @@ function MainApp() {
     flaggedQuestions: Record<string, boolean>;
     secondsElapsed: number;
   }) => {
-    const scratchpadId = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}`;
-    const storageKeyPrefix = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}_`;
+    const scratchpadId = getExamStorageBase(selectedSubject, selectedYear, selectedMonth, selectedSource);
+    const storageKeyPrefix = `${scratchpadId}_`;
 
     syncExamScratchpadRecord({
       subject: selectedSubject,
@@ -254,10 +285,11 @@ function MainApp() {
     }).catch((e) => console.warn('Failed to sync scratchpad record on pause in App:', e));
 
     const sessionToSave: PausedExamSession = {
-      id: getSessionKey(selectedSubject, selectedYear, selectedMonth),
+      id: getSessionKey(selectedSubject, selectedYear, selectedMonth, selectedSource),
       subject: selectedSubject,
       year: selectedYear,
       month: selectedMonth,
+      source: selectedSource,
       timerMode: timerMode === 'stopwatch' ? 'stopwatch' : 'no_limit',
       examMode: 'interactive',
       currentIndex: state.currentIndex,
@@ -289,8 +321,8 @@ function MainApp() {
     const ratingPercentage = Math.round((correctCount / activeQuestions.length) * 10000) / 100;
     const passedArea = ratingPercentage >= 50.0;
     const attemptId = `attempt-${Date.now()}`;
-    const scratchpadId = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}`;
-    const storageKeyPrefix = `exam_${selectedSubject}_${selectedYear}_${selectedMonth}_`;
+    const scratchpadId = getExamStorageBase(selectedSubject, selectedYear, selectedMonth, selectedSource);
+    const storageKeyPrefix = `${scratchpadId}_`;
 
     syncExamScratchpadRecord({
       subject: selectedSubject,
@@ -309,6 +341,7 @@ function MainApp() {
       subject: selectedSubject,
       year: selectedYear,
       month: selectedMonth,
+      source: selectedSource,
       date: new Date().toISOString(),
       timeSpentSeconds,
       timerMode,
@@ -342,7 +375,7 @@ function MainApp() {
       }).catch((e) => console.warn('Cloud attempt record fallback:', e));
     }
 
-    deletePausedSession(selectedSubject, selectedYear, selectedMonth);
+    deletePausedSession(selectedSubject, selectedYear, selectedMonth, selectedSource);
     setResumedSession(null);
     setLastUserAnswers(userAnswers);
     setLastTimeSpent(timeSpentSeconds);
@@ -475,6 +508,7 @@ function MainApp() {
               subject={selectedSubject}
               year={selectedYear}
               month={selectedMonth}
+              source={selectedSource}
               questions={activeQuestions}
               timerMode={timerMode}
               totalDurationSeconds={totalDurationSeconds}
@@ -495,6 +529,7 @@ function MainApp() {
               subject={selectedSubject}
               year={selectedYear}
               month={selectedMonth}
+              source={selectedSource}
               questions={activeQuestions}
               userAnswers={lastUserAnswers}
               timeSpentSeconds={lastTimeSpent}
@@ -548,6 +583,8 @@ function MainApp() {
                 <SubjectSelector
                   selectedSubject={selectedSubject}
                   onSubjectChange={handleSubjectChange}
+                  selectedSource={selectedSource}
+                  onSourceChange={handleSourceChange}
                   selectedYear={selectedYear}
                   onYearChange={setSelectedYear}
                   selectedMonth={selectedMonth}

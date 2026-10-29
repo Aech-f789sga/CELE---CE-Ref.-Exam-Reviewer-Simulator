@@ -8,17 +8,41 @@ import {
   PairedCycle,
   SubjectArea,
   ExamMonth,
+  ReferenceSource,
 } from '../types/exam';
 
 const ATTEMPTS_STORAGE_KEY = 'ce_board_attempts_v1';
 const PAUSED_SESSIONS_STORAGE_KEY = 'ce_board_paused_sessions_v1';
 
+/**
+ * Paused sessions are keyed by sitting *and* review reference, because the same
+ * sitting can exist in both references (PSAD November 2025 is in Gillesania and
+ * Besavilla) and they are completely different papers. The Gillesania key keeps
+ * its historical shape so existing saved sessions still resolve.
+ */
 export function getSessionKey(
   subject: string,
   year: number | string,
-  month: string
+  month: string,
+  source: ReferenceSource = 'Gillesania'
 ): string {
-  return `paused-${subject}-${year}-${month}`;
+  const base = `paused-${subject}-${year}-${month}`;
+  return source === 'Besavilla' ? `${base}-besa` : base;
+}
+
+/**
+ * Base id used for the exam scratchpad document and its per-page storage keys.
+ * The Gillesania form is unchanged so existing rough sheets keep resolving;
+ * Besavilla papers get their own namespace because PSAD November 2025 exists in
+ * both references.
+ */
+export function getExamStorageBase(
+  subject: SubjectArea | string,
+  year: number,
+  month: ExamMonth | string,
+  source: ReferenceSource = 'Gillesania'
+): string {
+  return `exam_${subject}_${year}_${month}${source === 'Besavilla' ? '_besa' : ''}`;
 }
 
 export function getStoredAttempts(): ExamAttempt[] {
@@ -208,11 +232,16 @@ export function getAllPausedSessions(): PausedExamSession[] {
 export function getPausedSession(
   subject: SubjectArea,
   year: number,
-  month: ExamMonth
+  month: ExamMonth,
+  source: ReferenceSource = 'Gillesania'
 ): PausedExamSession | null {
   const sessions = getAllPausedSessions();
   const found = sessions.find(
-    (s) => s.subject === subject && Number(s.year) === Number(year) && s.month === month
+    (s) =>
+      s.subject === subject &&
+      Number(s.year) === Number(year) &&
+      s.month === month &&
+      (s.source ?? 'Gillesania') === source
   );
   return found || null;
 }
@@ -232,12 +261,13 @@ export function savePausedSession(session: PausedExamSession): void {
 export function deletePausedSession(
   idOrSubject: string | SubjectArea,
   year?: number,
-  month?: ExamMonth
+  month?: ExamMonth,
+  source: ReferenceSource = 'Gillesania'
 ): void {
   try {
     const targetId =
       year !== undefined && month !== undefined
-        ? getSessionKey(idOrSubject, year, month)
+        ? getSessionKey(idOrSubject, year, month, source)
         : idOrSubject;
 
     const sessions = getAllPausedSessions();
@@ -249,7 +279,8 @@ export function deletePausedSession(
           month !== undefined &&
           s.subject === idOrSubject &&
           Number(s.year) === Number(year) &&
-          s.month === month
+          s.month === month &&
+          (s.source ?? 'Gillesania') === source
         )
     );
     localStorage.setItem(PAUSED_SESSIONS_STORAGE_KEY, JSON.stringify(updated));

@@ -3,6 +3,7 @@ import {
   Question,
   SubjectArea,
   ExamMonth,
+  ReferenceSource,
   SUBJECT_CONFIGS,
 } from '../types/exam';
 import confetti from 'canvas-confetti';
@@ -28,6 +29,7 @@ import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
 import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
+import { getExamStorageBase } from '../utils/storage';
 import {
   exportScratchpadBundle,
   generateScratchpadSvg,
@@ -39,6 +41,8 @@ interface ExamResultsProps {
   subject: SubjectArea;
   year: number;
   month: ExamMonth;
+  /** Review reference the paper came from; namespaces the scratchpad. */
+  source?: ReferenceSource;
   questions: Question[];
   userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
   timeSpentSeconds: number;
@@ -52,6 +56,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   subject,
   year,
   month,
+  source = 'Gillesania',
   questions,
   userAnswers,
   timeSpentSeconds,
@@ -65,8 +70,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
-  const scratchpadPrefix = `exam_${subject}_${year}_${month}_`;
-  const scratchpadDocId = `exam_${subject}_${year}_${month}`;
+  const scratchpadDocId = getExamStorageBase(subject, year, month, source);
+  const scratchpadPrefix = `${scratchpadDocId}_`;
 
   /**
    * Booklet page span that the answer key and worked solutions were printed on.
@@ -217,14 +222,21 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </h1>
 
             <p className="text-slate-300 text-sm max-w-xl">
-              Completed in {formatTime(timeSpentSeconds)}. Review your answers against the official{' '}
-              <strong className="text-amber-400">Answer Key</strong>
-              {solutionPageRange && (
+              Completed in {formatTime(timeSpentSeconds)}.{' '}
+              {questions.some((q) => q.workedSolution) ? (
                 <>
-                  {' '}(booklet p. {solutionPageRange})
+                  Every worked item below is scored from your own self-mark against the
+                  booklet&apos;s <strong className="text-amber-400">printed solution</strong>
+                  {solutionPageRange && <> (booklet pp. {solutionPageRange})</>}.
                 </>
-              )}{' '}
-              and the <strong className="text-amber-400">scanned Worked Solutions</strong> below.
+              ) : (
+                <>
+                  Review your answers against the official{' '}
+                  <strong className="text-amber-400">Answer Key</strong>
+                  {solutionPageRange && <> (booklet p. {solutionPageRange})</>} and the{' '}
+                  <strong className="text-amber-400">scanned Worked Solutions</strong> below.
+                </>
+              )}
             </p>
 
             {/* PRC Subject Status Tag */}
@@ -429,11 +441,19 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                   Q{q.number}
                 </div>
                 <div className="font-tech-mono font-bold text-sm">
-                  KEY: <span className="text-white">{q.correctAnswer}</span>
+                  {q.workedSolution ? (
+                    <span className="text-[11px] text-slate-300">WORKED</span>
+                  ) : (
+                    <>
+                      KEY: <span className="text-white">{q.correctAnswer}</span>
+                    </>
+                  )}
                 </div>
                 <div className="text-[10px] mt-1 font-tech-mono">
                   You: {userAns ? (
-                    <strong className={isCorrect ? 'text-emerald-400' : 'text-rose-400'}>{userAns}</strong>
+                    <strong className={isCorrect ? 'text-emerald-400' : 'text-rose-400'}>
+                      {q.workedSolution ? (isCorrect ? 'SOLVED' : 'MISSED') : userAns}
+                    </strong>
                   ) : (
                     <span className="text-slate-500 italic">None</span>
                   )}
@@ -562,10 +582,21 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
                   <div className="flex items-center space-x-3 shrink-0">
                     <div className="text-right text-xs font-tech-mono">
-                      <span className="text-slate-400 text-[10px] block">ANSWER</span>
-                      <strong className="text-emerald-400">({q.correctAnswer})</strong>
-                      {userAns && userAns !== q.correctAnswer && (
-                        <span className="text-rose-400 ml-1.5">(You: {userAns})</span>
+                      {q.workedSolution ? (
+                        <>
+                          <span className="text-slate-400 text-[10px] block">SELF-MARK</span>
+                          <strong className={isCorrect ? 'text-emerald-400' : 'text-rose-400'}>
+                            {userAns ? (isCorrect ? 'SOLVED' : 'MISSED') : '—'}
+                          </strong>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-slate-400 text-[10px] block">ANSWER</span>
+                          <strong className="text-emerald-400">({q.correctAnswer})</strong>
+                          {userAns && userAns !== q.correctAnswer && (
+                            <span className="text-rose-400 ml-1.5">(You: {userAns})</span>
+                          )}
+                        </>
                       )}
                     </div>
                     <span className="text-xs text-slate-400 px-2 py-1 bg-slate-900 rounded border border-slate-800">
@@ -590,26 +621,28 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                       )}
                     </div>
 
-                    {/* Choices recap */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                      {q.options.map((opt) => (
-                        <div
-                          key={opt.label}
-                          className={`p-2 rounded-lg border font-tech-mono flex items-center space-x-2 ${
-                            opt.label === q.correctAnswer
-                              ? 'bg-emerald-500/15 border-emerald-500 text-emerald-200 font-bold'
-                              : userAns === opt.label
-                              ? 'bg-rose-500/15 border-rose-500 text-rose-300'
-                              : 'bg-slate-900/60 border-slate-800 text-slate-400'
-                          }`}
-                        >
-                          <span className="font-bold">({opt.label})</span>
-                          <span>
-                            <MathView text={opt.text} />
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    {/* Choices recap (multiple-choice items only) */}
+                    {q.options.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        {q.options.map((opt) => (
+                          <div
+                            key={opt.label}
+                            className={`p-2 rounded-lg border font-tech-mono flex items-center space-x-2 ${
+                              opt.label === q.correctAnswer
+                                ? 'bg-emerald-500/15 border-emerald-500 text-emerald-200 font-bold'
+                                : userAns === opt.label
+                                ? 'bg-rose-500/15 border-rose-500 text-rose-300'
+                                : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                            }`}
+                          >
+                            <span className="font-bold">({opt.label})</span>
+                            <span>
+                              <MathView text={opt.text} />
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Solution Steps & Derivation */}
                     <div className="space-y-3 pt-2">

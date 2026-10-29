@@ -5,7 +5,10 @@ import {
   TimerMode,
   ExamMode,
   ExamMonth,
+  ReferenceSource,
   SUBJECT_CONFIGS,
+  SELF_MARK_SOLVED,
+  SELF_MARK_MISSED,
 } from '../types/exam';
 import {
   Clock,
@@ -31,11 +34,14 @@ import {
   TrendingUp,
   TrendingDown,
   Activity,
+  Eye,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
-import { deletePausedSession } from '../utils/storage';
+import { deletePausedSession, getExamStorageBase } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
 import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
 
@@ -43,6 +49,8 @@ interface ExamEngineProps {
   subject: SubjectArea;
   year: number;
   month: ExamMonth;
+  /** Review reference the paper came from; namespaces the scratchpad. */
+  source?: ReferenceSource;
   questions: Question[];
   timerMode: TimerMode;
   totalDurationSeconds: number;
@@ -65,6 +73,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   subject,
   year,
   month,
+  source = 'Gillesania',
   questions,
   timerMode,
   totalDurationSeconds,
@@ -91,9 +100,13 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const [showPacingDetails, setShowPacingDetails] = useState(false);
 
   const subjectConfig = SUBJECT_CONFIGS[subject];
+  const examStorageBase = getExamStorageBase(subject, year, month, source);
+  const examStoragePrefix = `${examStorageBase}_`;
   const currentQuestion = questions[currentIndex];
   const isInteractive = examMode === 'interactive';
   const isPauseEligible = isInteractive && (timerMode === 'stopwatch' || timerMode === 'no_limit');
+  /** Besavilla-style worked example: no A–D choices, self-marked after reveal. */
+  const isWorkedItem = !!currentQuestion?.workedSolution;
 
   // Timer reference
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -126,7 +139,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   }, [timerMode, isPaused]);
 
   const handleSaveAndExit = () => {
-    const storageKeyPrefix = `exam_${subject}_${year}_${month}_`;
+    const storageKeyPrefix = examStoragePrefix;
     syncExamScratchpadRecord({
       subject,
       year,
@@ -147,7 +160,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   };
 
   const handleDiscardAndExit = () => {
-    deletePausedSession(subject, year, month);
+    deletePausedSession(subject, year, month, source);
     onExit();
   };
 
@@ -175,7 +188,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
       ? totalDurationSeconds - secondsRemaining
       : secondsElapsed;
 
-    const storageKeyPrefix = `exam_${subject}_${year}_${month}_`;
+    const storageKeyPrefix = examStoragePrefix;
     syncExamScratchpadRecord({
       subject,
       year,
@@ -512,7 +525,8 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                     {currentQuestion.category}
                   </span>
                   <span className="text-[11px] text-slate-400">
-                    Booklet Page {currentQuestion.pageNumber} • Standard 4 Choices
+                    Booklet Page {currentQuestion.pageNumber} •{' '}
+                    {isWorkedItem ? 'Worked solution — reveal & self-mark' : 'Standard 4 Choices'}
                   </span>
                 </div>
               </div>
@@ -548,6 +562,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
             </div>
 
             {/* Options List */}
+            {!isWorkedItem && (
             <div className="space-y-3 pt-2">
               {currentQuestion.options.map((option) => {
                 const isSelected = currentAnswer === option.label;
@@ -585,9 +600,117 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                 );
               })}
             </div>
+            )}
+
+            {/* Worked-solution item (Besavilla): reveal, then self-mark */}
+            {isWorkedItem && (
+              <div className="space-y-4 pt-2">
+                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4 flex items-start space-x-3">
+                  <PenTool className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-cyan-100/90 leading-relaxed">
+                    This item comes from a <strong className="text-cyan-300">solved-problem review
+                    book</strong>, so it has no A–D choices. Work it out on the scratchpad, then
+                    reveal the booklet's printed solution and mark yourself honestly — your
+                    self-mark is what gets scored.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowSolutionForCurrent((v) => !v)}
+                  className={`w-full py-3 rounded-xl border-2 font-bold text-sm font-arnie tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                    showSolutionForCurrent
+                      ? 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      : 'border-amber-400 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25'
+                  }`}
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>{showSolutionForCurrent ? 'HIDE WORKED SOLUTION' : 'REVEAL WORKED SOLUTION'}</span>
+                </button>
+
+                {showSolutionForCurrent && (
+                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between text-amber-400 font-semibold border-b border-slate-800 pb-2">
+                      <span className="font-arnie text-sm">
+                        {currentQuestion.solution.images?.length
+                          ? `Worked Solution • ${
+                              currentQuestion.solution.pageNumberEnd &&
+                              currentQuestion.solution.pageNumberEnd !== currentQuestion.solution.pageNumber
+                                ? `Booklet pp. ${currentQuestion.solution.pageNumber}–${currentQuestion.solution.pageNumberEnd}`
+                                : `Booklet p. ${currentQuestion.solution.pageNumber ?? '—'}`
+                            }`
+                          : 'Worked Solution'}
+                      </span>
+                      <span className="font-tech-mono text-xs">
+                        <MathView text={currentQuestion.solution.finalAnswer} />
+                      </span>
+                    </div>
+                    {currentQuestion.solution.images?.length ? (
+                      <SolutionFigures
+                        images={currentQuestion.solution.images}
+                        alt={`${currentQuestion.category} worked solution`}
+                      />
+                    ) : (
+                      <div className="text-xs text-slate-300 italic leading-relaxed">
+                        <MathView text={currentQuestion.solution.summary} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Self-mark row — only meaningful once the solution is visible */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectOption(SELF_MARK_SOLVED)}
+                    className={`py-3 rounded-xl border-2 font-bold text-xs font-arnie tracking-wider flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                      currentAnswer === SELF_MARK_SOLVED
+                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-200'
+                        : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-emerald-500/50'
+                    }`}
+                  >
+                    <ThumbsUp className="w-4 h-4" />
+                    <span>I SOLVED IT</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectOption(SELF_MARK_MISSED)}
+                    className={`py-3 rounded-xl border-2 font-bold text-xs font-arnie tracking-wider flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                      currentAnswer === SELF_MARK_MISSED
+                        ? 'border-rose-500 bg-rose-500/20 text-rose-200'
+                        : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-rose-500/50'
+                    }`}
+                  >
+                    <ThumbsDown className="w-4 h-4" />
+                    <span>I MISSED IT</span>
+                  </button>
+                </div>
+
+                {currentAnswer && (
+                  <div
+                    className={`p-3 rounded-xl border text-xs flex items-center space-x-2 ${
+                      currentAnswer === SELF_MARK_SOLVED
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                        : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                    }`}
+                  >
+                    {currentAnswer === SELF_MARK_SOLVED ? (
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    ) : (
+                      <XCircle className="w-4 h-4 shrink-0" />
+                    )}
+                    <span className="font-semibold">
+                      Self-marked as{' '}
+                      {currentAnswer === SELF_MARK_SOLVED ? 'solved' : 'missed'} — counted in your
+                      score.
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Interactive Mode Immediate Popups & Solution reveal */}
-            {isInteractive && currentAnswer && (
+            {!isWorkedItem && isInteractive && currentAnswer && (
               <div className={`mt-4 p-4 rounded-xl border flex flex-col space-y-3 ${
                 isCurrentCorrect
                   ? 'bg-emerald-500/10 border-emerald-500/30'
@@ -715,14 +838,14 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                   subject,
                   year,
                   month,
-                  storageKeyPrefix: `exam_${subject}_${year}_${month}_`,
+                  storageKeyPrefix: examStoragePrefix,
                 }).catch((e) => console.warn('Sync on close error:', e));
               }}
               isDocked={true}
               onToggleDock={() => setIsScratchpadDocked(false)}
-              storageKeyPrefix={`exam_${subject}_${year}_${month}_`}
+              storageKeyPrefix={examStoragePrefix}
               title={`${subject} ${month} ${year} Exam Rough Sheets`}
-              documentId={`exam_${subject}_${year}_${month}`}
+              documentId={examStorageBase}
             />
           </div>
         )}
@@ -901,9 +1024,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           }}
           isDocked={false}
           onToggleDock={() => setIsScratchpadDocked(true)}
-          storageKeyPrefix={`exam_${subject}_${year}_${month}_`}
+          storageKeyPrefix={examStoragePrefix}
           title={`${subject} ${month} ${year} Exam Rough Sheets`}
-          documentId={`exam_${subject}_${year}_${month}`}
+          documentId={examStorageBase}
         />
       )}
 
