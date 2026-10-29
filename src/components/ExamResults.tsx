@@ -88,8 +88,16 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
     return min === max ? `${min}` : `${min}–${max}`;
   })();
 
-  const handleExportCescratch = async () => {
-    const bundle = await exportScratchpadBundle(scratchpadDocId);
+  /**
+   * True when this sitting came from a solved-problem book (Besavilla) rather
+   * than a PRC compilation. There is no printed A–D key in that case — the
+   * learner self-marks against the printed solution — so the section headings
+   * must not claim an "official master key".
+   */
+  const isWorkedSet = questions.some((q) => q.workedSolution);
+  const workedCount = questions.filter((q) => q.workedSolution).length;
+
+  const handleExportCescratch = async () => {    const bundle = await exportScratchpadBundle(scratchpadDocId);
     if (!bundle) {
       alert('No scratchpad drawings recorded for this session yet.');
       return;
@@ -411,10 +419,19 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </div>
             <div>
               <h2 className="font-arnie text-lg font-bold text-white tracking-wide">
-                {solutionPageRange ? `Booklet p. ${solutionPageRange}: ` : 'Page 11: '}Official Answer Keys
+                {solutionPageRange
+                  ? `Booklet ${solutionPageRange.includes('–') ? 'pp.' : 'p.'} ${solutionPageRange}: `
+                  : 'Page 11: '}
+                {isWorkedSet ? 'Worked Solutions' : 'Official Answer Keys'}
               </h2>
               <p className="text-[11px] text-slate-400">
-                Official PRC Examination Master Key &amp; Candidate Response Comparison
+                {isWorkedSet
+                  ? `Printed solutions from the review book, scored against your self-marks${
+                      workedCount < questions.length
+                        ? ` (${workedCount} worked, ${questions.length - workedCount} keyed)`
+                        : ''
+                    }`
+                  : 'Official PRC Examination Master Key & Candidate Response Comparison'}
               </p>
             </div>
           </div>
