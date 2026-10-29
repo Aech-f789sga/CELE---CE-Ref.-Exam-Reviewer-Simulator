@@ -237,8 +237,25 @@ const SOLUTIONS: Record<string, string[]> = {
   S23C: [s23c01],
 };
 
+/**
+ * Wraps a figure crop in the markup `EngineeringFigure` expects.
+ *
+ * `figureSvg` is injected with `dangerouslySetInnerHTML`, so it must be HTML,
+ * not a bare URL — handing it a URL string renders the path as text. This
+ * mirrors the `psadMay2019Figure` helper used by the Gillesania banks.
+ */
 export function besaNov2025Figure(key: string): string | undefined {
-  return FIGURES[key];
+  const src = FIGURES[key];
+  if (!src) return undefined;
+  return `<div class="flex flex-col items-center justify-center w-full py-2">
+  <img
+    src="${src}"
+    alt="Besavilla PSAD November 2025 illustration"
+    class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+    loading="eager"
+    referrerpolicy="no-referrer"
+  />
+</div>`;
 }
 
 export function besaNov2025SolutionImages(key: string): string[] {
