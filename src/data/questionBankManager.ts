@@ -24,9 +24,10 @@ import { PSAD_MAY_2019_QUESTIONS } from './questionBanks/psad/may2019Questions';
 import { MSTE_NOV2019_QUESTIONS } from './questionBanks/mstc/nov2019Questions';
 import { BESA_PSAD_NOV2025_QUESTIONS } from './questionBanks/psad/nov2025BesaQuestions';
 import { BESA_MSTC_NOV2025_QUESTIONS } from './questionBanks/mstc/nov2025BesaQuestions';
+import { BESA_PSAD_MAR2026_QUESTIONS } from './questionBanks/psad/mar2026BesaQuestions';
 
-export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2025 - i); // 2025 down to 2011
-export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
+export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
+export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
 
 /**
  * Registry of available exam sets that contain actual verified question data.
@@ -61,6 +62,8 @@ export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
  * 20. MSTC of November 2025 (61 Items — 49 worked situations answered by
  *     reveal-and-self-mark plus 12 keyed multiple-choice items, one of which
  *     also prints a worked solution)
+ * 21. PSAD of March 2026 (69 Items — 22 situations split into a/b/c worked
+ *     sub-parts plus 3 conceptual multiple-choice items)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -120,6 +123,12 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2025,
     month: 'November',
     subjects: ['PSAD', 'MSTC'],
+    source: 'Besavilla',
+  },
+  {
+    year: 2026,
+    month: 'March',
+    subjects: ['PSAD'],
     source: 'Besavilla',
   },
 ];
@@ -210,6 +219,9 @@ function getBaseQuestions(
   source: ReferenceSource
 ): Question[] {
   if (source === 'Besavilla') {
+    if (subject === 'PSAD' && year === 2026 && month === 'March') {
+      return BESA_PSAD_MAR2026_QUESTIONS;
+    }
     if (subject === 'PSAD' && year === 2025 && month === 'November') {
       return BESA_PSAD_NOV2025_QUESTIONS;
     }

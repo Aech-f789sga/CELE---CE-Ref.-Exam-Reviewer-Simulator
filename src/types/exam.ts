@@ -1,6 +1,6 @@
 export type SubjectArea = 'MSTC' | 'HPGE' | 'PSAD';
 
-export type ExamMonth = 'May' | 'November' | 'April' | 'October';
+export type ExamMonth = 'March' | 'May' | 'November' | 'April' | 'October';
 
 /**
  * Which review reference a question set was transcribed from.
