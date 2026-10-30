@@ -23,6 +23,7 @@ import { HGE_MAY_2019_QUESTIONS } from './questionBanks/hpge/may2019Questions';
 import { PSAD_MAY_2019_QUESTIONS } from './questionBanks/psad/may2019Questions';
 import { MSTE_NOV2019_QUESTIONS } from './questionBanks/mstc/nov2019Questions';
 import { BESA_PSAD_NOV2025_QUESTIONS } from './questionBanks/psad/nov2025BesaQuestions';
+import { BESA_MSTC_NOV2025_QUESTIONS } from './questionBanks/mstc/nov2025BesaQuestions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2025 - i); // 2025 down to 2011
 export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
@@ -57,6 +58,9 @@ export const ALL_MONTHS: ExamMonth[] = ['April', 'May', 'October', 'November'];
  * Besavilla (solved-problem review book, reveal-and-self-mark):
  * 19. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
  *     plus 6 conceptual multiple-choice items)
+ * 20. MSTC of November 2025 (61 Items — 49 worked situations answered by
+ *     reveal-and-self-mark plus 12 keyed multiple-choice items, one of which
+ *     also prints a worked solution)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -115,7 +119,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2025,
     month: 'November',
-    subjects: ['PSAD'],
+    subjects: ['PSAD', 'MSTC'],
     source: 'Besavilla',
   },
 ];
@@ -208,6 +212,9 @@ function getBaseQuestions(
   if (source === 'Besavilla') {
     if (subject === 'PSAD' && year === 2025 && month === 'November') {
       return BESA_PSAD_NOV2025_QUESTIONS;
+    }
+    if (subject === 'MSTC' && year === 2025 && month === 'November') {
+      return BESA_MSTC_NOV2025_QUESTIONS;
     }
     return [];
   }
