@@ -455,12 +455,14 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </h2>
         </div>
 
-        {/* Year Selector (2011 to 2025) */}
+        {/* Year Selector (newest to oldest, derived from ALL_YEARS) */}
         <div>
           <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
             <span className="flex items-center space-x-2">
               <Calendar className="w-3.5 h-3.5 text-amber-400" />
-              <span>Examination Year (2011 – 2025)</span>
+              <span>
+                Examination Year ({ALL_YEARS[ALL_YEARS.length - 1]} – {ALL_YEARS[0]})
+              </span>
             </span>
           </label>
           <div className="grid grid-cols-5 sm:grid-cols-8 gap-1.5">

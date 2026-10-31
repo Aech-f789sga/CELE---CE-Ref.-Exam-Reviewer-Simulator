@@ -136,9 +136,9 @@ export const InteractiveTourModal: React.FC<InteractiveTourModalProps> = ({
       tab: 'setup',
       badge: 'Step 05 · Question Bank',
       title: 'Past Board Exam Question Sets',
-      subtitle: 'Real PRC Board Sets (2011 – 2025)',
+      subtitle: 'Real PRC Board Sets (2012 – 2026)',
       description:
-        'Filter by year and examination month (April & November). Each problem contains step-by-step mathematical solutions, formulas in KaTeX, and dynamic SVG engineering figures.',
+        'Filter by year and examination month (March, April, May, October & November). Each problem contains step-by-step mathematical solutions, formulas in KaTeX, and dynamic SVG engineering figures.',
       accentColor: '#eab308',
       preferredPlacement: 'top',
     },
