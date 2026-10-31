@@ -26,6 +26,7 @@ import { BESA_PSAD_NOV2025_QUESTIONS } from './questionBanks/psad/nov2025BesaQue
 import { BESA_MSTC_NOV2025_QUESTIONS } from './questionBanks/mstc/nov2025BesaQuestions';
 import { BESA_PSAD_MAR2026_QUESTIONS } from './questionBanks/psad/mar2026BesaQuestions';
 import { BESA_MSTC_MAR2026_QUESTIONS } from './questionBanks/mstc/mar2026BesaQuestions';
+import { BESA_HPGE_MAR2026_QUESTIONS } from './questionBanks/hpge/mar2026BesaQuestions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -68,6 +69,8 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  * 22. MSTC of March 2026 (73 Items — 51 worked situations answered by
  *     reveal-and-self-mark plus 22 keyed multiple-choice items, several of
  *     which print their options as drawings)
+ * 23. HPGE of March 2026 (47 Items — 27 worked problems with a printed
+ *     solution plus 20 keyed concept items)
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -132,7 +135,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2026,
     month: 'March',
-    subjects: ['PSAD', 'MSTC'],
+    subjects: ['PSAD', 'MSTC', 'HPGE'],
     source: 'Besavilla',
   },
 ];
@@ -228,6 +231,9 @@ function getBaseQuestions(
     }
     if (subject === 'MSTC' && year === 2026 && month === 'March') {
       return BESA_MSTC_MAR2026_QUESTIONS;
+    }
+    if (subject === 'HPGE' && year === 2026 && month === 'March') {
+      return BESA_HPGE_MAR2026_QUESTIONS;
     }
     if (subject === 'PSAD' && year === 2025 && month === 'November') {
       return BESA_PSAD_NOV2025_QUESTIONS;
