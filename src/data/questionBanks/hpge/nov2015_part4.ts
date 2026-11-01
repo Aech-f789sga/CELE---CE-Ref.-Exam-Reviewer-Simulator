@@ -20,7 +20,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     figureCaption:
       'Figure 10: Line A feeds a loop of line B (top) and line C (bottom), which discharges into line D.',
     options: opts('21', '28', '15', '19'),
-    ...solved('s10', 'D', '19 L/s (Option D)', 185),
+    ...solved(43, 'D', '19 L/s (Option D)', 185),
   },
 
   // ── Item 44 ────────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Situation 10 — Head Loss in Line B',
     text: 'Situation 10 (continued) – Calculate the head loss in line B in meters.',
     options: opts('2.4', '3.6', '2', '1.5'),
-    ...solved('s10', 'C', '2 m (Option C)', 185),
+    ...solved(44, 'C', '2 m (Option C)', 185),
   },
 
   // ── Item 45 ────────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Situation 10 — Diameter of Line C',
     text: 'Situation 10 (continued) – Determine the diameter of line C in mm.',
     options: opts('180', '170', '200', '220'),
-    ...solved('s10', 'A', '180 mm (Option A)', 185),
+    ...solved(45, 'A', '180 mm (Option A)', 185),
   },
 
   // ── Item 46 ────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Open Channel — Manning Discharge',
     text: 'Water flows at a depth of 1.5 meters in a 6-m-wide rectangular channel. Find the discharge (in m³/s) if the channel is laid on a slope of 0.002. Use $n = 0.013$.',
     options: opts('30.96', '32.63', '28.54', '25.48'),
-    ...solved('i46', 'A', '30.96 m³/s (Option A)', 186),
+    ...solved(46, 'A', '30.96 m³/s (Option A)', 186),
   },
 
   // ── Item 47 ────────────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Situation 11 — Critical Depth From Specific Energy',
     text: 'Situation 11 – A rectangular channel 8-meter wide has constant specific energy of 2.20 meters.\n\n47. What is the critical depth of flow in meters?',
     options: opts('1.47', '1.65', '1.1', '1.76'),
-    ...solved('s11', 'A', '1.47 m (Option A)', 186),
+    ...solved(47, 'A', '1.47 m (Option A)', 186),
   },
 
   // ── Item 48 ────────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Situation 11 — Critical Velocity',
     text: 'Situation 11 (continued) – Calculate the critical velocity in m/s.',
     options: opts('3.28', '3.79', '4.02', '4.15'),
-    ...solved('s11', 'B', '3.79 m/s (Option B)', 186),
+    ...solved(48, 'B', '3.79 m/s (Option B)', 186),
   },
 
   // ── Item 49 ────────────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Situation 11 — Critical Slope',
     text: 'Situation 11 (continued) – Calculate the critical slope assuming $n = 0.013$.',
     options: opts('0.0020', '0.0024', '0.0022', '0.0026'),
-    ...solved('s11', 'C', '0.0022 (Option C)', 186),
+    ...solved(49, 'C', '0.0022 (Option C)', 186),
   },
 
   // ── Item 50 ────────────────────────────────────────────────────────────────
@@ -118,7 +118,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Soil Strength — Cohesion',
     text: 'Which component of rock or soil is independent of interparticle friction?',
     options: opts('adhesion', 'cohesion', 'plasticity', 'skin friction'),
-    ...solved('i50', 'B', 'cohesion (Option B)', 187),
+    ...solved(50, 'B', 'cohesion (Option B)', 187),
   },
 
   // ── Item 51 ────────────────────────────────────────────────────────────────
@@ -186,7 +186,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Soil Index Properties — Void Ratio From Porosity',
     text: 'Calculate the void ratio of a soil sample with porosity of 0.25.',
     options: opts('40.67%', '30%', '20%', '33.33%'),
-    ...solved('i54', 'D', '33.33% (Option D)', 187),
+    ...solved(54, 'D', '33.33% (Option D)', 187),
   },
 
   // ── Item 55 ────────────────────────────────────────────────────────────────
@@ -200,7 +200,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Soil Index Properties — Moist Unit Weight',
     text: 'The dry unit weight of a soil sample is 10 kN/m³. What is the moist unit weight of the soil when its moisture content is 15%?',
     options: opts('10.8 kN/m³', '13.6 kN/m³', '11.5 kN/m³', '12.2 kN/m³'),
-    ...solved('i55', 'C', '11.5 kN/m³ (Option C)', 187),
+    ...solved(55, 'C', '11.5 kN/m³ (Option C)', 187),
   },
 
   // ── Item 56 ────────────────────────────────────────────────────────────────
@@ -232,7 +232,7 @@ export const HPGE_NOV2015_PART4: Question[] = [
     category: 'Soil Classification — USCS Grain Sizes',
     text: 'According to USCS, what do you call a soil grain with grain size greater than 4.75 mm but less than 75 mm?',
     options: opts('rock', 'gravel', 'boulder', 'cobble'),
-    ...solved('i57', 'B', 'gravel (Option B)', 187),
+    ...solved(57, 'B', 'gravel (Option B)', 187),
   },
 
   // ── Item 58 ────────────────────────────────────────────────────────────────

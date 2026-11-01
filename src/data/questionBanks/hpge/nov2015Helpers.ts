@@ -5,11 +5,13 @@ import { hpgeNov2015SolutionImages } from '../../hpgeNov2015Images';
  * Four-choice item whose worked solution is the scanned booklet page.
  *
  * The booklet prints its own working for almost every item, so nothing is
- * retyped: `key` selects the crop set from {@link hpgeNov2015SolutionImages}
- * and `page`/`pageEnd` record the booklet folio the crop was taken from.
+ * retyped: `item` selects that item's own crop band from
+ * {@link hpgeNov2015SolutionImages} — never a whole situation, so one item's
+ * solution cannot give away the next one's answer — and `page`/`pageEnd` record
+ * the booklet folio the crop was taken from.
  */
 export const solved = (
-  key: string,
+  item: number,
   correct: 'A' | 'B' | 'C' | 'D',
   answer: string,
   page: number,
@@ -24,7 +26,7 @@ export const solved = (
     finalAnswer: answer,
     pageNumber: page,
     pageNumberEnd: pageEnd,
-    images: hpgeNov2015SolutionImages(key),
+    images: hpgeNov2015SolutionImages(item),
     ...(note ? { note } : {}),
   },
 });

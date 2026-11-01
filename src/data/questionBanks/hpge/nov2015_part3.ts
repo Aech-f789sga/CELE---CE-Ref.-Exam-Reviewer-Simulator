@@ -13,7 +13,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 7 — Rotating Tank, Water Reaches the Rim',
     text: 'Situation 7 – An open-top cylindrical tank 1 m in diameter and 2.5 m high is 3/5 full of water. Determine the angular speed in rpm if:\n\n28. The water will just touch the rim.',
     options: opts('119.6', '59.8', '105.4', '98.2'),
-    ...solved('s07', 'A', '119.6 rpm (Option A)', 180, 181),
+    ...solved(28, 'A', '119.6 rpm (Option A)', 180),
   },
 
   // ── Item 29 ────────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 7 — Vortex Reaches the Bottom',
     text: 'Situation 7 (continued) – The vortex will just touch the bottom.',
     options: opts('66.9', '145.8', '133.7', '123.8'),
-    ...solved('s07', 'C', '133.7 rpm (Option C)', 180, 181),
+    ...solved(29, 'C', '133.7 rpm (Option C)', 180),
   },
 
   // ── Item 30 ────────────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 7 — Base Uncovered Near the Axis',
     text: 'Situation 7 (continued) – The base is uncovered within 20 cm from the vertical axis.',
     options: opts('145.9', '124.7', '105.9', '68.2'),
-    ...solved('s07', 'A', '145.9 rpm (Option A)', 180, 181),
+    ...solved(30, 'A', '145.9 rpm (Option A)', 181),
   },
 
   // ── Item 31 ────────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 8 — Maximum Speed Without Spilling',
     text: 'Situation 8 – An open cylindrical tank 2 meters in diameter and 4 meters tall is half full of water. The tank is rotated about its vertical axis at constant angular speed.\n\n31. Find the maximum $\\omega$ (rpm) without spilling any water.',
     options: opts('80.21', '84.58', '75.32', '70.25'),
-    ...solved('s08', 'B', '84.58 rpm (Option B)', 181, 182),
+    ...solved(31, 'B', '84.58 rpm (Option B)', 181),
   },
 
   // ── Item 32 ────────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 8 — Height at the Sides',
     text: 'Situation 8 (continued) – What is the height of water at the sides if the depth of water at the center is zero?',
     options: opts('3 m', '3.5 m', '4 m', '3.8 m'),
-    ...solved('s08', 'C', '4 m (Option C)', 181, 182),
+    ...solved(32, 'C', '4 m (Option C)', 181),
   },
 
   // ── Item 33 ────────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 8 — Volume Spilled',
     text: 'Situation 8 (continued) – How much water is spilled (in liters) if the angular speed is 90 rpm?',
     options: opts('760', '854', '635', '734'),
-    ...solved('s08', 'D', '734 liters (Option D)', 181, 182),
+    ...solved(33, 'D', '734 liters (Option D)', 182),
   },
 
   // ── Item 34 ────────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Pipe Flow — Head Loss Between Two Reservoirs',
     text: 'Water flows at the rate of 182 L/s in a 300-mm-diameter pipeline connecting two reservoirs. If the pipe length is 845 m and using $f = 0.021$, what is the difference in water surface elevation between the two reservoirs?',
     options: opts('18 m', '25 m', '20 m', '22 m'),
-    ...solved('i35', 'C', '20 m (Option C)', 183),
+    ...solved(35, 'C', '20 m (Option C)', 183),
   },
 
   // ── Item 36 ────────────────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Pipe Flow — Pressure Difference Up a Slope',
     text: 'Water flows upward through a 200 mm pipe laid on a sloping ground inclined 10° with the horizontal. Assuming steady flow of 75 L/s, what is the difference in pressure between a point B to a point A 500 meters up the slope? Assume $f = 0.015$.',
     options: opts('836.2 kPa', '958.6 kPa', '744.9 kPa', '623.4 kPa'),
-    ...solved('i36', 'B', '958.6 kPa (Option B)', 183),
+    ...solved(36, 'B', '958.6 kPa (Option B)', 183),
   },
 
   // ── Item 37 ────────────────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Pipe Flow — Hazen Williams Head Loss',
     text: 'Water flows through a new cast iron pipe at a velocity of 4.2 m/s. The pipe is 400 m long and has a diameter of 150 mm. Determine the head loss due to friction using Hazen Williams formula with $C_H = 110$.',
     options: opts('59.8 m', '55.32 m', '54.21 m', '61.25 m'),
-    ...solved('i37', 'A', '59.8 m (Option A)', 183, 184),
+    ...solved(37, 'A', '59.8 m (Option A)', 183, 184),
   },
 
   // ── Item 38 ────────────────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Pipe Flow — Darcy-Weisbach Head Loss',
     text: 'Water flows through a new wrought iron pipe at a velocity of 2.5 m/s. The pipe is 360 m long and has a diameter of 100 mm. Determine the head loss due to friction using Darcy-Weisbach equation with $f = 0.026$.',
     options: opts('25.4 m', '22.1 m', '29.8 m', '32.6 m'),
-    ...solved('i38', 'C', '29.8 m (Option C)', 184),
+    ...solved(38, 'C', '29.8 m (Option C)', 184),
   },
 
   // ── Item 39 ────────────────────────────────────────────────────────────────
@@ -171,7 +171,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Pipe Flow — Manning Head Loss',
     text: 'Water flows through a new cast iron pipe at a velocity of 1.8 m/s. The pipe is 480 m long and has a diameter of 150 mm. Determine the head loss due to friction using Manning’s formula with $n = 0.012$.',
     options: opts('19.6 m', '17.8 m', '22.4 m', '15.2 m'),
-    ...solved('i39', 'B', '17.8 m (Option B)', 184),
+    ...solved(39, 'B', '17.8 m (Option B)', 184),
   },
 
   // ── Item 40 ────────────────────────────────────────────────────────────────
@@ -185,7 +185,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 9 — Theoretical Velocity in a Penstock',
     text: 'Situation 9 – A 150-mm-diameter penstock supplies water to a turbine under a constant head of 30 meters.\n\n40. Calculate the theoretical velocity of flow (m/s) through the penstock.',
     options: opts('22.14', '26.20', '19.81', '24.26'),
-    ...solved('s09', 'D', '24.26 m/s (Option D)', 184, 185),
+    ...solved(40, 'D', '24.26 m/s (Option D)', 184),
   },
 
   // ── Item 41 ────────────────────────────────────────────────────────────────
@@ -199,7 +199,7 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 9 — Theoretical Discharge',
     text: 'Situation 9 (continued) – Calculate the theoretical discharge in m³/s.',
     options: opts('0.350', '0.429', '0.391', '0.463'),
-    ...solved('s09', 'B', '0.429 m³/s (Option B)', 184, 185),
+    ...solved(41, 'B', '0.429 m³/s (Option B)', 184),
   },
 
   // ── Item 42 ────────────────────────────────────────────────────────────────
@@ -213,6 +213,6 @@ export const HPGE_NOV2015_PART3: Question[] = [
     category: 'Situation 9 — Power Delivered by the Turbine',
     text: 'Situation 9 (continued) – Calculate the power (kW) delivered by the turbine if the system efficiency is 70%.',
     options: opts('48.67', '67.18', '111.28', '88.31'),
-    ...solved('s09', 'D', '88.31 kW (Option D)', 184, 185),
+    ...solved(42, 'D', '88.31 kW (Option D)', 185),
   },
 ];

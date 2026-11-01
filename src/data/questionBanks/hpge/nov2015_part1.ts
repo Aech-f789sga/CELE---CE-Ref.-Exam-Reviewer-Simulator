@@ -14,7 +14,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Fluid Properties — Unit Weight of Air',
     text: 'What is the unit weight of dry air at standard temperature and pressure?',
     options: opts('10.6 N/m³', '15.3 N/m³', '11.3 N/m³', '12.5 N/m³'),
-    ...solved('i01', 'D', '12.5 N/m³ (Option D)', 174),
+    ...solved(1, 'D', '12.5 N/m³ (Option D)', 174),
   },
 
   // ── Item 2 ─────────────────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Fluid Properties — Atmosphere to Metres of Water',
     text: 'How many meters of water is equivalent to 2.55 atmospheres?',
     options: opts('23.24 m', '27.37 m', '26.34 m', '25.14 m'),
-    ...solved('i02', 'C', '26.34 m (Option C)', 174),
+    ...solved(2, 'C', '26.34 m (Option C)', 174),
   },
 
   // ── Item 3 ─────────────────────────────────────────────────────────────────
@@ -42,7 +42,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Fluid Properties — Absolute and Gage Pressure',
     text: 'The absolute pressure of air in a water condenser is 40 kPa. What is the gage pressure 1.5 m below the water surface?',
     options: opts('54.72 kPa', '−46.61 kPa', '156.04 kPa', '−63.89 kPa'),
-    ...solved('i03', 'B', '−46.61 kPa (Option B)', 174),
+    ...solved(3, 'B', '−46.61 kPa (Option B)', 174),
   },
 
   // ── Item 4 ─────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     figureCaption:
       'Figure 4: Water vessel A on a U-tube manometer with a gage liquid of sg = 10.',
     options: opts('32.56 kPa', '40.89 kPa', '38.26 kPa', '43.25 kPa'),
-    ...solved('i04', 'C', '38.26 kPa (Option C)', 174),
+    ...solved(4, 'C', '38.26 kPa (Option C)', 174),
   },
 
   // ── Item 5 ─────────────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Fluid Mechanics — Barometer and Altitude',
     text: 'A mercury barometer at the top of the mountain reads 460 mm Hg. At the same time, another barometer at the base reads 536 mmHg. Assuming that the unit weight of air is constant at $12\\ \\text{N/m}^3$, how high is the mountain?',
     options: opts('765 m', '845 m', '632 m', '812 m'),
-    ...solved('i05', 'B', '845 m (Option B)', 175),
+    ...solved(5, 'B', '845 m (Option B)', 175),
   },
 
   // ── Item 6 ─────────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Fluid Mechanics — Hydraulic Jack',
     text: 'A 10-kN car is to be lifted by a hydraulic jack. If a 400-N force is applied on a 25-mm-diameter plunger, find the required diameter of the piston.',
     options: opts('120', '135', '130', '125'),
-    ...solved('i06', 'D', '125 mm (Option D)', 175),
+    ...solved(6, 'D', '125 mm (Option D)', 175),
   },
 
   // ── Item 7 ─────────────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Hydrostatics — Centre of Pressure on a Triangular Plate',
     text: 'A vertical triangular plate has a base of 1.2 m and depth of 2.4 m. The base is horizontal and flush with the water surface. What is the distance of force of water below the centroid of the plate?',
     options: opts('0.3 m', '0.4 m', '0.2 m', '0.1 m'),
-    ...solved('i07', 'B', '0.4 m (Option B)', 175),
+    ...solved(7, 'B', '0.4 m (Option B)', 175),
   },
 
   // ── Item 8 ─────────────────────────────────────────────────────────────────
@@ -118,7 +118,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Situation 1 — Hydrostatic Force on an Inclined Gate',
     text: 'Situation 1 – A rectangular gate 1.2 m by 3 m is inclined 60° with the horizontal. The top of the gate is submerged at a depth of 2 m, the longer side parallel to the water surface.\n\n8. Find the total hydrostatic force in kN.',
     options: opts('116.51', '168.69', '116.96', '88.98'),
-    ...solved('s01', 'D', '88.98 kN (Option D)', 176),
+    ...solved(8, 'D', '88.98 kN (Option D)', 176),
   },
 
   // ── Item 9 ─────────────────────────────────────────────────────────────────
@@ -132,7 +132,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Situation 1 — Location of the Hydrostatic Force',
     text: 'Situation 1 (continued) – Find the location of total hydrostatic force from the bottom of gate in meters.',
     options: opts('0.641', '1.303', '0.899', '0.559'),
-    ...solved('s01', 'D', '0.559 m (Option D)', 176),
+    ...solved(9, 'D', '0.559 m (Option D)', 176),
   },
 
   // ── Item 10 ────────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Situation 1 — Force to Open the Gate',
     text: 'Situation 1 (continued) – If the gate is hinged at the top, find the force (kN) at the bottom normal to the gate required to open it.',
     options: opts('63.26', '47.55', '65.90', '92.84'),
-    ...solved('s01', 'B', '47.55 kN (Option B)', 176),
+    ...solved(10, 'B', '47.55 kN (Option B)', 176),
   },
 
   // ── Item 11 ────────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Situation 2 — Hydrostatic Force on a Gate in Molasses',
     text: 'Situation 2 – A vertical circular gate 0.90 m in diameter is immersed in molasses (s = 1.4). The top of the gate is 2.40 m below the surface of molasses. Determine the following:\n\n11. The total force acting on the gate.',
     options: opts('20.97 kN', '22.56 kN', '25.87 kN', '24.90 kN'),
-    ...solved('s02', 'D', '24.90 kN (Option D)', 176, 177),
+    ...solved(11, 'D', '24.90 kN (Option D)', 176, 177),
   },
 
   // ── Item 12 ────────────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Situation 2 — Location of the Force',
     text: 'Situation 2 (continued) – The location of the force from the bottom of the gate.',
     options: opts('0.429 m', '0.447 m', '0.103 m', '0.432 m'),
-    ...solved('s02', 'D', '0.432 m (Option D)', 176, 177),
+    ...solved(12, 'D', '0.432 m (Option D)', 177),
   },
 
   // ── Item 13 ────────────────────────────────────────────────────────────────
@@ -190,6 +190,6 @@ export const HPGE_NOV2015_PART1: Question[] = [
     category: 'Situation 2 — Force to Keep the Gate Closed',
     text: 'Situation 2 (continued) – The horizontal force at the bottom required to keep the gate closed if it is hinged at the top.',
     options: opts('9.58 kN', '10.98 kN', '12.94 kN', '11.21 kN'),
-    ...solved('s02', 'C', '12.94 kN (Option C)', 176, 177),
+    ...solved(13, 'C', '12.94 kN (Option C)', 177),
   },
 ];

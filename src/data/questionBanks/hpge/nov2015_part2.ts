@@ -13,7 +13,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 3 — Total Force on an Inclined Circular Gate',
     text: 'Situation 3 – A circular gate 1.5 m in diameter is inclined 45° with the vertical. The center of the gate is 10 m below the water surface.\n\n14. Calculate the total force on the gate.',
     options: opts('160.36 kN', '173.36 kN', '186.36 kN', '147.35 kN'),
-    ...solved('s03', 'B', '173.36 kN (Option B)', 177),
+    ...solved(14, 'B', '173.36 kN (Option B)', 177),
   },
 
   // ── Item 15 ────────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 3 — Location of the Total Force',
     text: 'Situation 3 (continued) – Calculate the distance of the total force from the bottom of the gate.',
     options: opts('0.69 m', '0.74 m', '0.76 m', '0.81 m'),
-    ...solved('s03', 'B', '0.74 m (Option B)', 177),
+    ...solved(15, 'B', '0.74 m (Option B)', 177),
   },
 
   // ── Item 16 ────────────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 3 — Normal Force at the Bottom',
     text: 'Situation 3 (continued) – If the gate is hinged at its top, find the normal force applied at the bottom required to open the gate.',
     options: opts('74.83 kN', '81.33 kN', '87.83 kN', '94.33 kN'),
-    ...solved('s03', 'C', '87.83 kN (Option C)', 177),
+    ...solved(16, 'C', '87.83 kN (Option C)', 177),
   },
 
   // ── Item 17 ────────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Buoyancy — Concrete Cube on a Sea Bed',
     text: 'A concrete cube ($\\gamma = 23.5\\ \\text{kN/m}^3$) 0.60 m on an edge is submerged in 5 m of sea water (SG = 1.03). Calculate the force to lift the cube if there is no seepage pressure at the bottom of the cube.',
     options: opts('23.3 kN', '26.9 kN', '27.7 kN', '28.5 kN'),
-    ...solved('i18', 'A', '23.3 kN (Option A)', 178),
+    ...solved(18, 'A', '23.3 kN (Option A)', 178),
   },
 
   // ── Item 19 ────────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 4 — Volume of a Submerged Stone',
     text: 'Situation 4 – A stone weighs 400 N in air and 240 N in water. Determine the following:\n\n19. The volume of stone in cubic meter.',
     options: opts('0.0183', '0.0143', '0.0163', '0.0153'),
-    ...solved('s04', 'C', '0.0163 m³ (Option C)', 178, 179),
+    ...solved(19, 'C', '0.0163 m³ (Option C)', 179),
   },
 
   // ── Item 20 ────────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 4 — Unit Weight of the Stone',
     text: 'Situation 4 (continued) – The unit weight of stone in kN/m³.',
     options: opts('21.80', '24.53', '28.03', '26.16'),
-    ...solved('s04', 'B', '24.53 kN/m³ (Option B)', 178, 179),
+    ...solved(20, 'B', '24.53 kN/m³ (Option B)', 178),
   },
 
   // ── Item 21 ────────────────────────────────────────────────────────────────
@@ -115,7 +115,14 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 4 — Specific Gravity of the Stone',
     text: 'Situation 4 (continued) – The specific gravity of the stone.',
     options: opts('2.50', '2.22', '2.86', '2.67'),
-    ...solved('s04', 'A', '2.50 (Option A)', 178, 179),
+    ...solved(
+      21,
+      'A',
+      '2.50 (Option A)',
+      178,
+      178,
+      'Booklet misprint: the margin tag beside $S_{stone} = 2.5$ reads “→ Part 3”, but the volume solution further down is also headed “Part 3”. The three worked parts run in ascending order, so this line is Part 1.',
+    ),
   },
 
   // ── Item 22 ────────────────────────────────────────────────────────────────
@@ -129,7 +136,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 5 — Draft of a Loaded Barge',
     text: 'Situation 5 – A barge floating in a river, in the form of rectangular parallelepiped 10 m wide by 30 m long by 3 m high, is loaded with 4500 kN of sand. Its centroid is located 4 m from the barge bottom. Specific gravity of water is 1.01. Determine the following:\n\n22. The draft of the barge.',
     options: opts('1.51 m', '1.85 m', '1.21 m', '2.32 m'),
-    ...solved('s05', 'A', '1.51 m (Option A)', 179),
+    ...solved(22, 'A', '1.51 m (Option A)', 179),
   },
 
   // ── Item 23 ────────────────────────────────────────────────────────────────
@@ -143,7 +150,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 5 — Metacentric Height for Rolling',
     text: 'Situation 5 (continued) – The metacentric height for rotation along about its longest centreline or rolling.',
     options: opts('4.58 m', '5.5 m', '2.26 m', '3.65 m'),
-    ...solved('s05', 'C', '2.26 m (Option C)', 179),
+    ...solved(23, 'C', '2.26 m (Option C)', 179),
   },
 
   // ── Item 24 ────────────────────────────────────────────────────────────────
@@ -157,7 +164,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 5 — Metacentric Height for Pitching',
     text: 'Situation 5 (continued) – The metacentric height for rotation along about its shortest centreline or pitching.',
     options: opts('49.5 m', '52.3 m', '55.4 m', '46.3 m'),
-    ...solved('s05', 'D', '46.3 m (Option D)', 179),
+    ...solved(24, 'D', '46.3 m (Option D)', 179),
   },
 
   // ── Item 25 ────────────────────────────────────────────────────────────────
@@ -171,7 +178,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 6 — Liquid Surface Under Horizontal Acceleration',
     text: 'Situation 6 – A rectangular tank filled with water is moving horizontally with acceleration of ½ g.\n\n25. What is the angle of the water surface with the horizontal?',
     options: opts('26.57°', '14.04°', '39.87°', '30.96°'),
-    ...solved('s06', 'A', '26.57° (Option A)', 180),
+    ...solved(25, 'A', '26.57° (Option A)', 180),
   },
 
   // ── Item 26 ────────────────────────────────────────────────────────────────
@@ -185,7 +192,7 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 6 — Angle With the Vertical',
     text: 'Situation 6 (continued) – What is the angle of the water surface with the vertical?',
     options: opts('75.96°', '59.04°', '63.43°', '53.13°'),
-    ...solved('s06', 'C', '63.43° (Option C)', 180),
+    ...solved(26, 'C', '63.43° (Option C)', 180),
   },
 
   // ── Item 27 ────────────────────────────────────────────────────────────────
@@ -199,6 +206,6 @@ export const HPGE_NOV2015_PART2: Question[] = [
     category: 'Situation 6 — Pressure Difference Along the Tank',
     text: 'Situation 6 (continued) – If the tank is 4 meters long, what is the difference in pressure between the rear end and front end of the tank?',
     options: opts('29.43 kPa', '9.81 kPa', '19.62 kPa', '23.54 kPa'),
-    ...solved('s06', 'C', '19.62 kPa (Option C)', 180),
+    ...solved(27, 'C', '19.62 kPa (Option C)', 180),
   },
 ];

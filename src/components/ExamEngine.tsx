@@ -656,9 +656,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                       </div>
                     )}
                     {currentQuestion.solution.note && (
-                      <p className="text-[11px] leading-relaxed text-amber-300/90 border-l-2 border-amber-500/50 pl-2.5">
+                      <div className="text-[11px] leading-relaxed text-amber-300/90 border-l-2 border-amber-500/50 pl-2.5">
                         <MathView text={currentQuestion.solution.note} />
-                      </p>
+                      </div>
                     )}
                   </div>
                 )}
@@ -800,9 +800,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                     )}
 
                     {currentQuestion.solution.note && (
-                      <p className="text-[11px] leading-relaxed text-amber-300/90 border-l-2 border-amber-500/50 pl-2.5">
+                      <div className="text-[11px] leading-relaxed text-amber-300/90 border-l-2 border-amber-500/50 pl-2.5">
                         <MathView text={currentQuestion.solution.note} />
-                      </p>
+                      </div>
                     )}
                   </div>
                 )}
