@@ -28,6 +28,7 @@ import { BESA_PSAD_MAR2026_QUESTIONS } from './questionBanks/psad/mar2026BesaQue
 import { BESA_MSTC_MAR2026_QUESTIONS } from './questionBanks/mstc/mar2026BesaQuestions';
 import { BESA_HPGE_MAR2026_QUESTIONS } from './questionBanks/hpge/mar2026BesaQuestions';
 import { MSTC_MAY_2015_QUESTIONS } from './questionBanks/mstc/may2015Questions';
+import { MSTC_NOV_2015_QUESTIONS } from './questionBanks/mstc/nov2015Questions';
 import { HPGE_MAY_2015_QUESTIONS } from './questionBanks/hpge/may2015Questions';
 import { PSAD_MAY_2015_QUESTIONS } from './questionBanks/psad/may2015Questions';
 
@@ -66,6 +67,9 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  *     booklet pages 38–50 with the key on page 50 and worked solutions after
  * 21. PSAD (SEC) of May 2015 (85 Items) — from Volume 4, questions on booklet
  *     pages 72–92, key on page 93, worked solutions on pages 94–125
+ * 22. MSTC of November 2015 (90 Items) — from Volume 4, questions on booklet
+ *     pages 125–135 with the key at the foot of page 135 and worked solutions
+ *     on pages 136–162
  *
  * Besavilla (solved-problem review book, reveal-and-self-mark):
  * 22. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
@@ -151,6 +155,12 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2015,
     month: 'May',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
+  },
+  {
+    year: 2015,
+    month: 'November',
+    subjects: ['MSTC'],
     source: 'Gillesania',
   },
 ];
@@ -267,6 +277,9 @@ function getBaseQuestions(
   }
   if (subject === 'PSAD' && year === 2015 && month === 'May') {
     return PSAD_MAY_2015_QUESTIONS;
+  }
+  if (subject === 'MSTC' && year === 2015 && month === 'November') {
+    return MSTC_NOV_2015_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
