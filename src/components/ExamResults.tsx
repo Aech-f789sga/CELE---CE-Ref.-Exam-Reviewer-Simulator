@@ -707,6 +707,12 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                         </>
                       )}
 
+                      {q.solution.note && (
+                        <p className="text-[11px] leading-relaxed text-amber-300/90 border-l-2 border-amber-500/50 pl-2.5">
+                          <MathView text={q.solution.note} />
+                        </p>
+                      )}
+
                       <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-xs font-tech-mono">
                         <span className="text-slate-300">Final Answer:</span>
                         <strong className="text-emerald-300 text-sm">

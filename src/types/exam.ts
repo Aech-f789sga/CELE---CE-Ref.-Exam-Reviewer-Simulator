@@ -123,6 +123,12 @@ export interface QuestionSolution {
    * the UI shows these images as the solution instead of the text breakdown.
    */
   images?: string[];
+  /**
+   * Editorial note shown beneath the worked solution. Used to flag a defect in
+   * the source booklet — a misprinted option, a key that disagrees with the
+   * booklet's own working — without altering the scanned page itself.
+   */
+  note?: string;
 }
 
 export interface Question {
