@@ -33,6 +33,7 @@ import { HPGE_MAY_2015_QUESTIONS } from './questionBanks/hpge/may2015Questions';
 import { HPGE_NOV_2015_QUESTIONS } from './questionBanks/hpge/nov2015Questions';
 import { PSAD_MAY_2015_QUESTIONS } from './questionBanks/psad/may2015Questions';
 import { PSAD_NOV_2015_QUESTIONS } from './questionBanks/psad/nov2015Questions';
+import { MSTC_MAY_2016_QUESTIONS } from './questionBanks/mstc/may2016Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -78,19 +79,23 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  * 24. PSAD (SEC) of November 2015 (88 Items) — from Volume 4, questions on
  *     booklet pages 194–212 with the key at the foot of page 212 and worked
  *     solutions, cropped per item, on pages 213–242
+ * 25. MSTC of May 2016 (75 Items) — from Volume 4, questions on booklet pages
+ *     243–252 with the key at the foot of page 252 and worked solutions,
+ *     cropped per item, on pages 253–276; the booklet leaves items 42 and 74
+ *     unsolved
  *
  * Besavilla (solved-problem review book, reveal-and-self-mark):
- * 25. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
+ * 26. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
  *     plus 6 conceptual multiple-choice items)
- * 26. MSTC of November 2025 (61 Items — 49 worked situations answered by
+ * 27. MSTC of November 2025 (61 Items — 49 worked situations answered by
  *     reveal-and-self-mark plus 12 keyed multiple-choice items, one of which
  *     also prints a worked solution)
- * 27. PSAD of March 2026 (69 Items — 22 situations split into a/b/c worked
+ * 28. PSAD of March 2026 (69 Items — 22 situations split into a/b/c worked
  *     sub-parts plus 3 conceptual multiple-choice items)
- * 28. MSTC of March 2026 (73 Items — 51 worked situations answered by
+ * 29. MSTC of March 2026 (73 Items — 51 worked situations answered by
  *     reveal-and-self-mark plus 22 keyed multiple-choice items, several of
  *     which print their options as drawings)
- * 29. HPGE of March 2026 (47 Items — 27 worked problems with a printed
+ * 30. HPGE of March 2026 (47 Items — 27 worked problems with a printed
  *     solution plus 20 keyed concept items)
  */
 export const AVAILABLE_EXAM_SETS: {
@@ -169,6 +174,12 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2015,
     month: 'November',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
+  },
+  {
+    year: 2016,
+    month: 'May',
+    subjects: ['MSTC'],
     source: 'Gillesania',
   },
 ];
@@ -294,6 +305,9 @@ function getBaseQuestions(
   }
   if (subject === 'PSAD' && year === 2015 && month === 'November') {
     return PSAD_NOV_2015_QUESTIONS;
+  }
+  if (subject === 'MSTC' && year === 2016 && month === 'May') {
+    return MSTC_MAY_2016_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
