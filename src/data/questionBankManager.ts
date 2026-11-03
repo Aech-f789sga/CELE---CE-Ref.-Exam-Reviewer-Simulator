@@ -43,6 +43,7 @@ import { HPGE_MAY_2017_QUESTIONS } from './questionBanks/hpge/may2017Questions';
 import { PSAD_MAY_2017_QUESTIONS } from './questionBanks/psad/may2017Questions';
 import { MSTC_NOV_2017_QUESTIONS } from './questionBanks/mstc/nov2017Questions';
 import { HPGE_NOV_2017_QUESTIONS } from './questionBanks/hpge/nov2017Questions';
+import { PSAD_NOV_2017_QUESTIONS } from './questionBanks/psad/nov2017Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -142,6 +143,12 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  *     folios 588-597 with the key at the foot of folio 597 and worked solutions
  *     on folios 598-614; fourteen situations plus seven standalone items, and
  *     all 49 items have printed working
+ * 37. PSAD of November 2017 (72 Items) — from Volume 4, questions on booklet
+ *     folios 615-633 with the key at the foot of folio 633 and worked solutions
+ *     on folios 634-658; twenty-four situations, no standalone items, and 69 of
+ *     the 72 have printed working (the three recall questions of Situation 24 do
+ *     not). The key grid has eighty slots but only 72 are lettered, so items
+ *     73-80 are unused, not missing.
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -242,7 +249,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2017,
     month: 'November',
-    subjects: ['MSTC', 'HPGE'],
+    subjects: ['MSTC', 'HPGE', 'PSAD'],
     source: 'Gillesania',
   },
 ];
@@ -398,6 +405,9 @@ function getBaseQuestions(
   }
   if (subject === 'HPGE' && year === 2017 && month === 'November') {
     return HPGE_NOV_2017_QUESTIONS;
+  }
+  if (subject === 'PSAD' && year === 2017 && month === 'November') {
+    return PSAD_NOV_2017_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
