@@ -40,6 +40,7 @@ import { HPGE_NOV_2016_QUESTIONS } from './questionBanks/hpge/nov2016Questions';
 import { PSAD_NOV_2016_QUESTIONS } from './questionBanks/psad/nov2016Questions';
 import { MSTC_MAY_2017_QUESTIONS } from './questionBanks/mstc/may2017Questions';
 import { HPGE_MAY_2017_QUESTIONS } from './questionBanks/hpge/may2017Questions';
+import { PSAD_MAY_2017_QUESTIONS } from './questionBanks/psad/may2017Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -220,7 +221,7 @@ export const AVAILABLE_EXAM_SETS: {
   {
     year: 2017,
     month: 'May',
-    subjects: ['MSTC', 'HPGE'],
+    subjects: ['MSTC', 'HPGE', 'PSAD'],
     source: 'Gillesania',
   },
 ];
@@ -367,6 +368,9 @@ function getBaseQuestions(
   }
   if (subject === 'HPGE' && year === 2017 && month === 'May') {
     return HPGE_MAY_2017_QUESTIONS;
+  }
+  if (subject === 'PSAD' && year === 2017 && month === 'May') {
+    return PSAD_MAY_2017_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
