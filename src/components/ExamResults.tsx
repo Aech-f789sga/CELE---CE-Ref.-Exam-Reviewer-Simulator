@@ -588,7 +588,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                           {q.category}
                         </span>
                         <span className="text-[10px] text-slate-500 font-tech-mono">
-                          Page {q.solution.pageNumber || 11}
+                          {q.solution.pageNumber ? `Page ${q.solution.pageNumber}` : 'Written'}
                         </span>
                       </div>
                       <div className="text-xs text-slate-300 line-clamp-1 mt-0.5">

@@ -757,7 +757,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                       <span className="font-arnie text-sm">
                         {currentQuestion.solution.images?.length
                           ? `Worked Solution • ${currentQuestion.solution.pageNumberEnd && currentQuestion.solution.pageNumberEnd !== currentQuestion.solution.pageNumber ? `Booklet pp. ${currentQuestion.solution.pageNumber}–${currentQuestion.solution.pageNumberEnd}` : `Booklet p. ${currentQuestion.solution.pageNumber ?? '—'}`}`
-                          : `Page ${currentQuestion.solution.pageNumber || 11} Solution`}
+                          : currentQuestion.solution.pageNumber
+                            ? `Page ${currentQuestion.solution.pageNumber} Solution`
+                            : 'Worked Solution'}
                       </span>
                       <span className="font-tech-mono">
                         <MathView text={currentQuestion.solution.finalAnswer} />

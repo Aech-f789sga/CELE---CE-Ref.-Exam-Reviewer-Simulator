@@ -35,6 +35,7 @@ import { PSAD_MAY_2015_QUESTIONS } from './questionBanks/psad/may2015Questions';
 import { PSAD_NOV_2015_QUESTIONS } from './questionBanks/psad/nov2015Questions';
 import { MSTC_MAY_2016_QUESTIONS } from './questionBanks/mstc/may2016Questions';
 import { HPGE_MAY_2016_QUESTIONS } from './questionBanks/hpge/may2016Questions';
+import { MSTC_NOV_2016_QUESTIONS } from './questionBanks/mstc/nov2016Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -88,19 +89,28 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  *     277–284 with the key at the foot of page 284 and worked solutions,
  *     cropped per item, on pages 285–297; items 15, 16 and 18 are recall only,
  *     and folio 298 (items 47–50) is missing from the scan
+ * 27. MSTC of November 2016 (75 Items) — from Volume 4, questions on booklet
+ *     pages 345–354 with the key at the foot of page 354 and worked solutions on
+ *     pages 355–378; no situations, and items 67–72 are terminology. The
+ *     solution blocks are numbered with faint margin boxes that the scan cannot
+ *     resolve, so this section carries written working instead of crops
+ *
+ * PSAD of May 2016 is NOT available: the scan is missing booklet folios 298–314,
+ * which hold items 1–69 of that 75-item paper. Only items 70–75 survive, so the
+ * sitting is deliberately absent from the registry.
  *
  * Besavilla (solved-problem review book, reveal-and-self-mark):
- * 27. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
+ * 28. PSAD of November 2025 (71 Items — 24 situations, 65 worked sub-parts
  *     plus 6 conceptual multiple-choice items)
- * 28. MSTC of November 2025 (61 Items — 49 worked situations answered by
+ * 29. MSTC of November 2025 (61 Items — 49 worked situations answered by
  *     reveal-and-self-mark plus 12 keyed multiple-choice items, one of which
  *     also prints a worked solution)
- * 29. PSAD of March 2026 (69 Items — 22 situations split into a/b/c worked
+ * 30. PSAD of March 2026 (69 Items — 22 situations split into a/b/c worked
  *     sub-parts plus 3 conceptual multiple-choice items)
- * 30. MSTC of March 2026 (73 Items — 51 worked situations answered by
+ * 31. MSTC of March 2026 (73 Items — 51 worked situations answered by
  *     reveal-and-self-mark plus 22 keyed multiple-choice items, several of
  *     which print their options as drawings)
- * 31. HPGE of March 2026 (47 Items — 27 worked problems with a printed
+ * 32. HPGE of March 2026 (47 Items — 27 worked problems with a printed
  *     solution plus 20 keyed concept items)
  */
 export const AVAILABLE_EXAM_SETS: {
@@ -185,6 +195,12 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2016,
     month: 'May',
     subjects: ['MSTC', 'HPGE'],
+    source: 'Gillesania',
+  },
+  {
+    year: 2016,
+    month: 'November',
+    subjects: ['MSTC'],
     source: 'Gillesania',
   },
 ];
@@ -316,6 +332,9 @@ function getBaseQuestions(
   }
   if (subject === 'HPGE' && year === 2016 && month === 'May') {
     return HPGE_MAY_2016_QUESTIONS;
+  }
+  if (subject === 'MSTC' && year === 2016 && month === 'November') {
+    return MSTC_NOV_2016_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
