@@ -41,6 +41,7 @@ import { PSAD_NOV_2016_QUESTIONS } from './questionBanks/psad/nov2016Questions';
 import { MSTC_MAY_2017_QUESTIONS } from './questionBanks/mstc/may2017Questions';
 import { HPGE_MAY_2017_QUESTIONS } from './questionBanks/hpge/may2017Questions';
 import { PSAD_MAY_2017_QUESTIONS } from './questionBanks/psad/may2017Questions';
+import { MSTC_NOV_2017_QUESTIONS } from './questionBanks/mstc/nov2017Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -104,6 +105,13 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  *     pages 378–384 with the key at the foot of page 384 and worked solutions,
  *     cropped per item, on pages 385–398; ten situations, and the booklet leaves
  *     items 2, 3 and 31 unsolved
+ * 35. MSTC of November 2017 (74 Items) — from Volume 4, questions on booklet
+ *     folios 553-563 with the key at the foot of folio 563 and worked solutions
+ *     on folios 564-587. Folios 565 and 568 are Hydraulics pages bound into the
+ *     Mathematics run, so items 6-8 and 16-19 have no working in the scan and
+ *     item 5 stops mid-derivation; eleven further items are keyed from the stem
+ *     alone.
+ *
  * 29. PSAD of November 2016 (75 Items) — from Volume 4, questions on booklet
  *     pages 399–418 with the key on page 419 and worked solutions, cropped per
  *     item, on pages 420–447; twenty-three situations, items 1, 2 and 7–9 are
@@ -222,6 +230,12 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2017,
     month: 'May',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
+  },
+  {
+    year: 2017,
+    month: 'November',
+    subjects: ['MSTC'],
     source: 'Gillesania',
   },
 ];
@@ -371,6 +385,9 @@ function getBaseQuestions(
   }
   if (subject === 'PSAD' && year === 2017 && month === 'May') {
     return PSAD_MAY_2017_QUESTIONS;
+  }
+  if (subject === 'MSTC' && year === 2017 && month === 'November') {
+    return MSTC_NOV_2017_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
