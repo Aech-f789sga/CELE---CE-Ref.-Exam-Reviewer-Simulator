@@ -44,6 +44,7 @@ import { PSAD_MAY_2017_QUESTIONS } from './questionBanks/psad/may2017Questions';
 import { MSTC_NOV_2017_QUESTIONS } from './questionBanks/mstc/nov2017Questions';
 import { HPGE_NOV_2017_QUESTIONS } from './questionBanks/hpge/nov2017Questions';
 import { PSAD_NOV_2017_QUESTIONS } from './questionBanks/psad/nov2017Questions';
+import { MSTC_MAY_2018_QUESTIONS } from './questionBanks/mstc/may2018Questions';
 
 export const ALL_YEARS: number[] = Array.from({ length: 15 }, (_, i) => 2026 - i); // 2026 down to 2012
 export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'November'];
@@ -149,6 +150,12 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  *     the 72 have printed working (the three recall questions of Situation 24 do
  *     not). The key grid has eighty slots but only 72 are lettered, so items
  *     73-80 are unused, not missing.
+ * 38. MSTC of May 2018 (62 Items) — from Volume 4, questions on booklet folios
+ *     659-668 with the key at the foot of folio 669 and worked solutions on
+ *     folios 670-689. The grid is seven columns of ten and exactly filled, which
+ *     makes this the only section whose grid capacity matches the item count.
+ *     Fifty-seven items carry working; 58-62 are transportation recall questions
+ *     and the solution run stops at 57.
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
@@ -250,6 +257,12 @@ export const AVAILABLE_EXAM_SETS: {
     year: 2017,
     month: 'November',
     subjects: ['MSTC', 'HPGE', 'PSAD'],
+    source: 'Gillesania',
+  },
+  {
+    year: 2018,
+    month: 'May',
+    subjects: ['MSTC'],
     source: 'Gillesania',
   },
 ];
@@ -408,6 +421,9 @@ function getBaseQuestions(
   }
   if (subject === 'PSAD' && year === 2017 && month === 'November') {
     return PSAD_NOV_2017_QUESTIONS;
+  }
+  if (subject === 'MSTC' && year === 2018 && month === 'May') {
+    return MSTC_MAY_2018_QUESTIONS;
   }
   if (subject === 'MSTC' && year === 2025 && month === 'April') {
     return MSTC_APRIL_2025_QUESTIONS;
