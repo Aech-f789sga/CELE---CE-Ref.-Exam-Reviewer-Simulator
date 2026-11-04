@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './apr2025Helpers';
 
 export const MSTC_APR2025_PART2: Question[] = [
   // Item 15
@@ -17,26 +18,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '5' },
       { label: 'D', text: '6' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Solve the separable logistic differential equation with initial condition P(0) = 1. Integrate from P = 1 to P = 25 (half of 50 people) to find time T ≈ 5.987 days ≈ 6 days.',
-      formulas: [
-        '\\frac{dP}{dt} = 0.65 P \\left(1 - \\frac{P}{50}\\right)',
-        '\\int_0^T dt = \\int_1^{25} \\frac{dP}{0.65 P (1 - P/50)}',
-        'T = \\frac{1}{0.65} \\left[ \\ln\\left(\\frac{P}{50 - P}\\right) \\right]_1^{25}',
-        'T = \\frac{\\ln(49)}{0.65} = \\frac{3.8918}{0.65} \\approx 5.987 \\approx 6',
-      ],
-      steps: [
-        'Step 1: Separate variables: dt = dP / [0.65 P (1 - P/50)].',
-        'Step 2: Half the office population is P = 50 / 2 = 25 people.',
-        'Step 3: Integrate both sides using bounds t from 0 to T, and P from 1 to 25: ∫₀^T dt = ∫₁²⁵ [1 / (0.65 P(1 - P/50))] dP.',
-        'Step 4: Use partial fractions: 1 / [P(1 - P/50)] = 1/P + (1/50) / (1 - P/50) = 1/P + 1/(50 - P).',
-        'Step 5: T = (1/0.65) [ln(P / (50 - P))] evaluated from 1 to 25 = (1/0.65) [ln(25/25) - ln(1/49)] = ln(49) / 0.65 ≈ 5.987 days.',
-        'Step 6: Rounding to the nearest whole day gives 6 days (Option D).',
-      ],
-      finalAnswer: '6 (Option D)',
-      pageNumber: 334,
-    },
+    ...solved(15, 'D', '6 (Option D)'),
   },
 
   // Item 16
@@ -55,25 +37,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: 'III' },
       { label: 'D', text: 'IV' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Find points of intersection by setting f(x) = g(x): -x² - x = -x - 1 => x² = 1 => x = ±1. On [-1, 1], test x = 0: f(0) = 0 > g(0) = -1, so f(x) is the upper curve. Area = ∫_{-1}^1 [f(x) - g(x)] dx = ∫_{-1}^1 [(-x² - x) - (-x - 1)] dx = ∫_{-1}^1 (1 - x²) dx.',
-      formulas: [
-        'f(x) = -x^2 - x, \\quad g(x) = -x - 1',
-        '-x^2 - x = -x - 1 \\implies x^2 = 1 \\implies x = \\pm 1',
-        'A = \\int_{x_1}^{x_2} (y_u - y_L)\\, dx',
-        'A = \\int_{-1}^1 [(-x^2 - x) - (-x - 1)]\\, dx = \\int_{-1}^1 (1 - x^2)\\, dx',
-      ],
-      steps: [
-        'Step 1: Locate the intersection points: -x² - x = -x - 1 => -x² = -1 => x = -1 and x = 1.',
-        'Step 2: Determine which curve is on top on [-1, 1]. At x = 0: f(0) = 0 and g(0) = -1. Since 0 > -1, f(x) is upper and g(x) is lower.',
-        'Step 3: Setup area integral: A = ∫_{-1}^1 [f(x) - g(x)] dx = ∫_{-1}^1 [(-x² - x) - (-x - 1)] dx.',
-        'Step 4: Simplify: (-x² - x + x + 1) = (1 - x²).',
-        'Step 5: This matches Expression I: ∫_{-1}^1 (1 - x²) dx (Option A).',
-      ],
-      finalAnswer: 'I (Option A)',
-      pageNumber: 334,
-    },
+    ...solved(16, 'A', 'I (Option A)'),
   },
 
   // Item 17
@@ -124,25 +88,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '11.5' },
       { label: 'D', text: '13.5' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Using vertical strips, upper curve is y_u = x² + 3 and lower curve is y_L = 3x - x². Area = ∫₀³ [(x² + 3) - (3x - x²)] dx = ∫₀³ (2x² - 3x + 3) dx = [2x³/3 - 3x²/2 + 3x] from 0 to 3 = 18 - 13.5 + 9 = 13.5 sq. units.',
-      formulas: [
-        'y_1 = x^2 + 3, \\quad y_2 = 3x - x^2',
-        'A = \\int_0^3 (y_1 - y_2)\\, dx = \\int_0^3 [(x^2 + 3) - (3x - x^2)]\\, dx',
-        'A = \\int_0^3 (2x^2 - 3x + 3)\\, dx',
-        'A = \\left[ \\frac{2x^3}{3} - \\frac{3x^2}{2} + 3x \\right]_0^3 = 18 - 13.5 + 9 = 13.5',
-      ],
-      steps: [
-        'Step 1: Upper function on [0, 3] is y_u = x² + 3, and lower curve is y_L = 3x - x².',
-        'Step 2: Setup definite integral: A = ∫₀³ [(x² + 3) - (3x - x²)] dx.',
-        'Step 3: Combine terms: ∫₀³ (2x² - 3x + 3) dx.',
-        'Step 4: Integrate term-by-term: [2x³/3 - 1.5x² + 3x] from 0 to 3.',
-        'Step 5: Evaluate at x = 3: 2(27)/3 - 1.5(9) + 3(3) = 18 - 13.5 + 9 = 13.5 sq. units (Option D).',
-      ],
-      finalAnswer: '13.5 (Option D)',
-      pageNumber: 334,
-    },
+    ...solved(17, 'D', '13.5 (Option D)'),
   },
 
   // Item 18
@@ -161,24 +107,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '-x² + 10x' },
       { label: 'D', text: 'x² - 10x' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Marginal revenue MR = dR/dx = 2x - 10. Integrating with respect to x gives R(x) = ∫ (2x - 10) dx = x² - 10x + C. Since total revenue is zero when no units are sold (R(0) = 0), the constant of integration C = 0. Thus, R(x) = x² - 10x.',
-      formulas: [
-        'M_R = \\frac{dR}{dx} = 2x - 10',
-        'R(x) = \\int M_R\\, dx = \\int (2x - 10)\\, dx = x^2 - 10x + C',
-        'R(0) = 0 \\implies C = 0',
-        'R(x) = x^2 - 10x',
-      ],
-      steps: [
-        'Step 1: Recall that the revenue function is the antiderivative of marginal revenue: R(x) = ∫ MR dx.',
-        'Step 2: Integrate: ∫ (2x - 10) dx = x² - 10x + C.',
-        'Step 3: Apply the economic boundary condition: when 0 units are sold, revenue is $0: R(0) = 0 => C = 0.',
-        'Step 4: Therefore, the revenue function is R(x) = x² - 10x (Option D).',
-      ],
-      finalAnswer: 'x² - 10x (Option D)',
-      pageNumber: 335,
-    },
+    ...solved(18, 'D', 'x² - 10x (Option D)'),
   },
 
   // Item 19
@@ -197,27 +126,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '74.00 mi/h, 383.14 ft' },
       { label: 'D', text: '47.00 mi/h, 338.41 ft' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Convert initial speed u₀ = 45 mi/h × (5280/3600) = 66.15 ft/s. Applying the vehicle velocity formula with α = 3.3, β = 0.04, and t = 5 s yields u(5) = 69.114 ft/s = 47.02 mi/h. Evaluating the distance equation gives x = 338.41 ft.',
-      formulas: [
-        'u_0 = 45 \\times \\frac{5280}{3600} = 66.15',
-        'u(t) = \\frac{\\alpha}{\\beta}(1 - e^{-\\beta t}) + u_0 e^{-\\beta t}',
-        'u(5) = \\frac{3.3}{0.04}(1 - e^{-0.04(5)}) + 66.15 e^{-0.04(5)} = 69.11',
-        'u(5) = 69.11 \\times \\frac{3600}{5280} = 47.02 \\approx 47.00',
-        'x(t) = \\frac{\\alpha}{\\beta}t - \\frac{\\alpha}{\\beta^2}(1 - e^{-\\beta t}) + \\frac{u_0}{\\beta}(1 - e^{-\\beta t}) = 338.41',
-      ],
-      steps: [
-        'Step 1: Convert u₀ to ft/sec: u₀ = 45 × (5280 / 3600) = 66.15 ft/s.',
-        'Step 2: Calculate e^{-β t} = e^{-0.04(5)} = e^{-0.20} = 0.81873. Then (1 - e^{-β t}) = 0.18127.',
-        'Step 3: Compute speed u: (3.3 / 0.04)(0.18127) + 66.15(0.81873) = 14.955 + 54.159 = 69.114 ft/s.',
-        'Step 4: Convert speed to mi/h: 69.114 / 1.4667 ≈ 47.02 mi/h ≈ 47.00 mi/h.',
-        'Step 5: Compute distance x: (3.3 / 0.04)(5) - (3.3 / 0.04²)(0.18127) + (66.15 / 0.04)(0.18127) = 412.5 - 373.87 + 299.78 = 338.41 ft.',
-        'Step 6: Result: 47.00 mi/h and 338.41 ft (Option D).',
-      ],
-      finalAnswer: '47.00 mi/h, 338.41 ft (Option D)',
-      pageNumber: 335,
-    },
+    ...solved(19, 'D', '47.00 mi/h, 338.41 ft (Option D)'),
   },
 
   // Item 20
@@ -236,26 +145,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '4.59 × 10⁶ cycles' },
       { label: 'D', text: '5.49 × 10⁶ cycles' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Critical crack length a_c = (1/π)[25 / (100 × 1.0)]² = 0.02 m. Effective cyclic tensile stress range Δσ = 100 MPa (compressive stresses do not contribute to crack propagation). Integrating Paris law from initial crack a₀ = 0.002 m to a_c = 0.02 m yields N_f = 5.49 × 10⁶ cycles.',
-      formulas: [
-        'a_c = \\frac{1}{\\pi} \\left( \\frac{K_{Ic}}{\\sigma Y} \\right)^2 = \\frac{1}{\\pi} \\left( \\frac{25}{100(1.0)} \\right)^2 = 0.01989 \\approx 0.02',
-        'N_f = \\frac{1}{A \\pi^{3/2} (\\Delta\\sigma)^3 Y^3} \\int_{a_0}^{a_c} a^{-3/2}\\, da',
-        '\\int_{0.002}^{0.02} a^{-3/2}\\, da = \\left[ -2 a^{-1/2} \\right]_{0.002}^{0.02} = 30.52',
-        'N_f = \\frac{30.52}{(1.0 \\times 10^{-12}) \\pi^{3/2} (100)^3} = 5.49 \\times 10^6',
-      ],
-      steps: [
-        'Step 1: Compute critical crack length a_c: a_c = (1/π)(25/100)² = (1/π)(0.0625) ≈ 0.02 m.',
-        'Step 2: Note that compressive stress of -50 MPa does not propagate fatigue cracks, so Δσ = 100 MPa.',
-        'Step 3: Initial flaw size a₀ = 2.0 mm = 0.002 m.',
-        'Step 4: Evaluate the integral: ∫_{0.002}^{0.02} a^{-1.5} da = [-2 / √a]_{0.002}^{0.02} = 2(22.36 - 7.07) = 30.58.',
-        'Step 5: Compute denominator: A · π^{1.5} · (Δσ)³ = 1.0 × 10^{-12} × 5.5683 × 10⁶ = 5.5683 × 10^{-6}.',
-        'Step 6: N_f = 30.58 / (5.5683 × 10^{-6}) = 5.49 × 10⁶ cycles (Option D).',
-      ],
-      finalAnswer: '5.49 × 10⁶ cycles (Option D)',
-      pageNumber: 335,
-    },
+    ...solved(20, 'D', '5.49 × 10⁶ cycles (Option D)'),
   },
 
   // Item 21
@@ -274,25 +164,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '70' },
       { label: 'D', text: '60' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Let x be the price increase in dollars. Ticket price p(x) = 50 + x, passengers = 8000 - 100x. Monthly revenue R(x) = (50 + x)(8000 - 100x) = 400,000 + 3000x - 100x². Set dR/dx = 3000 - 200x = 0 => x = 15. The optimal ticket price is $50 + $15 = $65.',
-      formulas: [
-        'p(x) = 50 + x',
-        'R(x) = (50 + x)(8000 - 100x) = 400000 + 3000x - 100x^2',
-        '\\frac{dR}{dx} = 3000 - 200x = 0 \\implies x = 15',
-        'p = 50 + 15 = 65',
-        'R_{\\max} = 65(6500) = 422500',
-      ],
-      steps: [
-        'Step 1: Set up the revenue equation in terms of price increase x: R(x) = (50 + x)(8000 - 100x).',
-        'Step 2: Expand: R(x) = 400,000 + 8000x - 5000x - 100x² = 400,000 + 3000x - 100x².',
-        'Step 3: Take derivative and equate to zero: dR/dx = 3000 - 200x = 0 => 200x = 3000 => x = 15.',
-        'Step 4: Ticket price for maximum revenue: p = 50 + 15 = $65 (Option A).',
-      ],
-      finalAnswer: '65 (Option A)',
-      pageNumber: 336,
-    },
+    ...solved(21, 'A', '65 (Option A)'),
   },
 
   // Item 22
@@ -311,24 +183,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: 'P_n = 0.2P_{n-1} + 0.45P_{n-2}' },
       { label: 'D', text: 'P_n = 0.2P_{n-1} + 1.45P_{n-2}' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'At the end of year n, the balance includes the prior year balance P_{n-1}, plus the first dividend (20% of P_{n-1}), plus the second dividend (45% of the year before that, P_{n-2}). P_n = P_{n-1} + 0.20P_{n-1} + 0.45P_{n-2} = 1.2P_{n-1} + 0.45P_{n-2}.',
-      formulas: [
-        'D_1 = 0.20 P_{n-1}',
-        'D_2 = 0.45 P_{n-2}',
-        'P_n = P_{n-1} + D_1 + D_2',
-        'P_n = P_{n-1} + 0.20 P_{n-1} + 0.45 P_{n-2} = 1.2 P_{n-1} + 0.45 P_{n-2}',
-      ],
-      steps: [
-        'Step 1: The capital in the account at the beginning of year n is P_{n-1}.',
-        'Step 2: 1st dividend awarded on the last day of year n is 20% of P_{n-1}: 0.20 P_{n-1}.',
-        'Step 3: 2nd dividend awarded is 45% of the balance two years ago: 0.45 P_{n-2}.',
-        'Step 4: Sum all components: P_n = P_{n-1} + 0.20 P_{n-1} + 0.45 P_{n-2} = 1.2 P_{n-1} + 0.45 P_{n-2} (Option B).',
-      ],
-      finalAnswer: 'P_n = 1.2P_{n-1} + 0.45P_{n-2} (Option B)',
-      pageNumber: 336,
-    },
+    ...solved(22, 'B', 'P_n = 1.2P_{n-1} + 0.45P_{n-2} (Option B)'),
   },
 
   // Item 23
@@ -347,24 +202,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: 'Both' },
       { label: 'D', text: 'Neither' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Compute the Equivalent Annual Cost (EAC) for each alternative: EAC_A = 1800(A/P, 7%, 30) + 5 = 1800(0.08059) + 5 = $150.06/yr. EAC_B = 450(A/P, 7%, 10) + 20 = 450(0.14238) + 20 = $84.07/yr. Since EAC_B < EAC_A, Alternative B is significantly more economical.',
-      formulas: [
-        'EAC = C_0 \\left[ \\frac{i(1+i)^n}{(1+i)^n - 1} \\right] + M',
-        'EAC_A = 1800 \\left[ \\frac{0.07(1.07)^{30}}{(1.07)^{30} - 1} \\right] + 5 = 1800(0.08059) + 5 = 150.06',
-        'EAC_B = 450 \\left[ \\frac{0.07(1.07)^{10}}{(1.07)^{10} - 1} \\right] + 20 = 450(0.14238) + 20 = 84.07',
-        'EAC_B < EAC_A \\implies 84.07 < 150.06',
-      ],
-      steps: [
-        'Step 1: Calculate annual capital recovery plus maintenance for Alternative A: EAC_A = 1800(0.07) + 5 + 1800(0.07)/[(1.07)³⁰ - 1] = $150.06.',
-        'Step 2: Calculate annual capital recovery plus maintenance for Alternative B: EAC_B = 450(0.07) + 20 + 450(0.07)/[(1.07)¹⁰ - 1] = $84.07.',
-        'Step 3: Comparing annual costs: $84.07 < $150.06, meaning Alternative B requires less annual expenditure.',
-        'Step 4: Alternative B is superior (Option B).',
-      ],
-      finalAnswer: 'Alternative B (Option B)',
-      pageNumber: 336,
-    },
+    ...solved(23, 'B', 'Alternative B (Option B)'),
   },
 
   // Item 24
@@ -383,23 +221,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '$873' },
       { label: 'D', text: '$738' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Cash flows at year ends: Year 1 = $1000, Year 2 = $800, Year 3 = $640, Year 4 = $512. Present worth P = 1000(1.25)⁻¹ + 800(1.25)⁻² + 640(1.25)⁻³ + 512(1.25)⁻⁴ = 800 + 512 + 327.68 + 209.715 = $1849.40. Uniform annual equivalent A = 1849.40 × [0.25(1.25)⁴ / (1.25⁴ - 1)] = $783.11 ≈ $783.',
-      formulas: [
-        'P = \\sum_{t=1}^4 F_t (1 + i)^{-t} = \\frac{1000}{1.25} + \\frac{800}{1.25^2} + \\frac{640}{1.25^3} + \\frac{512}{1.25^4} = 1849.40',
-        'A = P \\left[ \\frac{i(1+i)^n}{(1+i)^n - 1} \\right]',
-        'A = 1849.40 \\left[ \\frac{0.25(1.25)^4}{(1.25)^4 - 1} \\right] = 1849.40(0.42344) = 783.11 \\approx 783',
-      ],
-      steps: [
-        'Step 1: Compute cash flows: Y1 = $1,000; Y2 = 1000(0.8) = $800; Y3 = 800(0.8) = $640; Y4 = 640(0.8) = $512.',
-        'Step 2: Discount each cash flow at i = 25%: P = 1000/1.25 + 800/1.25² + 640/1.25³ + 512/1.25⁴ = 800 + 512 + 327.68 + 209.715 = $1849.40.',
-        'Step 3: Convert P to uniform series A over 4 years: A = P · (A/P, 25%, 4) = 1849.40 × [0.25(2.4414) / (2.4414 - 1)] = 1849.40 × 0.42344 = $783.11.',
-        'Step 4: Closest answer is $783 (Option B).',
-      ],
-      finalAnswer: '$783 (Option B)',
-      pageNumber: 336,
-    },
+    ...solved(24, 'B', '$783 (Option B)'),
   },
 
   // Item 25
@@ -418,23 +240,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '$22' },
       { label: 'D', text: '$21' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Total outstanding principal P = $677 + $452 + $139 + $141 = $1409. Assuming no new interest: Minimum Payment = 0 + 1.5%($1409) = $21.135. Credit card billing rules require payment ≥ $21.135, which rounds up to $22.',
-      formulas: [
-        'P = 677 + 452 + 139 + 141 = 1409',
-        'M_p = I + 0.015 P',
-        'M_p = 0 + 0.015(1409) = 21.135 \\implies 22',
-      ],
-      steps: [
-        'Step 1: Calculate total charged principal: P = $677 + $452 + $139 + $141 = $1409.',
-        'Step 2: Calculate 1.5% of outstanding principal: 0.015 × $1409 = $21.135.',
-        'Step 3: With no new interest, minimum required payment is at least $21.135.',
-        'Step 4: Standard commercial minimum payment rounds up to whole dollar $22 (Option C).',
-      ],
-      finalAnswer: '$22 (Option C)',
-      pageNumber: 337,
-    },
+    ...solved(25, 'C', '$22 (Option C)'),
   },
 
   // Item 26
@@ -453,24 +259,7 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: '53.7%' },
       { label: 'D', text: '57.3%' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Breakeven hours x = C_F / (p - c_v) = 2,024,000 / (85.56 - 62) = 2,024,000 / 23.56 = 85,908.32 hours per year. Percentage of total capacity = (85,908.32 / 160,000) × 100% = 53.69% ≈ 53.7%.',
-      formulas: [
-        'R(x) = C_F + c_v x',
-        'p x = C_F + c_v x \\implies x = \\frac{C_F}{p - c_v}',
-        'x = \\frac{2024000}{85.56 - 62} = \\frac{2024000}{23.56} = 85908.32',
-        '\\% C = \\frac{85908.32}{160000} \\times 100\\% = 53.69\\% \\approx 53.7\\%',
-      ],
-      steps: [
-        'Step 1: Contribution margin per hour = Selling price - Variable cost = $85.56 - $62.00 = $23.56/hr.',
-        'Step 2: Breakeven volume: x = Fixed Cost / Contribution Margin = $2,024,000 / $23.56 = 85,908.32 hours.',
-        'Step 3: Compare to maximum capacity of 160,000 hours: (85,908.32 / 160,000) × 100% = 53.69% ≈ 53.7%.',
-        'Step 4: Therefore, the breakeven capacity is 53.7% (Option C).',
-      ],
-      finalAnswer: '53.7% (Option C)',
-      pageNumber: 337,
-    },
+    ...solved(26, 'C', '53.7% (Option C)'),
   },
 
   // Item 27
@@ -489,25 +278,6 @@ export const MSTC_APR2025_PART2: Question[] = [
       { label: 'C', text: 'Operate at 6,000 feet per minute' },
       { label: 'D', text: 'Operate at 6,500 feet per minute' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'At 5,000 ft/min: cycle time = 2 + 0.25 = 2.25 hr => 3.555 cycles/day. Net value per day = $711 - $35.55 - $17.78 = $657.67. At 6,000 ft/min: cycle time = 1.5 + 0.25 = 1.75 hr => 4.571 cycles/day. Net value per day = $822.78 - $45.71 - $22.86 = $754.21. Since $754.21 > $657.67, operating at 6,000 ft/min is superior.',
-      formulas: [
-        'T_1 = 2 + 0.25 = 2.25 \\implies N_1 = \\frac{8}{2.25} = 3.555',
-        'V_1 = 3.555(2)(1000)(0.10) - 3.555(10) - 3.555\\left(\\frac{50}{10}\\right) = 657.67',
-        'T_2 = 1.5 + 0.25 = 1.75 \\implies N_2 = \\frac{8}{1.75} = 4.571',
-        'V_2 = 4.571(1.5)(1200)(0.10) - 4.571(10) - 4.571\\left(\\frac{50}{10}\\right) = 754.21',
-        'V_2 > V_1 \\implies 754.21 > 657.67',
-      ],
-      steps: [
-        'Step 1: For 5,000 ft/min: Cycle time = 2 hr planing + 0.25 hr shutdown = 2.25 hr. Cycles per 8-hr day = 8 / 2.25 = 3.555 cycles.',
-        'Step 2: Value added = 3.555 × 2 hr × 1,000 bd-ft × $0.10 = $711.00. Sharpening cost = 3.555 × $10 = $35.55. Blade depreciation = 3.555 × ($50/10) = $17.78. Net = $657.67/day.',
-        'Step 3: For 6,000 ft/min: Cycle time = 1.5 hr planing + 0.25 hr shutdown = 1.75 hr. Cycles per 8-hr day = 8 / 1.75 = 4.571 cycles.',
-        'Step 4: Value added = 4.571 × 1.5 hr × 1,200 bd-ft × $0.10 = $822.78. Sharpening cost = 4.571 × $10 = $45.71. Blade depreciation = 4.571 × ($50/10) = $22.86. Net = $754.21/day.',
-        'Step 5: Compare: $754.21 > $657.67. Therefore, operate at 6,000 feet per minute (Option C).',
-      ],
-      finalAnswer: 'Operate at 6,000 feet per minute (Option C)',
-      pageNumber: 337,
-    },
+    ...solved(27, 'C', 'Operate at 6,000 feet per minute (Option C)'),
   },
 ];

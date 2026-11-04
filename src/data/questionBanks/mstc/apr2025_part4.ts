@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './apr2025Helpers';
 
 export const MSTC_APR2025_PART4: Question[] = [
   // Item 41
@@ -17,23 +18,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: '10' },
       { label: 'D', text: '8' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Convert vehicle arrival rate λ = 500 veh/hr = 0.1389 veh/sec. The effective red time is r = C - g = 100 - 30 = 70 seconds. In deterministic queueing, the maximum queue occurs right at the end of the red interval: Q_{max} = λ r = 0.1389 × 70 = 9.72 ≈ 10 vehicles.',
-      formulas: [
-        '\\lambda = \\frac{500}{3600} = 0.1389',
-        'r = C - g = 100 - 30 = 70',
-        'Q_{\\max} = \\lambda r = 0.1389 \\times 70 = 9.72 \\approx 10',
-      ],
-      steps: [
-        'Step 1: Convert arrival rate to vehicles per second: λ = 500 / 3600 = 0.1389 veh/s.',
-        'Step 2: Effective red time is the portion of the cycle when vehicles queue up: r = 100 s - 30 s = 70 s.',
-        'Step 3: Under D/D/1 conditions, maximum queue is accumulated during red time: Q_{max} = λ · r = 0.1389 × 70 = 9.72 vehicles.',
-        'Step 4: Rounding to the nearest whole vehicle gives 10 vehicles (Option C).',
-      ],
-      finalAnswer: '10 (Option C)',
-      pageNumber: 341,
-    },
+    ...solved(41, 'C', '10 (Option C)'),
   },
 
   // Item 42
@@ -52,25 +37,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: '78 km/h' },
       { label: 'D', text: '98 km/h' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'From the test skid run at 60 km/h (16.667 m/s) stopping in 100 m: f = v² / (2g d_b) = (16.667)² / [2(9.81)(100)] = 0.1416. Average accident skid mark d_b = (210 + 205 + 190 + 195) / 4 = 200 m. Final impact velocity v_e = 50 km/h = 13.889 m/s. Solving v_i² = v_e² + 2g f d_b gives v_i = 27.358 m/s = 98.49 km/h ≈ 98 km/h.',
-      formulas: [
-        'f = \\frac{v_i^2}{2g d_b} = \\frac{(16.667)^2}{2(9.81)(100)} = 0.1416',
-        'd_b = \\frac{210 + 205 + 190 + 195}{4} = 200',
-        'v_i = \\sqrt{v_e^2 + 2g f d_b} = \\sqrt{(13.889)^2 + 2(9.81)(0.1416)(200)} = 27.358',
-        'v_i = 27.358 \\times 3.6 = 98.49 \\approx 98',
-      ],
-      steps: [
-        'Step 1: Determine pavement friction f from trial run: 60 km/h = 60 / 3.6 = 16.667 m/s. f = (16.667)² / [2(9.81)(100)] = 0.1416.',
-        'Step 2: Average the four skid marks: d_b = (210 + 205 + 190 + 195) / 4 = 200 meters.',
-        'Step 3: Convert impact velocity: v_e = 50 km/h = 50 / 3.6 = 13.889 m/s.',
-        'Step 4: Use work-energy principle: v_i² = v_e² + 2g f d_b = 13.889² + 2(9.81)(0.1416)(200) = 192.90 + 555.65 = 748.55 (m/s)²',
-        'Step 5: v_i = √748.55 = 27.358 m/s × 3.6 = 98.49 km/h ≈ 98 km/h (Option D).',
-      ],
-      finalAnswer: '98 km/h (Option D)',
-      pageNumber: 341,
-    },
+    ...solved(42, 'D', '98 km/h (Option D)'),
   },
 
   // Item 43
@@ -89,26 +56,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: '1.62' },
       { label: 'D', text: '1.29' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Traffic base TB = (3 × 15,400 × 0.2 × 365) / 10⁸ = 0.033726 per 100 mvm. Segment weighted crashes = 3(8) + 15 = 39 equivalent crashes, giving an observed rate of 39 / 0.033726 = 1,156.4 crashes/100mvm. Critical Rate CR = 615 + 0.5/0.033726 + 1.96 √(615 / 0.033726) = 615 + 14.83 + 264.7 = 894.5 ≈ 895. Crash Ratio = 1157 / 895 = 1.29. Since Crash Ratio > 1.0, the site is classified as hazardous.',
-      formulas: [
-        'TB = \\frac{3 \\times 15400 \\times 0.20 \\times 365}{10^8} = 0.033726',
-        'E = 3(8) + 15 = 39',
-        'R = \\frac{39}{0.033726} = 1156.4',
-        'CR = 615 + \\frac{0.5}{0.033726} + 1.96 \\sqrt{\\frac{615}{0.033726}} = 894.54 \\approx 895',
-        'R = \\frac{1156.4}{894.5} = 1.29',
-      ],
-      steps: [
-        'Step 1: Compute vehicle exposure in hundred million vehicle miles (100 mvm): TB = (3 × 15,400 × 0.20 × 365) / 100,000,000 = 0.033726.',
-        'Step 2: Equivalent segment crash history: 1 death/injury = 3 PDO crashes => 3(8) + 15 = 39 equivalent crashes.',
-        'Step 3: Actual crash rate on segment = 39 / 0.033726 = 1,156.4 crashes per 100 mvm.',
-        'Step 4: Statewide Critical Rate: CR = 615 + 0.5/0.033726 + 1.96√(615/0.033726) = 615 + 14.83 + 264.71 = 894.5 ≈ 895 crashes/100mvm.',
-        'Step 5: Crash Ratio = 1156.4 / 895 = 1.29 (Option D).',
-      ],
-      finalAnswer: '1.29 (Option D)',
-      pageNumber: 342,
-    },
+    ...solved(43, 'D', '1.29 (Option D)'),
   },
 
   // Item 44
@@ -127,27 +75,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: '1.31' },
       { label: 'D', text: '1.34' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Project duration = 522 / 6 = 87 weeks. Total weekday regular hours = 5 days/wk × 87 wks × 8 hr = 3,480 hrs (factor 1.0). Weekday overtime hours = 5 days/wk × 87 wks × 2 hr = 870 hrs (factor 1.5). Weekend/contingency hours = (87 wks × 10 hr) + (30 days × 10 hr) = 1,170 hrs (factor 1.8). Overall premium factor = [3480(1.0) + 870(1.5) + 1170(1.8)] / [3480 + 870 + 1170] = 6,891 / 5,520 = 1.248 ≈ 1.25.',
-      formulas: [
-        'W = \\frac{522}{6} = 87',
-        'H_{\\text{reg}} = 5 \\times 87 \\times 8 = 3480',
-        'H_{\\text{ot}} = 5 \\times 87 \\times 2 = 870',
-        'H_{\\text{wknd}} = (87 \\times 10) + (30 \\times 10) = 1170',
-        'H_{\\text{tot}} = 3480 + 870 + 1170 = 5520',
-        'P = \\frac{3480(1.0) + 870(1.5) + 1170(1.8)}{5520} = \\frac{6891}{5520} = 1.248 \\approx 1.25',
-      ],
-      steps: [
-        'Step 1: Duration in weeks = 522 working days / 6 days/week = 87 weeks.',
-        'Step 2: Base weekday hours (8 hr/day, 5 days/wk): 5 × 87 × 8 = 3,480 hours at 1.0x rate.',
-        'Step 3: Weekday overtime hours (2 hr/day, 5 days/wk): 5 × 87 × 2 = 870 hours at 1.5x rate.',
-        'Step 4: Weekend work (6th day of 87 weeks + 30 contingency days at 10 hr/day): (87 × 10) + (30 × 10) = 1,170 hours at 1.8x rate.',
-        'Step 5: Weighted average rate = [3480(1.0) + 870(1.5) + 1170(1.8)] / 5520 = 6,891 / 5,520 = 1.248 ≈ 1.25 (Option A).',
-      ],
-      finalAnswer: '1.25 (Option A)',
-      pageNumber: 342,
-    },
+    ...solved(44, 'A', '1.25 (Option A)'),
   },
 
   // Item 45
@@ -223,26 +151,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'A-B-D-F-G' },
       { label: 'D', text: 'A-C-F-G' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Calculate the total duration of each path through the CPM network from Start (A) to End (G): Path A-B-E-G = 4 + 2 = 6 days; Path A-B-D-G = 4 + 5 = 9 days; Path A-C-F-G = 6 + 3 = 9 days; Path A-B-D-F-G = 4 + 5 + 3 = 12 days. The critical path is the longest sequence, which is A-B-D-F-G with 12 days.',
-      formulas: [
-        'T_{A-B-E-G} = 4 + 2 = 6',
-        'T_{A-B-D-G} = 4 + 5 = 9',
-        'T_{A-C-F-G} = 6 + 3 = 9',
-        'T_{A-B-D-F-G} = 4 + 5 + 3 = 12',
-      ],
-      steps: [
-        'Step 1: Identify all available paths connecting node A to node G.',
-        'Step 2: Path A-B-E-G duration = 4 + 2 = 6 days.',
-        'Step 3: Path A-B-D-G duration = 4 + 5 = 9 days.',
-        'Step 4: Path A-C-F-G duration = 6 + 3 = 9 days.',
-        'Step 5: Path A-B-D-F-G duration = 4 + 5 + 3 = 12 days.',
-        'Step 6: The critical path is the sequence with the longest total duration: A-B-D-F-G (Option C).',
-      ],
-      finalAnswer: 'A-B-D-F-G (Option C)',
-      pageNumber: 343,
-    },
+    ...solved(45, 'C', 'A-B-D-F-G (Option C)'),
   },
 
   // Item 46
@@ -261,19 +170,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'I and III' },
       { label: 'D', text: 'All of the above' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'All three statements represent well-documented physical and construction shortcomings of unbound granular subbases beneath rigid concrete pavements: pumping of fines through joints due to water infiltration (I), void creation leading to loss of support and fatigue cracking (II), and compaction/workmanship unevenness inducing differential settlement (III).',
-      formulas: [],
-      steps: [
-        'Step 1: Statement I is true: Water entering joints mixes with erodible granular fines; heavy wheel loads generate high pore water pressure that ejects (pumps) fines out through joints.',
-        'Step 2: Statement II is true: The removal of fines creates voids under the slab edges and corners, resulting in loss of subbase support and subsequent slab cracking.',
-        'Step 3: Statement III is true: Inconsistent grading or compaction during construction yields uneven density and differential settlement under traffic.',
-        'Step 4: Therefore, all three statements are genuine shortcomings (Option D).',
-      ],
-      finalAnswer: 'All of the above (Option D)',
-      pageNumber: 343,
-    },
+    ...solved(46, 'D', 'All of the above (Option D)'),
   },
 
   // Item 47
@@ -292,20 +189,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'I, III, and IV' },
       { label: 'D', text: 'All of the above' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Method I (larger diameter bars at closer spacing) is specified for heavy stabilization of major, deep-seated slips. For minor, shallow surface slips, appropriate engineering solutions include tie beams to distribute loads across nails (II), steel wire mesh to retain shallow surface raveling (III), and short soil nails hybridizing with long nails to pin the surficial layer (IV).',
-      formulas: [],
-      steps: [
-        'Step 1: Method I is unsuitable for minor slips: heavy reinforcement is designated for deep global slope failure, whereas minor slips require surface control rather than massive tensile capacity.',
-        'Step 2: Method II (horizontal tie beams) links adjacent soil nail heads, redistributing localized surface forces across the system.',
-        'Step 3: Method III (wire mesh / facing) prevents shallow unravelling and spalling of soil between nail locations.',
-        'Step 4: Method IV (combining short nails with long nails) pins shallow instability without wasteful deep embedment for every nail.',
-        'Step 5: Thus, methods II, III, and IV are correct (Option B).',
-      ],
-      finalAnswer: 'II, III, and IV (Option B)',
-      pageNumber: 343,
-    },
+    ...solved(47, 'B', 'II, III, and IV (Option B)'),
   },
 
   // Item 48
@@ -324,20 +208,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'I, III, and IV' },
       { label: 'D', text: 'All of the above' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'All statements describe valid technical objectives of sacrificial verification and production pull-out testing on soil nails: verifying assumed design grout-ground bond (I), obtaining ultimate skin friction values up to the 80% yield/UTS bar limit for future calibration (II), monitoring long-term creep and slip under sustained test loads (III), and evaluating elastic and residual plastic deformations across cyclic loading stages (IV).',
-      formulas: [],
-      steps: [
-        'Step 1: Verification tests primarily confirm the designer\'s assumed ultimate soil-grout bond stress under site-specific conditions (Statement I).',
-        'Step 2: Ultimate capacity testing intentionally pushes the grout-ground interface to failure while remaining below 80% of steel tensile strength to avoid premature tendon fracture (Statement II).',
-        'Step 3: Creep testing observes displacement under constant sustained proof load over time (Statement III).',
-        'Step 4: Cyclic loading-unloading curves separate reversible elastic tendon stretch from non-recoverable plastic movement (Statement IV).',
-        'Step 5: Hence, all four are valid objectives (Option D).',
-      ],
-      finalAnswer: 'All of the above (Option D)',
-      pageNumber: 344,
-    },
+    ...solved(48, 'D', 'All of the above (Option D)'),
   },
 
   // Item 49
@@ -356,19 +227,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'Seasoning' },
       { label: 'D', text: 'Hygroscopic' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Hygroscopicity is the intrinsic physical property of timber to exchange moisture with the ambient atmosphere, swelling as moisture is adsorbed below the fiber saturation point and shrinking as bound water is desorbed during drying.',
-      formulas: [],
-      steps: [
-        'Step 1: Susceptibility describes vulnerability to biological decay or pest infestation.',
-        'Step 2: Moisture content is the quantitative ratio of water weight to oven-dry wood weight.',
-        'Step 3: Seasoning is the controlled industrial process of drying lumber.',
-        'Step 4: Hygroscopic refers specifically to the reversible dimensional property of expanding with moisture gain and shrinking with moisture loss (Option D).',
-      ],
-      finalAnswer: 'Hygroscopic (Option D)',
-      pageNumber: 344,
-    },
+    ...solved(49, 'D', 'Hygroscopic (Option D)'),
   },
 
   // Item 50
@@ -387,20 +246,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'Offers low resistance to the passage of electricity.' },
       { label: 'D', text: 'Glass is fatigue resistant, this means that if pressure is applied to glass, causing it to bend or stretch, the glass will return exactly to its original shape when the bending or stretching force is removed.' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Glass is an excellent electrical insulator with an extremely high electrical resistivity (typically 10¹¹ to 10¹⁵ Ω·m at room temperature). Therefore, the claim that glass "offers low resistance to the passage of electricity" is completely false.',
-      formulas: [],
-      steps: [
-        'Step 1: Statement A is true: Optical transmission, reflection, and absorption govern glass behavior.',
-        'Step 2: Statement B is true: Amorphous silicate glass is completely non-porous and chemically inert against water and many acids.',
-        'Step 3: Statement C is false: Glass exhibits extraordinarily high electrical resistance and is universally used as high-voltage dielectric insulation, not a low-resistance conductor.',
-        'Step 4: Statement D is true: Glass exhibits virtually ideal linear elastic behavior up to brittle fracture with no dislocation-driven mechanical fatigue plasticity.',
-        'Step 5: The incorrect statement is C (Option C).',
-      ],
-      finalAnswer: 'Offers low resistance to the passage of electricity. (Option C)',
-      pageNumber: 344,
-    },
+    ...solved(50, 'C', 'Offers low resistance to the passage of electricity. (Option C)'),
   },
 
   // Item 51
@@ -419,19 +265,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'Random observation' },
       { label: 'D', text: 'Systematic observation' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'In surveying measurement theory, an indirect observation is one where the unknown quantity cannot be measured directly with an instrument, but is calculated through mathematical relationships with directly observed related quantities (such as determining an inaccessible horizontal distance from measured angles and baseline).',
-      formulas: [],
-      steps: [
-        'Step 1: Direct observation involves direct physical application of an instrument (e.g. measuring distance with a steel tape or angle with a total station).',
-        'Step 2: Indirect observation occurs when the target quantity is obtained indirectly via mathematical relationships with other observed parameters.',
-        'Step 3: Random and systematic observations describe categories of error behavior, not measurement accessibility.',
-        'Step 4: The required term is Indirect observation (Option B).',
-      ],
-      finalAnswer: 'Indirect observation (Option B)',
-      pageNumber: 344,
-    },
+    ...solved(51, 'B', 'Indirect observation (Option B)'),
   },
 
   // Item 52
@@ -450,20 +284,7 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'P-2, Q-4, R-3, S-1' },
       { label: 'D', text: 'P-4, Q-3, R-1, S-2' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Matching test methods to evaluated properties:\nP. Resonant frequency -> 2. Dynamic modulus of elasticity\nQ. Rebound hammer test -> 4. Compressive strength\nR. Split cylinder test -> 1. Tensile strength test\nS. Compacting factor test -> 3. Workability\nHence, P-2, Q-4, R-1, S-3.',
-      formulas: [],
-      steps: [
-        'Step 1: Resonant frequency testing vibrates a concrete prism to determine its fundamental frequency, from which the dynamic modulus of elasticity (E_d) is computed (P -> 2).',
-        'Step 2: Rebound (Schmidt) hammer evaluates surface hardness, which is correlated through empirical calibration curves to compressive strength (Q -> 4).',
-        'Step 3: The Brazilian split-cylinder test applies diametral compressive line loads to induce uniform lateral tensile failure, measuring splitting tensile strength (R -> 1).',
-        'Step 4: Compacting factor test measures the degree of compaction achieved by a standard amount of work, quantifying workability for low-slump mixes (S -> 3).',
-        'Step 5: The correct match is P-2, Q-4, R-1, S-3 (Option A).',
-      ],
-      finalAnswer: 'P-2, Q-4, R-1, S-3 (Option A)',
-      pageNumber: 345,
-    },
+    ...solved(52, 'A', 'P-2, Q-4, R-1, S-3 (Option A)'),
   },
 
   // Item 53
@@ -482,20 +303,6 @@ export const MSTC_APR2025_PART4: Question[] = [
       { label: 'C', text: 'weight by volume' },
       { label: 'D', text: 'volume by weight' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'In standard concrete mix design (ACI / ASTM), the water-cement ratio (w/c) is defined strictly as the ratio of the weight (or mass) of mixing water to the weight (or mass) of cementitious material: weight by weight.',
-      formulas: [
-        '\\frac{w}{c} = \\frac{W_w}{W_c}'
-      ],
-      steps: [
-        'Step 1: Cement and water have widely differing densities, and bulk cement volume varies drastically with compaction and aeration.',
-        'Step 2: Consequently, volumetric ratios would introduce substantial batching errors.',
-        'Step 3: Standard specifications specify w/c strictly as mass of water divided by mass of cement (weight by weight).',
-        'Step 4: Therefore, the ratio is weight by weight (Option B).',
-      ],
-      finalAnswer: 'weight by weight (Option B)',
-      pageNumber: 345,
-    },
+    ...solved(53, 'B', 'weight by weight (Option B)'),
   },
 ];

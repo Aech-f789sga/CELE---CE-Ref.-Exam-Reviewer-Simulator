@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './apr2025Helpers';
 
 export const MSTC_APR2025_PART1: Question[] = [
   // Item 1
@@ -17,26 +18,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '19' },
       { label: 'D', text: '16' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Let t be the duration of the long-distance call in minutes. The call costs 36 cents for the first 3 minutes, and 11 cents for each additional minute (t > 3). Set the total cost strictly less than 200 cents ($2.00) to find the maximum whole-minute duration.',
-      formulas: [
-        'C(t) = 36 + 11(t - 3) < 200',
-        '11(t - 3) < 164',
-        't - 3 < 14.91 \\implies t < 17.91',
-        't_{\\max} = 17',
-      ],
-      steps: [
-        'Step 1: Set up the piecewise cost model: C(t) = 36 for t ≤ 3, and C(t) = 36 + 11(t - 3) for t > 3.',
-        'Step 2: Convert $2 to cents: $2 = 200 cents.',
-        'Step 3: Set up the inequality for t > 3: 36 + 11(t - 3) < 200.',
-        'Step 4: Expand and simplify: 36 + 11t - 33 < 200 => 11t + 3 < 200 => 11t < 197.',
-        'Step 5: Solve for t: t < 197 / 11 ≈ 17.909 minutes.',
-        'Step 6: Since time is counted in whole minutes, the maximum duration is 17 minutes (Option A).',
-      ],
-      finalAnswer: '17 (Option A)',
-      pageNumber: 330,
-    },
+    ...solved(1, 'A', '17 (Option A)'),
   },
 
   // Item 2
@@ -55,24 +37,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '13,000' },
       { label: 'D', text: '11,000' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Using calculus, the marginal change in output resulting from adding one worker is approximated by the first derivative Q\'(x) evaluated at the current workforce x = 30.',
-      formulas: [
-        'Q(x) = 50x^2 + 9000x',
-        'Q\'(x) = \\frac{dQ}{dx} = 100x + 9000',
-        '\\Delta Q \\approx Q\'(30) \\cdot \\Delta x = [100(30) + 9000](1) = 12000',
-        '\\Delta Q = Q(31) - Q(30) = 327050 - 315000 = 12050',
-      ],
-      steps: [
-        'Step 1: Differentiate the production function Q(x): Q\'(x) = d/dx [50x² + 9,000x] = 100x + 9,000.',
-        'Step 2: Evaluate the derivative at current employment x = 30: Q\'(30) = 100(30) + 9,000 = 3,000 + 9,000 = 12,000 units/worker.',
-        'Step 3: For an addition of Δx = 1 worker, the estimated change in weekly output is ΔQ ≈ Q\'(30) · Δx = 12,000(1) = 12,000 units.',
-        'Step 4: Therefore, the estimated increase in weekly output is 12,000 units (Option B).',
-      ],
-      finalAnswer: '12,000 (Option B)',
-      pageNumber: 330,
-    },
+    ...solved(2, 'B', '12,000 (Option B)'),
   },
 
   // Item 3
@@ -135,25 +100,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: 'f(n) = 3n + 27' },
       { label: 'D', text: 'f(n) = 6n + 12' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'The difference in height between 6 containers (42") and 4 containers (36") is 6 inches for 2 additional stacked containers. Each extra container adds h = 3 inches. Solve for the base constant to establish the linear function f(n) = 3n + 24.',
-      formulas: [
-        'h = \\frac{42 - 36}{6 - 4} = 3',
-        'f(n) = f(1) + (n - 1)h',
-        'f(4) = 3(4) + c = 36 \\implies c = 24',
-        'f(n) = 3n + 24',
-      ],
-      steps: [
-        'Step 1: Find the incremental height h added by each container when nested: h = (42 - 36) / (6 - 4) = 6 / 2 = 3 inches.',
-        'Step 2: Express the total height as a linear model: f(n) = 3n + c.',
-        'Step 3: Use Figure II (n = 4 containers, total height = 36 inches): 3(4) + c = 36 => 12 + c = 36 => c = 24.',
-        'Step 4: Verify with Figure III (n = 6 containers): f(6) = 3(6) + 24 = 18 + 24 = 42 inches (matches).',
-        'Step 5: Thus, f(n) = 3n + 24 (Option B).',
-      ],
-      finalAnswer: 'f(n) = 3n + 24 (Option B)',
-      pageNumber: 330,
-    },
+    ...solved(3, 'B', 'f(n) = 3n + 24 (Option B)'),
   },
 
   // Item 4
@@ -243,26 +190,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: 'y = -5x² - 20x - 15' },
       { label: 'D', text: 'y = 5x² + 20x + 15' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'The parabola opens downward with vertex (h, k) = (2.0, 35) and a y-intercept at (0, 15). Setting up the vertex form y = a(x - h)² + k gives a = -5, resulting in y = -5x² + 20x + 15.',
-      formulas: [
-        'y = a(x - h)^2 + k',
-        '(h, k) = (2, 35)',
-        'y = a(x - 2)^2 + 35',
-        '15 = a(0 - 2)^2 + 35 \\implies a = -5',
-        'y = -5(x - 2)^2 + 35 = -5x^2 + 20x + 15',
-      ],
-      steps: [
-        'Step 1: Identify key points from the trajectory graph: Vertex at (2.0, 35), y-intercept at (0, 15).',
-        'Step 2: Since the parabola opens downward, the leading coefficient must be negative (eliminating B and D).',
-        'Step 3: Substitute the vertex (2, 35) into standard vertex form: y = a(x - 2)² + 35.',
-        'Step 4: Use the y-intercept (0, 15): 15 = a(-2)² + 35 => 4a = -20 => a = -5.',
-        'Step 5: Expand to standard form: y = -5(x² - 4x + 4) + 35 = -5x² + 20x - 20 + 35 = -5x² + 20x + 15 (Option A).',
-      ],
-      finalAnswer: 'y = -5x² + 20x + 15 (Option A)',
-      pageNumber: 331,
-    },
+    ...solved(4, 'A', 'y = -5x² + 20x + 15 (Option A)'),
   },
 
   // Item 5
@@ -318,24 +246,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '100 ft' },
       { label: 'D', text: '175 ft' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Substitute d = 0.8 ft into the deflection formula: 0.8 = 0.0000008x²(200 - x) => x²(200 - x) = 1,000,000. Testing x = 100 ft gives (100)²(100) = 1,000,000, placing the weight at midspan (100 ft from the support).',
-      formulas: [
-        'd = 0.0000008 x^2 (200 - x)',
-        '0.8 = 0.0000008 x^2 (200 - x)',
-        'x^2(200 - x) = \\frac{0.8}{0.0000008} = 10^6',
-        '100^2(200 - 100) = 10^6 \\implies x = 100',
-      ],
-      steps: [
-        'Step 1: Set the deflection d = 0.8 ft in the given deflection equation: 0.8 = 0.0000008x²(200 - x).',
-        'Step 2: Divide both sides by 0.0000008: x²(200 - x) = 1,000,000.',
-        'Step 3: Test candidate values from the options. For x = 100 ft: (100)²(200 - 100) = 10,000 × 100 = 1,000,000 (Exact match).',
-        'Step 4: Midspan x = 100 ft represents the position 100 ft from either piling (Option C).',
-      ],
-      finalAnswer: '100 ft (Option C)',
-      pageNumber: 331,
-    },
+    ...solved(5, 'C', '100 ft (Option C)'),
   },
 
   // Item 6
@@ -354,23 +265,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '0.66' },
       { label: 'D', text: '0.33' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Combine multiple crash reduction factors using the standard multiplicative rule: Overall CR = 1 - ∏(1 - CR_i). With CR₁ = 0.40, CR₂ = 0.28, CR₃ = 0.20: CR = 1 - (0.60)(0.72)(0.80) = 0.6544 ≈ 0.66.',
-      formulas: [
-        'CR = 1 - \\prod_{i=1}^3 (1 - CR_i)',
-        'CR = 1 - (1 - 0.40)(1 - 0.28)(1 - 0.20)',
-        'CR = 1 - (0.60)(0.72)(0.80) = 1 - 0.3456 = 0.6544 \\approx 0.66',
-      ],
-      steps: [
-        'Step 1: Express the overall safety effectiveness as 1 minus the product of non-reduction factors: 1 - CR = (1 - CR₁)(1 - CR₂)(1 - CR₃).',
-        'Step 2: Calculate individual non-reduction factors: 1 - 0.40 = 0.60; 1 - 0.28 = 0.72; 1 - 0.20 = 0.80.',
-        'Step 3: Multiply: 0.60 × 0.72 × 0.80 = 0.3456.',
-        'Step 4: Overall CR = 1 - 0.3456 = 0.6544 ≈ 0.66 (Option C).',
-      ],
-      finalAnswer: '0.66 (Option C)',
-      pageNumber: 331,
-    },
+    ...solved(6, 'C', '0.66 (Option C)'),
   },
 
   // Item 7
@@ -389,25 +284,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '(x - 2)² + (y + 1)² - 4 = 5' },
       { label: 'D', text: '(x - 2)² + (y + 1)² = 9' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Complete the squares for x and y to express the circle in standard form (x - h)² + (y - k)² = r², where the constant on the right side represents r² = 9.',
-      formulas: [
-        'x^2 + y^2 - 4x + 2y - 4 = 0',
-        '(x^2 - 4x + 4) + (y^2 + 2y + 1) = 4 + 4 + 1',
-        '(x - 2)^2 + (y + 1)^2 = 9',
-        'r^2 = 9 \\implies r = 3',
-      ],
-      steps: [
-        'Step 1: Move the constant term to the right-hand side: (x² - 4x) + (y² + 2y) = 4.',
-        'Step 2: Complete the square for the x-terms: add (-4/2)² = 4 to both sides.',
-        'Step 3: Complete the square for the y-terms: add (2/2)² = 1 to both sides.',
-        'Step 4: Factor the perfect square trinomials: (x - 2)² + (y + 1)² = 4 + 4 + 1 = 9.',
-        'Step 5: The resulting standard form clearly displays r² = 9 as the constant: (x - 2)² + (y + 1)² = 9 (Option D).',
-      ],
-      finalAnswer: '(x - 2)² + (y + 1)² = 9 (Option D)',
-      pageNumber: 332,
-    },
+    ...solved(7, 'D', '(x - 2)² + (y + 1)² = 9 (Option D)'),
   },
 
   // Item 8
@@ -426,23 +303,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '$28.07' },
       { label: 'D', text: '$20.78' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Multiply the hours required for a small sofa (1.4 hr cutting, 0.7 hr assembly, 0.3 hr packing) by the Ames City Plant hourly labor rates ($14, $10, $7). Total cost = 1.4(14) + 0.7(10) + 0.3(7) = $28.70.',
-      formulas: [
-        'C_T = t_c r_c + t_a r_a + t_p r_p',
-        'C_T = 1.4(14) + 0.7(10) + 0.3(7)',
-        'C_T = 19.60 + 7.00 + 2.10 = 28.70',
-      ],
-      steps: [
-        'Step 1: Extract small sofa labor hours from matrix L: Cutting = 1.4 hr, Assembly = 0.7 hr, Packing = 0.3 hr.',
-        'Step 2: Extract Ames City wage rates from matrix C: Cutting = $14/hr, Assembly = $10/hr, Packing = $7/hr.',
-        'Step 3: Multiply hours by corresponding rates: 1.4 × $14 = $19.60; 0.7 × $10 = $7.00; 0.3 × $7 = $2.10.',
-        'Step 4: Sum the labor costs: $19.60 + $7.00 + $2.10 = $28.70 (Option A).',
-      ],
-      finalAnswer: '$28.70 (Option A)',
-      pageNumber: 332,
-    },
+    ...solved(8, 'A', '$28.70 (Option A)'),
   },
 
   // Item 9
@@ -461,22 +322,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '30%' },
       { label: 'D', text: '40%' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Ductility measured as percent reduction in area: %RA = [(A₀ - A_f) / A₀] × 100 = [(d₀² - d_f²) / d₀²] × 100 = [(12.8² - 10.7²) / 12.8²] × 100 = 30.12% ≈ 30%.',
-      formulas: [
-        '\\%RA = \\frac{A_0 - A_f}{A_0} \\times 100 = \\frac{d_0^2 - d_f^2}{d_0^2} \\times 100',
-        '\\%RA = \\frac{12.8^2 - 10.7^2}{12.8^2} \\times 100 = 30.12\\% \\approx 30\\%',
-      ],
-      steps: [
-        'Step 1: Original cross-sectional area A₀ = (π/4)(12.8)² = 128.68 mm².',
-        'Step 2: Cross-sectional area at fracture A_f = (π/4)(10.7)² = 89.92 mm².',
-        'Step 3: Calculate %RA: [(128.68 - 89.92) / 128.68] × 100 = (38.76 / 128.68) × 100 = 30.12%.',
-        'Step 4: Rounding gives 30% reduction in area (Option C).',
-      ],
-      finalAnswer: '30% (Option C)',
-      pageNumber: 332,
-    },
+    ...solved(9, 'C', '30% (Option C)'),
   },
 
   // Item 10
@@ -495,23 +341,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '10' },
       { label: 'D', text: '12' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'The sum of interior angles of an n-sided polygon is S = (n - 2) × 180°. For an arithmetic sequence, S = (n / 2)(a₁ + a_n). Equating both formulas gives 180(n - 2) = (n / 2)(85 + 215) => 180n - 360 = 150n => 30n = 360 => n = 12.',
-      formulas: [
-        'S = (n - 2) \\times 180^{\\circ}',
-        'S = \\frac{n}{2}(a_1 + a_n) = \\frac{n}{2}(85^{\\circ} + 215^{\\circ}) = 150^{\\circ}n',
-        '180^{\\circ}(n - 2) = 150^{\\circ}n \\implies 30^{\\circ}n = 360^{\\circ} \\implies n = 12',
-      ],
-      steps: [
-        'Step 1: Formula for interior angle sum of polygon: S = (n - 2) × 180°.',
-        'Step 2: Arithmetic series sum: S = (n / 2)(first term + last term) = (n / 2)(85° + 215°) = 150°n.',
-        'Step 3: Equate the two expressions: 180(n - 2) = 150n.',
-        'Step 4: 180n - 360 = 150n => 30n = 360 => n = 12 sides (Option D).',
-      ],
-      finalAnswer: '12 (Option D)',
-      pageNumber: 333,
-    },
+    ...solved(10, 'D', '12 (Option D)'),
   },
 
   // Item 11
@@ -565,25 +395,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '39.2 miles' },
       { label: 'D', text: '32.9 miles' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'In the oblique triangle formed by the intersection, the transmitter (30 mi along Park Road), and points along the interstate: 25² = 30² + d² - 2(30)(d) cos(47°). The quadratic equation yields d₁ = 32.444 mi and d₂ = 8.476 mi. The length of coverage along the interstate is L = d₁ - d₂ = 23.968 miles ≈ 23.9 miles.',
-      formulas: [
-        '25^2 = 30^2 + d^2 - 2(30)(d)\\cos(47^{\\circ})',
-        'd^2 - 40.92d + 275 = 0',
-        'd = \\frac{40.92 \\pm \\sqrt{40.92^2 - 4(275)}}{2} = \\{32.44, 8.48\\}',
-        'L = d_1 - d_2 = 32.44 - 8.48 = 23.96 \\approx 23.9',
-      ],
-      steps: [
-        'Step 1: Let d be the distance along the interstate from the intersection to the edge of the broadcast range.',
-        'Step 2: Apply the Law of Cosines: 25² = 30² + d² - 2(30)(d) cos(47°).',
-        'Step 3: 625 = 900 + d² - 40.92d => d² - 40.92d + 275 = 0.',
-        'Step 4: Solve the quadratic: d₁ = 32.444 miles and d₂ = 8.476 miles.',
-        'Step 5: The car can hear the broadcast across the distance between these two intersection points: L = 32.444 - 8.476 = 23.968 ≈ 23.9 miles (Option A).',
-      ],
-      finalAnswer: '23.9 miles (Option A)',
-      pageNumber: 333,
-    },
+    ...solved(11, 'A', '23.9 miles (Option A)'),
   },
 
   // Item 12
@@ -647,26 +459,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: 'x = 32.11 m, α = 122.25°, β = 147.48°' },
       { label: 'D', text: 'x = 31.21 m, α = 125.22°, β = 147.48°' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Horizontal run of sloping back b = 32.00 - 3.50 - 3.00 = 25.50 m. Vertical rise h = 24.50 - 4.00 - 2.50 = 18.00 m. By Pythagorean theorem, x = √(25.50² + 18.00²) = 31.21 m. Angles are α = 180° - arctan(25.50/18.00) = 125.22° and β = 180° - arctan(18.00/25.50) = 144.78°.',
-      formulas: [
-        'b = 32.00 - 3.50 - 3.00 = 25.50',
-        'h = 24.50 - 4.00 - 2.50 = 18.00',
-        'x = \\sqrt{b^2 + h^2} = \\sqrt{25.50^2 + 18.00^2} = 31.21',
-        '\\alpha = 180^{\\circ} - \\arctan\\left(\\frac{25.50}{18.00}\\right) = 125.22^{\\circ}',
-        '\\beta = 180^{\\circ} - \\arctan\\left(\\frac{18.00}{25.50}\\right) = 144.78^{\\circ}',
-      ],
-      steps: [
-        'Step 1: Find the horizontal base of the triangle behind the wall: b = 32.00 - 3.50 - 3.00 = 25.50 m.',
-        'Step 2: Find the vertical height of the triangle: h = 24.50 - 4.00 - 2.50 = 18.00 m.',
-        'Step 3: Hypotenuse x = √(25.50² + 18.00²) = √(650.25 + 324) = √974.25 = 31.21 m.',
-        'Step 4: Angle α: tan(180° - α) = 25.50 / 18.00 = 1.4167 => 180° - α = 54.78° => α = 125.22°.',
-        'Step 5: Angle β: tan(180° - β) = 18.00 / 25.50 = 0.7059 => 180° - β = 35.22° => β = 144.78° (Option B).',
-      ],
-      finalAnswer: 'x = 31.21 m, α = 125.22°, β = 144.78° (Option B)',
-      pageNumber: 333,
-    },
+    ...solved(12, 'B', 'x = 31.21 m, α = 125.22°, β = 144.78° (Option B)'),
   },
 
   // Item 13
@@ -685,29 +478,7 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '32.64 km' },
       { label: 'D', text: '36.24 km' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: "Because the smoke column CD subtends the same angle (64°) at both stations A and B, points A, B, C, and D lie on a circle (concyclic). By the Intersecting Secant Theorem: AP × BP = DP × CP => (7 + x)(x) = z × y. With y = (7 + x) tan(8°) and z = (7 + x) tan(72°), solve for horizontal distance x = 5.336 km, y = 1.734 km, z = 37.965 km. Smoke height h = z - y = 36.24 km.",
-      formulas: [
-        '(7 + x)x = z \\cdot y',
-        'y = (7 + x)\\tan(8^{\\circ}), \\quad z = (7 + x)\\tan(72^{\\circ})',
-        'x = (7 + x)\\tan(72^{\\circ})\\tan(8^{\\circ}) \\implies x = 5.336',
-        'y = 1.734, \\quad z = 37.965',
-        'h = z - y = 37.965 - 1.734 = 36.24',
-      ],
-      steps: [
-        'Step 1: Let P be the ground point directly below crater C and highest point of smoke D. Let x be distance from P to station B. Total distance from A is 7 + x.',
-        'Step 2: Since smoke CD subtends equal angles (64°) at A and B, A, B, C, D are concyclic.',
-        'Step 3: By the secant theorem from external point P: (7 + x)(x) = z · y.',
-        'Step 4: From triangle PAC: y = (7 + x) tan(8°). From triangle PAD: z = (7 + x) tan(72°).',
-        'Step 5: Substitute into secant equation: (7 + x)(x) = (7 + x)² tan(72°) tan(8°) => x = (7 + x) tan(72°) tan(8°).',
-        'Step 6: Compute factor: tan(72°) tan(8°) = 3.0777 × 0.1405 = 0.4325. Thus x = 0.4325(7 + x) => 0.5675x = 3.028 => x = 5.336 km.',
-        'Step 7: y = 12.336 tan(8°) = 1.734 km. z = 12.336 tan(72°) = 37.965 km.',
-        'Step 8: Height of smoke h = z - y = 37.965 - 1.734 = 36.24 km (Option D).',
-      ],
-      finalAnswer: '36.24 km (Option D)',
-      pageNumber: 334,
-    },
+    ...solved(13, 'D', '36.24 km (Option D)'),
   },
 
   // Item 14
@@ -726,24 +497,6 @@ export const MSTC_APR2025_PART1: Question[] = [
       { label: 'C', text: '-4' },
       { label: 'D', text: '8' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Acceleration is a(t) = v\'(t) = t² - 4t. Critical point a\'(t) = 2t - 4 = 0 => t = 2. Evaluate a(t) on [0, 6]: a(0) = 0, a(2) = -4, a(6) = 12. The maximum acceleration is 12 at t = 6.',
-      formulas: [
-        'a(t) = v\'(t) = t^2 - 4t',
-        'a\'(t) = 2t - 4 = 0 \\implies t = 2',
-        'a(0) = 0^2 - 4(0) = 0',
-        'a(2) = 2^2 - 4(2) = -4',
-        'a(6) = 6^2 - 4(6) = 12',
-      ],
-      steps: [
-        'Step 1: Differentiate velocity to find acceleration: a(t) = v\'(t) = d/dt [t³/3 - 2t² + 5] = t² - 4t.',
-        'Step 2: Differentiate acceleration to find critical points: a\'(t) = 2t - 4 = 0 => t = 2.',
-        'Step 3: Evaluate a(t) at the endpoints and critical point: a(0) = 0, a(2) = -4 (minimum), a(6) = 36 - 24 = 12.',
-        'Step 4: Therefore, the maximum acceleration on [0, 6] is 12 (Option B).',
-      ],
-      finalAnswer: '12 (Option B)',
-      pageNumber: 334,
-    },
+    ...solved(14, 'B', '12 (Option B)'),
   },
 ];
