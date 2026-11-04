@@ -307,12 +307,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   };
 
   useEffect(() => {
+    // Nothing is fetched for a non-admin: the guard is here as well as at the
+    // render site so that even a stray mount cannot pull every account's email,
+    // role and feature history over the wire.
+    if (!isAdmin) {
+      setLoading(false);
+      return;
+    }
     loadData();
     const unsubPresence = subscribeUserPresence((updatedList) => {
       setPresencesList(updatedList);
     });
     return () => unsubPresence();
-  }, []);
+  }, [isAdmin]);
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -435,6 +442,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
     if (inboxCategoryFilter === 'replied') return Boolean(m.adminReply);
     return true;
   });
+
+  if (!isAdmin) {
+    return (
+      <div className="max-w-3xl mx-auto pb-20">
+        <div
+          className="rounded-3xl p-8 border shadow-2xl text-center space-y-4"
+          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+        >
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center">
+            <ShieldCheck className="w-6 h-6 text-rose-400" />
+          </div>
+          <h2 className="font-arnie text-xl font-bold text-white">Administrator access only</h2>
+          <p className="text-sm text-slate-400 max-w-md mx-auto">
+            This area holds every account&apos;s email, role and feature history. Only the
+            administrator may open it.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20">

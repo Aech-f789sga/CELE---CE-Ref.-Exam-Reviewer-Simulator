@@ -18,6 +18,11 @@ import {
  * appears in this list. Three states are shown rather than two because a tab
  * left open with nobody at the keyboard is neither "here" nor "gone", and
  * saying so is more useful than guessing between the two.
+ *
+ * This is the one roster every signed-in user sees, so it deliberately carries
+ * only a username and a status. Email, current feature, role and feature history
+ * belong to the admin panel; showing them here would hand every examinee a
+ * record of what their classmates are doing.
  */
 export const OnlineUsersPanel: React.FC = () => {
   const { themeConfig } = useTheme();
@@ -70,6 +75,30 @@ export const OnlineUsersPanel: React.FC = () => {
     Boolean(activeUser && (p.userId === (activeUser as { uid?: string }).uid ||
       (activeUser.email && p.email?.toLowerCase() === activeUser.email?.toLowerCase())));
 
+  /**
+   * Coarse "how long ago", not the stored timestamp.
+   *
+   * The roster is a presence list, not a log: it should answer "are they around
+   * or not" without handing every examinee a record of exactly when their
+   * classmates came and went.
+   */
+  const relativeTime = (iso?: string): string => {
+    if (!iso) return 'a while ago';
+    const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  };
+
+  /**
+   * A roster row carries a username and a live status and nothing else.
+   *
+   * The current feature, the email, the role and the feature history all stay in
+   * the admin panel: they are what other people are doing, and an examinee has no
+   * business reading that off a leaderboard.
+   */
   const Row: React.FC<{ p: UserPresence; state: 'online' | 'idle' | 'offline' }> = ({ p, state }) => {
     const dot =
       state === 'online' ? 'bg-emerald-400' : state === 'idle' ? 'bg-amber-400' : 'bg-slate-600';
@@ -82,19 +111,8 @@ export const OnlineUsersPanel: React.FC = () => {
             {isSelf(p) && <span className="text-[10px] text-slate-400 ml-1">(you)</span>}
           </span>
         </div>
-        <span className="text-[11px] font-mono text-slate-400 truncate shrink-0 max-w-[45%] text-right">
-          {state === 'online'
-            ? p.currentFeature || 'Browsing'
-            : state === 'idle'
-              ? 'Idle'
-              : p.lastSeenAt
-                ? `Seen ${new Date(p.lastSeenAt).toLocaleString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}`
-                : 'Offline'}
+        <span className="text-[11px] font-mono text-slate-400 shrink-0">
+          {state === 'online' ? 'Online' : state === 'idle' ? 'Idle' : relativeTime(p.lastSeenAt)}
         </span>
       </div>
     );

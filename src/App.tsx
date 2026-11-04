@@ -144,8 +144,21 @@ function MainApp() {
   const { themeConfig } = useTheme();
   const particleTheme = useParticleTheme();
   const [isParticleRemoteOpen, setIsParticleRemoteOpen] = useState<boolean>(false);
-  const { user, profile, openAuthModal, isAdmin } = useAuth();
+  const { user, profile, openAuthModal, isAdmin, loading: authLoading } = useAuth();
   const activeUser = profile || user;
+
+  /**
+   * The admin tab is restored from localStorage, so hiding it in the navbar is
+   * not enough: anyone can set `ce_board_current_tab` to 'admin' and land on the
+   * panel. Bounce them back once auth has settled -- waiting for `authLoading`
+   * keeps a real administrator from being kicked off the tab during the brief
+   * window before their cached profile is read.
+   */
+  useEffect(() => {
+    if (!authLoading && !isAdmin && currentTab === 'admin') {
+      setCurrentTab('setup');
+    }
+  }, [authLoading, isAdmin, currentTab]);
 
   // Selection states
   const [selectedSource, setSelectedSource] = useState<ReferenceSource>('Gillesania');
@@ -655,7 +668,7 @@ function MainApp() {
                 <FormulaCardsHub onOpenDonation={handleOpenDonation} />
               )}
 
-              {currentTab === 'admin' && (
+              {currentTab === 'admin' && isAdmin && (
                 <AdminPanel
                   onNavigateToExam={(sub) => {
                     handleSubjectChange(sub);
