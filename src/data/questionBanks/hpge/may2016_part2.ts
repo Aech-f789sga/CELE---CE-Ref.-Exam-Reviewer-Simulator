@@ -116,7 +116,7 @@ export const HPGE_MAY2016_PART2: Question[] = [
     category: 'Situation 4 — Pipe Network Design',
     text: 'Situation 4 – Reservoir A, the source of water for towns C and D, is at elevation 150 m. The distribution reservoir at junction B is at elevation 91.46 m and is 15,200 m from reservoir A. Town C, with a population of 25,000, is at elevation 30.49 m and is 9,150 m from junction B. Town D, with a population of 30,000, is at elevation 15.49 m and is 6,100 m from junction B. The water demand is 150 liters per capita per day. Assume f = 0.02 for all pipes.\n\nWhat is the required diameter of pipe AB in meter?',
     options: opts('0.450', '0.390', '0.330', '0.650'),
-    ...solved(20, 'C', '$D_1 = 0.33\\text{ m}$ (Option C)', 291),
+    ...solved(20, 'C', '$D_1 = 0.33\\text{ m}$ (Option C)', 290),
   },
 
   // ── Item 21 ────────────────────────────────────────────────────────────────
