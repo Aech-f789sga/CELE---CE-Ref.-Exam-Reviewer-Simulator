@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './apr2025Helpers';
 
 export const HPGE_APR2025_PART1: Question[] = [
   // Item 1
@@ -17,29 +18,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '4.5' },
       { label: 'D', text: '3.5' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'The difference in barometer reading between the base and top corresponds to the pressure difference exerted by the intervening column of air. Convert the differential liquid column to air column height assuming constant air unit weight.',
-      formulas: [
-        'h_1 = 0.5, \\quad h_2 = 0.850',
-        '\\Delta h_l = 0.85 - 0.50 = 0.35',
-        's_l = 0.9 \\times 13.6 = 12.24',
-        '\\gamma_l = 9810(13.6 \\times 0.9) = 120,074.4',
-        'H = \\Delta h_l \\left( \\frac{\\gamma_l}{\\gamma_a} \\right)',
-        'H = 0.35 \\times \\frac{9810(13.6 \\times 0.9)}{12} = 3502.17',
-        'H \\approx 3.5',
-      ],
-      steps: [
-        'Step 1: Identify readings: base reading h₂ = 850 mm = 0.85 m, top reading h₁ = 500 mm = 0.50 m.',
-        'Step 2: Head difference of the improvised liquid: Δh_l = 0.85 - 0.50 = 0.35 m.',
-        'Step 3: Specific gravity of the liquid = 0.90 × 13.6 = 12.24.',
-        'Step 4: Unit weight of liquid γ_liq = 9810(12.24) = 120,074.4 N/m³.',
-        'Step 5: Equate pressure difference to air column: ΔP = γ_liq · Δh_l = γ_air · H.',
-        'Step 6: Solve for mountain height: H = 0.35 × (120,074.4 / 12) = 3502.17 m ≈ 3.5 km.',
-      ],
-      finalAnswer: '3.5 (Option D)',
-      pageNumber: 395,
-    },
+    ...solved(1, 'D', '3.5 (Option D)'),
   },
 
   // Item 2
@@ -58,26 +37,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '8.5' },
       { label: 'D', text: '6.5' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Hydrostatic pressure increases linearly with depth. Summing pressures from point 1 (higher elevation) to point 2 (lower elevation) yields the unit weight directly.',
-      formulas: [
-        'p_1 + \\gamma h = p_2',
-        'p_2 - p_1 = \\gamma h',
-        '85.5 - 60 = \\gamma(3)',
-        '25.5 = 3\\gamma',
-        '\\gamma = \\frac{25.5}{3} = 8.5',
-      ],
-      steps: [
-        'Step 1: Elevation of Point 1 is 6 m from the base, where pressure p₁ = 60 kPa.',
-        'Step 2: Elevation of Point 2 is 3 m from the base, where pressure p₂ = 85.5 kPa.',
-        'Step 3: The vertical distance between point 1 and point 2 is h = 6 m - 3 m = 3 m.',
-        'Step 4: Since point 2 is deeper than point 1: p₂ = p₁ + γ · h.',
-        'Step 5: 85.5 - 60 = γ(3) => 25.5 = 3γ => γ = 8.5 kN/m³.',
-      ],
-      finalAnswer: '8.5 (Option C)',
-      pageNumber: 395,
-    },
+    ...solved(2, 'C', '8.5 (Option C)'),
   },
 
   // Item 3
@@ -96,24 +56,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '67.62' },
       { label: 'D', text: '39.24' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'The total gage pressure at any depth in layered liquids equals the sum of the hydrostatic pressures of all overlying liquid columns.',
-      formulas: [
-        'p_A = \\sum \\gamma h + p_0',
-        'p_A = \\gamma_1 h_1 + \\gamma_2 h_2',
-        'p_A = 8(6) + 9.81(2)',
-        'p_A = 48 + 19.62 = 67.62',
-      ],
-      steps: [
-        'Step 1: Free surface pressure is atmospheric (gage pressure p_surface = 0).',
-        'Step 2: The entire upper liquid layer has depth h₁ = 6 m and γ₁ = 8 kN/m³.',
-        'Step 3: Mid-depth of the lower liquid layer is h₂ = 4 / 2 = 2 m, with γ₂ = 9.81 kN/m³.',
-        'Step 4: Compute pressure at point A: p_A = γ₁h₁ + γ₂h₂ = 8(6) + 9.81(2) = 48 + 19.62 = 67.62 kPa.',
-      ],
-      finalAnswer: '67.62 (Option C)',
-      pageNumber: 396,
-    },
+    ...solved(3, 'C', '67.62 (Option C)'),
   },
 
   // Item 4
@@ -132,24 +75,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '81.75' },
       { label: 'D', text: '85.71' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'By Newton\'s third law, the downward reaction exerted by the submerged part of the wood on the water equals the upward buoyant force acting on the submerged wood. The scale reading increases by this buoyant force expressed in mass equivalent.',
-      formulas: [
-        'V_d = (0.05)(0.05)(0.70) = 0.00175',
-        'BF = \\rho_w V_d = 1000(0.00175) = 1.75',
-        'F_N = W_w + BF = 80 + 1.75 = 81.75',
-      ],
-      steps: [
-        'Step 1: Cross-sectional dimensions of wood: 50 mm × 50 mm = 0.05 m × 0.05 m.',
-        'Step 2: Submerged depth in water: h = 700 mm = 0.70 m.',
-        'Step 3: Displaced volume of water: V_disp = (0.05)(0.05)(0.70) = 0.00175 m³.',
-        'Step 4: Buoyant force in mass equivalent: BF = ρ_water · V_disp = 1000 kg/m³ × 0.00175 m³ = 1.75 kg.',
-        'Step 5: The scale reading becomes: F_N = 80 kg + 1.75 kg = 81.75 kg.',
-      ],
-      finalAnswer: '81.75 (Option C)',
-      pageNumber: 396,
-    },
+    ...solved(4, 'C', '81.75 (Option C)'),
   },
 
   // Item 5
@@ -168,31 +94,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '1.71' },
       { label: 'D', text: '1.51' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'For vertical equilibrium of the floating wood-lead assembly, the total weight of wood and lead must equal the sum of the buoyant forces acting on the submerged part of the wood and the completely submerged lead.',
-      formulas: [
-        'W_{wo} = \\text{SG}_{wo} \\rho_w V_{wo} = (0.60)(1000)(0.07^2 \\times 1.5) = 4.41',
-        'W_L = \\text{SG}_L \\rho_w V_L = (11.2)(1000)V_L = 11200V_L',
-        'BF_{wo} = \\rho_w V_{D,wo} = 1000(0.07^2 \\times 1.2) = 5.88',
-        'BF_L = \\rho_w V_L = 1000V_L',
-        '\\sum F_v = 0 \\implies W_{wo} + W_L = BF_{wo} + BF_L',
-        '4.41 + 11200V_L = 5.88 + 1000V_L',
-        '10200V_L = 1.47 \\implies V_L = 0.0001441',
-        'm_L = 11.2(1000)(0.0001441) = 1.61',
-      ],
-      steps: [
-        'Step 1: Compute total mass/weight of the wood piece: W_wo = 0.60 × 1000 × (0.07)² × 1.5 = 4.41 kg.',
-        'Step 2: Submerged length of the wood: L_sub = 1.5 m - 0.30 m = 1.2 m.',
-        'Step 3: Buoyant force on submerged wood: BF_wo = 1000 × (0.07)² × 1.2 = 5.88 kg.',
-        'Step 4: Weight of lead: W_L = 11.2 × 1000 × V_L = 11,200 V_L; Buoyant force on lead: BF_L = 1000 V_L.',
-        'Step 5: Apply vertical equilibrium: W_wo + W_L = BF_wo + BF_L => 4.41 + 11,200 V_L = 5.88 + 1000 V_L.',
-        'Step 6: Solve for V_L: 10,200 V_L = 1.47 => V_L = 0.0001441 m³.',
-        'Step 7: Mass of lead: m_L = 11.2(1000)(0.0001441) = 1.61 kg.',
-      ],
-      finalAnswer: '1.61 (Option B)',
-      pageNumber: 397,
-    },
+    ...solved(5, 'B', '1.61 (Option B)'),
   },
 
   // Item 6
@@ -211,29 +113,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '72 (RM)' },
       { label: 'D', text: '62 (RM)' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'When tilted until one edge reaches the deck level, calculate angle of tilt θ, metacentric radius MB₀, metacentric height MG = MB₀ - GB₀, and the overturning/righting moment W · MG sin θ.',
-      formulas: [
-        '\\theta = \\tan^{-1}\\left(\\frac{4 - 2.4}{6 / 2}\\right) = \\tan^{-1}\\left(\\frac{1.6}{3}\\right) = 28.072^\\circ',
-        'W = \\gamma_w V_D = 9.81(2.4 \\times 6 \\times 15) = 2118.96',
-        'GB_0 = 2.7 - 1.2 = 1.5',
-        'MB_0 = \\frac{B^2}{12D}\\left(1 + \\frac{\\tan^2\\theta}{2}\\right) = \\frac{6^2}{12(2.4)}\\left(1 + \\frac{\\tan^2 28.072^\\circ}{2}\\right) = 1.4278',
-        'MG = MB_0 - GB_0 = 1.4278 - 1.5 = -0.0722',
-        'OM = W \\times |MG| \\sin\\theta = 2118.96 \\times 0.0722 \\sin 28.072^\\circ = 72',
-      ],
-      steps: [
-        'Step 1: Freeboard in upright position: FB = 4.0 m - 2.4 m = 1.6 m.',
-        'Step 2: Angle of tilt when one top corner reaches water surface: tan θ = 1.6 / (6 / 2) = 1.6 / 3 => θ = 28.072°.',
-        'Step 3: Weight of scow: W = BF = 9.81 × (2.4 × 6 × 15) = 2118.96 kN.',
-        'Step 4: Distance from center of buoyancy to center of gravity in upright position: GB₀ = y_G - y_B = 2.7 - (2.4 / 2) = 2.7 - 1.2 = 1.5 m.',
-        'Step 5: Metacentric radius MB₀ at large angle of heel: MB₀ = (B² / 12D) · [1 + 0.5 tan² θ] = (36 / 28.8) · [1 + 0.5(1.6 / 3)²] = 1.25(1.1422) = 1.4278 m.',
-        'Step 6: Metacentric height: MG = MB₀ - GB₀ = 1.4278 - 1.50 = -0.0722 m. Since MG is negative, the metacenter is below G, producing an overturning moment (OM).',
-        'Step 7: Overturning moment: OM = W × |MG| sin θ = 2118.96 × 0.0722 × sin 28.072° = 72 kN·m.',
-      ],
-      finalAnswer: '72 (OM) (Option A)',
-      pageNumber: 398,
-    },
+    ...solved(6, 'A', '72 (OM) (Option A)'),
   },
 
   // Item 7
@@ -252,28 +132,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '84' },
       { label: 'D', text: '104' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'The lifting force must overcome the self-weight of the gate plus the friction force generated by the total normal hydrostatic pressure on the upstream face of the gate.',
-      formulas: [
-        '\\bar{h} = 2 + \\frac{4}{2} = 4',
-        'A = 4 \\times 6 = 24',
-        'F_H = \\gamma \\bar{h} A = 9.81(4)(24) = 941.76',
-        'N = F_H = 941.76',
-        'f = \\mu N = 0.10(941.76) = 94.176',
-        'P = W + f = 10 + 94.176 = 104.18 \\approx 104',
-      ],
-      steps: [
-        'Step 1: Depth to centroid of the submerged gate: h̄ = 2 m + (4 / 2) m = 4 m.',
-        'Step 2: Submerged area of gate: A = 4 m × 6 m = 24 m².',
-        'Step 3: Total hydrostatic thrust on upstream face: F_H = γ · h̄ · A = 9.81 × 4 × 24 = 941.76 kN.',
-        'Step 4: Normal reaction on guides: N = F_H = 941.76 kN.',
-        'Step 5: Friction force along the vertical guides: f = μ · N = 0.10 × 941.76 = 94.176 kN.',
-        'Step 6: Total lifting force P = Weight + friction = 10 + 94.176 = 104.18 kN ≈ 104 kN.',
-      ],
-      finalAnswer: '104 (Option D)',
-      pageNumber: 399,
-    },
+    ...solved(7, 'D', '104 (Option D)'),
   },
 
   // Item 8
@@ -292,22 +151,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '1.9' },
       { label: 'D', text: '4.9' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'For a liquid subjected to vertical downward acceleration, effective gravity is reduced: p = γ · h · (1 - a / g).',
-      formulas: [
-        'p_h = \\gamma h \\left(1 \\pm \\frac{a}{g}\\right)',
-        'p_h = 9.81(0.5)\\left[1 - \\frac{2}{9.81}\\right]',
-        'p_h = 9.81(0.5)\\left(\\frac{7.81}{9.81}\\right) = 0.5(7.81) = 3.905',
-      ],
-      steps: [
-        'Step 1: Formula for pressure at depth h under vertical acceleration: p = γ · h · (1 ± a/g).',
-        'Step 2: For downward acceleration, use negative sign (-): effective gravity is g - a = 9.81 - 2 = 7.81 m/s².',
-        'Step 3: Pressure at base: p = 1000 kg/m³ × (9.81 - 2) m/s² × 0.5 m = 3,905 Pa = 3.905 kPa ≈ 3.9 kPa.',
-      ],
-      finalAnswer: '3.9 (Option A)',
-      pageNumber: 400,
-    },
+    ...solved(8, 'A', '3.9 (Option A)'),
   },
 
   // Item 9
@@ -326,24 +170,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '0.4' },
       { label: 'D', text: '2.4' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'When rotated without spilling, the liquid rises by y/2 at the rim and depresses by y/2 at the center, where y is the total height of the paraboloid of revolution. Therefore, maximum initial depth is H - y/2.',
-      formulas: [
-        '\\omega = 100 \\times \\frac{2\\pi}{60} = 10.472',
-        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(10.472)^2 (0.75)^2}{2(9.81)} = 3.144',
-        'h_{\\max} = H - \\frac{y}{2} = 4 - \\frac{3.144}{2} = 2.428',
-      ],
-      steps: [
-        'Step 1: Radius of the cylinder r = 1.5 / 2 = 0.75 m. Tank height H = 4 m.',
-        'Step 2: Angular velocity: ω = 100 × (2π / 60) = 10.472 rad/s.',
-        'Step 3: Height of paraboloid: y = (ω² r²) / (2g) = [ (10.472)² × (0.75)² ] / [ 2(9.81) ] = 3.144 m.',
-        'Step 4: Since y = 3.144 m < H = 4 m, the vortex does not touch the base.',
-        'Step 5: The maximum depth to avoid spilling is h_max = H - y / 2 = 4 - (3.144 / 2) = 2.428 m ≈ 2.4 m.',
-      ],
-      finalAnswer: '2.4 (Option D)',
-      pageNumber: 400,
-    },
+    ...solved(9, 'D', '2.4 (Option D)'),
   },
 
   // Item 10
@@ -362,27 +189,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: '6.9' },
       { label: 'D', text: '8.0' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'The condition for the most hydraulically efficient trapezoidal channel is that the top width T equals the sum of the two sloping sides (T = 2y), or a semi-hexagon in the optimal case. Here with b = 3 m and d = 3 m, solve for side flare x and top width T = b + 2x.',
-      formulas: [
-        'T = 2y \\implies b + 2x = 2y',
-        'y = \\sqrt{x^2 + d^2}',
-        'b + 2x = 2\\sqrt{x^2 + d^2}',
-        'x = \\frac{4d^2 - b^2}{4b} = \\frac{4(3)^2 - 3^2}{4(3)} = 2.25',
-        'T = b + 2x = 3 + 2(2.25) = 7.5',
-      ],
-      steps: [
-        'Step 1: For the most hydraulically efficient section with given bottom width b = 3 m and flow depth d = 3 m, top width T = 2y where y is the sloping side length.',
-        'Step 2: Express y in terms of horizontal flare x and depth d: y = √(x² + d²).',
-        'Step 3: Top width: T = b + 2x. Setting b + 2x = 2√(x² + d²).',
-        'Step 4: Square both sides: (b + 2x)² = 4(x² + d²) => b² + 4bx + 4x² = 4x² + 4d² => 4bx = 4d² - b².',
-        'Step 5: Solve for x: x = [4(3)² - 3²] / [4(3)] = (36 - 9) / 12 = 27 / 12 = 2.25 m.',
-        'Step 6: Compute top width T: T = b + 2x = 3 + 2(2.25) = 7.5 m.',
-      ],
-      finalAnswer: '7.5 (Option B)',
-      pageNumber: 401,
-    },
+    ...solved(10, 'B', '7.5 (Option B)'),
   },
 
   // Item 11
@@ -401,20 +208,7 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: 'Hydrodynamics' },
       { label: 'D', text: 'Hydrology' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Hydrodynamics is the branch of fluid mechanics that studies fluids in motion along with the forces causing that motion.',
-      formulas: [],
-      steps: [
-        'Step 1: Hydrostatics deals with fluids at rest.',
-        'Step 2: Hydrokinetics describes fluid motion without considering the forces causing it.',
-        'Step 3: Hydrodynamics deals with fluids in motion together with the forces and energies producing and influencing that motion.',
-        'Step 4: Hydrology studies the occurrence, distribution, and movement of water on and beneath the Earth\'s surface.',
-        'Therefore, the branch that deals with fluid motion is Hydrodynamics (Option C).',
-      ],
-      finalAnswer: 'Hydrodynamics (Option C)',
-      pageNumber: 402,
-    },
+    ...solved(11, 'C', 'Hydrodynamics (Option C)'),
   },
 
   // Item 12
@@ -433,20 +227,6 @@ export const HPGE_APR2025_PART1: Question[] = [
       { label: 'C', text: 'A physical quantity that can be measured' },
       { label: 'D', text: 'All of these' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Effective stress is transmitted through the soil skeleton across contact points, governs mechanical behaviors (shear strength, compression, settlement), and is treated and calculated as a measurable engineering quantity (total stress minus pore water pressure).',
-      formulas: [
-        '\\sigma\' = \\sigma - u',
-      ],
-      steps: [
-        'Step 1: Effective stress represents the stress transmitted across particle-to-particle contact points of the mineral skeleton.',
-        'Step 2: It is fundamental in geotechnical engineering because all major soil properties (shear strength, compressibility, consolidation) depend directly on effective stress.',
-        'Step 3: In engineering practice, it is calculated from measurable physical quantities: total overburden stress σ and pore water pressure u.',
-        'Step 4: Since statements A, B, and C are all valid descriptions and implications, the answer is "All of these" (Option D).',
-      ],
-      finalAnswer: 'All of these (Option D)',
-      pageNumber: 402,
-    },
+    ...solved(12, 'D', 'All of these (Option D)'),
   },
 ];

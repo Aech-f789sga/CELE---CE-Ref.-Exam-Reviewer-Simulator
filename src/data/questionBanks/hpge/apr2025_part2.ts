@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './apr2025Helpers';
 
 export const HPGE_APR2025_PART2: Question[] = [
   // Item 13
@@ -17,19 +18,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: 'Direct Shear Test' },
       { label: 'D', text: 'SPT' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'The Standard Penetration Test (SPT) is an in-situ dynamic test measuring blow count N. Soil shear strength is only roughly estimated from empirical correlations, making it the least accurate method for shear strength determination compared to laboratory tests.',
-      formulas: [],
-      steps: [
-        'Step 1: Triaxial Test is the most versatile and reliable laboratory test because drainage and confining pressures are accurately controlled.',
-        'Step 2: Unconfined Compression Test directly measures the undrained compressive strength of saturated cohesive soils in the laboratory.',
-        'Step 3: Direct Shear Test directly applies shear along a predetermined shear plane with normal force control.',
-        'Step 4: Standard Penetration Test (SPT) does not directly measure shear stress or failure planes; shear parameters are inferred indirectly through empirical correlations with blow count N, making it the least accurate method (Option D).',
-      ],
-      finalAnswer: 'SPT (Option D)',
-      pageNumber: 403,
-    },
+    ...solved(13, 'D', 'SPT (Option D)'),
   },
 
   // Item 14
@@ -48,19 +37,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: 'Direct Shear Test' },
       { label: 'D', text: 'SPT' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'The unconfined compression test uses the simplest equipment (no confining pressure chamber, membranes, or fluid pressure systems required), making it the fastest and least expensive shear strength test.',
-      formulas: [],
-      steps: [
-        'Step 1: Triaxial test equipment involves a high-pressure cell, fluid pressure pumps, and volume change sensors, making it the most expensive and time-consuming.',
-        'Step 2: Direct shear test requires a split shear box apparatus and normal loading arm.',
-        'Step 3: SPT requires a drilling rig, drill rods, split spoon sampler, and cathead hammer system in the field.',
-        'Step 4: The Unconfined Compression (UC) test requires only a simple uniaxial loading frame with no lateral confining cell or pore pressure measurements, making it the simplest and least costly (Option B).',
-      ],
-      finalAnswer: 'Unconfined Compressive Test (Option B)',
-      pageNumber: 403,
-    },
+    ...solved(14, 'B', 'Unconfined Compressive Test (Option B)'),
   },
 
   // Item 15
@@ -79,19 +56,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: 'Direct Shear Test' },
       { label: 'D', text: 'SPT' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'The triaxial test allows precise control of drainage conditions (UU, CU, CD) and pore water pressure measurement, yielding the most reliable fundamental shear strength parameters (c and φ).',
-      formulas: [],
-      steps: [
-        'Step 1: The triaxial test encloses a cylindrical soil specimen inside a pressurized fluid cell, allowing independent control of cell pressure σ₃ and axial deviator stress.',
-        'Step 2: It allows full control of drainage conditions: Unconsolidated Undrained (UU), Consolidated Undrained (CU), and Consolidated Drained (CD).',
-        'Step 3: It enables accurate measurement of excess pore water pressure during shear to obtain effective stress parameters c\' and φ\'.',
-        'Step 4: Therefore, the Triaxial Test is universally recognized as the most reliable method for determining soil shear strength parameters under controlled drainage (Option A).',
-      ],
-      finalAnswer: 'Triaxial Test (Option A)',
-      pageNumber: 403,
-    },
+    ...solved(15, 'A', 'Triaxial Test (Option A)'),
   },
 
   // Item 16
@@ -110,27 +75,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '17%' },
       { label: 'D', text: '64%' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Compute moisture content w from the total unit weight phase relationship: γ_m = [G_s (1 + w) / (1 + e)] · γ_w.',
-      formulas: [
-        '\\gamma_m = \\frac{G_s + G_s w}{1 + e}\\gamma_w',
-        '21.9 = \\frac{2.70 + 2.70w}{1 + 0.50}(9.81)',
-        '21.9(1.50) = (2.70 + 2.70w)(9.81)',
-        '32.85 = 26.487 + 26.487w',
-        '26.487w = 6.363 \\implies w = 0.2402',
-        'w = 24\\%',
-      ],
-      steps: [
-        'Step 1: Identify given properties: G_s = 2.70, e = 0.50, γ_m = 21.9 kN/m³, γ_w = 9.81 kN/m³.',
-        'Step 2: State fundamental total unit weight formula: γ_m = [G_s(1 + w) / (1 + e)] · γ_w.',
-        'Step 3: Substitute values: 21.9 = [2.70(1 + w) / 1.50] × 9.81.',
-        'Step 4: Solve for (1 + w): 1 + w = (21.9 × 1.50) / (2.70 × 9.81) = 32.85 / 26.487 = 1.2402.',
-        'Step 5: Moisture content w = 1.2402 - 1 = 0.2402 = 24% (Option A).',
-      ],
-      finalAnswer: '24% (Option A)',
-      pageNumber: 404,
-    },
+    ...solved(16, 'A', '24% (Option A)'),
   },
 
   // Item 17
@@ -149,24 +94,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '26.5%' },
       { label: 'D', text: '18.3%' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Air void ratio (or air content parameter) is given by e_a = n(1 - S), where n is porosity and S is the degree of saturation.',
-      formulas: [
-        'n = \\frac{e}{1 + e} = \\frac{0.59}{1 + 0.59} = 0.371',
-        'G_s w = S e \\implies S = \\frac{G_s w}{e} = \\frac{2.67(0.112)}{0.59} = 0.5069',
-        'e_a = n(1 - S) = 0.371(1 - 0.5069) = 0.1829',
-        'e_a = 18.3\\%',
-      ],
-      steps: [
-        'Step 1: Compute total porosity n: n = e / (1 + e) = 0.59 / 1.59 = 0.3711.',
-        'Step 2: Compute degree of saturation from G_s · w = S · e: S = (2.67 × 0.112) / 0.59 = 0.29904 / 0.59 = 0.5069 (50.69%).',
-        'Step 3: Degree of air saturation (fraction of voids containing air): 1 - S = 1 - 0.5069 = 0.4931.',
-        'Step 4: Air void ratio e_a = n(1 - S) = 0.3711 × 0.4931 = 0.1830 = 18.3% (Option D).',
-      ],
-      finalAnswer: '18.3% (Option D)',
-      pageNumber: 404,
-    },
+    ...solved(17, 'D', '18.3% (Option D)'),
   },
 
   // Item 18
@@ -185,25 +113,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '3.3' },
       { label: 'D', text: '4.5' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Settlement due to void ratio reduction is given by ΔH = H · (e₀ - e₁) / (1 + e₀).',
-      formulas: [
-        'e_0 = 1.20',
-        'e_c = \\frac{1}{3}(1.20) = 0.40',
-        '\\Delta H = \\frac{H(e_0 - e_c)}{1 + e_0}',
-        '\\Delta H = \\frac{6(1.20 - 0.40)}{1 + 1.20} = \\frac{6(0.80)}{2.20} = 2.1818',
-        '\\Delta H \\approx 2.2',
-      ],
-      steps: [
-        'Step 1: Initial clay layer thickness H = 6 m, initial void ratio e₀ = 1.20.',
-        'Step 2: Final void ratio after consolidation: e_c = (1/3) × 1.20 = 0.40.',
-        'Step 3: Change in void ratio: Δe = e₀ - e_c = 1.20 - 0.40 = 0.80.',
-        'Step 4: Consolidation reduction: ΔH = H · Δe / (1 + e₀) = 6(0.80) / (1 + 1.20) = 4.8 / 2.2 = 2.182 m ≈ 2.2 m (Option A).',
-      ],
-      finalAnswer: '2.2 (Option A)',
-      pageNumber: 405,
-    },
+    ...solved(18, 'A', '2.2 (Option A)'),
   },
 
   // Item 19
@@ -222,27 +132,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '47.75' },
       { label: 'D', text: '70.15' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'In a constant-head permeability test, Darcy\'s law gives the permeability coefficient as k = (V · L) / (A · h · t).',
-      formulas: [
-        'D = 8, \\quad L = 20, \\quad h = 40',
-        't = \\frac{4}{60} = \\frac{1}{15}',
-        'A = \\frac{\\pi}{4}(8)^2 = 16\\pi',
-        'k = \\frac{V L}{A h t}',
-        'k = \\frac{320(20)}{16\\pi(40)\\left(\\frac{1}{15}\\right)} = \\frac{6400}{\\frac{640\\pi}{15}} = \\frac{150}{\\pi} = 47.746',
-        'k \\approx 47.75',
-      ],
-      steps: [
-        'Step 1: Convert dimensions to cm and hours: D = 80 mm = 8 cm, L = 200 mm = 20 cm, head h = 400 mm = 40 cm.',
-        'Step 2: Test duration t = 4 min = 4/60 hr = 1/15 hr. Volume of collected water V = 320 cm³.',
-        'Step 3: Sample cross-sectional area: A = (π/4)(8 cm)² = 16π cm² = 50.265 cm².',
-        'Step 4: Apply constant head formula: k = (V · L) / (A · h · t) = (320 × 20) / [ 16π × 40 × (1/15) ].',
-        'Step 5: k = 6400 / [ 134.04 ] = 47.75 cm/hr (Option C).',
-      ],
-      finalAnswer: '47.75 (Option C)',
-      pageNumber: 405,
-    },
+    ...solved(19, 'C', '47.75 (Option C)'),
   },
 
   // Item 20
@@ -261,23 +151,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '60.0°' },
       { label: 'D', text: '26.6°' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'The slope of the Mohr-Coulomb failure envelope in a direct shear test represents the tangent of the angle of internal friction: tan φ = Δτ / Δσ.',
-      formulas: [
-        '\\tan\\phi = \\frac{\\Delta\\tau}{\\Delta\\sigma}',
-        '\\tan\\phi = \\frac{15}{30} = 0.50',
-        '\\phi = \\tan^{-1}(0.50) = 26.565^\\circ \\approx 26.6^\\circ',
-      ],
-      steps: [
-        'Step 1: From the Mohr-Coulomb failure criterion: τ = c + σ tan φ.',
-        'Step 2: The incremental change in shear stress with respect to normal stress gives the envelope slope: Δτ / Δσ = tan φ.',
-        'Step 3: Given Δτ = 15 kPa and Δσ = 30 kPa: tan φ = 15 / 30 = 0.50.',
-        'Step 4: Solve for friction angle: φ = arctan(0.50) = 26.565° ≈ 26.6° (Option D).',
-      ],
-      finalAnswer: '26.6° (Option D)',
-      pageNumber: 406,
-    },
+    ...solved(20, 'D', '26.6° (Option D)'),
   },
 
   // Item 21
@@ -296,22 +170,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '1.0' },
       { label: 'D', text: '2.4' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'The maximum shear stress developed in any stress state represented by Mohr\'s circle equals the radius R of the circle: τ_max = (σ₁ - σ₃) / 2.',
-      formulas: [
-        '\\tau_{\\max} = R = \\frac{\\sigma_1 - \\sigma_3}{2}',
-        '\\sigma_1 - \\sigma_3 = 2.8',
-        '\\tau_{\\max} = \\frac{2.8}{2} = 1.4',
-      ],
-      steps: [
-        'Step 1: On Mohr\'s circle of stress, the principal stress difference (deviator stress) is σ₁ - σ₃ = 2.8 kPa.',
-        'Step 2: The radius of Mohr\'s circle is R = (σ₁ - σ₃) / 2.',
-        'Step 3: The maximum shear stress τ_max is equal to the radius of the circle: τ_max = 2.8 / 2 = 1.4 kPa (Option B).',
-      ],
-      finalAnswer: '1.4 (Option B)',
-      pageNumber: 406,
-    },
+    ...solved(21, 'B', '1.4 (Option B)'),
   },
 
   // Item 22
@@ -330,27 +189,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '4.05 × 10⁻¹¹' },
       { label: 'D', text: '6.04 × 10⁻¹¹' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Seepage velocity v_s = (k · i) / n, where hydraulic gradient i = Δh / L_flow along the inclined flow path.',
-      formulas: [
-        'k = 0.0018\\left(\\frac{1}{100}\\right)\\left(\\frac{1}{3600}\\right) = 5 \\times 10^{-9}',
-        '\\Delta h = 70 - 60 = 10',
-        'L_f = \\frac{2500}{\\cos 4^\\circ} = 2506.09',
-        'i = \\frac{10}{2500 / \\cos 4^\\circ} = 0.003990',
-        'v_s = \\frac{k i}{n} = \\frac{(5 \\times 10^{-9})(0.003990)}{0.33} = 6.045 \\times 10^{-11}',
-      ],
-      steps: [
-        'Step 1: Convert permeability to m/s: k = 0.0018 cm/hr × (1 m / 100 cm) × (1 hr / 3600 s) = 5 × 10⁻⁹ m/s.',
-        'Step 2: Total head loss between piezometers: Δh = 70 m - 60 m = 10 m.',
-        'Step 3: Distance along the flow line inclined at α = 4°: L_flow = L_horizontal / cos 4° = 2500 / cos 4° = 2506.09 m.',
-        'Step 4: Hydraulic gradient: i = Δh / L_flow = 10 / 2506.09 = 0.003990.',
-        'Step 5: Discharge velocity: v = k · i = (5 × 10⁻⁹)(0.003990) = 1.995 × 10⁻¹¹ m/s.',
-        'Step 6: Seepage velocity: v_s = v / n = (1.995 × 10⁻¹¹) / 0.33 = 6.045 × 10⁻¹¹ m/s ≈ 6.04 × 10⁻¹¹ m/s (Option D).',
-      ],
-      finalAnswer: '6.04 × 10⁻¹¹ (Option D)',
-      pageNumber: 407,
-    },
+    ...solved(22, 'D', '6.04 × 10⁻¹¹ (Option D)'),
   },
 
   // Item 23
@@ -369,23 +208,7 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '20' },
       { label: 'D', text: '35' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Compute total seepage rate per unit width using the flow net equation: Q = k · H · (N_f / N_d), and convert m³/day to liters/min.',
-      formulas: [
-        'Q = k H \\left(\\frac{N_f}{N_d}\\right)',
-        'Q = 3(30)\\left(\\frac{4}{10}\\right) = 36',
-        'Q = 36\\left(\\frac{1000}{24 \\times 60}\\right) = 36\\left(\\frac{1000}{1440}\\right) = 25',
-      ],
-      steps: [
-        'Step 1: Given parameters: k = 3 m/day, total head difference H = 30 m, N_f = 4 flow channels, N_d = 10 equipotential drops.',
-        'Step 2: Flow net discharge per unit width: Q = k · H · (N_f / N_d) = 3 × 30 × (4 / 10) = 36 m³/day per meter.',
-        'Step 3: Convert units to liters/min: 1 m³ = 1000 L, 1 day = 24 × 60 = 1440 min.',
-        'Step 4: Q = 36 × (1000 / 1440) = 25 liters/min (Option A).',
-      ],
-      finalAnswer: '25 (Option A)',
-      pageNumber: 407,
-    },
+    ...solved(23, 'A', '25 (Option A)'),
   },
 
   // Item 24
@@ -404,27 +227,6 @@ export const HPGE_APR2025_PART2: Question[] = [
       { label: 'C', text: '5' },
       { label: 'D', text: '8' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'For friction piles in clay, ultimate skin friction is Q_f = α · c_u · P · L. The pile group capacity is Q_group = Efficiency × n × Q_f. Solve for the integer number of piles required.',
-      formulas: [
-        'c_u = \\frac{q_u}{2} = \\frac{120}{2} = 60',
-        'P = 4(0.40) = 1.60',
-        'Q_f = \\alpha c_u L P = 1.0(60)(20)(1.60) = 1920',
-        'Q_g = \\eta n Q_f \\implies 12,000 = (0.80)(1920)n',
-        '12,000 = 1536 n \\implies n = 7.8125',
-        'n \\approx 8',
-      ],
-      steps: [
-        'Step 1: Undrained shear strength of clay: c_u = q_u / 2 = 120 kPa / 2 = 60 kPa.',
-        'Step 2: Perimeter of 400 mm square pile: P = 4 × 0.40 m = 1.60 m. Embedded length L = 20 m.',
-        'Step 3: Skin friction resistance of one pile (assuming adhesion factor α = 1): Q_f = α · c_u · L · P = 1(60)(20)(1.60) = 1920 kN.',
-        'Step 4: Total required group capacity: Q = 12 MN = 12,000 kN with group efficiency η = 80% = 0.80.',
-        'Step 5: 12,000 = 0.80 × 1920 × n => 12,000 = 1536 n => n = 7.81.',
-        'Step 6: Rounding up to the nearest whole integer: n = 8 piles (Option D).',
-      ],
-      finalAnswer: '8 (Option D)',
-      pageNumber: 408,
-    },
+    ...solved(24, 'D', '8 (Option D)'),
   },
 ];
