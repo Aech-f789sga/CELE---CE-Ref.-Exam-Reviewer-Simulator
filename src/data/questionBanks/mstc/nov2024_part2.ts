@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './nov2024Helpers';
 
 export const MSTC_NOV2024_PART2: Question[] = [
   // Item 13
@@ -17,24 +18,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '120' },
       { label: 'D', text: '127' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'For every 2 units increase in US size, EU size increases by 5 units (slope = 5/2 = 2.5). From US size 46 (EU 117) to US size 48 (+2 units), EU size increases by 5 units: 117 + 5 = 122.',
-      formulas: [
-        '\\Delta EU / \\Delta US = 5 / 2 = 2.5 EU per US unit',
-        'US = 48 is +2 units above US = 46 (EU = 117)',
-        'EU(48) = 117 + 2  \\cdot  (2.5) = 117 + 5 = 122',
-      ],
-      steps: [
-        'Step 1: Check pattern: (112 - 107) / (44 - 42) = 5 / 2 = 2.5.',
-        'Step 2: Base reference point: US size 46 corresponds to EU size 117.',
-        'Step 3: Distance from 46 to 48 is ΔUS = 48 - 46 = 2 units.',
-        'Step 4: ΔEU = 2 × 2.5 = 5 units.',
-        'Step 5: Equivalent EU size = 117 + 5 = 122.',
-      ],
-      finalAnswer: '122 (Option B)',
-      pageNumber: 189,
-    },
+    ...solved(13, 'B', '122 (Option B)'),
   },
 
   // Item 14
@@ -53,22 +37,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '4.1°' },
       { label: 'D', text: '3.9°' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'tan θ = opposite / adjacent = 150 / 2200 => θ = arctan(150 / 2200) = 3.90°.',
-      formulas: [
-        '\\tan\\theta = \\frac{y}{x}',
-        '\\theta = \\arctan\\left(\\frac{y}{x}\\right)',
-      ],
-      steps: [
-        'Step 1: The height of the control tower is opposite side = 150 m.',
-        'Step 2: The horizontal distance on the ground is adjacent side = 2,200 m.',
-        'Step 3: tan θ = 150 / 2,200 = 0.06818.',
-        'Step 4: Angle of depression θ = arctan(0.06818) = 3.90° ≈ 3.9°.',
-      ],
-      finalAnswer: '3.9° (Option D)',
-      pageNumber: 189,
-    },
+    ...solved(14, 'D', '3.9° (Option D)'),
   },
 
   // Item 15
@@ -96,24 +65,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '86.7 ft' },
       { label: 'D', text: '87.6 ft' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'In triangle ABC: ∠B = 180° - 25° = 155°, ∠C = 180° - 155° - 8° = 17°. Apply Law of Sines: x / sin 155° = 60 / sin 17° => x = 86.73 ft ≈ 86.7 ft.',
-      formulas: [
-        '∠B = 180° - 25° = 155°',
-        '∠C = 180° - 155° - 8° = 17°',
-        'x / sin 155° = 60 / sin 17°',
-        'x = (60  \\cdot  sin 155°) / sin 17° = 86.73  \\approx  86.7',
-      ],
-      steps: [
-        'Step 1: Interior angle at B: ∠B = 180° - 25° = 155°.',
-        'Step 2: Interior angle at intersection C: ∠C = 180° - 155° - 8° = 17°.',
-        'Step 3: Apply the Law of Sines to find distance x along the 8° slope: x / sin 155° = 60 / sin 17°.',
-        'Step 4: x = (60 × 0.4226) / 0.2924 = 86.73 ft ≈ 86.7 ft.',
-      ],
-      finalAnswer: '86.7 ft (Option C)',
-      pageNumber: 190,
-    },
+    ...solved(15, 'C', '86.7 ft (Option C)'),
   },
 
   // Item 16
@@ -132,22 +84,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '38' },
       { label: 'D', text: '48' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Perimeter P = 2(8 + 6) = 28 m. Diagonal d = √(8² + 6²) = 10 m. Total molding = 28 + 10 = 38 m.',
-      formulas: [
-        'Perimeter P = 2(L + W) = 2(8 + 6) = 28',
-        'Diagonal d = \\sqrt{L^2 + W^2} = \\sqrt{8^2 + 6^2} = \\sqrt{100} = 10',
-        'Total length = P + d = 28 + 10 = 38',
-      ],
-      steps: [
-        'Step 1: Compute perimeter of the four walls: P = 2(8 + 6) = 28 m.',
-        'Step 2: Compute length of the diagonal across the room: d = √(8² + 6²) = 10 m.',
-        'Step 3: Total molding length = Perimeter + Diagonal = 28 + 10 = 38 m.',
-      ],
-      finalAnswer: '38 (Option C)',
-      pageNumber: 190,
-    },
+    ...solved(16, 'C', '38 (Option C)'),
   },
 
   // Item 17
@@ -175,24 +112,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '4' },
       { label: 'D', text: '3' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Let border width be x. (40 + 2x)(30 + 2x) - (40)(30) = 296 => 4x² + 140x - 296 = 0 => x² + 35x - 74 = 0 => (x - 2)(x + 37) = 0 => x = 2 ft.',
-      formulas: [
-        '(40 + 2x)(30 + 2x) - 1200 = 296',
-        '4x^2 + 140x + 1200 - 1200 = 296 => 4x^2 + 140x - 296 = 0',
-        'x^2 + 35x - 74 = 0 => (x - 2)(x + 37) = 0 => x = 2',
-      ],
-      steps: [
-        'Step 1: Total outer dimensions with border x: length = 40 + 2x, width = 30 + 2x.',
-        'Step 2: Area of border = Outer Area - Pool Area: (40 + 2x)(30 + 2x) - (40)(30) = 296 ft².',
-        'Step 3: Expand: 1200 + 140x + 4x² - 1200 = 296 => 4x² + 140x - 296 = 0.',
-        'Step 4: Divide by 4: x² + 35x - 74 = 0 => (x - 2)(x + 37) = 0.',
-        'Step 5: Taking positive root: x = 2 ft.',
-      ],
-      finalAnswer: '2 (Option B)',
-      pageNumber: 190,
-    },
+    ...solved(17, 'B', '2 (Option B)'),
   },
 
   // Item 18
@@ -211,25 +131,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: 'width = 11 m, length = 21 m' },
       { label: 'D', text: 'width = 11 m, length = 23 m' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Total yard area = 20(30) = 600 m². Garden area = 600 - 336 = 264 m². Dimensions: (30 - 2x)(20 - 2x) = 264 => x = 4 m. Length = 30 - 2(4) = 22 m, Width = 20 - 2(4) = 12 m.',
-      formulas: [
-        'Area_garden = Total Area - Area_grass = 600 - 336 = 264^2',
-        '(30 - 2x)(20 - 2x) = 264',
-        '4x^2 - 100x + 336 = 0 => x^2 - 25x + 84 = 0 => (x - 4)(x - 21) = 0 => x = 4',
-        'L = 30 - 2(4) = 22; W = 20 - 2(4) = 12',
-      ],
-      steps: [
-        'Step 1: Total backyard area = 20 m × 30 m = 600 m².',
-        'Step 2: Garden area = 600 - 336 = 264 m².',
-        'Step 3: Express dimensions with uniform grass border x: (30 - 2x)(20 - 2x) = 264.',
-        'Step 4: Solve quadratic equation: x = 4 m.',
-        'Step 5: Garden length = 30 - 2(4) = 22 m; garden width = 20 - 2(4) = 12 m.',
-      ],
-      finalAnswer: 'width = 12 m, length = 22 m (Option A)',
-      pageNumber: 191,
-    },
+    ...solved(18, 'A', 'width = 12 m, length = 22 m (Option A)'),
   },
 
   // Item 19
@@ -248,26 +150,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '4r³(6 - π)' },
       { label: 'D', text: '12r³(r - π)' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Box dimensions: length = 6r, width = 2r, height = 2r. V_box = (6r)(2r)(2r) = 24r³. Volume of 3 spheres = 3 · (4/3 π r³) = 4π r³. Space = 24r³ - 4π r³ = 4r³(6 - π).',
-      formulas: [
-        'Box dimensions: = 6r, W = 2r, H = 2r',
-        'V_box = 6r  \\cdot  2r  \\cdot  2r = 24r^3',
-        'V_spheres = 3 · [(4/3)π r³] = 4π r³',
-        'V_space = 24r³ - 4π r³ = 4r³(6 - π)',
-      ],
-      steps: [
-        'Step 1: Each ball has radius r, diameter 2r.',
-        'Step 2: Three balls lined up give box length L = 3(2r) = 6r.',
-        'Step 3: Box width W = 2r and height H = 2r.',
-        'Step 4: Box volume V_box = 6r × 2r × 2r = 24r³.',
-        'Step 5: Total volume of three spheres = 3 × (4/3)π r³ = 4π r³.',
-        'Step 6: Vacant space volume = 24r³ - 4π r³ = 4r³(6 - π).',
-      ],
-      finalAnswer: '4r³(6 - π) (Option C)',
-      pageNumber: 191,
-    },
+    ...solved(19, 'C', '4r³(6 - π) (Option C)'),
   },
 
   // Item 20
@@ -295,25 +178,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '90,606 ft' },
       { label: 'D', text: '90,660 ft' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Slant distance to 757: y = 20,000 / sin 6° = 191,335.44 ft. Slant distance to 737: x = 15,000 / sin 3° = 286,609.84 ft. Angle between sightlines α = 6° - 3° = 3°. By Law of Cosines: d = √(x² + y² - 2xy cos α) = 96,059.98 ft ≈ 96,060 ft.',
-      formulas: [
-        'y = 20,000 / sin 6° = 191,335.44',
-        'x = 15,000 / sin 3° = 286,609.84',
-        '\\alpha  = 6° - 3° = 3°',
-        'd^2 = x^2 + y^2 - 2xy  \\cdot  cos(3°)',
-        'd = 96,059.98  \\approx  96,060',
-      ],
-      steps: [
-        'Step 1: Slant range from tower to 757: y = 20,000 / sin(6°) = 191,335.44 ft.',
-        'Step 2: Slant range from tower to 737: x = 15,000 / sin(3°) = 286,609.84 ft.',
-        'Step 3: Angular separation between the two aircraft from tower: α = 6° - 3° = 3°.',
-        'Step 4: Use the Law of Cosines: d = √(x² + y² - 2xy cos 3°) = 96,059.98 ft ≈ 96,060 ft.',
-      ],
-      finalAnswer: '96,060 ft (Option B)',
-      pageNumber: 192,
-    },
+    ...solved(20, 'B', '96,060 ft (Option B)'),
   },
 
   // Item 21
@@ -341,24 +206,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '(1481.09, 4464.85) or (2272.2, 82523.02)' },
       { label: 'D', text: '(2523.02, 4464.85) or (2272.28, 1481.09)' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Point P is the intersection of two circles centered at A and B with radii 2000 m and 1500 m. Solving the two circle equations yields (4464.85, 1481.09) or (2523.02, 2272.28).',
-      formulas: [
-        'Circle A: (x - 2851.28)^2 + (y - 299.40)^2 = 2000^2',
-        'Circle B: (x - 3898.72)^2 + (y - 2870.15)^2 = 1500^2',
-        'Equating and solving: x_1 = 4,464.85, y_1 = 1,481.09',
-        'x_2 = 2,523.02, y_2 = 2,272.28',
-      ],
-      steps: [
-        'Step 1: Write equation of Circle A: (x - X_A)² + (y - Y_A)² = R_A².',
-        'Step 2: Write equation of Circle B: (x - X_B)² + (y - Y_B)² = R_B².',
-        'Step 3: Subtract circle equations to find line of intersection (radical axis).',
-        'Step 4: Substitute back to obtain intersection coordinates: P₁ = (4464.85, 1481.09) and P₂ = (2523.02, 2272.28).',
-      ],
-      finalAnswer: '(4464.85, 1481.09) or (2523.02, 2272.28) (Option A)',
-      pageNumber: 193,
-    },
+    ...solved(21, 'A', '(4464.85, 1481.09) or (2523.02, 2272.28) (Option A)'),
   },
 
   // Item 22
@@ -377,24 +225,7 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '260' },
       { label: 'D', text: '290' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Revenue R(x) = 690x. Profit P(x) = R(x) - C(x) = 690x - (0.5x² + 400x + 24,000) = -0.5x² + 290x - 24,000. dP/dx = -x + 290 = 0 => x = 290.',
-      formulas: [
-        'R(x) = 690x',
-        'P(x) = 690x - (0.5x^2 + 400x + 24,000) = -0.5x^2 + 290x - 24,000',
-        'dP/dx = -x + 290 = 0 => x = 290 units',
-      ],
-      steps: [
-        'Step 1: Revenue function R(x) = Price × x = 690x.',
-        'Step 2: Total cost C(x) = 0.5x² + 400x + 24,000.',
-        'Step 3: Profit P(x) = R(x) - C(x) = -0.5x² + 290x - 24,000.',
-        'Step 4: Differentiate with respect to x: dP/dx = -x + 290.',
-        'Step 5: Set derivative to zero: -x + 290 = 0 => x = 290 units.',
-      ],
-      finalAnswer: '290 (Option D)',
-      pageNumber: 194,
-    },
+    ...solved(22, 'D', '290 (Option D)'),
   },
 
   // Item 23
@@ -408,28 +239,12 @@ export const MSTC_NOV2024_PART2: Question[] = [
     category: 'Differential Calculus - Rate of Spread Optimization',
     text: 'It has been estimated that a rumor spreads at a rate $R$ that is proportional both to the ratio $r$ of individuals who have heard the rumor and to the ratio $(1 - r)$ who have not. Thus, $R = k r (1 - r)$, where $k$ is a positive constant. For what value of $r$ does the rumor spread fastest?',
     options: [
-      { label: 'A', text: '$r/2$' },
-      { label: 'B', text: '$r/4$' },
-      { label: 'C', text: '$1/2$' },
-      { label: 'D', text: '$r/5$' },
+      { label: 'A', text: 'r/2' },
+      { label: 'B', text: 'r/4' },
+      { label: 'C', text: 'r/3' },
+      { label: 'D', text: 'r/5' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'R(r) = k(r - r²). dR/dr = k(1 - 2r) = 0 => 1 - 2r = 0 => r = 1/2.',
-      formulas: [
-        'R(r) = kr - kr^2',
-        'dR/dr = k(1 - 2r) = 0',
-        '1 - 2r = 0 => r = 1/2',
-      ],
-      steps: [
-        'Step 1: Write the rate function: R = kr - kr².',
-        'Step 2: Take the derivative with respect to r: dR/dr = k(1 - 2r).',
-        'Step 3: To maximize R, set dR/dr = 0: k(1 - 2r) = 0.',
-        'Step 4: Since k > 0, 1 - 2r = 0 => r = 1/2.',
-      ],
-      finalAnswer: '1/2 (Option C)',
-      pageNumber: 194,
-    },
+    ...solved(23, 'A', 'r/2 (Option A)', 'The booklet keys this item A and prints option A as $r/2$. Differentiating $R = kr(1-r)$ gives $r = 1/2$, and no option offers that value, so the printed $r/2$ is evidently a misprint of $1/2$. The key follows the booklet.'),
   },
 
   // Item 24
@@ -448,25 +263,6 @@ export const MSTC_NOV2024_PART2: Question[] = [
       { label: 'C', text: '(2, 26), We would characterize the inflection point as the point of increasing returns.' },
       { label: 'D', text: '(2, 3), We would characterize the inflection point as the point of diminishing returns.' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: "P'(t) = -3t² + 12t. P''(t) = -6t + 12 = 0 => t = 2. P(2) = -(2)³ + 6(2)² + 10 = -8 + 24 + 10 = 26 => Point is (2, 26). Beyond t = 2, P''(t) < 0 (concave down), representing the point of diminishing returns.",
-      formulas: [
-        "P'(t) = -3t^2 + 12t",
-        "P''(t) = -6t + 12",
-        '6t + 12 = 0 => t = 2',
-        'P(2) = -(2)^3 + 6(2)^2 + 10 = 26 => (2, 26)',
-        "For t > 2, P''(t) < 0 (concave down, diminishing returns)",
-      ],
-      steps: [
-        "Step 1: First derivative: P'(t) = -3t² + 12t.",
-        "Step 2: Second derivative: P''(t) = -6t + 12.",
-        'Step 3: Equate second derivative to zero: -6t + 12 = 0 => t = 2.',
-        'Step 4: Calculate P(2) = -(8) + 6(4) + 10 = 26. Point of inflection is (2, 26).',
-        'Step 5: Since the concavity switches from positive to negative, the point marks the onset of diminishing returns.',
-      ],
-      finalAnswer: '(2, 26), We would characterize the inflection point as the point of diminishing returns. (Option B)',
-      pageNumber: 195,
-    },
+    ...solved(24, 'B', '(2, 26), We would characterize the inflection point as the point of diminishing returns. (Option B)'),
   },
 ];
