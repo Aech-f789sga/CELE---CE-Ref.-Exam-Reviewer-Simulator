@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved } from './nov2024Helpers';
 
 export const HPGE_NOV2024_PART1: Question[] = [
   // Item 1
@@ -17,24 +18,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '2.2' },
       { label: 'D', text: '1.8' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'The difference in mercury barometer readings between the base and mountain top corresponds to the weight of the intervening column of air: ΔP = γ_air · h.',
-      formulas: [
-        '\\Delta h_{Hg} = 700\ - 538\ = 162\ = 0.162',
-        '\\Delta P = \\gamma_{Hg} \\times \\Delta h_{Hg} = 9810(13.6)\\text{ N/m}^3 \\times 0.162\ = 21,613\\text{ N/m}^2',
-        '\\Delta P = \\gamma_{air} \\times h \\implies 21,613 = 12 \\times h',
-        'h = \\frac{21,613}{12} = 1,801\ \\approx 1.8',
-      ],
-      steps: [
-        'Step 1: Compute the difference in mercury barometer readings: Δh_Hg = 700 mmHg - 538 mmHg = 162 mmHg = 0.162 m Hg.',
-        'Step 2: Convert pressure difference to Pascals (N/m²): ΔP = γ_water · SG_Hg · Δh_Hg = 9810(13.6)(0.162) = 21,613 N/m².',
-        'Step 3: Equate ΔP to the air column pressure: ΔP = γ_air · h => 21,613 = 12 · h.',
-        'Step 4: Solve for mountain height: h = 21,613 / 12 = 1,801 m ≈ 1.8 km.',
-      ],
-      finalAnswer: '1.8 (Option D)',
-      pageNumber: 236,
-    },
+    ...solved(1, 'D', '1.8 (Option D)'),
   },
 
   // Item 2
@@ -53,21 +37,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '15.13' },
       { label: 'D', text: '15.65' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Dry unit weight is obtained directly using the standard fundamental phase relationship γ_dry = γ_m / (1 + w).',
-      formulas: [
-        '\\gamma_{dry} = \\frac{\\gamma_m}{1 + w}',
-        '\\gamma_{dry} = \\frac{18}{1 + 0.15} = \\frac{18}{1.15} = 15.652',
-      ],
-      steps: [
-        'Step 1: Identify given parameters: moist unit weight γ_m = 18 kN/m³, moisture content w = 15% = 0.15.',
-        'Step 2: Apply the fundamental phase relationship: γ_dry = γ_m / (1 + w).',
-        'Step 3: Calculate: γ_dry = 18 / (1 + 0.15) = 18 / 1.15 = 15.65 kN/m³.',
-      ],
-      finalAnswer: '15.65 (Option D)',
-      pageNumber: 237,
-    },
+    ...solved(2, 'D', '15.65 (Option D)'),
   },
 
   // Item 3
@@ -86,23 +56,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '25.0' },
       { label: 'D', text: '26.2' },
     ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'For a fluid with variable weight density γ(h), total hydrostatic pressure at depth H is found by integrating dP = γ(h) dh from 0 to H.',
-      formulas: [
-        'P = \\int_0^H \\gamma(h)\\,dh',
-        'P = \\int_0^2 (12 + 0.5h)\\,dh = \\left[ 12h + 0.25h^2 \\right]_0^2',
-        'P = 12(2) + 0.25(2)^2 = 24 + 1 = 25',
-      ],
-      steps: [
-        'Step 1: Set up the integral for hydrostatic pressure: P = ∫₀ᴴ γ(h) dh.',
-        'Step 2: Substitute the weight density equation γ = 12 + 0.5h with limits h = 0 to h = 2 m.',
-        'Step 3: Integrate: ∫ (12 + 0.5h) dh = [12h + 0.25h²] from 0 to 2.',
-        'Step 4: Evaluate: P = 12(2) + 0.25(4) = 24 + 1 = 25 kPa.',
-      ],
-      finalAnswer: '25.0 (Option C)',
-      pageNumber: 237,
-    },
+    ...solved(3, 'C', '25.0 (Option C)'),
   },
 
   // Item 4
@@ -121,28 +75,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '21.3' },
       { label: 'D', text: '33.6' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Divide the trapezoidal gate into a rectangular area (1.5 m × 2.4 m) and a right-triangular area (1.5 m × 0.6 m). Compute hydrostatic forces and center of pressures, then sum moments about the top hinge.',
-      formulas: [
-        'F_H = \\gamma \\bar{h} A,\\quad e = \\frac{I_g}{A \\bar{h}}',
-        '\A_1 = 1.5(2.4) = 3.6\,\\; \\bar{h}_1 = 1.2\,\\; F_{H1} = 9.81(1.2)(3.6) = 42.3792',
-        'e_1 = \\frac{1.5(2.4)^3 / 12}{3.6(1.2)} = 0.4\ \\implies r_1 = 1.2 + 0.4 = 1.6',
-        '\A_2 = 0.5(1.5)(0.6) = 0.45\,\\; \\bar{h}_2 = 2.4 + \\frac{0.6}{3} = 2.6\,\\; F_{H2} = 9.81(2.6)(0.45) = 11.477',
-        'e_2 = \\frac{1.5(0.6)^3 / 36}{0.45(2.6)} = 0.0167\ \\implies r_2 = 2.6 + 0.0167 = 2.6167',
-        '\\sum M_{\\text{hinge}} = 0 \\implies 42.3792(1.6) + 11.477(2.6167) = P \\left(\\frac{2.4 + 3.0}{2}\\right) = 2.7P',
-        '97.838 = 2.7P \\implies P = 36.24\ \\approx 36.2',
-      ],
-      steps: [
-        'Step 1: Divide trapezoidal gate into rectangle (1.5 m × 2.4 m) and triangle (1.5 m base × 0.6 m height).',
-        'Step 2: For rectangle: F_H1 = γ·h̄₁·A₁ = 9.81(1.2)(3.6) = 42.3792 kN. Moment arm from hinge: r₁ = h̄₁ + e₁ = 1.2 + 0.4 = 1.6 m.',
-        'Step 3: For triangle: F_H2 = γ·h̄₂·A₂ = 9.81(2.6)(0.45) = 11.477 kN. Moment arm from hinge: r₂ = h̄₂ + e₂ = 2.6 + 0.0167 = 2.6167 m.',
-        'Step 4: Average lever arm for force P applied at 0.75 m from each side (centerline): y_P = (2.4 + 3.0)/2 = 2.7 m.',
-        'Step 5: Equilibrium ΣM_hinge = 0: 42.3792(1.6) + 11.477(2.6167) = P(2.7) => 97.838 = 2.7P => P = 36.2 kN.',
-      ],
-      finalAnswer: '36.2 (Option A)',
-      pageNumber: 238,
-    },
+    ...solved(4, 'A', '36.2 (Option A)'),
   },
 
   // Item 5
@@ -161,21 +94,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '5.7' },
       { label: 'D', text: '2.5' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'When moving at constant velocity, vertical acceleration is zero (a = 0). Hydrostatic pressure depends solely on static fluid depth.',
-      formulas: [
-        'P = \\gamma h \\left(1 \\pm \\frac{a}{g}\\right)',
-        'a = 0 \\implies P = \\gamma h = 9.81(0.60) = 5.886\ \\approx 5.9',
-      ],
-      steps: [
-        'Step 1: Check acceleration: Since the elevator travels upward at constant velocity (v = 2 m/s), acceleration a = 0.',
-        'Step 2: The hydrostatic pressure equation for vertical motion is P = γ·h(1 ± a/g).',
-        'Step 3: Substitute a = 0: P = 9.81(0.60)(1 + 0) = 5.886 kPa ≈ 5.9 kPa.',
-      ],
-      finalAnswer: '5.9 (Option B)',
-      pageNumber: 239,
-    },
+    ...solved(5, 'B', '5.9 (Option B)'),
   },
 
   // Item 6
@@ -194,27 +113,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '91.3' },
       { label: 'D', text: '340.3' },
     ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Compute angular velocity ω, height of the paraboloid of revolution y, verify that the vortex vertex remains within the vessel, then compute spilled volume as the difference between final air volume and initial air volume.',
-      formulas: [
-        '\\omega = 90\ \\times \\frac{\\pi}{30} = 3\\pi\ = 9.4248',
-        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(3\\pi)^2 (0.65)^2}{2(9.81)} = 1.913\ < 2.1',
-        'V_{\\text{air,final}} = \\frac{1}{2} \\pi r^2 y = \\frac{1}{2}\\pi(0.65)^2(1.913) = 1.269',
-        'V_{\\text{air,initial}} = \\pi r^2 (2.1 - 1.4) = \\pi(0.65)^2(0.70) = 0.929',
-        'V_{\\text{spilled}} = V_{\\text{air,final}} - V_{\\text{air,initial}} = 1.269 - 0.929 = 0.3403\ = 340.3',
-      ],
-      steps: [
-        'Step 1: Compute angular velocity: ω = 90(π/30) = 3π rad/s.',
-        'Step 2: Radius r = 1.3 / 2 = 0.65 m. Initial water depth = (2/3)(2.1) = 1.4 m; initial air depth = 0.7 m.',
-        'Step 3: Paraboloid height: y = ω²r² / (2g) = (3π)²(0.65)² / (2 × 9.81) = 1.913 m < 2.1 m (vertex inside tank).',
-        'Step 4: Air volume during rotation = 1/2 · π · r² · y = 0.5 × π × (0.65)² × 1.913 = 1.269 m³.',
-        'Step 5: Initial air volume = π · r² · 0.7 = π × (0.65)² × 0.7 = 0.929 m³.',
-        'Step 6: Volume spilled = 1.269 m³ - 0.929 m³ = 0.3403 m³ = 340.3 liters.',
-      ],
-      finalAnswer: '340.3 (Option D)',
-      pageNumber: 239,
-    },
+    ...solved(6, 'D', '340.3 (Option D)'),
   },
 
   // Item 7
@@ -233,24 +132,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '0.912' },
       { label: 'D', text: '0.713' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'To prevent spillage, the water surface climbing the wall must reach at most the tank rim. Because the rise above the static level equals y/2, the maximum initial depth is h = H - y/2.',
-      formulas: [
-        '\\omega = 240\ \\times \\frac{\\pi}{30} = 8\\pi\ = 25.1327',
-        'y = \\frac{\\omega^2 r^2}{2g} = \\frac{(8\\pi)^2 (0.20)^2}{2(9.81)} = 1.288\ < 1.5',
-        'h_{\\text{max}} = H - \\frac{y}{2} = 1.5 - \\frac{1.288}{2} = 1.5 - 0.644 = 0.856',
-      ],
-      steps: [
-        'Step 1: Compute angular speed: ω = 240(π/30) = 8π rad/s.',
-        'Step 2: Radius r = 0.40 / 2 = 0.20 m.',
-        'Step 3: Paraboloid height: y = ω²r² / (2g) = (8π)²(0.2)² / (2 × 9.81) = 1.288 m.',
-        'Step 4: Water surface rise at the wall is y/2 = 1.288 / 2 = 0.644 m.',
-        'Step 5: Maximum initial water depth = H - y/2 = 1.5 - 0.644 = 0.856 m.',
-      ],
-      finalAnswer: '0.856 (Option B)',
-      pageNumber: 240,
-    },
+    ...solved(7, 'B', '0.856 (Option B)'),
   },
 
   // Item 8
@@ -269,23 +151,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '7.33' },
       { label: 'D', text: '23.6' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: "By Archimedes' Principle, the buoyant force equals the weight loss of the body in water, which equals the weight of displaced water.",
-      formulas: [
-        'BF = W_{\\text{air}} - W_{\\text{water}} = 300 - 230 = 70',
-        'BF = \\gamma_{\\text{water}} \\times V_{\\text{stone}} \\implies 70 = 9810 \\times V_{\\text{stone}}',
-        'V_{\\text{stone}} = \\frac{70}{9810} = 0.007136\ = 7.136\ \\approx 7.14',
-      ],
-      steps: [
-        'Step 1: Calculate buoyant force: BF = W_air - W_water = 300 - 230 = 70 N.',
-        'Step 2: Relate buoyant force to displaced volume: BF = γ_water · V_stone.',
-        'Step 3: Solve for V_stone: V = 70 / 9810 = 0.007136 m³.',
-        'Step 4: Convert to liters (1 m³ = 1000 L): V = 0.007136 × 1000 = 7.14 L.',
-      ],
-      finalAnswer: '7.14 (Option A)',
-      pageNumber: 241,
-    },
+    ...solved(8, 'A', '7.14 (Option A)'),
   },
 
   // Item 9
@@ -304,25 +170,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '0.385' },
       { label: 'D', text: '0.914' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'For vertical equilibrium of the submerged sphere: BF = W_sphere + T. Compute displaced volume, buoyant force from seawater, deduce sphere weight, and evaluate specific gravity / unit weight ratio.',
-      formulas: [
-        'V_{\\text{sphere}} = \\frac{4}{3}\\pi r^3 = \\frac{4}{3}\\pi (0.375)^3 = 0.22089',
-        'BF = \\gamma_{\\text{sw}} V = 1.026(9810)(0.22089) = 2223.3',
-        'W_{\\text{sphere}} = BF - T = 2223.3 - 270 = 1953.3',
-        '\\gamma_{\\text{sphere}} = \\frac{1953.3}{0.22089} = 8842.75\\text{ N/m}^3 = 8.84',
-        'SG_{\\text{sphere}} = \\frac{8842.75}{9810} = 0.901',
-      ],
-      steps: [
-        'Step 1: Compute sphere volume: V = (4/3)π(0.375)³ = 0.221 m³.',
-        'Step 2: Compute buoyant force from seawater: BF = 1.026(9810)(0.221) = 2223.3 N.',
-        'Step 3: Equilibrium equation: W_sphere + T = BF => W_sphere = 2223.3 - 270 = 1953.3 N.',
-        'Step 4: Unit weight γ = 1953.3 / 0.221 = 8842.75 N/m³; relative density / specific gravity ratio reported in PRC exam key: SG = 8842.75 / 9810 = 0.901.',
-      ],
-      finalAnswer: '0.901 (Option A)',
-      pageNumber: 241,
-    },
+    ...solved(9, 'A', '0.901 (Option A)'),
   },
 
   // Item 10
@@ -341,28 +189,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '10.44' },
       { label: 'D', text: '11.27' },
     ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Compute the displacement volume in ocean water versus fresh water for the total 90,000 metric ton mass. The additional volume required in fresh water divided by the waterline area yields the change in draft Δd.',
-      formulas: [
-        'M_{\\text{total}} = 70,000 + 20,000 = 90,000\\text{ metric tons} = 90 \\times 10^6',
-        'V_{\\text{ocean}} = \\frac{90 \\times 10^6}{1.03 \\times 1000} = 87,378.64',
-        'V_{\\text{fresh}} = \\frac{90 \\times 10^6}{1000} = 90,000',
-        '\\Delta V = V_{\\text{fresh}} - V_{\\text{ocean}} = 90,000 - 87,378.64 = 2,621.36',
-        '\\Delta d = \\frac{\\Delta V}{A_{\\text{wl}}} = \\frac{2,621.36}{10,000} = 0.2621',
-        'd_{\\text{fresh}} = 10.37 + 0.2621 = 10.632\ \\approx 10.63',
-      ],
-      steps: [
-        'Step 1: Total displacement mass M = 70,000 + 20,000 = 90,000 tons = 90 × 10⁶ kg.',
-        'Step 2: Submerged volume in ocean water: V_ocean = 90 × 10⁶ / 1030 = 87,378.64 m³.',
-        'Step 3: Submerged volume in freshwater: V_fresh = 90 × 10⁶ / 1000 = 90,000 m³.',
-        'Step 4: Additional volume required: ΔV = 90,000 - 87,378.64 = 2,621.36 m³.',
-        'Step 5: Increase in draft: Δd = ΔV / A_wl = 2,621.36 / 10,000 = 0.2621 m.',
-        'Step 6: Freshwater draft: d = 10.37 + 0.2621 = 10.63 m.',
-      ],
-      finalAnswer: '10.63 (Option B)',
-      pageNumber: 242,
-    },
+    ...solved(10, 'B', '10.63 (Option B)'),
   },
 
   // Item 11
@@ -381,21 +208,7 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '21.4' },
       { label: 'D', text: '19.2' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'The maximum theoretical unit weight of a soil mass occurs when there are no voids (e = 0), representing the solid particles alone.',
-      formulas: [
-        '\\gamma_{\\text{max}} = G_s \\gamma_w \\quad (\\text{at } e = 0)',
-        '\\gamma_{\\text{max}} = 2.10 \\times 9.81 = 20.601\ \\approx 20.6',
-      ],
-      steps: [
-        'Step 1: The general soil unit weight relation is γ = [(Gs + Se)/(1 + e)] · γ_w.',
-        'Step 2: Maximum possible unit weight occurs at zero void ratio (e = 0, completely void-free solid mass).',
-        'Step 3: At e = 0: γ_max = Gs · γ_w = 2.10 × 9.81 = 20.601 kN/m³ ≈ 20.6 kN/m³.',
-      ],
-      finalAnswer: '20.6 (Option A)',
-      pageNumber: 243,
-    },
+    ...solved(11, 'A', '20.6 (Option A)'),
   },
 
   // Item 12
@@ -414,21 +227,6 @@ export const HPGE_NOV2024_PART1: Question[] = [
       { label: 'C', text: '17.15' },
       { label: 'D', text: '20.57' },
     ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Moisture content is the ratio of the weight of water to the dry weight of soil solids expressed as a percentage.',
-      formulas: [
-        'W_{\\text{water}} = W_{\\text{moist}} - W_{\\text{dry}} = 190 - 160 = 30\\text{ g}',
-        'w = \\frac{W_{\\text{water}}}{W_{\\text{dry}}} \\times 100\\%',
-        'w = \\frac{30}{160} \\times 100\\% = 18.75\\%',
-      ],
-      steps: [
-        'Step 1: Mass of water evaporated: W_water = W_moist - W_dry = 190 - 160 = 30 g.',
-        'Step 2: Moisture content formula: w = (W_water / W_dry) × 100%.',
-        'Step 3: w = (30 / 160) × 100% = 18.75%.',
-      ],
-      finalAnswer: '18.75 (Option A)',
-      pageNumber: 244,
-    },
+    ...solved(12, 'A', '18.75 (Option A)'),
   },
 ];
