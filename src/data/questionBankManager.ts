@@ -163,6 +163,16 @@ export const ALL_MONTHS: ExamMonth[] = ['March', 'April', 'May', 'October', 'Nov
  *     and worked solutions on folios 698-710. Hydraulics runs to item 24 and
  *     geotechnics from item 25. Forty-nine items carry working; item 25 is a
  *     recall question and the solution run jumps from 24 to 26.
+ * 40. MSTC of May 2022 (55 Items) — from Volume 5, questions on booklet folios
+ *     372-382 with the 55-item key in six columns at the foot of folio 382 and
+ *     worked solutions on folios 383-411. The paper is a CamScanner scan with no
+ *     text layer, so every working is a crop of the rendered page rather than
+ *     extracted text. Fifty-four items carry working; item 45 is a pile-driving
+ *     recall question and the solution run jumps from 44 to 46. Twenty items run
+ *     over a folio break and carry two crops. Item 43 is keyed D and its working
+ *     agrees, but choice D reads "At most four times its own weight" while the
+ *     scaffolding standards require at least four times the maximum intended
+ *     load; the note records the disagreement and the printed key is kept.
  */
 export const AVAILABLE_EXAM_SETS: {
   year: number;
