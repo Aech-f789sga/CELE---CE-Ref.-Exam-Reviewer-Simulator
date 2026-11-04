@@ -144,7 +144,7 @@ function MainApp() {
   const { themeConfig } = useTheme();
   const particleTheme = useParticleTheme();
   const [isParticleRemoteOpen, setIsParticleRemoteOpen] = useState<boolean>(false);
-  const { user, profile, openAuthModal } = useAuth();
+  const { user, profile, openAuthModal, isAdmin } = useAuth();
   const activeUser = profile || user;
 
   // Selection states
@@ -636,6 +636,7 @@ function MainApp() {
                     setCurrentTab('scratchpad');
                   }}
                   onOpenDonation={handleOpenDonation}
+                  isAdmin={isAdmin}
                 />
               )}
 

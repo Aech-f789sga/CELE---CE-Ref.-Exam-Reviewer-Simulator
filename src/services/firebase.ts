@@ -26,8 +26,32 @@ import {
 } from 'firebase/firestore';
 import { ExamMonth, SubjectArea } from '../types/exam';
 import configJson from '../../firebase-applet-config.json';
+import {
+  DESIGNATED_ADMIN_EMAIL,
+  PRESENCE_IDLE_TIMEOUT_MS,
+  PRESENCE_ONLINE_WINDOW_MS,
+  excludeAnalyticsAccounts,
+  isAnalyticsExcluded,
+  isUserAdmin,
+  type UserPresence,
+} from './presence';
 
-export const DESIGNATED_ADMIN_EMAIL = 'derrickdarrack@gmail.com';
+/**
+ * Presence and analytics policy lives in ./presence so it stays free of Firebase
+ * imports and can be exercised directly. Re-exported here so every caller keeps
+ * importing from one module.
+ */
+export {
+  DESIGNATED_ADMIN_EMAIL,
+  PRESENCE_IDLE_TIMEOUT_MS,
+  PRESENCE_ONLINE_WINDOW_MS,
+  isAnalyticsExcluded,
+  isUserAdmin,
+  isUserIdle,
+  isUserCurrentlyOnline,
+  excludeAnalyticsAccounts,
+  type UserPresence,
+} from './presence';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -124,14 +148,6 @@ export function formatAnnouncerName(ann?: {
   }
 
   return 'Admin';
-}
-
-/**
- * Checks whether an email address is the designated system administrator.
- */
-export function isUserAdmin(email?: string | null): boolean {
-  if (!email) return false;
-  return email.trim().toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase();
 }
 
 /**
@@ -1469,16 +1485,6 @@ export async function updateUsernameWithWeeklyLimit(
    USER FEATURE INTERACTION & PRESENCE ANALYTICS (ADMIN ONLY)
    ========================================================================== */
 
-export interface UserPresence {
-  userId: string;
-  email: string;
-  displayName: string;
-  lastSeenAt: string;
-  currentFeature: string;
-  isOnline: boolean;
-  userAgent?: string;
-}
-
 export interface FeatureInteraction {
   id: string;
   userId: string;
@@ -1495,6 +1501,9 @@ export interface FeatureInteraction {
 
 /**
  * Updates a user's real-time online presence and currently active feature.
+ *
+ * Returns silently for accounts excluded from analytics, so no presence document
+ * is ever written for the administrator.
  */
 export async function updateUserPresence(presence: {
   userId: string;
@@ -1502,8 +1511,11 @@ export async function updateUserPresence(presence: {
   displayName: string;
   currentFeature: string;
   isOnline?: boolean;
+  idle?: boolean;
+  lastActivityAt?: string;
 }): Promise<void> {
   if (!presence.userId) return;
+  if (isAnalyticsExcluded(presence.email)) return;
   const now = new Date().toISOString();
   const payload: UserPresence = {
     userId: presence.userId,
@@ -1511,6 +1523,8 @@ export async function updateUserPresence(presence: {
     displayName: presence.displayName || 'Candidate',
     currentFeature: presence.currentFeature || 'Dashboard',
     isOnline: presence.isOnline ?? true,
+    idle: presence.idle ?? false,
+    lastActivityAt: presence.lastActivityAt || now,
     lastSeenAt: now,
   };
 
@@ -1533,17 +1547,22 @@ export async function markUserOffline(userId: string): Promise<void> {
   if (!userId) return;
   try {
     const docRef = doc(db, 'userPresence', userId);
-    await setDoc(docRef, { isOnline: false, lastSeenAt: new Date().toISOString() }, { merge: true });
+    await setDoc(docRef, { isOnline: false, idle: false, lastSeenAt: new Date().toISOString() }, { merge: true });
   } catch {}
 }
 
 /**
  * Records a completed feature interaction (feature used and how long it was used)
+ *
+ * Accounts excluded from analytics are dropped here as well as at the presence
+ * layer, so a stale tab still running the old bundle cannot reintroduce the
+ * administrator into the rankings.
  */
 export async function recordFeatureInteraction(
   interaction: Omit<FeatureInteraction, 'id' | 'createdAt'>
 ): Promise<string> {
   if (!interaction.userId || interaction.durationSeconds <= 0) return '';
+  if (isAnalyticsExcluded(interaction.userEmail)) return '';
   const id = `int-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   const now = new Date().toISOString();
 
@@ -1630,11 +1649,15 @@ export async function fetchAllUserPresence(): Promise<UserPresence[]> {
     console.error('Error fetching user presence:', err);
   }
 
-  return Array.from(presencesMap.values());
+  return excludeAnalyticsAccounts(Array.from(presencesMap.values()));
 }
 
 /**
  * Subscribes to real-time user presences
+ *
+ * Excluded accounts are filtered here rather than in each consumer, so every
+ * view of this data -- the roster and the admin analytics alike -- agrees on
+ * who is counted.
  */
 export function subscribeUserPresence(callback: (presences: UserPresence[]) => void): () => void {
   try {
@@ -1649,7 +1672,7 @@ export function subscribeUserPresence(callback: (presences: UserPresence[]) => v
             list.push(data);
           }
         });
-        callback(list);
+        callback(excludeAnalyticsAccounts(list));
       },
       (err) => {
         console.warn('Real-time presence subscription warning:', err);
@@ -1658,16 +1681,4 @@ export function subscribeUserPresence(callback: (presences: UserPresence[]) => v
   } catch {
     return () => {};
   }
-}
-
-/**
- * Helper to compute whether a user is online right now based on heartbeat timestamp.
- * Standard online threshold: lastSeenAt within the past 2 minutes.
- */
-export function isUserCurrentlyOnline(presence?: UserPresence | null): boolean {
-  if (!presence) return false;
-  if (!presence.isOnline) return false;
-  if (!presence.lastSeenAt) return false;
-  const diffMs = Date.now() - new Date(presence.lastSeenAt).getTime();
-  return diffMs <= 2 * 60 * 1000; // 2 minutes threshold
 }

@@ -23,6 +23,7 @@ import {
   ChevronRight,
   PenTool,
   Heart,
+  Lock,
 } from 'lucide-react';
 
 interface PerformanceReviewProps {
@@ -31,6 +32,12 @@ interface PerformanceReviewProps {
   onTakeExamArea: (subject: SubjectArea) => void;
   onOpenScratchpad?: (padId?: string) => void;
   onOpenDonation?: () => void;
+  /**
+   * Only the administrator may wipe attempt history. Examinees keep their own
+   * record so a bad cycle stays visible to them; the reset is a support action,
+   * not a self-service one.
+   */
+  isAdmin?: boolean;
 }
 
 export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
@@ -39,6 +46,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   onTakeExamArea,
   onOpenScratchpad,
   onOpenDonation,
+  isAdmin = false,
 }) => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const cycles = computePairedCycles(attempts);
@@ -64,6 +72,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   const psadMetrics = getSubjectMetrics('PSAD');
 
   const handleClear = () => {
+    if (!isAdmin) return;
     clearAllAttempts();
     onAttemptsChange([]);
     setShowClearConfirm(false);
@@ -133,15 +142,24 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                 <Sparkles className="w-4 h-4" />
                 <span>Load Demonstration Attempt Data</span>
               </button>
-            ) : (
+            ) : isAdmin ? (
               <button
                 type="button"
                 onClick={() => setShowClearConfirm(true)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-rose-500/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs transition-colors"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-rose-500/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs transition-colors cursor-pointer"
+                title="Administrator only: delete all logged attempts"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Reset History</span>
               </button>
+            ) : (
+              <span
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800/60 text-slate-500 text-xs cursor-not-allowed select-none"
+                title="Attempt history can only be reset by the administrator. Contact admin via the support button if you need a reset."
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>Reset History (admin only)</span>
+              </span>
             )}
           </div>
         </div>
@@ -718,7 +736,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
       </div>
 
       {/* Confirmation Modal for Reset */}
-      {showClearConfirm && (
+      {showClearConfirm && isAdmin && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 className="font-arnie text-lg font-bold text-white">

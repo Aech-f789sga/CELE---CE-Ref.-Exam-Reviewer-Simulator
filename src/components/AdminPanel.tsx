@@ -59,6 +59,10 @@ import {
   fetchAllUserPresence,
   subscribeUserPresence,
   isUserCurrentlyOnline,
+  isUserIdle,
+  isAnalyticsExcluded,
+  excludeAnalyticsAccounts,
+  PRESENCE_IDLE_TIMEOUT_MS,
   UserProfile,
   CloudExamAttempt,
   SystemAnnouncement,
@@ -130,8 +134,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
       setAttemptsList(allAttempts);
       setAnnouncementsList(allAnnouncements);
       setMessagesList(allMessages);
-      setInteractionsList(allInteractions);
-      setPresencesList(allPresences);
+      // Analytics never includes accounts excluded from it. Rows written before
+      // this rule existed (or by a stale tab) are dropped here, so the totals
+      // describe the examinees only.
+      setInteractionsList(excludeAnalyticsAccounts(allInteractions));
+      setPresencesList(excludeAnalyticsAccounts(allPresences));
     } catch (e) {
       console.error('Error loading admin data:', e);
     } finally {
@@ -147,11 +154,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   };
 
   const isUserOnline = (uid?: string, email?: string): boolean => {
+    if (isAnalyticsExcluded(email)) return false;
     const presence = getUserPresence(uid, email);
     return isUserCurrentlyOnline(presence);
   };
 
+  const isUserIdleNow = (uid?: string, email?: string): boolean => {
+    if (isAnalyticsExcluded(email)) return false;
+    return isUserIdle(getUserPresence(uid, email));
+  };
+
   const onlineUsersCount = usersList.filter((u) => isUserOnline(u.uid, u.email)).length;
+  const idleUsersCount = usersList.filter((u) => isUserIdleNow(u.uid, u.email)).length;
 
   // Feature usage aggregation for admin analytics
   const featureStats = React.useMemo(() => {
@@ -1015,6 +1029,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                     u.role === 'admin' || u.email.toLowerCase() === designatedAdminEmail.toLowerCase();
                   const presence = getUserPresence(u.uid, u.email);
                   const isOnline = isUserCurrentlyOnline(presence);
+                  const isIdle = isUserIdle(presence);
+                  const isTracked = !isAnalyticsExcluded(u.email);
                   const userInteractions = interactionsList.filter(
                     (i) => i.userId === u.uid || (i.userEmail && i.userEmail.toLowerCase() === u.email.toLowerCase())
                   );
@@ -1070,10 +1086,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                         </div>
                       </td>
                       <td className="py-3.5 px-4">
-                        {isOnline ? (
+                        {!isTracked ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-900 text-slate-500 border border-slate-700">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-600 inline-block" />
+                            <span>NOT TRACKED</span>
+                          </span>
+                        ) : isOnline ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
                             <span>ONLINE</span>
+                          </span>
+                        ) : isIdle ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                            <span>IDLE</span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700">
@@ -1087,7 +1113,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                           {presence?.currentFeature || 'Portal Dashboard'}
                         </span>
                         <span className="text-[10px] text-slate-500 font-mono">
-                          {isOnline ? 'Active right now' : `Last seen: ${formatTimeAgo(presence?.lastSeenAt || u.lastLoginAt)}`}
+                          {!isTracked
+                            ? 'Excluded from analytics'
+                            : isOnline
+                              ? 'Active right now'
+                              : isIdle
+                                ? `Idle for ${Math.max(
+                                    1,
+                                    Math.floor(
+                                      (Date.now() -
+                                        new Date(presence?.lastActivityAt || presence?.lastSeenAt || Date.now()).getTime()) /
+                                        60000
+                                    )
+                                  )} min — not counted online`
+                                : `Last seen: ${formatTimeAgo(presence?.lastSeenAt || u.lastLoginAt)}`}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 font-mono font-medium">
@@ -1202,6 +1241,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                 {onlineUsersCount > 0
                   ? `${onlineUsersCount} examinee${onlineUsersCount > 1 ? 's' : ''} currently active on the platform`
                   : 'No active examinees connected in the past 2 minutes'}
+                {idleUsersCount > 0 && (
+                  <>
+                    {' '}
+                    <span className="text-amber-400/90">
+                      · {idleUsersCount} idle over {Math.round(PRESENCE_IDLE_TIMEOUT_MS / 60000)} min, excluded
+                    </span>
+                  </>
+                )}
+                <span className="block mt-1 text-slate-500">Administrator activity is never counted.</span>
               </p>
             </div>
 

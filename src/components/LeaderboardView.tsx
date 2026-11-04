@@ -32,6 +32,7 @@ import {
   UserProfile,
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
+import { OnlineUsersPanel } from './OnlineUsersPanel';
 
 interface LeaderboardViewProps {
   onTakeExamArea?: (subject: SubjectArea) => void;
@@ -202,6 +203,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
         attemptsCount={attemptsCount}
         loading={loading}
       />
+
+      {/* Who is online / idle / recently active right now */}
+      <OnlineUsersPanel />
 
       {/* Main Tab Switcher: Overall vs Per Area */}
       <div className="grid grid-cols-2 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800">
