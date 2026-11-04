@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved, opts } from './nov2025Helpers';
 
 export const PSAD_NOV2025_PART2: Question[] = [
   // --- SITUATION 6: Vertical Light Pole with Two Guy Cables (Questions 16 - 18) ---
@@ -12,36 +13,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     category: 'Engineering Mechanics - 3D Concurrent Cable Equilibrium',
     text: 'Situation 6 — Refer to Figure 6.\nA vertical light pole is supported by two cables, $AB$ and $AC$, and is subjected to a horizontal force $H$ acting along the $y$-axis.\nGiven: $a = 4\$; $b = 4.5\$; $c = 6.0\$; $d = 3.0\$; $e = 6.0\$; $H = 2.4\$.\n\n16. Determine the tension (kN) in cable $AB$.',
     figureCaption: 'Figure 6: Vertical light pole supported by guy cables AB and AC under lateral horizontal force H',
-    options: [
-      { label: 'A', text: '1.66' },
-      { label: 'B', text: '1.57' },
-      { label: 'C', text: '2.49' },
-      { label: 'D', text: '2.35' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Compute true cable lengths from geometric coordinate projections: $L_{AB} = 8.5\$, $L_{AC} = 9.0\$. Set up equilibrium equations $\\sum F_x = 0$ and $\\sum F_y = 0$ at joint $A$ to solve for $T_{AB} = 1.57\$ and $T_{AC} = 2.49\$.',
-      formulas: [
-        'L_{AB} = \\sqrt{a^2 + b^2 + e^2}',
-        'L_{AC} = \\sqrt{c^2 + c^2 + d^2}',
-        '\\sum F_y = 0 \\implies -T_{AB}\\left(\\frac{a}{L_{AB}}\\right) - T_{AC}\\left(\\frac{c}{L_{AC}}\\right) + H = 0',
-        '\\sum F_x = 0 \\implies T_{AB}\\left(\\frac{b}{L_{AB}}\\right) - T_{AC}\\left(\\frac{d}{L_{AC}}\\right) = 0',
-      
-      ],
-      steps: [
-        'Step 1: Calculate the cable lengths from coordinate differences:',
-        'Cable AB: LAB = √(4² + 4.5² + 6²) = √72.25 = 8.5 m.',
-        'Cable AC: LAC = √(6² + 6² + 3²) = √81 = 9.0 m.',
-        'Step 2: Project cable tension forces along the Cartesian axes at mast tip A:',
-        'T_AB unit vector components: x = +4.5/8.5, y = -4/8.5, z = -6/8.5.',
-        'T_AC unit vector components: x = -3/9, y = -6/9, z = -6/9.',
-        'Step 3: Horizontal equilibrium along x-axis: ΣFx = 0 => (4.5/8.5) TAB - (3/9) TAC = 0 => 0.5294 TAB = 0.3333 TAC => TAC = 1.5882 TAB.',
-        'Step 4: Horizontal equilibrium along y-axis with applied force H = 2.4 kN: ΣFy = 0 => -(4/8.5) TAB - (6/9) TAC + 2.4 = 0.',
-        'Step 5: Substitute TAC: 0.4706 TAB + 0.6667 (1.5882 TAB) = 2.4 => 1.5294 TAB = 2.4 => TAB = 1.569 kN ≈ 1.57 kN (Option B).',
-      ],
-      finalAnswer: '1.57 (Option B)',
-      pageNumber: 608,
-    },
+    options: opts('1.66', '1.57', '2.49', '2.35'),
+    ...solved(16, 'B', '1.57 (Option B)'),
   },
 
   {
@@ -53,27 +26,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - 3D Concurrent Cable Equilibrium',
     text: 'Situation 6 (Cont.) — 17. Determine the tension (kN) in cable $AC$.',
-    options: [
-      { label: 'A', text: '1.66' },
-      { label: 'B', text: '1.57' },
-      { label: 'C', text: '2.49' },
-      { label: 'D', text: '2.35' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'From the equilibrium system in Item 16: $T_{AC} = \\frac{4.5/8.5}{3/9} T_{AB} = 1.5882(1.569) = 2.492\ \\approx 2.49\$.',
-      formulas: [
-        'T_{AC} = T_{AB} \\left(\\frac{b / L_{AB}}{d / L_{AC}}\\right)',
-      
-      ],
-      steps: [
-        'Step 1: Using the relation between cable tensions from x-axis equilibrium: TAC = (4.5/8.5) / (3/9) × TAB.',
-        'Step 2: With TAB = 1.569 kN: TAC = 1.5882 × 1.569 kN = 2.492 kN ≈ 2.49 kN.',
-        'Step 3: Therefore, the tension in cable AC is 2.49 kN (Option C).',
-      ],
-      finalAnswer: '2.49 (Option C)',
-      pageNumber: 608,
-    },
+    options: opts('1.66', '1.57', '2.49', '2.35'),
+    ...solved(17, 'C', '2.49 (Option C)'),
   },
 
   {
@@ -85,28 +39,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Engineering Mechanics - Maximum Allowable Applied Lateral Force',
     text: 'Situation 6 (Cont.) — 18. If the allowable tension in cable $AB$ is $4.5\$ and in cable $AC$ is $5.5\$, determine the maximum allowable force $H$ (kN) that can be applied to the pole.',
-    options: [
-      { label: 'A', text: '5.29' },
-      { label: 'B', text: '6.88' },
-      { label: 'C', text: '3.46' },
-      { label: 'D', text: '5.78' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'The tension in each cable varies linearly with the applied load $H$. Calculate $H_{\\max}$ based on the allowable tension of each cable: $H_{\\max(AB)} = \\frac{2.4}{1.57}(4.5) = 6.88\$, $H_{\\max(AC)} = \\frac{2.4}{2.49}(5.5) = 5.29\$. The smaller value governs.',
-      formulas: [
-        'H_{\\max} = \\min\\left(H \\frac{T_{AB,\\mathrm{all}}}{T_{AB}}, \\; H \\frac{T_{AC,\\mathrm{all}}}{T_{AC}}\\right)',
-      
-      ],
-      steps: [
-        'Step 1: Check capacity based on cable AB: When TAB = 4.5 kN, H = 2.4 × (4.5 / 1.57) = 6.88 kN.',
-        'Step 2: Check capacity based on cable AC: When TAC = 5.5 kN, H = 2.4 × (5.5 / 2.49) = 5.29 kN.',
-        'Step 3: Cable AC reaches its allowable tension first when H = 5.29 kN.',
-        'Step 4: Therefore, the maximum allowable lateral load is 5.29 kN (Option A).',
-      ],
-      finalAnswer: '5.29 (Option A)',
-      pageNumber: 609,
-    },
+    options: opts('5.29', '6.88', '3.46', '5.78'),
+    ...solved(18, 'A', '5.29 (Option A)'),
   },
 
   // --- SITUATION 7: Stresses on Inclined Plane of Compressive Block (Questions 19 - 21) ---
@@ -120,32 +54,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     category: 'Mechanics of Deformable Bodies - Stresses on Inclined Sections',
     text: 'Situation 7 — Refer to Figure 7.\nA rectangular block panel is formed by rigidly joining two prismatic blocks along an inclined plane $a$-$a$. The assembly is subjected to a vertical compressive load $P$ applied uniformly on the top surface.\nGiven: $B = 80\$; $L = 40\$; $\\theta = 30^\\circ$; $P = 48\$.\n\n19. Determine the normal stress (MPa) acting on the inclined plane $a$-$a$ due to the applied load $P$.',
     figureCaption: 'Figure 7: Rectangular block subjected to uniaxial compression P with joint along inclined plane a-a',
-    options: [
-      { label: 'A', text: '6.50' },
-      { label: 'B', text: '11.25' },
-      { label: 'C', text: '15.00' },
-      { label: 'D', text: '13.00' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Cross-sectional area perpendicular to uniaxial load is $A_\\perp = B \\times L = 80 \\times 40 = 3,200\$. Principal stress is $\\sigma_p = \\frac{P}{A_\\perp} = \\frac{48,000}{3,200} = 15\$. The normal stress on the plane inclined at angle $\\theta = 30^\\circ$ from the horizontal is $\\sigma_a = \\sigma_p \\cos^2\\theta = 15 \\cos^2 30^\\circ = 11.25\$.',
-      formulas: [
-        'A_\\perp = B L',
-        '\\sigma_p = \\frac{P}{A_\\perp}',
-        '\\sigma_a = \\sigma_p \\cos^2\\theta',
-      
-      ],
-      steps: [
-        'Step 1: Cross-sectional area perpendicular to the compressive force: A = 80 mm × 40 mm = 3,200 mm².',
-        'Step 2: Uniaxial compressive principal stress: σp = P / A = 48,000 N / 3,200 mm² = 15 MPa.',
-        'Step 3: The inclined plane a-a is at angle θ = 30° from the cross-sectional plane.',
-        'Step 4: Normal component of force on inclined area: P_normal = P cos θ.',
-        'Step 5: Inclined plane area: A_inclined = A / cos θ.',
-        'Step 6: Normal stress: σa = P_normal / A_inclined = (P/A) cos² θ = 15 × cos²(30°) = 15 × 0.75 = 11.25 MPa (Option B).',
-      ],
-      finalAnswer: '11.25 (Option B)',
-      pageNumber: 609,
-    },
+    options: opts('6.50', '11.25', '15.00', '13.00'),
+    ...solved(19, 'B', '11.25 (Option B)'),
   },
 
   {
@@ -157,30 +67,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Shear Stress on Inclined Planes',
     text: 'Situation 7 (Cont.) — 20. Determine the shear stress (MPa) acting on the inclined plane $a$-$a$ due to the applied load $P$.',
-    options: [
-      { label: 'A', text: '6.50' },
-      { label: 'B', text: '11.25' },
-      { label: 'C', text: '15.00' },
-      { label: 'D', text: '13.00' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Shear stress on the inclined plane is given by $\\tau_a = \\sigma_p \\sin\\theta \\cos\\theta = 15 \\sin 30^\\circ \\cos 30^\\circ = 15(0.50)(0.866) = 6.495\ \\approx 6.50\$.',
-      formulas: [
-        '\\tau_a = \\sigma_p \\sin\\theta \\cos\\theta',
-        '\\tau_a = \\frac{\\sigma_p}{2} \\sin(2\\theta)',
-      
-      ],
-      steps: [
-        'Step 1: Uniaxial stress σp = 15 MPa.',
-        'Step 2: Shear force parallel to the inclined plane: P_parallel = P sin θ.',
-        'Step 3: Inclined plane area: A_inclined = A / cos θ.',
-        'Step 4: Shear stress: τa = P_parallel / A_inclined = (P/A) sin θ cos θ = 15 × sin(30°) cos(30°).',
-        'Step 5: Compute: τa = 15 × 0.50 × 0.866025 = 6.495 MPa ≈ 6.50 MPa (Option A).',
-      ],
-      finalAnswer: '6.50 (Option A)',
-      pageNumber: 610,
-    },
+    options: opts('6.50', '11.25', '15.00', '13.00'),
+    ...solved(20, 'A', '6.50 (Option A)'),
   },
 
   {
@@ -192,29 +80,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Maximum Shear Stress & Safe Load',
     text: 'Situation 7 (Cont.) — 21. The maximum shear stress in the block occurs on a plane inclined at $\\theta = 45^\\circ$. If the allowable shear stress of the material is $2.4\$, determine the safe maximum value of the applied load $P$ (kN).',
-    options: [
-      { label: 'A', text: '10.86' },
-      { label: 'B', text: '7.68' },
-      { label: 'C', text: '17.73' },
-      { label: 'D', text: '15.36' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'At $\\theta = 45^\\circ$, maximum shear stress is $\\tau_{\\max} = \\frac{\\sigma_p}{2} = \\frac{P}{2 A_\\perp}$. Set $\\tau_{\\max} = 2.4\$ and solve for $P = 2(2.4)(3,200) = 15,360\ = 15.36\$.',
-      formulas: [
-        '\\tau_{\\max} = \\frac{P}{2 A_\\perp}',
-        'P = 2 \\tau_{\\max} A_\\perp',
-      
-      ],
-      steps: [
-        'Step 1: The maximum shear stress occurs on 45° planes: τ_max = σp / 2.',
-        'Step 2: Express in terms of load P and gross cross-section A = 3,200 mm²: τ_max = P / (2A) = P / 6,400.',
-        'Step 3: Equate to allowable shear stress of 2.4 MPa: 2.4 = P / 6,400.',
-        'Step 4: Solve for P: P = 2.4 × 6,400 = 15,360 N = 15.36 kN (Option D).',
-      ],
-      finalAnswer: '15.36 (Option D)',
-      pageNumber: 610,
-    },
+    options: opts('10.86', '7.68', '17.73', '15.36'),
+    ...solved(21, 'D', '15.36 (Option D)'),
   },
 
   // --- SITUATION 8: Fixed-Ended Shaft with Applied Intermediate Torque (Questions 22 - 24) ---
@@ -228,31 +95,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     category: 'Mechanics of Deformable Bodies - Statically Indeterminate Torsion of Shafts',
     text: 'Situation 8 — Refer to the figure shown.\nA torque $T$ is applied to the shaft with resisting torques $T_1$ and $T_2$ shown. The shaft is fixed at both ends.\nGiven: $T = 40\\\cdot\$; $L_1 = 4\$; $L_2 = 3\$; $G = 83\$.\n\n22. Determine resisting torque $T_1$ (kN·m).',
     figureCaption: 'Figure: Statically indeterminate circular shaft fixed at both ends with applied intermediate torque T',
-    options: [
-      { label: 'A', text: '17.1' },
-      { label: 'B', text: '30.0' },
-      { label: 'C', text: '22.9' },
-      { label: 'D', text: '10.0' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'By static equilibrium: $T_1 + T_2 = T = 40\\\cdot\$. By compatibility of deformation: total twist between fixed ends is zero, giving $\\frac{T_1 L_1}{J G} = \\frac{T_2 L_2}{J G} \\implies T_1(4) = T_2(3)$. Solving gives $T_1 = 17.14\\\cdot\ \\approx 17.1\\\cdot\$ and $T_2 = 22.86\\\cdot\$.',
-      formulas: [
-        'T_1 + T_2 = T',
-        '\\theta_1 = \\theta_2 \\implies \\frac{T_1 L_1}{J_1 G} = \\frac{T_2 L_2}{J_2 G}',
-        'T_1 = T \\left(\\frac{L_2}{L_1 + L_2}\\right)',
-      
-      ],
-      steps: [
-        'Step 1: Equilibrium equation for torques: T1 + T2 = 40 kN·m.',
-        'Step 2: Compatibility of deformation: Since the shaft is clamped at both outer ends, the rotation at the torque application point from segment 1 must equal that of segment 2: θ1 = θ2.',
-        'Step 3: With uniform cross-section (J1 = J2) and homogeneous material: T1 L1 = T2 L2.',
-        'Step 4: Substitute L1 = 4 m and L2 = 3 m: 4 T1 = 3 (40 - T1) = 120 - 3 T1.',
-        'Step 5: 7 T1 = 120 => T1 = 17.14 kN·m ≈ 17.1 kN·m (Option A).',
-      ],
-      finalAnswer: '17.1 (Option A)',
-      pageNumber: 611,
-    },
+    options: opts('17.1', '30.0', '22.9', '10.0'),
+    ...solved(22, 'A', '17.1 (Option A)'),
   },
 
   {
@@ -264,31 +108,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Shaft Diameter for Allowable Angle of Twist',
     text: 'Situation 8 (Cont.) — 23. Determine the required minimum diameter (mm) of the shaft if the maximum angle of twist is $6^\\circ$.',
-    options: [
-      { label: 'A', text: '83' },
-      { label: 'B', text: '95' },
-      { label: 'C', text: '135' },
-      { label: 'D', text: '102' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Convert angle of twist to radians: $\\theta = 6^\\circ \\times \\frac{\\pi}{180^\\circ} = 0.10472\$. Apply $\\theta = \\frac{T_1 L_1}{J G} \\le 0.10472$. For solid circular shaft $J = \\frac{\\pi D^4}{32}$, solve for $D_{\\min} = 94.7\ \\approx 95\$.',
-      formulas: [
-        '\\theta = \\frac{T L}{J G} \\le \\theta_{\\mathrm{all}}',
-        'J = \\frac{\\pi D^4}{32}',
-        'D \\ge \\left(\\frac{32 T L}{\\pi G \\theta_{\\mathrm{all}}}\\right)^{1/4}',
-      
-      ],
-      steps: [
-        'Step 1: Maximum rotation occurs at the junction of segments 1 and 2 where torque T is applied.',
-        'Step 2: Allowable angle of twist in radians: θ = 6 × (π / 180) = 0.10472 rad.',
-        'Step 3: Express angle of twist: θ = T1 L1 / (J G) = (17.14 × 10⁶ × 4000) / [(π/32) D⁴ (83,000)].',
-        'Step 4: Solve for D⁴: D⁴ ≥ 8.035 × 10⁷ mm⁴.',
-        'Step 5: Compute D: D_min = (8.035 × 10⁷)^(0.25) = 94.7 mm ≈ 95 mm (Option B).',
-      ],
-      finalAnswer: '95 (Option B)',
-      pageNumber: 612,
-    },
+    options: opts('83', '95', '135', '102'),
+    ...solved(23, 'B', '95 (Option B)'),
   },
 
   {
@@ -300,31 +121,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Shaft Sizing by Angle of Twist and Allowable Shear Stress',
     text: 'Situation 8 (Cont.) — 24. Determine the required minimum diameter (mm) of the shaft if the maximum angle of twist is $6^\\circ$ and the allowable shear stress is $99\$.',
-    options: [
-      { label: 'A', text: '128' },
-      { label: 'B', text: '96' },
-      { label: 'C', text: '135' },
-      { label: 'D', text: '106' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'From Part 2, angle of twist requires $D \\ge 94.7\$. Now check allowable shear stress using the maximum torque in the shaft ($T_2 = 22.86\\\cdot\$): $\\tau = \\frac{16 T_2}{\\pi D^3} \\le 99\$. Solving gives $D_{\\min} = 105.6\ \\approx 106\$. The larger value governs.',
-      formulas: [
-        '\\tau = \\frac{16 T_{\\max}}{\\pi D^3} \\le \\tau_{\\mathrm{all}}',
-        'D \\ge \\left(\\frac{16 T_{\\max}}{\\pi \\tau_{\\mathrm{all}}}\\right)^{1/3}',
-        'D_{\\mathrm{gov}} = \\max(D_\\theta, D_\\tau)',
-      
-      ],
-      steps: [
-        'Step 1: Check which segment carries the larger torque: T1 = 17.14 kN·m, T2 = 22.86 kN·m. T2 governs for shearing stress.',
-        'Step 2: Torsional shear stress formula: τ = 16 T / (π D³).',
-        'Step 3: Set τ ≤ 99 MPa: 99 = 16(22.86 × 10⁶) / (π D³) => D³ = 1,176,000 mm³.',
-        'Step 4: Solve for D: D = (1,176,000)^(1/3) = 105.55 mm ≈ 106 mm.',
-        'Step 5: Comparing the requirements: D ≥ 94.7 mm (stiffness) and D ≥ 105.6 mm (strength). Strength governs => D = 106 mm (Option D).',
-      ],
-      finalAnswer: '106 (Option D)',
-      pageNumber: 612,
-    },
+    options: opts('128', '96', '135', '106'),
+    ...solved(24, 'D', '106 (Option D)'),
   },
 
   // --- SITUATION 9: Light-Grade Steel Channel Purlin (Questions 25 - 27) ---
@@ -337,30 +135,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Biaxial Bending of Roof Purlins',
     text: 'Situation 9 — A light-grade steel channel was used as a purlin of a truss.\nTruss configuration:\nTop chord angle of inclination, $\\theta = 15^\\circ$\nDistance between trusses, $L = 6\$ on centers\nChannel properties:\n$S_x = 6.19 \\times 10^4\$; $S_y = 1.26 \\times 10^4\$\nSpacing of purlins, $s = 1\$ on centers with no sag rods\nLoads:\nRoof loads $= 660\\text{ Pa}$ applied at the top of the purlin\nDead loads $= 720\\text{ Pa}$ applied at the centroid of the purlin\nAllowable stresses:\n$F_{bx} = F_{by} = 185.5\$\n\n25. Determine the maximum bending stress (MPa) about the $x$-axis, $f_{bx}$, of the purlins.',
-    options: [
-      { label: 'A', text: '143.25' },
-      { label: 'B', text: '38.38' },
-      { label: 'C', text: '96.90' },
-      { label: 'D', text: '25.97' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Normal uniform load: $w_n = (RL + DL)(s) \\cos 15^\\circ = (0.66 + 0.72)(1) \\cos 15^\\circ = 1.333\$. Midspan strong-axis moment: $M_x = \\frac{w_n L^2}{8} = \\frac{1.333(6)^2}{8} = 5.998\\\cdot\$. Strong-axis bending stress: $f_{bx} = \\frac{M_x}{S_x} = \\frac{5.998 \\times 10^6}{6.19 \\times 10^4} = 96.905\ \\approx 96.90\$.',
-      formulas: [
-        'w_n = w s \\cos\\theta',
-        'M_x = \\frac{w_n L^2}{8}',
-        'f_{bx} = \\frac{M_x}{S_x}',
-      
-      ],
-      steps: [
-        'Step 1: Total vertical roof plus dead pressure: w = 660 Pa + 720 Pa = 1,380 Pa = 1.38 kN/m².',
-        'Step 2: Normal load per meter along the inclined roof: wn = w × s × cos 15° = 1.38 × 1.0 × 0.96593 = 1.333 kN/m.',
-        'Step 3: Maximum strong-axis moment for simply supported purlin: Mx = wn L² / 8 = 1.333 × 36 / 8 = 5.9984 kN·m = 5.9984 × 10⁶ N·mm.',
-        'Step 4: Bending stress about x-axis: fbx = Mx / Sx = 5.9984 × 10⁶ / 61,900 = 96.905 MPa ≈ 96.90 MPa (Option C).',
-      ],
-      finalAnswer: '96.90 (Option C)',
-      pageNumber: 614,
-    },
+    options: opts('143.25', '38.38', '96.90', '25.97'),
+    ...solved(25, 'C', '96.90 (Option C)'),
   },
 
   {
@@ -372,30 +148,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Weak-Axis Bending Stress on Purlins',
     text: 'Situation 9 (Cont.) — 26. Determine the maximum bending stress (MPa) about the $y$-axis, $f_{by}$, of the purlins. Note: For loads applied at the top of the purlin, multiply the tangential component $w_t$ by 2.',
-    options: [
-      { label: 'A', text: '188.57' },
-      { label: 'B', text: '127.56' },
-      { label: 'C', text: '703.74' },
-      { label: 'D', text: '476.06' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Tangential load component: $w_t = (RL \\times 2 + DL)(s) \\sin 15^\\circ = (660 \\times 2 + 720)(1) \\sin 15^\\circ = 2,040 \\sin 15^\\circ = 527.99\\text{ N/m} = 0.528\$. Midspan weak-axis moment: $M_y = \\frac{w_t L^2}{8} = 2.376\\\cdot\$. Weak-axis bending stress: $f_{by} = \\frac{M_y}{S_y} = \\frac{2.376 \\times 10^6}{1.26 \\times 10^4} = 188.566\ \\approx 188.57\$.',
-      formulas: [
-        'w_t = w s \\sin\\theta',
-        'M_y = \\frac{w_t L^2}{8}',
-        'f_{by} = \\frac{M_y}{S_y}',
-      
-      ],
-      steps: [
-        'Step 1: In accordance with standard purlin design specifications, top-flange roof load produces double the torsion/bending lever arm: wt = (2 × RL + DL) s sin 15°.',
-        'Step 2: Effective tangential load: wt = (2 × 660 + 720)(1.0) sin 15° = 2,040 × 0.25882 = 527.99 N/m = 0.528 kN/m.',
-        'Step 3: Weak-axis bending moment (no sag rods, span = 6 m): My = wt L² / 8 = 0.528 × 36 / 8 = 2.376 kN·m.',
-        'Step 4: Bending stress about y-axis: fby = My / Sy = 2.376 × 10⁶ / 12,600 = 188.566 MPa ≈ 188.57 MPa (Option A).',
-      ],
-      finalAnswer: '188.57 (Option A)',
-      pageNumber: 614,
-    },
+    options: opts('188.57', '127.56', '703.74', '476.06'),
+    ...solved(26, 'A', '188.57 (Option A)'),
   },
 
   {
@@ -407,30 +161,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Biaxial Bending Interaction & Safe Spacing',
     text: 'Situation 9 (Cont.) — 27. Determine the maximum safe spacing $s$ (m) of the purlins.',
-    options: [
-      { label: 'A', text: '0.80' },
-      { label: 'B', text: '0.85' },
-      { label: 'C', text: '0.60' },
-      { label: 'D', text: '0.65' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Apply the AISC / NSCP biaxial bending interaction formula: $\\frac{f_{bx}}{F_{bx}} + \\frac{f_{by}}{F_{by}} \\le 1.0$. Both stresses are proportional to spacing $s$: $\\frac{96.905 s}{185.5} + \\frac{188.566 s}{185.5} \\le 1.0 \\implies 285.47 s \\le 185.5 \\implies s \\le 0.6498\ \\approx 0.65\$.',
-      formulas: [
-        '\\frac{f_{bx}}{F_{bx}} + \\frac{f_{by}}{F_{by}} \\le 1.0',
-        's \\le \\frac{1.0}{\\frac{f_{bx0}}{F_{bx}} + \\frac{f_{by0}}{F_{by}}}',
-      
-      ],
-      steps: [
-        'Step 1: Biaxial bending interaction equation: (fbx / Fbx) + (fby / Fby) ≤ 1.0.',
-        'Step 2: Allowable bending stresses: Fbx = Fby = 185.5 MPa.',
-        'Step 3: Stresses at 1.0 m spacing are fbx = 96.905 MPa and fby = 188.566 MPa.',
-        'Step 4: Interaction value for s = 1.0 m: (96.905 + 188.566) / 185.5 = 285.47 / 185.5 = 1.539 > 1.0.',
-        'Step 5: Maximum allowable spacing: s_max = 1.0 / 1.539 = 0.6498 m ≈ 0.65 m (Option D).',
-      ],
-      finalAnswer: '0.65 (Option D)',
-      pageNumber: 614,
-    },
+    options: opts('0.80', '0.85', '0.60', '0.65'),
+    ...solved(27, 'D', '0.65 (Option D)'),
   },
 
   // --- SITUATION 10: Vertical Sheet Pile Wall with Strut (Questions 28 - 30) ---
@@ -444,31 +176,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     category: 'Foundation Engineering - Sheet Pile Bending Stress without Strut',
     text: 'Situation 10 — Refer to the figure shown.\nA vertical sheet pile wall is fixed at the base and laterally supported by a horizontal strut. The wall is subjected to a total active earth pressure force, $F$, due to the retained soil. Neglect the passive earth pressure.\nGiven: $H = 7.7\$; $h_1 = 0.7\$; $h_2 = 3.2\$; $d = 1.5\$; $F = 90\$; Strut spacing $= 2.5\$; Effective width of sheet pile $= 0.50\$; $S_x = 0.68 \\times 10^6\$.\n\n28. Compute the maximum bending stress (MPa) in the sheet pile without the strut.',
     figureCaption: 'Figure: Vertical sheet pile wall fixed at base C, laterally propped by strut at B',
-    options: [
-      { label: 'A', text: '212' },
-      { label: 'B', text: '1059' },
-      { label: 'C', text: '424' },
-      { label: 'D', text: '569' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'For effective width of $0.50\$, the load is $F = 90(0.50) = 45\$ acting at $h_2 = 3.2\$ from fixed base $C$. Maximum cantilever moment: $M_{\\max} = 45(3.2) = 144\\\cdot\$. Maximum bending stress: $f_{b\\max} = \\frac{M_{\\max}}{S_x} = \\frac{144 \\times 10^6}{0.68 \\times 10^6} = 211.76\ \\approx 212\$.',
-      formulas: [
-        'F = w s',
-        'M_{\\max} = F h_2',
-        'f_{b,\\max} = \\frac{M_{\\max}}{S_x}',
-      
-      ],
-      steps: [
-        'Step 1: Calculate the resultant active force on a single sheet pile of width 0.50 m: F = 90 kN/m × 0.50 m = 45 kN.',
-        'Step 2: Without the strut, the sheet pile acts as a vertical cantilever fixed at base C.',
-        'Step 3: The load F acts at height h2 = 3.2 m above point of fixity C.',
-        'Step 4: Maximum bending moment at base C: MC = F × h2 = 45 kN × 3.2 m = 144 kN·m.',
-        'Step 5: Maximum bending stress: fb = MC / Sx = 144 × 10⁶ N·mm / 680,000 mm³ = 211.76 MPa ≈ 212 MPa (Option A).',
-      ],
-      finalAnswer: '212 (Option A)',
-      pageNumber: 615,
-    },
+    options: opts('212', '1059', '424', '569'),
+    ...solved(28, 'A', '212 (Option A)'),
   },
 
   {
@@ -480,30 +189,8 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Foundation Engineering - Sheet Pile Bending Moment with Strut',
     text: 'Situation 10 (Cont.) — 29. Find the bending moment (kN·m) at point $C$ considering the strut.',
-    options: [
-      { label: 'A', text: '59.3' },
-      { label: 'B', text: '118.6' },
-      { label: 'C', text: '296.6' },
-      { label: 'D', text: '215.7' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Total load per strut bay (spacing $2.5\$) is $F = 90(2.5) = 225\$. Strut distance from base $C$ is $L = (7.7 + 0.7) - 1.5 = 6.9\$. Using propped cantilever formula: $R = \\frac{P a^2}{2 L^3}(3L - a) = \\frac{225(3.2)^2}{2(6.9)^3}[3(6.9) - 3.2] = 61.368\$. Moment at $C$: $M_C = R L - P a = 61.368(6.9) - 225(3.2) = -296.6\\\cdot\$.',
-      formulas: [
-        'F = w s',
-        'R = \\frac{P a^2}{2 L^3}(3L - a)',
-        'M_C = R L - P a',
-      ],
-      steps: [
-        'Step 1: Total active pressure force per strut spacing (2.5 m): P = 90 kN/m × 2.5 m = 225 kN.',
-        'Step 2: Total height of pile to strut: L = 8.4 m - 1.5 m = 6.9 m.',
-        'Step 3: Distance from fixed base C to load P: a = 3.2 m.',
-        'Step 4: Propped cantilever reaction R at strut B: R = [P a² / (2 L³)] × (3L - a) = [225(3.2)² / (2 × 6.9³)] × [3(6.9) - 3.2] = 61.368 kN.',
-        'Step 5: Moment at base C: MC = R · L - P · a = 61.368(6.9) - 225(3.2) = -296.56 kN·m ≈ -296.6 kN·m (Option C).',
-      ],
-      finalAnswer: '296.6 (Option C)',
-      pageNumber: 616,
-    },
+    options: opts('59.3', '118.6', '296.6', '215.7'),
+    ...solved(29, 'C', '296.6 (Option C)'),
   },
 
   {
@@ -515,29 +202,7 @@ export const PSAD_NOV2025_PART2: Question[] = [
     month: 'November',
     category: 'Foundation Engineering - Strut Force to Eliminate Tip Deflection',
     text: 'Situation 10 (Cont.) — 30. What force (kN) must the strut exert to eliminate the deflection at point $A$?',
-    options: [
-      { label: 'A', text: '23.3' },
-      { label: 'B', text: '11.6' },
-      { label: 'C', text: '36.5' },
-      { label: 'D', text: '58.2' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Using the cantilever deflection formula $\\delta = \\frac{P a^2}{6EI}(3L - a)$ for tip deflection: equate $\\delta_A(\\text{due to } F) = \\delta_A(\\text{due to } R)$. With $L = 8.4\$, $a_F = 3.2\$, $a_R = 6.9\$: $225(3.2)^2[3(8.4) - 3.2] = R(6.9)^2[3(8.4) - 6.9]$. Solving gives $R = 58.18\ \\approx 58.2\$.',
-      formulas: [
-        '\\delta_A = \\frac{P a^2}{6 E I}(3L - a)',
-        '\\delta_{A,F} = \\delta_{A,R}',
-        'R = P \\left(\\frac{a_F}{a_R}\\right)^2 \\left(\\frac{3L - a_F}{3L - a_R}\\right)',
-      ],
-      steps: [
-        'Step 1: Total cantilever length from fixed base C to tip A: L = 7.7 + 0.7 = 8.4 m.',
-        'Step 2: Deflection at free tip A due to point load P = 225 kN at a = 3.2 m from base: δF = [P a² / (6EI)] × (3L - a).',
-        'Step 3: Deflection at free tip A due to strut reaction R at a = 6.9 m from base: δR = [R a² / (6EI)] × (3L - a).',
-        'Step 4: Set δF = δR to eliminate deflection at A: 225(3.2)²[3(8.4) - 3.2] = R(6.9)²[3(8.4) - 6.9].',
-        'Step 5: 50,688 = 871.263 R => R = 58.18 kN ≈ 58.2 kN (Option D).',
-      ],
-      finalAnswer: '58.2 (Option D)',
-      pageNumber: 616,
-    },
+    options: opts('23.3', '11.6', '36.5', '58.2'),
+    ...solved(30, 'D', '58.2 (Option D)'),
   },
 ];

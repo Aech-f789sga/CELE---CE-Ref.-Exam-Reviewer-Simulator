@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved, opts } from './nov2025Helpers';
 
 export const PSAD_NOV2025_PART4: Question[] = [
   // --- SITUATION 16: Bolted Butt Splice Connection (Questions 46 - 48) ---
@@ -12,33 +13,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     category: 'Structural Steel Design - Bolted Butt Connection Net Section Tension',
     text: 'Situation 16 — Refer to the figure shown.\nThe butt connection shows eight $20\\text{-mm}$ diameter A325 bolts with $22\$ bolt hole diameter spaced as follows:\n$s_1 = 50\$; $s_2 = 100\$; $s_3 = 38\$; $s_4 = 76\$.\nThickness of plates: $t_1 = 16\$ (main plate); $t_2 = 12\$ (two splice plates).\nSteel strength and allowable stress are:\nYield strength, $F_y = 248\$\nUltimate strength, $F_u = 400\$\nAllowable tensile stress on the gross area $= 148\$\nAllowable tensile stress on the net area $= 200\$\nAllowable shear stress on the net area $= 120\$\nAllowable bearing stress on plate $= 480\$\nAllowable bolt shear stress, $F_v = 120\$\n\n46. If $T = 450\$, determine the maximum bolt diameter (mm) based on tension on the net area of the plate.',
     figureCaption: 'Figure: Bolted double-shear butt splice connection with 8 bolts and plate layout',
-    options: [
-      { label: 'A', text: '32' },
-      { label: 'B', text: '25' },
-      { label: 'C', text: '28' },
-      { label: 'D', text: '30' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Main plate width is $w = 2 s_1 + s_2 = 2(50) + 100 = 200\$, thickness $t_1 = 16\$. Net tensile area across a vertical section with 2 bolt holes is $A_{\\text{net}} = (200 - 2 d_{\\text{hole}})(16)$. Set $f_t = \\frac{T}{A_{\\text{net}}} \\le 200\$. Solving gives $d_{\\text{hole}} \\le 29.69\$. With standard hole allowance of $2\$, $d_{\\text{bolt}} \\le 27.69\$, so choose $28\$.',
-      formulas: [
-        'f_t = \\frac{P}{A_n} \\le F_t',
-        'A_n = (w - n d_h) t',
-        'd_b = d_h - 2',
-      
-      ],
-      steps: [
-        'Step 1: Total width of the plate: w = s1 + s2 + s1 = 50 + 100 + 50 = 200 mm.',
-        'Step 2: A transverse cross section passes through 2 bolt holes.',
-        'Step 3: Net area: Anet = (w - 2 d_hole) t1 = (200 - 2 d_hole)(16).',
-        'Step 4: Allowable net tensile stress: Ft_net = 200 MPa.',
-        'Step 5: Set ft = 450,000 / Anet ≤ 200 MPa => Anet ≥ 2,250 mm².',
-        'Step 6: (200 - 2 d_hole) ≥ 140.625 => 2 d_hole ≤ 59.375 => d_hole ≤ 29.69 mm.',
-        'Step 7: Standard bolt diameter: d_bolt = 28 mm (Option C).',
-      ],
-      finalAnswer: '28 (Option C)',
-      pageNumber: 625,
-    },
+    options: opts('32', '25', '28', '30'),
+    ...solved(46, 'C', '28 (Option C)'),
   },
 
   {
@@ -50,31 +26,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Connection Plate Bearing Capacity',
     text: 'Situation 16 (Cont.) — 47. Determine the maximum allowable tensile force, $T$ (kN) based on bearing stress on the plate.',
-    options: [
-      { label: 'A', text: '675.8' },
-      { label: 'B', text: '1228.8' },
-      { label: 'C', text: '614.4' },
-      { label: 'D', text: '460.8' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'The main center plate thickness is $t_1 = 16\$, while the two splice plates have a combined thickness of $2 \\times 12 = 24\$. Thus the $16\$ plate governs bearing. Each side of the splice has 4 bolts transmitting load $P$: $f_p = \\frac{P/4}{d_b t_p} \\le F_p = 480\$. Solving gives $P = 4(480)(20)(16) = 614,400\ = 614.4\$.',
-      formulas: [
-        'f_p = \\frac{P / n}{d_b t_p} \\le F_p',
-        'P_{\\max} = n d_b t_p F_p',
-        't_p = \\min(t_1, 2 t_2)',
-      
-      ],
-      steps: [
-        'Step 1: Check governing plate thickness for bearing: Main plate t1 = 16 mm vs two splice plates 2(12) = 24 mm. Main plate t1 = 16 mm governs.',
-        'Step 2: Number of bolts on one side of the joint: n = 4 bolts, each carrying P/4.',
-        'Step 3: Projected bearing area per bolt: Ab = db tp = 20 mm × 16 mm = 320 mm².',
-        'Step 4: Allowable bearing load per bolt: Pb = Fp Ab = 480 MPa × 320 mm² = 153,600 N = 153.6 kN.',
-        'Step 5: Total allowable joint tension: T = 4 × 153.6 kN = 614.4 kN (Option C).',
-      ],
-      finalAnswer: '614.4 (Option C)',
-      pageNumber: 625,
-    },
+    options: opts('675.8', '1228.8', '614.4', '460.8'),
+    ...solved(47, 'C', '614.4 (Option C)'),
   },
 
   {
@@ -86,30 +39,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Connection Block Shear Strength',
     text: 'Situation 16 (Cont.) — 48. Determine the maximum allowable tensile force, $T$ (kN) based on block shear strength of the connection.',
-    options: [
-      { label: 'A', text: '560.6' },
-      { label: 'B', text: '529.9' },
-      { label: 'C', text: '420.5' },
-      { label: 'D', text: '397.4' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Evaluate potential block shear failure paths. In Pattern 2 (U-path tearing along an edge): shear net area $A_v = [76 + 38 - 1.5(22)](16) = 1,296\$ and tensile net area $A_t = [150 - 1.5(22)](16) = 1,872\$. Then $P_{\\max} = F_v A_v + F_t A_t = 120(1,296) + 200(1,872) = 155,520 + 374,400 = 529,920\ \\approx 529.9\$.',
-      formulas: [
-        'R_n = 0.60 F_u A_{nv} + U_{bs} F_u A_{nt}',
-        'R_n \\le 0.60 F_y A_{gv} + U_{bs} F_u A_{nt}',
-        'P_{\\mathrm{crit}} = \\min(P_1, P_2)',
-      
-      ],
-      steps: [
-        'Step 1: Check Block Shear Pattern 1 (Center block shear): Net shear area along two lines: Av = 2 × (114 - 1.5 × 22)(16) = 2,592 mm². Net tension area: At = (100 - 22)(16) = 1,248 mm². Capacity P1 = 120(2592) + 200(1248) = 560.64 kN.',
-        'Step 2: Check Block Shear Pattern 2 (L-shaped block shear tear): Net shear area: Av = (114 - 33)(16) = 1,296 mm². Net tension area: At = (150 - 33)(16) = 1,872 mm².',
-        'Step 3: Capacity P2 = 120(1296) + 200(1872) = 155,520 + 374,400 = 529,920 N = 529.92 kN.',
-        'Step 4: The governing block shear capacity is the minimum: 529.92 kN ≈ 529.9 kN (Option B).',
-      ],
-      finalAnswer: '529.9 (Option B)',
-      pageNumber: 626,
-    },
+    options: opts('560.6', '529.9', '420.5', '397.4'),
+    ...solved(48, 'B', '529.9 (Option B)'),
   },
 
   // --- SITUATION 17: Welded Angle to Gusset Plate (Questions 49 - 51) ---
@@ -123,29 +54,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     category: 'Structural Steel Design - Polar Moment of Inertia of Fillet Weld Group',
     text: 'Situation 17 — Refer to the figure shown.\nAn angle bar is welded to a gusset plate as shown in Figures A, B, and C.\n49. Figure A.\nGiven: $L_1 = 250\$; $L_2 = 125\$.\nDetermine the unit polar moment of inertia ($10^6\\\text{/mm}$) of the weld group.',
     figureCaption: 'Figure A: U-shaped fillet weld group connecting angle bar to gusset plate',
-    options: [
-      { label: 'A', text: '4.39 x 10^6' },
-      { label: 'B', text: '23.93 x 10^6' },
-      { label: 'C', text: '22.14 x 10^6' },
-      { label: 'D', text: '6.02 x 10^6' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Total weld length is $L_t = 250 + 2(125) = 500\$. Centroid from the vertical web weld: $x_g = \\frac{2 \\times 125(62.5)}{500} = 31.25\$. Using parallel axis theorem: $J = \\sum L \\left[\\frac{L^2}{12} + x_c^2 + y_c^2\\right] = 6.022 \\times 10^6\\\text{/mm}$.',
-      formulas: [
-        '\\bar{x} = \\frac{\\sum L_i x_i}{L_t}',
-        'J = \\sum L_i \\left(\\frac{L_i^2}{12} + x_{ci}^2 + y_{ci}^2\\right)',
-      ],
-      steps: [
-        'Step 1: Total length of weld lines: Lt = 250 + 125 + 125 = 500 mm.',
-        'Step 2: Center of gravity of weld group measured from vertical weld BC: xg = [2 × 125 × (125/2)] / 500 = 31.25 mm.',
-        'Step 3: Distance from each horizontal weld segment centroid to CG: xc = |62.5 - 31.25| = 31.25 mm; yc = 125 mm.',
-        'Step 4: Distance from vertical weld centroid to CG: xc = 31.25 mm; yc = 0.',
-        'Step 5: Compute polar moment of inertia using parallel-axis theorem: J = 6.022 × 10⁶ mm⁴/mm ≈ 6.02 × 10⁶ mm⁴/mm (Option D).',
-      ],
-      finalAnswer: '6.02 x 10^6 (Option D)',
-      pageNumber: 627,
-    },
+    options: opts('4.39 x 10^6', '23.93 x 10^6', '22.14 x 10^6', '6.02 x 10^6'),
+    ...solved(49, 'D', '6.02 x 10^6 (Option D)'),
   },
 
   {
@@ -157,37 +67,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Resultant Fillet Weld Force under Eccentric Load',
     text: 'Situation 17 (Cont.) — 50. Figure B.\nGiven: $L_1 = 400\$; $L_2 = 200\$; $L_3 = 200\$; $J = 23.3 \\times 10^6\\\text{/mm}$; $P = 8\$.\nDetermine the resultant weld reaction (N/mm) at point $A$.',
-    options: [
-      { label: 'A', text: '6.0' },
-      { label: 'B', text: '28.9' },
-      { label: 'C', text: '24.0' },
-      { label: 'D', text: '24.4' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Total weld length is $L_t = 400 + 2(200) = 800\$. C.G. location: $x_g = \\frac{2(200)(100)}{800} = 50\$. Eccentricity of load $P = 8\$ is $e = 200 + 200 - 50 = 350\$. Torque $T = 8,000(350) = 2.8 \\times 10^6\\\cdot\$. Direct shear: $R_{d} = \\frac{8,000}{800} = 10\\text{ N/mm}$ (downward). Torsional components at $A(-50, 200)$: $R_{tx} = \\frac{T y}{J} = \\frac{2.8 \\times 10^6(200)}{23.3 \\times 10^6} = 24.03\\text{ N/mm}$ (left), $R_{ty} = \\frac{T x}{J} = \\frac{2.8 \\times 10^6(50)}{23.3 \\times 10^6} = 6.01\\text{ N/mm}$ (upward). Resultant $R_A = \\sqrt{(24.03)^2 + (10 - 6.01)^2} = 24.36\\text{ N/mm} \\approx 24.4\\text{ N/mm}$.',
-      formulas: [
-        'R_d = \\frac{P}{L_t}',
-        'R_{tx} = \\frac{T y}{J}',
-        'R_{ty} = \\frac{T x}{J}',
-        'R_A = \\sqrt{R_{tx}^2 + (R_d - R_{ty})^2}',
-      
-      ],
-      steps: [
-        'Step 1: Total weld length: Lt = 400 + 200 + 200 = 800 mm.',
-        'Step 2: Center of gravity of weld group: xg = [2 × 200 × 100] / 800 = 50 mm from vertical leg.',
-        'Step 3: Eccentricity of load P = 8 kN: e = 200 + 200 - 50 = 350 mm.',
-        'Step 4: Applied torsional moment: T = 8,000 N × 350 mm = 2,800,000 N·mm.',
-        'Step 5: Direct shear: Rd = 8,000 / 800 = 10 N/mm (acting downward).',
-        'Step 6: Torsional shear at corner A (-50 mm, +200 mm):',
-        'Horizontal: Rtx = T y / J = (2.8 × 10⁶ × 200) / (23.3 × 10⁶) = 24.03 N/mm (to the left).',
-        'Vertical: Rty = T x / J = (2.8 × 10⁶ × 50) / (23.3 × 10⁶) = 6.01 N/mm (acting upward).',
-        'Step 7: Net vertical force: Ry = Rd - Rty = 10 - 6.01 = 3.99 N/mm (downward).',
-        'Step 8: Vector resultant: RA = √[(24.03)² + (3.99)²] = 24.36 N/mm ≈ 24.4 N/mm (Option D).',
-      ],
-      finalAnswer: '24.4 (Option D)',
-      pageNumber: 628,
-    },
+    options: opts('6.0', '28.9', '24.0', '24.4'),
+    ...solved(50, 'D', '24.4 (Option D)'),
   },
 
   {
@@ -199,29 +80,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Design Axial Capacity of Fillet Welds (LRFD)',
     text: 'Situation 17 (Cont.) — 51. Figure C.\nGiven: $L_1 = 250\$; $L_2 = 125\$; $t_w = 5\$; $F_{vw} = 200\$; $\\phi_v = 0.75$.\nDetermine the design axial load capacity (kN) based on weld group strength capacity.',
-    options: [
-      { label: 'A', text: '265.1' },
-      { label: 'B', text: '353.5' },
-      { label: 'C', text: '375.0' },
-      { label: 'D', text: '500.0' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Effective throat of the $5\$ fillet weld is $t_e = 0.707 t_w = 0.707(5) = 3.535\$. Total weld length is $L_t = 500\$. Nominal strength: $R_n = 0.707 F_{vw} t_w L_t = 0.707(200)(5)(500) = 353,500\ = 353.5\$. Design capacity: $\\phi_v R_n = 0.75(353.5) = 265.125\ \\approx 265.1\$.',
-      formulas: [
-        'R_n = 0.707 F_{vw} t_w L_t',
-        '\\phi_v R_n = 0.75 R_n',
-      
-      ],
-      steps: [
-        'Step 1: Total weld length along the connection perimeter: Lt = 500 mm.',
-        'Step 2: Effective throat dimension of fillet weld: a = 0.707 tw = 0.707 × 5 mm = 3.535 mm.',
-        'Step 3: Nominal shear strength on effective weld area: Rn = 0.707 Fvw tw Lt = 353.5 kN.',
-        'Step 4: Design shear capacity with reduction factor φv = 0.75: φv Rn = 0.75 × 353.5 kN = 265.125 kN ≈ 265.1 kN (Option A).',
-      ],
-      finalAnswer: '265.1 (Option A)',
-      pageNumber: 629,
-    },
+    options: opts('265.1', '353.5', '375.0', '500.0'),
+    ...solved(51, 'A', '265.1 (Option A)'),
   },
 
   // --- SITUATION 18: Simply Supported Beam W410x100 (Questions 52 - 54) ---
@@ -235,34 +95,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     category: 'Structural Steel Design - Maximum Factored Live Load based on Flexure',
     text: 'Situation 18 — A $12\\text{-m}$ simply supported steel beam carries a uniformly distributed dead load and a concentrated live load applied at midspan.\nGiven: Dead load (superimposed), $w = 18\$\nProperties of W410×100:\nArea, $A = 12,700\$\nDepth, $d = 410\$\nFlange width, $b_f = 259\$\nWeb thickness, $t_w = 10\$\nFlange thickness, $t_f = 16.9\$\nElastic section modulus, $S_x = 1.92 \\times 10^6\$\nYield stress, $F_y = 248\$\nModulus of elasticity, $E = 200\$\n\n52. If the nominal flexural strength of the beam is $528\\\cdot\$, determine the maximum factored concentrated live load, $P_u$ (kN), applied at midspan that the beam can safely carry.\nFactored load combination: $U = 1.2D + 1.6L$\nStrength reduction factor for flexure, $\\phi = 0.90$.',
     figureCaption: 'Figure: Simply supported W410x100 beam of 12 m span under uniform dead load and central point load',
-    options: [
-      { label: 'A', text: '18.0' },
-      { label: 'B', text: '13.5' },
-      { label: 'C', text: '21.7' },
-      { label: 'D', text: '28.8' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Beam self-weight is $100\\text{ kg/m} \\times 9.81 \\times 10^{-3} = 0.981\$. Total dead load $w_D = 18 + 0.981 = 18.981\$. Factored uniform load: $w_u = 1.2(18.981) = 22.78\$. Design flexural strength: $\\phi M_n = 0.90(528) = 475.2\\\cdot\$. Set $M_u = \\frac{w_u L^2}{8} + \\frac{P_u L}{4} \\le 475.2$. Solving gives $P_u \\le 21.72\ \\approx 21.7\$.',
-      formulas: [
-        'w_u = 1.2 w_D',
-        'M_u = \\frac{w_u L^2}{8} + \\frac{P_u L}{4}',
-        '\\phi M_n \\ge M_u',
-        'P_u \\le \\frac{4(\\phi M_n - \\frac{w_u L^2}{8})}{L}',
-      
-      ],
-      steps: [
-        'Step 1: Compute total dead load including beam self-weight: wD = 18 + 0.981 = 18.981 kN/m.',
-        'Step 2: Factored uniform load: wu = 1.2 × 18.981 = 22.78 kN/m.',
-        'Step 3: Uniform load midspan moment: Mu1 = wu L² / 8 = 22.78(144) / 8 = 410.04 kN·m.',
-        'Step 4: Design moment capacity: φMn = 0.90 × 528 = 475.2 kN·m.',
-        'Step 5: Remaining moment capacity for point load: Mu2 = 475.2 - 410.04 = 65.16 kN·m.',
-        'Step 6: Concentrated load moment: Mu2 = Pu L / 4 = 3 Pu.',
-        'Step 7: Solve for Pu: Pu = 65.16 / 3 = 21.72 kN ≈ 21.7 kN (Option C).',
-      ],
-      finalAnswer: '21.7 (Option C)',
-      pageNumber: 630,
-    },
+    options: opts('18.0', '13.5', '21.7', '28.8'),
+    ...solved(52, 'C', '21.7 (Option C)'),
   },
 
   {
@@ -274,32 +108,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Maximum Factored Live Load based on Shear Strength',
     text: 'Situation 18 (Cont.) — 53. Based on the design shear strength of the beam, determine the maximum factored concentrated live load, $P_u$ (kN), applied at midspan that the beam can safely carry.\nFactored load combination: $U = 1.2D + 1.6L$\nStrength reduction factor for shear, $\\phi = 1.0$\nShear stress at factored loads, $v_u = 0.6 F_y$.',
-    options: [
-      { label: 'A', text: '600.6' },
-      { label: 'B', text: '946.8' },
-      { label: 'C', text: '591.7' },
-      { label: 'D', text: '960.9' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Nominal shear strength is $V_n = 0.60 F_y d t_w = 0.60(248)(410)(10) = 610,080\ = 610.08\$. Maximum factored shear at ends is $V_u = \\frac{w_u L + P_u}{2} = \\frac{22.78(12) + P_u}{2}$. Set $\\phi V_n \\ge V_u$ with $\\phi = 1.0$: $610.08 \\ge \\frac{273.36 + P_u}{2} \\implies P_u \\le 946.8\$.',
-      formulas: [
-        'V_n = v_u d t_w',
-        'V_u = \\frac{w_u L + P_u}{2}',
-        '\\phi V_n \\ge V_u',
-        'P_u \\le 2\\phi V_n - w_u L',
-      
-      ],
-      steps: [
-        'Step 1: Compute nominal shear strength of web: Vn = 0.60 Fy d tw = 0.60(248 MPa)(410 mm)(10 mm) = 610.08 kN.',
-        'Step 2: Factored shear force at beam support: Vu = (wu L + Pu) / 2 = [22.78(12) + Pu] / 2 = (273.36 + Pu) / 2.',
-        'Step 3: Design criteria: φ Vn ≥ Vu with φ = 1.0.',
-        'Step 4: 610.08 ≥ (273.36 + Pu) / 2 => 1,220.16 ≥ 273.36 + Pu.',
-        'Step 5: Solve for Pu: Pu = 1,220.16 - 273.36 = 946.8 kN (Option B).',
-      ],
-      finalAnswer: '946.8 (Option B)',
-      pageNumber: 631,
-    },
+    options: opts('600.6', '946.8', '591.7', '960.9'),
+    ...solved(53, 'B', '946.8 (Option B)'),
   },
 
   {
@@ -311,31 +121,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Mechanics of Deformable Bodies - Transverse Horizontal Shear Stress in Wide-Flange Web',
     text: 'Situation 18 (Cont.) — 54. Determine the maximum shear stress (MPa) in the beam when it is subjected to an unfactored concentrated live load of $45\$ applied at midspan. First moment of area, $Q = 10.45 \\times 10^3\$.',
-    options: [
-      { label: 'A', text: '0.458' },
-      { label: 'B', text: '0.439' },
-      { label: 'C', text: '0.346' },
-      { label: 'D', text: '0.362' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Compute moment of inertia: $I_x = S_x \\left(\\frac{d}{2}\\right) = 1.92 \\times 10^6 \\times 205 = 393.6 \\times 10^6\$. Unfactored maximum shear: $V = \\frac{w L + P}{2} = \\frac{18.981(12) + 45}{2} = 136.386\$. Maximum transverse shear stress: $\\tau_{\\max} = \\frac{V Q}{I_x t_w} = \\frac{136,386(10.45 \\times 10^3)}{393.6 \\times 10^6(10)} = 0.362\$.',
-      formulas: [
-        'I_x = S_x c',
-        'V_{\\max} = \\frac{w L + P}{2}',
-        '\\tau_{\\max} = \\frac{V Q}{I_x t_w}',
-      
-      ],
-      steps: [
-        'Step 1: Total unfactored service uniform load: w = 18.981 kN/m.',
-        'Step 2: Service shear force at support: V = (18.981 × 12 + 45) / 2 = 136.386 kN = 136,386 N.',
-        'Step 3: Moment of inertia about strong axis: Ix = Sx (d/2) = 1.92 × 10⁶ × 205 = 393.6 × 10⁶ mm⁴.',
-        'Step 4: Web thickness: tw = 10 mm; First moment of area Q = 10.45 × 10³ mm³.',
-        'Step 5: Maximum horizontal shear stress: τ = V Q / (Ix tw) = (136,386 × 10,450) / (393.6 × 10⁶ × 10) = 0.362 MPa (Option D).',
-      ],
-      finalAnswer: '0.362 (Option D)',
-      pageNumber: 631,
-    },
+    options: opts('0.458', '0.439', '0.346', '0.362'),
+    ...solved(54, 'D', '0.362 (Option D)'),
   },
 
   // --- SITUATION 19: Steel Column W310x107 (Questions 55 - 57) ---
@@ -349,30 +136,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     category: 'Structural Steel Design - Column Slenderness & Euler Buckling Stress',
     text: 'Situation 19 — A W310×107 steel column is used in a building frame. The column has a height of $8\$ and is fixed at the base and hinged at the top.\nSection Properties:\nCross-sectional area, $A = 13,600\$\nMoment of inertia about the $x$-axis, $I_x = 248 \\times 10^6\$\nMoment of inertia about the $y$-axis, $I_y = 81.2 \\times 10^6\$\nOverall depth, $d = 312\$\nWeb thickness, $t_w = 10.9\$; Flange thickness, $t_f = 17.0\$\nFlange width, $b_f = 305\$\nRadius of gyration about the $x$-axis, $r_x = 135\$\nRadius of gyration about the $y$-axis, $r_y = 77\$\nModulus of elasticity, $E = 200\$\nEffective length design factor, $K = 0.8$\nLoad reduction factor, $\\phi = 0.90$\n\n55. Determine the critical buckling stress $F_{cr}$ (MPa) of the column.',
     figureCaption: 'Figure: W310x107 column with fixed base and pinned top under axial load',
-    options: [
-      { label: 'A', text: '878.3' },
-      { label: 'B', text: '562.1' },
-      { label: 'C', text: '285.7' },
-      { label: 'D', text: '182.9' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Compute slenderness ratios: $\\left(\\frac{KL}{r}\\right)_x = \\frac{0.8(8000)}{135} = 47.407$, $\\left(\\frac{KL}{r}\\right)_y = \\frac{0.8(8000)}{77} = 83.117$. The weak-axis slenderness controls. Euler critical buckling stress: $F_{cr} = \\frac{\\pi^2 E}{(KL/r)^2} = \\frac{\\pi^2(200,000)}{(83.117)^2} = 285.726\ \\approx 285.7\$.',
-      formulas: [
-        '\\lambda_x = \\left(\\frac{K L}{r}\\right)_x',
-        '\\lambda_y = \\left(\\frac{K L}{r}\\right)_y',
-        'F_{cr} = \\frac{\\pi^2 E}{\\lambda_{\\max}^2}',
-      
-      ],
-      steps: [
-        'Step 1: Effective length: KL = 0.8 × 8,000 mm = 6,400 mm.',
-        'Step 2: Slenderness ratio about strong axis: (KL/r)x = 6,400 / 135 = 47.41.',
-        'Step 3: Slenderness ratio about weak axis: (KL/r)y = 6,400 / 77 = 83.12 (governing).',
-        'Step 4: Euler critical elastic buckling stress: Fcr = π² E / (KL/r)² = π²(200,000) / (83.117)² = 285.726 MPa ≈ 285.7 MPa (Option C).',
-      ],
-      finalAnswer: '285.7 (Option C)',
-      pageNumber: 632,
-    },
+    options: opts('878.3', '562.1', '285.7', '182.9'),
+    ...solved(55, 'C', '285.7 (Option C)'),
   },
 
   {
@@ -384,28 +149,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Column Design Strength from Column Tables',
     text: 'Situation 19 (Cont.) — 56. Using the nominal stresses obtained from the column design tables (Table on Page 595), determine the design axial load (kN) that the column can safely carry.',
-    options: [
-      { label: 'A', text: '1909.5' },
-      { label: 'B', text: '2238.7' },
-      { label: 'C', text: '3497.0' },
-      { label: 'D', text: '2121.7' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'For governing slenderness ratio $\\frac{KL}{r} = 83.117$: from table on Page 595, $\\phi F_{cr} = 156.17\$ at 83 and $154.79\$ at 84. Linear interpolation gives $\\phi F_{cr} = 156.0085\$. Design strength: $P_u = \\phi F_{cr} A = 156.0085(13,600) = 2,121,716\ \\approx 2,121.7\$.',
-      formulas: [
-        'P_u = \\phi F_{cr} A',
-      
-      ],
-      steps: [
-        'Step 1: Critical slenderness ratio: KL/r = 83.117.',
-        'Step 2: Read table values from Page 595: KL/r = 83 gives φ Fcr = 156.17 MPa; KL/r = 84 gives φ Fcr = 154.79 MPa.',
-        'Step 3: Interpolate for 83.117: φ Fcr = 156.17 - 0.117(1.38) = 156.0085 MPa.',
-        'Step 4: Design compressive axial load: Pu = φ Fcr × A = 156.0085 MPa × 13,600 mm² = 2,121.7 kN (Option D).',
-      ],
-      finalAnswer: '2121.7 (Option D)',
-      pageNumber: 632,
-    },
+    options: opts('1909.5', '2238.7', '3497.0', '2121.7'),
+    ...solved(56, 'D', '2121.7 (Option D)'),
   },
 
   {
@@ -417,29 +162,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Structural Steel Design - Slenderness with Intermediate Lateral Support',
     text: 'Situation 19 (Cont.) — 57. If the column is laterally supported at mid-height along the weak axis, determine the critical slenderness ratio.',
-    options: [
-      { label: 'A', text: '47.4' },
-      { label: 'B', text: '51.9' },
-      { label: 'C', text: '83.1' },
-      { label: 'D', text: '41.6' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'With weak-axis brace at mid-height: unsupported length $L_y = 4\$, $K_y = 1.0 \\implies \\left(\\frac{KL}{r}\\right)_y = \\frac{1.0(4000)}{77} = 51.95$. For strong axis: $L_x = 8\$, $K_x = 0.80 \\implies \\left(\\frac{KL}{r}\\right)_x = \\frac{0.8(8000)}{135} = 47.41$. The larger value controls: $51.95 \\approx 51.9$.',
-      formulas: [
-        '\\lambda_x = \\frac{K_x L_x}{r_x}',
-        '\\lambda_y = \\frac{K_y L_y}{r_y}',
-        '\\lambda_{\\max} = \\max(\\lambda_x, \\lambda_y)',
-      
-      ],
-      steps: [
-        'Step 1: Strong axis has full 8 m height with fixed-pinned ends: Kx = 0.8, Lx = 8,000 mm => (KL/r)x = 0.8(8000)/135 = 47.41.',
-        'Step 2: Weak axis is laterally braced at mid-height: unsupported segment length Ly = 4,000 mm with pinned intermediate brace: Ky = 1.0 => (KL/r)y = 1.0(4000)/77 = 51.95.',
-        'Step 3: Critical slenderness ratio is the maximum: max(47.41, 51.95) = 51.95 ≈ 51.9 (Option B).',
-      ],
-      finalAnswer: '51.9 (Option B)',
-      pageNumber: 633,
-    },
+    options: opts('47.4', '51.9', '83.1', '41.6'),
+    ...solved(57, 'B', '51.9 (Option B)'),
   },
 
   // --- SITUATION 20: Rectangular RC Beam Flexure & Shear (Questions 58 - 60) ---
@@ -453,34 +177,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     category: 'Reinforced Concrete Design - Singly vs Doubly Reinforced Beam Capacity',
     text: 'Situation 20 — A rectangular reinforced concrete beam has a width of $320\$ and an overall depth of $520\$.\nGiven: Concrete compressive strength, $f\'_c = 30\$\nYield strength of longitudinal reinforcement, $f_y = 415\$\nYield strength of transverse reinforcement, $f_{yt} = 275\$\nConcrete cover to the centroid of longitudinal bars, $d\' = 70\$\nBalanced steel ratio, $\\rho_{bal} = 0.0308$\nStrength reduction factor for flexure, $\\phi = 0.90$\nStrength reduction factor for shear, $\\phi = 0.75$\n\n58. If $A_s = 4 - 25\$ diameter bars and $A\'_s = 2 - 25\$ diameter bars are used, determine the design moment capacity, $\\phi M_n$ (kN·m) of the beam.',
     figureCaption: 'Figure: Rectangular RC beam section 320x520 mm with top and bottom rebar details',
-    options: [
-      { label: 'A', text: '326.0' },
-      { label: 'B', text: '383.0' },
-      { label: 'C', text: '293.4' },
-      { label: 'D', text: '344.7' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Effective depth $d = 520 - 70 = 450\$. $A_s = 4\\left(\\frac{\\pi(25)^2}{4}\\right) = 625\\pi = 1,963.5\$. Reinforcement ratio $\\rho = \\frac{1,963.5}{320(450)} = 0.0136 < 0.75 \\rho_{bal} = 0.0231$, so analyze as singly reinforced. Compression block $a = \\frac{A_s f_y}{0.85 f\'_c b} = 99.859\$. Nominal moment $M_n = 325.997\\\cdot\$. Design strength: $\\phi M_n = 0.90(325.997) = 293.397\\\cdot\ \\approx 293.4\\\cdot\$.',
-      formulas: [
-        '\\rho = \\frac{A_s}{b d}',
-        'a = \\frac{A_s f_y}{0.85 f\'_c b}',
-        'M_n = 0.85 f\'_c a b \\left(d - \\frac{a}{2}\\right)',
-        '\\phi M_n = 0.90 M_n',
-      
-      ],
-      steps: [
-        'Step 1: Effective depth: d = h - d\' = 520 - 70 = 450 mm.',
-        'Step 2: Tension steel area: As = 4 × [π(25)² / 4] = 1,963.5 mm².',
-        'Step 3: Steel ratio: ρ = As / (b d) = 1,963.5 / (320 × 450) = 0.0136.',
-        'Step 4: Check if compression steel is required: 0.75 ρb = 0.75(0.0308) = 0.0231. Since ρ = 0.0136 < 0.0231, the beam acts as singly reinforced (compression steel develops negligible stress).',
-        'Step 5: Depth of equivalent stress block: a = As fy / (0.85 f\'c b) = (1,963.5 × 415) / (0.85 × 30 × 320) = 99.859 mm.',
-        'Step 6: Nominal flexural strength: Mn = As fy (d - a/2) = 1,963.5 × 415 × (450 - 49.93) = 325.997 kN·m.',
-        'Step 7: Design strength: φMn = 0.90 × 325.997 = 293.397 kN·m ≈ 293.4 kN·m (Option C).',
-      ],
-      finalAnswer: '293.4 (Option C)',
-      pageNumber: 634,
-    },
+    options: opts('326.0', '383.0', '293.4', '344.7'),
+    ...solved(58, 'C', '293.4 (Option C)'),
   },
 
   {
@@ -492,35 +190,8 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Reinforced Concrete Design - Design Moment Capacity of Beam',
     text: 'Situation 20 (Cont.) — 59. If $A_s = 6 - 20\$ diameter bars and $A\'_s = 4 - 20\$ diameter bars are used, determine the design moment capacity, $\\phi M_n$ (kN·m) of the beam.',
-    options: [
-      { label: 'A', text: '314.5' },
-      { label: 'B', text: '283.1' },
-      { label: 'C', text: '332.4' },
-      { label: 'D', text: '369.3' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Tension steel area: $A_s = 6\\left(\\frac{\\pi(20)^2}{4}\\right) = 600\\pi = 1,884.96\$. $\\rho = \\frac{1,884.96}{320(450)} = 0.0131 < 0.0231$ (SRB governs). Reinforcement index $\\omega = \\frac{0.0131(415)}{30} = 0.1812$. Resistance factor $R_n = 30(0.1812)[1 - 0.59(0.1812)] = 4.855\$. Nominal moment $M_n = R_n b d^2 = 314.604\\\cdot\$. Design strength: $\\phi M_n = 0.90(314.604) = 283.14\\\cdot\ \\approx 283.1\\\cdot\$.',
-      formulas: [
-        'A_s = n \\left(\\frac{\\pi d^2}{4}\\right)',
-        '\\rho = \\frac{A_s}{b d}',
-        '\\omega = \\frac{\\rho f_y}{f\'_c}',
-        'R_n = f\'_c \\omega (1 - 0.59 \\omega)',
-        'M_n = R_n b d^2',
-        '\\phi M_n = 0.90 M_n',
-      ],
-      steps: [
-        'Step 1: Tension steel area: As = 6 × 314.16 = 1,884.96 mm².',
-        'Step 2: Reinforcement ratio: ρ = As / (b d) = 1,884.96 / (320 × 450) = 0.0131.',
-        'Step 3: Since ρ < 0.75 ρb (0.0131 < 0.0231), beam is analyzed as singly reinforced.',
-        'Step 4: Dimensionless reinforcement index: ω = ρ fy / f\'c = 0.0131(415) / 30 = 0.1812.',
-        'Step 5: Flexural resistance factor: Rn = f\'c ω (1 - 0.59 ω) = 4.855 MPa.',
-        'Step 6: Nominal strength: Mn = Rn b d² = 4.855 × 320 × 450² = 314.604 kN·m.',
-        'Step 7: Design strength: φMn = 0.90 × 314.604 = 283.14 kN·m ≈ 283.1 kN·m (Option B).',
-      ],
-      finalAnswer: '283.1 (Option B)',
-      pageNumber: 636,
-    },
+    options: opts('314.5', '283.1', '332.4', '369.3'),
+    ...solved(59, 'B', '283.1 (Option B)'),
   },
 
   {
@@ -532,32 +203,7 @@ export const PSAD_NOV2025_PART4: Question[] = [
     month: 'November',
     category: 'Reinforced Concrete Design - Design Shear Capacity with U-Stirrups',
     text: 'Situation 20 (Cont.) — 60. If $12\$ diameter U-stirrups spaced at $110\$ are used, and the allowable concrete shear stress is $v_c = 0.93\$, determine the design shear capacity (kN) of the beam.',
-    options: [
-      { label: 'A', text: '291.2' },
-      { label: 'B', text: '336.6' },
-      { label: 'C', text: '448.8' },
-      { label: 'D', text: '388.4' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Concrete shear capacity: $V_c = v_c b_w d = 0.93(320)(450) = 133,920\ = 133.92\$. Stirrup shear capacity ($A_v = 2 \\times \\frac{\\pi(12)^2}{4} = 72\\pi = 226.19\$): $V_s = \\frac{A_v f_{yt} d}{s} = \\frac{72\\pi(275)(450)}{110} = 254.469\$. Nominal shear: $V_n = 133.92 + 254.47 = 388.389\$. Design capacity: $\\phi V_n = 0.75(388.389) = 291.29\ \\approx 291.2\$.',
-      formulas: [
-        'V_c = v_c b_w d',
-        'A_v = 2 \\left(\\frac{\\pi d_v^2}{4}\\right)',
-        'V_s = \\frac{A_v f_{yt} d}{s}',
-        'V_n = V_c + V_s',
-        '\\phi V_n = 0.75 V_n',
-      
-      ],
-      steps: [
-        'Step 1: Concrete shear contribution: Vc = vc bw d = 0.93 MPa × 320 mm × 450 mm = 133.92 kN.',
-        'Step 2: Area of 2 legs of 12-mm stirrups: Av = 2 × (π/4)(12)² = 226.19 mm².',
-        'Step 3: Stirrup shear contribution: Vs = Av fyt d / s = (226.19 × 275 × 450) / 110 = 254.47 kN.',
-        'Step 4: Total nominal shear strength: Vn = Vc + Vs = 133.92 + 254.47 = 388.39 kN.',
-        'Step 5: Design shear strength with φ = 0.75: φVn = 0.75 × 388.39 = 291.29 kN ≈ 291.2 kN (Option A).',
-      ],
-      finalAnswer: '291.2 (Option A)',
-      pageNumber: 637,
-    },
+    options: opts('291.2', '336.6', '448.8', '388.4'),
+    ...solved(60, 'A', '291.2 (Option A)'),
   },
 ];

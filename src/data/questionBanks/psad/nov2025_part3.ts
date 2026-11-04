@@ -1,4 +1,5 @@
 import { Question } from '../../../types/exam';
+import { solved, opts } from './nov2025Helpers';
 
 export const PSAD_NOV2025_PART3: Question[] = [
   // --- SITUATION 11: Geometric Stability & Equilibrium (Questions 31 - 33) ---
@@ -12,30 +13,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     category: 'Structural Analysis - Geometric Stability and Equilibrium of Determinate Structures',
     text: 'Situation 11 — Refer to Figures A and B above.\n\n31. For Figure A (a horizontal bar supported by a hinge at $A$ and a vertical roller link at $B$, subjected to an inclined force $P$): Classify the stability and equilibrium of the structure.',
     figureCaption: 'Figure A: Bar supported by pin A and roller link B resisting inclined load P',
-    options: [
-      { label: 'A', text: 'Geometrically stable and equilibrium' },
-      { label: 'B', text: 'Geometrically unstable and equilibrium' },
-      { label: 'C', text: 'Geometrically stable and not equilibrium' },
-      { label: 'D', text: 'Geometrically unstable and not equilibrium' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'In Figure A, support A provides both horizontal and vertical reactions ($A_h, A_v$) and support B provides a vertical reaction ($B_v$). These non-concurrent, non-parallel reactions restrain all three rigid-body degrees of freedom, ensuring both geometric stability and equilibrium.',
-      formulas: [
-        'r = 3',
-        '3m + r = 3j + c',
-      
-      ],
-      steps: [
-        'Step 1: Check support conditions: Hinge at A provides 2 independent reaction components (horizontal and vertical); link at B provides 1 vertical reaction component. Total reactions = 3.',
-        'Step 2: Check for geometric instability: The reaction lines of action are neither all concurrent nor all parallel.',
-        'Step 3: All three rigid-body modes of planar motion (horizontal translation, vertical translation, and rotation) are completely prevented.',
-        'Step 4: Equilibrium equations ΣFx = 0, ΣFy = 0, and ΣM = 0 can be satisfied for any arbitrary applied force P.',
-        'Step 5: Therefore, the structure is Geometrically stable and in equilibrium (Option A).',
-      ],
-      finalAnswer: 'Geometrically stable and equilibrium (Option A)',
-      pageNumber: 617,
-    },
+    options: opts('Geometrically stable and equilibrium', 'Geometrically unstable and equilibrium', 'Geometrically stable and not equilibrium', 'Geometrically unstable and not equilibrium'),
+    ...solved(31, 'A', 'Geometrically stable and equilibrium (Option A)'),
   },
 
   {
@@ -47,31 +26,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Geometric Instability under Non-Concurrent Parallel Reactions',
     text: 'Situation 11 (Cont.) — 32. For Figure B (a horizontal bar supported by three parallel vertical links at $A$, $B$, and $C$, subjected to an inclined force $P$): Classify the stability and equilibrium of the structure.',
-    options: [
-      { label: 'A', text: 'Geometrically stable and equilibrium' },
-      { label: 'B', text: 'Geometrically unstable and equilibrium' },
-      { label: 'C', text: 'Geometrically stable and not equilibrium' },
-      { label: 'D', text: 'Geometrically unstable and not equilibrium' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'In Figure B, all three supports provide only parallel vertical reactions. Because there is no horizontal constraint to resist the horizontal component of the inclined load $P$, the structure is geometrically unstable and cannot maintain equilibrium.',
-      formulas: [
-        '\\sum F_x = 0',
-        '\\sum F_y = 0',
-        '\\sum M = 0',
-      
-      ],
-      steps: [
-        'Step 1: In Figure B, all three links at A, B, and C are parallel (vertical).',
-        'Step 2: A system whose reactions are all parallel cannot prevent translation in the perpendicular direction (horizontal translation).',
-        'Step 3: When an inclined load P acts on the structure, it induces a horizontal force component Ph = P cos θ.',
-        'Step 4: Since ΣFx = Ph ≠ 0 cannot be balanced by any support reaction, static equilibrium cannot be maintained, and the bar accelerates horizontally.',
-        'Step 5: Hence, the structure is Geometrically unstable and not in equilibrium (Option D).',
-      ],
-      finalAnswer: 'Geometrically unstable and not equilibrium (Option D)',
-      pageNumber: 617,
-    },
+    options: opts('Geometrically stable and equilibrium', 'Geometrically unstable and equilibrium', 'Geometrically stable and not equilibrium', 'Geometrically unstable and not equilibrium'),
+    ...solved(32, 'D', 'Geometrically unstable and not equilibrium (Option D)'),
   },
 
   {
@@ -83,31 +39,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Geometric Instability with Vertical Load (Unstable Equilibrium)',
     text: 'Situation 11 (Cont.) — 33. For Figure B but the applied load $P$ is strictly vertical: Classify the stability and equilibrium of the structure.',
-    options: [
-      { label: 'A', text: 'Geometrically stable and equilibrium' },
-      { label: 'B', text: 'Geometrically unstable and equilibrium' },
-      { label: 'C', text: 'Geometrically stable and not equilibrium' },
-      { label: 'D', text: 'Geometrically unstable and not equilibrium' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'When load $P$ is purely vertical, $\\sum F_x = 0$ is trivially satisfied and vertical reactions can balance $P$, achieving static equilibrium. However, because the support arrangement inherently lacks horizontal restraint against lateral disturbance, the structure is geometrically unstable (unstable equilibrium).',
-      formulas: [
-        '\\sum F_x = 0',
-        '\\sum F_y = 0',
-        '\\sum M = 0',
-      
-      ],
-      steps: [
-        'Step 1: If load P is purely vertical, there is no applied horizontal force (Ph = 0).',
-        'Step 2: The equations of planar equilibrium ΣFy = 0 and ΣM = 0 are fully satisfied by the vertical link reactions.',
-        'Step 3: Thus, the structure is in static equilibrium under this specific loading condition.',
-        'Step 4: However, geometric stability is an inherent property of the constraint geometry regardless of applied load: because zero stiffness exists against horizontal displacement, the structure remains geometrically unstable.',
-        'Step 5: Therefore, the system is Geometrically unstable and in equilibrium (Option B).',
-      ],
-      finalAnswer: 'Geometrically unstable and equilibrium (Option B)',
-      pageNumber: 617,
-    },
+    options: opts('Geometrically stable and equilibrium', 'Geometrically unstable and equilibrium', 'Geometrically stable and not equilibrium', 'Geometrically unstable and not equilibrium'),
+    ...solved(33, 'B', 'Geometrically unstable and equilibrium (Option B)'),
   },
 
   // --- SITUATION 12: Triangular Load on Beam (Questions 34 - 36) ---
@@ -121,29 +54,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     category: 'Structural Analysis - Triangular Beam Loading from Support Reactions',
     text: 'Situation 12 — Refer to the shear and moment diagram shown.\nCalculate the value of $w$ (kN/m) based on the following conditions:\n\n34. Figure A. Given: $L = 6\$; $R_A = 8.1\$; $R_B = 18.9\$.',
     figureCaption: 'Figure A: Simply supported beam with linearly varying load from 0 at A to w at B',
-    options: [
-      { label: 'A', text: '9.0' },
-      { label: 'B', text: '9.5' },
-      { label: 'C', text: '8.1' },
-      { label: 'D', text: '4.5' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'For a triangular load varying from zero at $A$ to $w$ at $B$, the total load is $W = \\frac{1}{2} w L = \\frac{1}{2} w (6) = 3w$. Global vertical equilibrium gives $\\sum F_v = 0 \\implies R_A + R_B - 3w = 0 \\implies 8.1 + 18.9 = 3w \\implies w = 9.0\$.',
-      formulas: [
-        '\\sum F_v = 0 \\implies R_A + R_B - \\frac{1}{2} w L = 0',
-        'w = \\frac{2(R_A + R_B)}{L}',
-      
-      ],
-      steps: [
-        'Step 1: Total downward force from triangular load: W = 0.5 × w × L = 0.5 × w × 6 = 3w.',
-        'Step 2: Sum of upward support reactions: RA + RB = 8.1 kN + 18.9 kN = 27.0 kN.',
-        'Step 3: Vertical equilibrium: 3w = 27.0 kN.',
-        'Step 4: Solve for peak load intensity: w = 9.0 kN/m (Option A).',
-      ],
-      finalAnswer: '9.0 (Option A)',
-      pageNumber: 618,
-    },
+    options: opts('9.0', '9.5', '8.1', '4.5'),
+    ...solved(34, 'A', '9.0 (Option A)'),
   },
 
   {
@@ -155,30 +67,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Triangular Beam Loading from Shear Values',
     text: 'Situation 12 (Cont.) — 35. Figures A and B. Given: $L = 8\$; $V_A = 7.2\$; $V_B = 16.8\$.',
-    options: [
-      { label: 'A', text: '3.0' },
-      { label: 'B', text: '6.0' },
-      { label: 'C', text: '5.4' },
-      { label: 'D', text: '2.7' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'For a horizontal simply supported beam, the end shears equal the support reactions: $R_A = V_A = 7.2\$ and $R_B = V_B = 16.8\$. Equilibrium gives $V_A + V_B = \\frac{1}{2} w L \\implies 7.2 + 16.8 = \\frac{1}{2} w (8) \\implies 24 = 4w \\implies w = 6.0\$.',
-      formulas: [
-        'V_A = R_A',
-        'V_B = R_B',
-        'w = \\frac{2(R_A + R_B)}{L}',
-      
-      ],
-      steps: [
-        'Step 1: End shear forces represent the vertical reaction magnitudes: RA = 7.2 kN, RB = 16.8 kN.',
-        'Step 2: Total vertical load is the area of the triangular distribution: W = 0.5 × w × 8 = 4w.',
-        'Step 3: Vertical equilibrium requires: 4w = 7.2 + 16.8 = 24.0 kN.',
-        'Step 4: Solve for w: w = 24.0 / 4 = 6.0 kN/m (Option B).',
-      ],
-      finalAnswer: '6.0 (Option B)',
-      pageNumber: 618,
-    },
+    options: opts('3.0', '6.0', '5.4', '2.7'),
+    ...solved(35, 'B', '6.0 (Option B)'),
   },
 
   {
@@ -190,32 +80,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Maximum Moment and Load Reconstruction',
     text: 'Situation 12 (Cont.) — 36. Figures A, B, and C. Given: $L = 9\$; point of zero shear $x = 5.2\$ from $A$; maximum moment $M = 65\\\cdot\$.',
-    options: [
-      { label: 'A', text: '25.9' },
-      { label: 'B', text: '12.5' },
-      { label: 'C', text: '8.65' },
-      { label: 'D', text: '64.9' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'Load intensity at $x = 5.2\$ is $y = \\frac{5.2}{9} w = \\frac{26}{45} w$. Since shear is zero at $x = 5.2\$: $R_A = \\frac{1}{2} x y = \\frac{1}{2}(5.2)\\left(\\frac{26}{45} w\\right) = \\frac{338}{225} w$. Area of parabolic shear diagram gives moment $M = \\frac{2}{3}(5.2)(R_A) = \\frac{10.4}{3}\\left(\\frac{338}{225} w\\right) = 65\\\cdot\$. Solving gives $w = 12.48\ \\approx 12.5\$.',
-      formulas: [
-        'y(x) = \\frac{x}{L} w',
-        'V(x) = R_A - \\frac{1}{2} x \\left(\\frac{x}{L} w\\right)',
-        'M(x) = R_A x - \\frac{1}{6} \\left(\\frac{w}{L}\\right) x^3',
-      
-      ],
-      steps: [
-        'Step 1: By linear proportion along the triangular load: load intensity at x = 5.2 m is y = w(5.2 / 9) = (26/45) w.',
-        'Step 2: Total load between x = 0 and x = 5.2 m: Wx = 0.5 × 5.2 × (26/45) w = (338/225) w.',
-        'Step 3: Point of zero shear occurs where shear diagram crosses zero: RA = Wx = (338/225) w.',
-        'Step 4: The area under the second-degree parabolic shear curve from x = 0 to 5.2 m is A1 = (2/3)(5.2)(RA).',
-        'Step 5: Max moment Mc = A1 = (2/3)(5.2)[(338/225) w] = 5.2076 w.',
-        'Step 6: Equate to given moment Mc = 65 kN·m: 5.2076 w = 65 => w = 12.48 kN/m ≈ 12.5 kN/m (Option B).',
-      ],
-      finalAnswer: '12.5 (Option B)',
-      pageNumber: 619,
-    },
+    options: opts('25.9', '12.5', '8.65', '64.9'),
+    ...solved(36, 'B', '12.5 (Option B)'),
   },
 
   // --- SITUATION 13: Propped Cantilever Beam (Questions 37 - 39) ---
@@ -228,30 +94,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Propped Cantilever Zero Shear Location',
     text: 'Situation 13 — A $6.0\\text{-m}$ long beam is fixed at the left end and supported by a roller at the right end. The beam carries a uniformly distributed load of $36\$ over its entire length.\n\n37. Determine the location (m) of the point of zero shear, measured from the left end of the beam.',
-    options: [
-      { label: 'A', text: '2.75' },
-      { label: 'B', text: '2.25' },
-      { label: 'C', text: '3.25' },
-      { label: 'D', text: '3.75' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'For a propped cantilever beam with uniform load, the simple support reaction at the right end is $R_B = \\frac{3}{8} w L = \\frac{3}{8}(36)(6) = 81\$. The point of zero shear measured from the right end is $x = \\frac{R_B}{w} = \\frac{81}{36} = 2.25\$. Measured from the left end, the distance is $6.0 - 2.25 = 3.75\$.',
-      formulas: [
-        'R_B = \\frac{3}{8} w L',
-        'x_0 = \\frac{3}{8} L',
-        'x_1 = \\frac{5}{8} L',
-      
-      ],
-      steps: [
-        'Step 1: Compute reaction at the roller support B using standard propped cantilever formula: RB = 3/8 wL = 3/8 (36 kN/m)(6 m) = 81 kN.',
-        'Step 2: Let x be measured from the right roller support B toward the left: V(x) = 81 - 36x.',
-        'Step 3: Point of zero shear: 81 - 36x = 0 => x = 81 / 36 = 2.25 m from the right support.',
-        'Step 4: Distance measured from the left fixed end: x_left = 6.0 - 2.25 = 3.75 m (Option D).',
-      ],
-      finalAnswer: '3.75 (Option D)',
-      pageNumber: 619,
-    },
+    options: opts('2.75', '2.25', '3.25', '3.75'),
+    ...solved(37, 'D', '3.75 (Option D)'),
   },
 
   {
@@ -263,29 +107,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Maximum Positive Bending Moment in Propped Cantilever',
     text: 'Situation 13 (Cont.) — 38. Determine the maximum positive bending moment (kN·m) acting on the beam.',
-    options: [
-      { label: 'A', text: '162.0' },
-      { label: 'B', text: '292.5' },
-      { label: 'C', text: '91.1' },
-      { label: 'D', text: '178.8' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Maximum positive bending moment occurs at the point of zero shear located at $x = 2.25\$ from support $B$: $M_{\\text{pos}\\max} = R_B x - \\frac{w x^2}{2} = 81(2.25) - \\frac{36(2.25)^2}{2} = 91.125\\\cdot\ \\approx 91.1\\\cdot\$.',
-      formulas: [
-        'M_{\\max} = \\frac{9}{128} w L^2',
-        'M(x_0) = R_B x_0 - \\frac{w x_0^2}{2}',
-      
-      ],
-      steps: [
-        'Step 1: Point of zero shear is at x = 2.25 m from the roller support B.',
-        'Step 2: Moment equation from the right end: M(x) = RB · x - (w · x²) / 2.',
-        'Step 3: Evaluate at x = 2.25 m: M = 81(2.25) - 36(2.25)² / 2 = 182.25 - 91.125 = 91.125 kN·m.',
-        'Step 4: Alternatively, using the standard coefficient: M_pos = (9/128) wL² = (9/128)(36)(36) = 91.125 kN·m ≈ 91.1 kN·m (Option C).',
-      ],
-      finalAnswer: '91.1 (Option C)',
-      pageNumber: 620,
-    },
+    options: opts('162.0', '292.5', '91.1', '178.8'),
+    ...solved(38, 'C', '91.1 (Option C)'),
   },
 
   {
@@ -297,30 +120,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Location of Maximum Deflection by Area-Moment Method',
     text: 'Situation 13 (Cont.) — 39. Determine the location (m) of the maximum deflection, measured from the left end of the beam.',
-    options: [
-      { label: 'A', text: '2.53' },
-      { label: 'B', text: '3.47' },
-      { label: 'C', text: '3.75' },
-      { label: 'D', text: '2.25' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'At the left fixed support $A$, the slope is zero ($\\theta_A = 0$). At the point of maximum deflection $C$, the slope is also zero ($\\theta_C = 0$). Using the second moment-area theorem: $\\theta_{AC} = \\frac{1}{EI} \\sum \\text{Area}_{AC} = 0$. This yields $6 x^2 - 67.5 x + 162 = 0 \\implies x = 3.471\ \\approx 3.47\$ from the left end.',
-      formulas: [
-        '\\theta_{AC} = \\frac{1}{E I} \\int_A^C M(x) \\, dx = 0',
-        '\\delta_B = \\frac{w L^4}{8 E I}',
-      ],
-      steps: [
-        'Step 1: Reactions at fixed support A: RA = 135 kN (upward), MA = -162 kN·m.',
-        'Step 2: The point of maximum deflection occurs where the elastic curve slope θ = 0.',
-        'Step 3: Since slope at fixed support A is zero (θA = 0), the angle change between A and the peak deflection point C is θAC = 0.',
-        'Step 4: Sum the areas of the M/EI diagram from A to x: Triangular area from RA: 0.5(135x)(x) = 67.5x²; Cubic area from uniform load: -(1/3)(18x²)(x) = -6x³; Rectangular area from MA: -162x.',
-        'Step 5: Set area sum to zero: 67.5x² - 6x³ - 162x = 0 => 6x² - 67.5x + 162 = 0.',
-        'Step 6: Solve quadratic equation: x = 3.471 m ≈ 3.47 m from the left end (Option B).',
-      ],
-      finalAnswer: '3.47 (Option B)',
-      pageNumber: 620,
-    },
+    options: opts('2.53', '3.47', '3.75', '2.25'),
+    ...solved(39, 'B', '3.47 (Option B)'),
   },
 
   // --- SITUATION 14: Continuous Two-Span Beam (Questions 40 - 42) ---
@@ -334,30 +135,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     category: 'Structural Analysis - Continuous Beam Maximum Positive Moment under Pattern Loading',
     text: 'Situation 14 — Refer to the shear and bending moment diagram of the continuous beam shown in the figure.\nThe beam consists of two equal spans, $AB$ and $BC$, each of length $L = 8\$.\nGiven: Dead load, $w_D = 15\$; Live load, $w_L = 12\$.\n\n40. Considering live load only, determine the maximum positive moment (kN·m) when the live load acts on span $AB$ only.',
     figureCaption: 'Figure: Continuous beam of two equal spans L = 8 m under single-span and two-span uniform loads',
-    options: [
-      { label: 'A', text: '108.0' },
-      { label: 'B', text: '165.4' },
-      { label: 'C', text: '73.5' },
-      { label: 'D', text: '48.0' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'From standard continuous beam formulas for two equal spans with uniform load on one span: $M_{\\max} = \\frac{49}{512} w_L L^2$ at $x = \\frac{7}{16} L$. For $w_L = 12\$ and $L = 8\$: $M_{\\max} = \\frac{49}{512}(12)(8)^2 = 73.5\\\cdot\$.',
-      formulas: [
-        'M_{\\max} = \\frac{49}{512} w_L L^2',
-        'x = \\frac{7}{16} L',
-      
-      ],
-      steps: [
-        'Step 1: When live load acts on span AB only, the loaded span develops its maximum positive bending moment.',
-        'Step 2: By the three-moment equation for two equal spans L, the interior support moment is M1 = wL L² / 16.',
-        'Step 3: End reaction is R1 = 7 wL L / 16.',
-        'Step 4: Point of maximum positive moment occurs at x = R1 / wL = (7/16) L.',
-        'Step 5: Maximum positive moment: M_max = (49/512) wL L² = (49/512)(12)(64) = 73.5 kN·m (Option C).',
-      ],
-      finalAnswer: '73.5 (Option C)',
-      pageNumber: 621,
-    },
+    options: opts('108.0', '165.4', '73.5', '48.0'),
+    ...solved(40, 'C', '73.5 (Option C)'),
   },
 
   {
@@ -369,28 +148,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Continuous Beam Support Reaction under Single-Span Live Load',
     text: 'Situation 14 (Cont.) — 41. Considering live load only, determine the reaction (kN) at $C$ when the live load acts on span $BC$ only.',
-    options: [
-      { label: 'A', text: '94.5' },
-      { label: 'B', text: '42.0' },
-      { label: 'C', text: '6.0' },
-      { label: 'D', text: '13.5' },
-    ],
-    correctAnswer: 'B',
-    solution: {
-      summary: 'When live load $w_L$ is applied on span $BC$, support $C$ is the exterior support of the loaded span: $R_C = R_1 = \\frac{7}{16} w_L L = \\frac{7}{16}(12)(8) = 42\$.',
-      formulas: [
-        'R_C = \\frac{7}{16} w_L L',
-      
-      ],
-      steps: [
-        'Step 1: By symmetry of the two equal spans, when live load is placed on span BC, support C behaves identically to support A when span AB is loaded.',
-        'Step 2: Formula for exterior support reaction of the loaded span: R = (7/16) wL L.',
-        'Step 3: Substitute given values: RC = (7/16)(12 kN/m)(8 m) = (7/16)(96) = 42.0 kN.',
-        'Step 4: Therefore, the reaction at support C is 42.0 kN (Option B).',
-      ],
-      finalAnswer: '42.0 (Option B)',
-      pageNumber: 621,
-    },
+    options: opts('94.5', '42.0', '6.0', '13.5'),
+    ...solved(41, 'B', '42.0 (Option B)'),
   },
 
   {
@@ -402,29 +161,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Maximum Shear at Continuous Beam Interior Support',
     text: 'Situation 14 (Cont.) — 42. Determine the maximum shear (kN) at $B$ in span $AB$.',
-    options: [
-      { label: 'A', text: '270.0' },
-      { label: 'B', text: '129.0' },
-      { label: 'C', text: '121.5' },
-      { label: 'D', text: '135.0' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Maximum shear at interior support $B$ occurs when both spans carry full dead plus live loads: $V_B = \\frac{5}{8}(w_D + w_L) L = \\frac{5}{8}(15 + 12)(8) = \\frac{5}{8}(27)(8) = 135\$.',
-      formulas: [
-        'V_{B,\\max} = \\frac{5}{8}(w_D + w_L) L',
-      
-      ],
-      steps: [
-        'Step 1: Check pattern loading cases for shear at interior support B in span AB:',
-        'Case 1 (Live load on span AB only): VB = (5/8) wD L + (9/16) wL L = (5/8)(15)(8) + (9/16)(12)(8) = 75 + 54 = 129 kN.',
-        'Case 2 (Live load on both spans): VB = (5/8)(wD + wL) L = (5/8)(15 + 12)(8) = (5/8)(27)(8) = 135 kN.',
-        'Step 2: Comparing the two cases, Case 2 produces the absolute maximum shear: 135 kN > 129 kN.',
-        'Step 3: Hence, the maximum shear at B in span AB is 135.0 kN (Option D).',
-      ],
-      finalAnswer: '135.0 (Option D)',
-      pageNumber: 622,
-    },
+    options: opts('270.0', '129.0', '121.5', '135.0'),
+    ...solved(42, 'D', '135.0 (Option D)'),
   },
 
   // --- SITUATION 15: Truss Bridge Moving Load Influence Lines (Questions 43 - 45) ---
@@ -438,28 +176,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     category: 'Structural Analysis - Moving Highway Truck Load on Truss Influence Line',
     text: 'Situation 15 — Refer to the figure shown.\nThe truss shown is to be analyzed by a lane load, truck load, and tandem load.\nGiven: $s = 4.30\$; $h = 2.67\$;\nOrdinates for member $GH$ influence line:\n$A = 0$; $H = 1.125$; $G = 0.750$; $F = 0.375$; $B = 0$\nLoads:\nUniform Lane load, $w = 9.34\$\nTruck loads:\nRear wheel $= 145\$\nFront wheel $= 35\$\nWheel base $= 4.3\$\nTandem load:\nRear wheel $= 108\$\nFront wheel $= 108\$\nWheel base $= 1.2\$\n\n43. Determine the force (kN) in member $GH$ due to the truck load.',
     figureCaption: 'Figure: Highway truss bridge elevation and influence line for chord member GH',
-    options: [
-      { label: 'A', text: '271.9' },
-      { label: 'B', text: '148.1' },
-      { label: 'C', text: '189.4' },
-      { label: 'D', text: '163.1' },
-    ],
-    correctAnswer: 'C',
-    solution: {
-      summary: 'Place the heavier rear wheel ($145\$) at the peak of the influence line (joint $H$, ordinate $1.125$). The front wheel ($35\$) is at distance $4.3\$ (joint $G$, ordinate $0.750$). Total force is $F_{GH} = 145(1.125) + 35(0.750) = 189.375\ \\approx 189.4\$.',
-      formulas: [
-        'F_{GH} = \\sum P_i y_i',
-      
-      ],
-      steps: [
-        'Step 1: To maximize member force, place the heavier 145 kN wheel at the peak ordinate of the influence line at joint H: y1 = 1.125.',
-        'Step 2: The wheel base is 4.3 m, matching panel spacing s = 4.3 m. Therefore, the 35 kN wheel falls exactly at joint G: y2 = 0.750.',
-        'Step 3: Total member force: F_GH = 145(1.125) + 35(0.750) = 163.125 + 26.25 = 189.375 kN ≈ 189.4 kN.',
-        'Step 4: Therefore, F_GH = 189.4 kN (Option C).',
-      ],
-      finalAnswer: '189.4 (Option C)',
-      pageNumber: 623,
-    },
+    options: opts('271.9', '148.1', '189.4', '163.1'),
+    ...solved(43, 'C', '189.4 (Option C)'),
   },
 
   {
@@ -471,30 +189,8 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Tandem Axle Load on Truss Influence Line',
     text: 'Situation 15 (Cont.) — 44. Determine the force (kN) in member $GH$ due to the tandem load.',
-    options: [
-      { label: 'A', text: '202.5' },
-      { label: 'B', text: '121.5' },
-      { label: 'C', text: '209.1' },
-      { label: 'D', text: '231.7' },
-    ],
-    correctAnswer: 'D',
-    solution: {
-      summary: 'Place one $108\$ axle at peak $H$ (ordinate $1.125$). The second $108\$ axle is $1.2\$ away towards $B$. By similar triangles along segment $H$-$B$ ($12.9\$ long), the ordinate is $u_j = \\frac{11.7}{12.9}(1.125) = 1.0203$. Total force: $F_{GH} = 108(1.125) + 108(1.0203) = 231.69\ \\approx 231.7\$.',
-      formulas: [
-        'F_{GH} = \\sum P_i y_i',
-        'y_2 = y_1 \\left(\\frac{L - d}{L}\\right)',
-      
-      ],
-      steps: [
-        'Step 1: Place the first 108 kN tandem wheel directly at the peak H: y1 = 1.125.',
-        'Step 2: The second 108 kN wheel is 1.2 m away on the slope from H to B.',
-        'Step 3: Distance from H to B = 3 panels × 4.3 m = 12.9 m. Distance of second wheel from B = 12.9 - 1.2 = 11.7 m.',
-        'Step 4: Interpolate ordinate: uj = 1.125 × (11.7 / 12.9) = 1.0203.',
-        'Step 5: Total force: F_GH = 108(1.125 + 1.0203) = 108(2.1453) = 231.69 kN ≈ 231.7 kN (Option D).',
-      ],
-      finalAnswer: '231.7 (Option D)',
-      pageNumber: 624,
-    },
+    options: opts('202.5', '121.5', '209.1', '231.7'),
+    ...solved(44, 'D', '231.7 (Option D)'),
   },
 
   {
@@ -506,28 +202,7 @@ export const PSAD_NOV2025_PART3: Question[] = [
     month: 'November',
     category: 'Structural Analysis - Bridge Support Reaction with Dynamic Impact Factor',
     text: 'Situation 15 (Cont.) — 45. Determine the reaction at support $B$ (kN) due to the lane load and truck load with $30\\%$ impact factor ($I_f = 0.30$).',
-    options: [
-      { label: 'A', text: '302.9' },
-      { label: 'B', text: '327.0' },
-      { label: 'C', text: '363.7' },
-      { label: 'D', text: '336.6' },
-    ],
-    correctAnswer: 'A',
-    solution: {
-      summary: 'Influence line for reaction at $B$ is linear from $0$ at $A$ to $1.0$ at $B$. Lane load contribution (no impact): $R_{\\text{lane}} = w A_i = 9.34 \\times \\frac{1}{2}(4 \\times 4.3)(1) = 80.324\$. Truck load with impact: place $145\$ at $B$ ($y = 1.0$) and $35\$ at $E$ ($y = 0.75$): $R_{\\text{truck}} = [35(0.75) + 145(1.0)](1 + 0.30) = 171.25(1.30) = 222.625\$. Total $R_{B\\max} = 80.324 + 222.625 = 302.95\ \\approx 302.9\$.',
-      formulas: [
-        'R_B = w_L A_{\\mathrm{IL}} + (1 + I_f) \\sum P_i y_i',
-      ],
-      steps: [
-        'Step 1: Influence line for reaction RB is a triangle of base L = 4 × 4.3 = 17.2 m and peak height 1.0 at support B.',
-        'Step 2: Area of influence line: Ai = 0.5 × 17.2 × 1.0 = 8.6 m.',
-        'Step 3: Uniform lane load force (impact factor does NOT apply to distributed lane loads): R_lane = 9.34 kN/m × 8.6 m = 80.324 kN.',
-        'Step 4: Position truck for maximum reaction at B: Place 145 kN rear wheel at B (ordinate = 1.0) and 35 kN front wheel at E (ordinate = 3/4 = 0.75).',
-        'Step 5: Dynamic impact multiplier is (1 + If) = 1 + 0.30 = 1.30: R_truck = [145(1.0) + 35(0.75)] × 1.30 = 171.25 × 1.30 = 222.625 kN.',
-        'Step 6: Total maximum reaction at B: RB = 80.324 + 222.625 = 302.95 kN ≈ 302.9 kN (Option A).',
-      ],
-      finalAnswer: '302.9 (Option A)',
-      pageNumber: 624,
-    },
+    options: opts('302.9', '327.0', '363.7', '336.6'),
+    ...solved(45, 'A', '302.9 (Option A)'),
   },
 ];
