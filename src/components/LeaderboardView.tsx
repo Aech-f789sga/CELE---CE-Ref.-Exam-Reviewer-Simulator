@@ -33,6 +33,7 @@ import {
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
 import { OnlineUsersPanel } from './OnlineUsersPanel';
+import { DEMO_ATTEMPTS, DEMO_USERS, SHOW_DEMO_ACCOUNTS } from '../data/demoAccounts';
 
 interface LeaderboardViewProps {
   onTakeExamArea?: (subject: SubjectArea) => void;
@@ -65,9 +66,18 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onTakeExamArea
         fetchAllAttemptsForLeaderboard(),
         fetchAllUsers(),
       ]);
-      setRawAttempts(attempts);
-      setAllUsersList(users);
-      const computed = computeLeaderboards(attempts, users);
+
+      // The seeded examinees exist only here: they are merged after the fetch so
+      // the admin's user table (which can edit and delete its rows) never shows
+      // an account that has no document behind it. Their attempts go through the
+      // same `computeLeaderboards` call as everyone else's, so the GWA and the
+      // pass/fail verdict are computed, not asserted.
+      const rosterUsers = SHOW_DEMO_ACCOUNTS ? [...users, ...DEMO_USERS] : users;
+      const rosterAttempts = SHOW_DEMO_ACCOUNTS ? [...attempts, ...DEMO_ATTEMPTS] : attempts;
+
+      setRawAttempts(rosterAttempts);
+      setAllUsersList(rosterUsers);
+      const computed = computeLeaderboards(rosterAttempts, rosterUsers);
       setOverallList(computed.overall);
       setPerAreaLists(computed.perArea);
     } catch (e) {

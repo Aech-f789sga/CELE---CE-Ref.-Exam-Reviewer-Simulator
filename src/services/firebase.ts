@@ -97,6 +97,12 @@ export interface UserProfile {
   createdAt: string;
   lastLoginAt: string;
   lastUsernameChangedAt?: string;
+  /**
+   * True for the seeded accounts in `src/data/demoAccounts.ts`. They have no
+   * Firestore document, so they are merged into the leaderboard view only and
+   * never into the admin's user table, where every row is editable.
+   */
+  isDemo?: boolean;
 }
 
 export interface CloudExamAttempt {
