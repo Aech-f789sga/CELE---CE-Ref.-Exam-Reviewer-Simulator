@@ -62,7 +62,7 @@ import {
   isUserIdle,
   isAnalyticsExcluded,
   excludeAnalyticsAccounts,
-  PRESENCE_IDLE_TIMEOUT_MS,
+  PRESENCE_IDLE_TIMEOUT_MINUTES,
   UserProfile,
   CloudExamAttempt,
   SystemAnnouncement,
@@ -1152,7 +1152,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                                         new Date(presence?.lastActivityAt || presence?.lastSeenAt || Date.now()).getTime()) /
                                         60000
                                     )
-                                  )} min — not counted online`
+                                  )} min — marked offline`
                                 : `Last seen: ${formatTimeAgo(presence?.lastSeenAt || u.lastLoginAt)}`}
                         </span>
                       </td>
@@ -1272,7 +1272,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
                   <>
                     {' '}
                     <span className="text-amber-400/90">
-                      · {idleUsersCount} idle over {Math.round(PRESENCE_IDLE_TIMEOUT_MS / 60000)} min, excluded
+                      · {idleUsersCount} idle {PRESENCE_IDLE_TIMEOUT_MINUTES}+ min, marked offline
                     </span>
                   </>
                 )}

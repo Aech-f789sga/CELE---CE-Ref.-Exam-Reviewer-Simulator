@@ -4,9 +4,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import {
   subscribeUserPresence,
-  isUserCurrentlyOnline,
-  isUserIdle,
-  PRESENCE_IDLE_TIMEOUT_MS,
+  resolvePresenceState,
+  PRESENCE_IDLE_TIMEOUT_MINUTES,
   UserPresence,
 } from '../services/firebase';
 
@@ -17,7 +16,9 @@ import {
  * stripped of accounts excluded from analytics, so the administrator never
  * appears in this list. Three states are shown rather than two because a tab
  * left open with nobody at the keyboard is neither "here" nor "gone", and
- * saying so is more useful than guessing between the two.
+ * saying so is more useful than guessing between the two. Idle is not online:
+ * the tracker writes `isOnline: false` at the fifteen-minute mark, and only the
+ * label keeps the distinction.
  *
  * This is the one roster every signed-in user sees, so it deliberately carries
  * only a username and a status. Email, current feature, role and feature history
@@ -51,8 +52,9 @@ export const OnlineUsersPanel: React.FC = () => {
     const off: UserPresence[] = [];
 
     for (const p of presences) {
-      if (isUserCurrentlyOnline(p)) on.push(p);
-      else if (isUserIdle(p)) away.push(p);
+      const state = resolvePresenceState(p);
+      if (state === 'online') on.push(p);
+      else if (state === 'idle') away.push(p);
       else off.push(p);
     }
 
@@ -69,7 +71,7 @@ export const OnlineUsersPanel: React.FC = () => {
 
   const total = online.length + idle.length + offline.length;
   const shownOffline = expanded ? offline : offline.slice(0, 6);
-  const idleMinutes = Math.round(PRESENCE_IDLE_TIMEOUT_MS / 60000);
+  const idleMinutes = PRESENCE_IDLE_TIMEOUT_MINUTES;
 
   const isSelf = (p: UserPresence) =>
     Boolean(activeUser && (p.userId === (activeUser as { uid?: string }).uid ||
@@ -159,7 +161,7 @@ export const OnlineUsersPanel: React.FC = () => {
             <div className="pt-2 border-t border-slate-800/80 space-y-0.5">
               <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-amber-400/90">
                 <Moon className="w-3 h-3" />
-                Idle over {idleMinutes} min ({idle.length}) — not counted as online
+                No activity for {idleMinutes} min ({idle.length}) — marked offline
               </div>
               {idle.map((p) => (
                 <Row key={`idle-${p.userId}`} p={p} state="idle" />

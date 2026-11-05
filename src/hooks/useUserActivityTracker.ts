@@ -4,6 +4,7 @@ import {
   recordFeatureInteraction,
   markUserOffline,
   isAnalyticsExcluded,
+  isIdleAt,
   PRESENCE_IDLE_TIMEOUT_MS,
   UserProfile,
 } from '../services/firebase';
@@ -176,7 +177,9 @@ export function useUserActivityTracker({
           email: u.email || '',
           displayName: u.displayName || 'Candidate',
           currentFeature: activeFeatureName,
-          isOnline: true,
+          // A user who has been idle for the whole timeout stays offline even
+          // while navigating: the tab moving is not the person coming back.
+          isOnline: !isIdleRef.current,
           idle: isIdleRef.current,
           lastActivityAt: new Date(lastActivityRef.current).toISOString(),
         }).catch(() => {});
@@ -195,9 +198,18 @@ export function useUserActivityTracker({
       return;
     }
 
+    /**
+     * Writes presence, and decides on the way whether the user still counts as
+     * online.
+     *
+     * The document is the only thing other clients can see, so idleness has to
+     * be recorded in it: `isOnline: false` is what "marked offline" means here.
+     * `idle` stays true so the roster can still say "Idle" instead of claiming
+     * the tab was closed.
+     */
     const ping = () => {
       const now = Date.now();
-      const idle = now - lastActivityRef.current >= PRESENCE_IDLE_TIMEOUT_MS;
+      const idle = isIdleAt(lastActivityRef.current, now);
 
       if (idle && !isIdleRef.current) {
         // Entering idle: close out the feature session at the idle boundary so
@@ -218,27 +230,69 @@ export function useUserActivityTracker({
         email: user.email || '',
         displayName: user.displayName || 'Candidate',
         currentFeature: currentSessionRef.current.featureName,
-        isOnline: true,
+        isOnline: !idle,
         idle,
         lastActivityAt: new Date(lastActivityRef.current).toISOString(),
       }).catch(() => {});
     };
 
+    /**
+     * Fires once, exactly at the idle boundary, so the offline write lands at
+     * fifteen minutes rather than at the next heartbeat up to 25 s later. A
+     * background tab throttles timers, which is what the interval is for.
+     */
+    let idleTimerId = 0;
+    const armIdleTimer = () => {
+      window.clearTimeout(idleTimerId);
+      const remaining = lastActivityRef.current + PRESENCE_IDLE_TIMEOUT_MS - Date.now();
+      idleTimerId = window.setTimeout(ping, Math.max(0, remaining) + 250);
+    };
+
     // Initial ping
     ping();
+    armIdleTimer();
 
     const intervalId = window.setInterval(ping, HEARTBEAT_MS);
 
-    // Any real input clears idle. Cheap enough to run on every event; the value
-    // is only read by the heartbeat.
-    const markActivity = () => {
-      lastActivityRef.current = Date.now();
+    /**
+     * Any real input clears idle.
+     *
+     * Returns true when this call lifted an idle session, in which case presence
+     * is rewritten immediately: waiting for the next heartbeat would leave the
+     * user showing as offline for up to 25 s after they had plainly come back.
+     */
+    const markActivity = (): boolean => {
+      const now = Date.now();
+      const wasIdle = isIdleRef.current;
+      lastActivityRef.current = now;
+      armIdleTimer();
+      if (!wasIdle) return false;
+
+      isIdleRef.current = false;
+      currentSessionRef.current.startTime = now;
+      currentSessionRef.current.startTimeIso = new Date(now).toISOString();
+      ping();
+      return true;
+    };
+
+    /**
+     * Pointer movement counts as interaction -- someone reading a page with the
+     * cursor is present even if they never click. Throttled to once a second so
+     * a drag does not fire this hundreds of times; a second of lag at the idle
+     * boundary is immaterial.
+     */
+    let lastMoveAt = 0;
+    const handlePointerMove = () => {
+      const now = Date.now();
+      if (now - lastMoveAt < 1000) return;
+      lastMoveAt = now;
+      markActivity();
     };
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        markActivity();
-        ping();
+        // markActivity already rewrites presence when it lifts an idle session.
+        if (!markActivity()) ping();
       } else {
         // Log interaction duration up to now
         const prev = currentSessionRef.current;
@@ -258,17 +312,23 @@ export function useUserActivityTracker({
 
     document.addEventListener('visibilitychange', handleVisibility);
     document.addEventListener('pointerdown', markActivity, { passive: true });
+    document.addEventListener('pointermove', handlePointerMove, { passive: true });
     document.addEventListener('keydown', markActivity);
     document.addEventListener('wheel', markActivity, { passive: true });
+    // Capture, because scroll does not bubble out of scrollable panels.
+    document.addEventListener('scroll', markActivity, { passive: true, capture: true });
     document.addEventListener('touchstart', markActivity, { passive: true });
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       window.clearInterval(intervalId);
+      window.clearTimeout(idleTimerId);
       document.removeEventListener('visibilitychange', handleVisibility);
       document.removeEventListener('pointerdown', markActivity);
+      document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('keydown', markActivity);
       document.removeEventListener('wheel', markActivity);
+      document.removeEventListener('scroll', markActivity, { capture: true });
       document.removeEventListener('touchstart', markActivity);
       window.removeEventListener('beforeunload', handleBeforeUnload);
 

@@ -43,13 +43,17 @@ import {
  */
 export {
   DESIGNATED_ADMIN_EMAIL,
+  PRESENCE_IDLE_TIMEOUT_MINUTES,
   PRESENCE_IDLE_TIMEOUT_MS,
   PRESENCE_ONLINE_WINDOW_MS,
   isAnalyticsExcluded,
   isUserAdmin,
   isUserIdle,
+  isIdleAt,
   isUserCurrentlyOnline,
+  resolvePresenceState,
   excludeAnalyticsAccounts,
+  type PresenceState,
   type UserPresence,
 } from './presence';
 
