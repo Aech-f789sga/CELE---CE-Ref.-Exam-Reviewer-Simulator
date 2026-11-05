@@ -13,6 +13,12 @@
  * the ranking code, which is the only way the numbers stay believable (the GWA
  * and the pass/fail verdict are computed by the real function, not typed in).
  *
+ * The names are handles, not people. Reviewees sign up with a board-exam pun and
+ * a number more often than with their real name, so the seeded rows carry
+ * IGN-style handles — `SlabMaster64`, `Rebar_Rush` — in the mix of casing and
+ * digits real ones use, rather than invented full names that would read as fake
+ * the moment two of them sat next to each other.
+ *
  * They are deliberately NOT written to Firestore and NOT merged into
  * `fetchAllUsers`, so the admin's user table — where every row can be renamed,
  * banned or deleted — keeps showing only accounts that actually exist. The merge
@@ -76,9 +82,9 @@ function daysAgoAt(daysAgo: number, hour: number, minute: number): string {
 const ACCOUNTS: DemoAccountSpec[] = [
   {
     // Clear front-runner: a strong first cycle, then a better one a month later.
-    uid: 'demo-maria-santos',
-    displayName: 'Maria Kristina Santos',
-    email: 'maria.santos@example.com',
+    uid: 'demo-slab-master-64',
+    displayName: 'SlabMaster64',
+    email: 'slabmaster64@example.com',
     joinedDaysAgo: 148,
     lastSeenDaysAgo: 1,
     attempts: [
@@ -93,9 +99,9 @@ const ACCOUNTS: DemoAccountSpec[] = [
   },
   {
     // One strong cycle, no retake yet.
-    uid: 'demo-jomar-dela-cruz',
-    displayName: 'Jomar Dela Cruz',
-    email: 'jomar.delacruz@example.com',
+    uid: 'demo-moment-of-inertia',
+    displayName: 'MomentOfInertia',
+    email: 'momentofinertia@example.com',
     joinedDaysAgo: 96,
     lastSeenDaysAgo: 2,
     attempts: [
@@ -106,9 +112,9 @@ const ACCOUNTS: DemoAccountSpec[] = [
   },
   {
     // Mid-pack: a passable first cycle, then a clear improvement.
-    uid: 'demo-angelica-reyes',
-    displayName: 'Angelica Reyes',
-    email: 'angelica.reyes@example.com',
+    uid: 'demo-rebar-rush',
+    displayName: 'Rebar_Rush',
+    email: 'rebar_rush@example.com',
     joinedDaysAgo: 121,
     lastSeenDaysAgo: 3,
     attempts: [
@@ -123,9 +129,9 @@ const ACCOUNTS: DemoAccountSpec[] = [
   },
   {
     // Scrapes past the 70% GWA line, with one area close to the 50% floor.
-    uid: 'demo-reymart-villanueva',
-    displayName: 'Reymart Villanueva',
-    email: 'reymart.villanueva@example.com',
+    uid: 'demo-cantilever-kid',
+    displayName: 'CantileverKid',
+    email: 'cantileverkid@example.com',
     joinedDaysAgo: 74,
     lastSeenDaysAgo: 4,
     attempts: [
@@ -136,9 +142,9 @@ const ACCOUNTS: DemoAccountSpec[] = [
   },
   {
     // Improving but still short of the GWA requirement — the board is not all passes.
-    uid: 'demo-kyla-mae-bautista',
-    displayName: 'Kyla Mae Bautista',
-    email: 'kyla.bautista@example.com',
+    uid: 'demo-soil-slinger-07',
+    displayName: 'SoilSlinger07',
+    email: 'soilslinger07@example.com',
     joinedDaysAgo: 132,
     lastSeenDaysAgo: 6,
     attempts: [
