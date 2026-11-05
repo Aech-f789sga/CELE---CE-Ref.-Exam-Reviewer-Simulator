@@ -8,10 +8,11 @@
  * cycles but still fell short — so the Overall and per-area tables read the way
  * they will once real attempts arrive.
  *
- * Everything here is derived from the same fields a real attempt carries, so
- * `computeLeaderboards` treats them identically: no special casing anywhere in
- * the ranking code, which is the only way the numbers stay believable (the GWA
- * and the pass/fail verdict are computed by the real function, not typed in).
+ * Each account has sat three full cycles (MSTC, HPGE, PSAD), so every row shows
+ * three completed attempts and the retake columns are not empty. The score for
+ * each cycle is written down once; the rating, the GWA, the average and the
+ * PRC verdict are all derived by the same `computeLeaderboards` the real
+ * attempts go through, which is the only way the numbers stay believable.
  *
  * The names are handles, not people. Reviewees sign up with a board-exam pun and
  * a number more often than with their real name, so the seeded rows carry
@@ -37,16 +38,23 @@ import type { ExamMonth, SubjectArea, TimerMode } from '../types/exam';
 /** Master switch for the seeded accounts. */
 export const SHOW_DEMO_ACCOUNTS = true;
 
-interface AttemptSpec {
-  subject: SubjectArea;
+const AREAS: SubjectArea[] = ['MSTC', 'HPGE', 'PSAD'];
+
+interface PaperSpec {
   year: number;
   month: ExamMonth;
   totalQuestions: number;
-  score: number;
-  timeSpentSeconds: number;
-  /** Days before today, so the board never goes stale. */
+}
+
+/**
+ * One sitting of all three areas. `scores` is what the examinee actually got
+ * right on each paper that cycle — everything else about the attempt follows
+ * from it.
+ */
+interface CycleSpec {
+  /** Days before today; the three areas are sat on consecutive evenings. */
   daysAgo: number;
-  timerMode?: TimerMode;
+  scores: Record<SubjectArea, number>;
 }
 
 interface DemoAccountSpec {
@@ -55,7 +63,11 @@ interface DemoAccountSpec {
   email: string;
   joinedDaysAgo: number;
   lastSeenDaysAgo: number;
-  attempts: AttemptSpec[];
+  /** One paper per area, retaken across the cycles. */
+  papers: Record<SubjectArea, PaperSpec>;
+  /** Seconds on the clock in the first cycle; each retake shaves eight minutes. */
+  paceSeconds: Record<SubjectArea, number>;
+  cycles: CycleSpec[];
 }
 
 /**
@@ -72,59 +84,71 @@ function daysAgoAt(daysAgo: number, hour: number, minute: number): string {
 }
 
 /**
- * Two cycles of the three areas, in the order they were sat.
+ * Three cycles each, oldest first.
  *
  * `computeLeaderboards` pairs attempts by position within each subject (the
  * first MSTC with the first HPGE with the first PSAD), so the day offsets have to
  * keep every cycle in the same relative order per subject — which is also how a
- * real reviewee sits them.
+ * real reviewee sits them. Each progression is meant to look like work: a weak
+ * opening, a solid middle, and a best cycle that is either a small gain or a
+ * plateau, because nobody climbs ten points a month.
  */
 const ACCOUNTS: DemoAccountSpec[] = [
   {
-    // Clear front-runner: a strong first cycle, then a better one a month later.
+    // Clear front-runner: starts strong and keeps tightening.
     uid: 'demo-slab-master-64',
     displayName: 'SlabMaster64',
     email: 'slabmaster64@example.com',
     joinedDaysAgo: 148,
     lastSeenDaysAgo: 1,
-    attempts: [
-      { subject: 'MSTC', year: 2018, month: 'May', totalQuestions: 62, score: 50, timeSpentSeconds: 14280, daysAgo: 45 },
-      { subject: 'HPGE', year: 2015, month: 'May', totalQuestions: 82, score: 66, timeSpentSeconds: 11640, daysAgo: 44 },
-      { subject: 'PSAD', year: 2019, month: 'May', totalQuestions: 69, score: 56, timeSpentSeconds: 17400, daysAgo: 43 },
-
-      { subject: 'MSTC', year: 2017, month: 'May', totalQuestions: 75, score: 64, timeSpentSeconds: 13140, daysAgo: 12 },
-      { subject: 'HPGE', year: 2016, month: 'May', totalQuestions: 50, score: 42, timeSpentSeconds: 9840, daysAgo: 11 },
-      { subject: 'PSAD', year: 2022, month: 'May', totalQuestions: 72, score: 62, timeSpentSeconds: 16020, daysAgo: 10 },
+    papers: {
+      MSTC: { year: 2018, month: 'May', totalQuestions: 62 },
+      HPGE: { year: 2015, month: 'May', totalQuestions: 82 },
+      PSAD: { year: 2019, month: 'May', totalQuestions: 69 },
+    },
+    paceSeconds: { MSTC: 15000, HPGE: 11400, PSAD: 17400 },
+    cycles: [
+      { daysAgo: 70, scores: { MSTC: 48, HPGE: 64, PSAD: 53 } },
+      { daysAgo: 40, scores: { MSTC: 51, HPGE: 67, PSAD: 56 } },
+      { daysAgo: 9, scores: { MSTC: 53, HPGE: 69, PSAD: 59 } },
     ],
   },
   {
-    // One strong cycle, no retake yet.
+    // Strong from the start, gaining a couple of points a cycle rather than leaping.
     uid: 'demo-moment-of-inertia',
     displayName: 'MomentOfInertia',
     email: 'momentofinertia@example.com',
     joinedDaysAgo: 96,
     lastSeenDaysAgo: 2,
-    attempts: [
-      { subject: 'MSTC', year: 2025, month: 'April', totalQuestions: 66, score: 55, timeSpentSeconds: 15060, daysAgo: 30 },
-      { subject: 'HPGE', year: 2015, month: 'May', totalQuestions: 82, score: 64, timeSpentSeconds: 12300, daysAgo: 29 },
-      { subject: 'PSAD', year: 2017, month: 'May', totalQuestions: 66, score: 54, timeSpentSeconds: 18120, daysAgo: 28, timerMode: 'stopwatch' },
+    papers: {
+      MSTC: { year: 2025, month: 'April', totalQuestions: 66 },
+      HPGE: { year: 2015, month: 'May', totalQuestions: 82 },
+      PSAD: { year: 2017, month: 'May', totalQuestions: 66 },
+    },
+    paceSeconds: { MSTC: 16200, HPGE: 12600, PSAD: 19200 },
+    cycles: [
+      { daysAgo: 58, scores: { MSTC: 51, HPGE: 60, PSAD: 49 } },
+      { daysAgo: 34, scores: { MSTC: 54, HPGE: 63, PSAD: 52 } },
+      { daysAgo: 12, scores: { MSTC: 55, HPGE: 64, PSAD: 54 } },
     ],
   },
   {
-    // Mid-pack: a passable first cycle, then a clear improvement.
+    // Mid-pack: a rough opening, then steady gains that clear the passing line.
     uid: 'demo-rebar-rush',
     displayName: 'Rebar_Rush',
     email: 'rebar_rush@example.com',
     joinedDaysAgo: 121,
     lastSeenDaysAgo: 3,
-    attempts: [
-      { subject: 'MSTC', year: 2018, month: 'May', totalQuestions: 62, score: 44, timeSpentSeconds: 15300, daysAgo: 55 },
-      { subject: 'HPGE', year: 2016, month: 'May', totalQuestions: 50, score: 35, timeSpentSeconds: 11220, daysAgo: 54 },
-      { subject: 'PSAD', year: 2019, month: 'May', totalQuestions: 69, score: 48, timeSpentSeconds: 18960, daysAgo: 53 },
-
-      { subject: 'MSTC', year: 2017, month: 'May', totalQuestions: 75, score: 57, timeSpentSeconds: 14580, daysAgo: 18 },
-      { subject: 'HPGE', year: 2018, month: 'May', totalQuestions: 50, score: 37, timeSpentSeconds: 10500, daysAgo: 17 },
-      { subject: 'PSAD', year: 2019, month: 'May', totalQuestions: 69, score: 52, timeSpentSeconds: 17880, daysAgo: 16 },
+    papers: {
+      MSTC: { year: 2018, month: 'May', totalQuestions: 62 },
+      HPGE: { year: 2016, month: 'May', totalQuestions: 50 },
+      PSAD: { year: 2019, month: 'May', totalQuestions: 69 },
+    },
+    paceSeconds: { MSTC: 16800, HPGE: 13200, PSAD: 20400 },
+    cycles: [
+      { daysAgo: 76, scores: { MSTC: 39, HPGE: 31, PSAD: 43 } },
+      { daysAgo: 46, scores: { MSTC: 43, HPGE: 34, PSAD: 47 } },
+      { daysAgo: 15, scores: { MSTC: 47, HPGE: 37, PSAD: 52 } },
     ],
   },
   {
@@ -134,27 +158,35 @@ const ACCOUNTS: DemoAccountSpec[] = [
     email: 'cantileverkid@example.com',
     joinedDaysAgo: 74,
     lastSeenDaysAgo: 4,
-    attempts: [
-      { subject: 'MSTC', year: 2018, month: 'May', totalQuestions: 62, score: 45, timeSpentSeconds: 15720, daysAgo: 25 },
-      { subject: 'HPGE', year: 2016, month: 'May', totalQuestions: 50, score: 34, timeSpentSeconds: 12840, daysAgo: 24 },
-      { subject: 'PSAD', year: 2017, month: 'May', totalQuestions: 66, score: 47, timeSpentSeconds: 19260, daysAgo: 23 },
+    papers: {
+      MSTC: { year: 2018, month: 'May', totalQuestions: 62 },
+      HPGE: { year: 2016, month: 'May', totalQuestions: 50 },
+      PSAD: { year: 2017, month: 'May', totalQuestions: 66 },
+    },
+    paceSeconds: { MSTC: 15900, HPGE: 12900, PSAD: 19800 },
+    cycles: [
+      { daysAgo: 63, scores: { MSTC: 41, HPGE: 30, PSAD: 42 } },
+      { daysAgo: 37, scores: { MSTC: 44, HPGE: 33, PSAD: 45 } },
+      { daysAgo: 18, scores: { MSTC: 45, HPGE: 34, PSAD: 47 } },
     ],
   },
   {
-    // Improving but still short of the GWA requirement — the board is not all passes.
+    // Improving every cycle but still short of the GWA requirement — the board is not all passes.
     uid: 'demo-soil-slinger-07',
     displayName: 'SoilSlinger07',
     email: 'soilslinger07@example.com',
     joinedDaysAgo: 132,
     lastSeenDaysAgo: 6,
-    attempts: [
-      { subject: 'MSTC', year: 2018, month: 'May', totalQuestions: 62, score: 38, timeSpentSeconds: 16080, daysAgo: 60 },
-      { subject: 'HPGE', year: 2016, month: 'May', totalQuestions: 50, score: 30, timeSpentSeconds: 13320, daysAgo: 59 },
-      { subject: 'PSAD', year: 2019, month: 'May', totalQuestions: 69, score: 41, timeSpentSeconds: 20100, daysAgo: 58, timerMode: 'stopwatch' },
-
-      { subject: 'MSTC', year: 2017, month: 'May', totalQuestions: 75, score: 50, timeSpentSeconds: 15120, daysAgo: 20 },
-      { subject: 'HPGE', year: 2018, month: 'May', totalQuestions: 50, score: 33, timeSpentSeconds: 12060, daysAgo: 19 },
-      { subject: 'PSAD', year: 2022, month: 'May', totalQuestions: 72, score: 48, timeSpentSeconds: 19500, daysAgo: 18 },
+    papers: {
+      MSTC: { year: 2017, month: 'May', totalQuestions: 75 },
+      HPGE: { year: 2018, month: 'May', totalQuestions: 50 },
+      PSAD: { year: 2022, month: 'May', totalQuestions: 72 },
+    },
+    paceSeconds: { MSTC: 17100, HPGE: 13500, PSAD: 20700 },
+    cycles: [
+      { daysAgo: 82, scores: { MSTC: 42, HPGE: 26, PSAD: 36 } },
+      { daysAgo: 52, scores: { MSTC: 46, HPGE: 29, PSAD: 42 } },
+      { daysAgo: 21, scores: { MSTC: 50, HPGE: 33, PSAD: 48 } },
     ],
   },
 ];
@@ -170,27 +202,41 @@ export const DEMO_USERS: UserProfile[] = ACCOUNTS.map((acc) => ({
   lastLoginAt: daysAgoAt(acc.lastSeenDaysAgo, 20, 5),
 }));
 
-/** The attempts behind those profiles. Ratings are derived, never typed in. */
+/**
+ * Nine attempts per account: three cycles of three areas.
+ *
+ * Ratings are derived from the score and the paper's real item count, never
+ * typed in. The time on the clock shortens a little each retake, which is what
+ * makes `bestTimeSpentSeconds` on the per-area board mean something.
+ */
 export const DEMO_ATTEMPTS: CloudExamAttempt[] = ACCOUNTS.flatMap((acc) =>
-  acc.attempts.map((spec, index) => {
-    const ratingPercentage = Math.round((spec.score / spec.totalQuestions) * 10000) / 100;
-    return {
-      id: `demo-att-${acc.uid}-${spec.subject}-${index + 1}`,
-      userId: acc.uid,
-      userEmail: acc.email,
-      userDisplayName: acc.displayName,
-      subject: spec.subject,
-      year: spec.year,
-      month: spec.month,
-      score: spec.score,
-      totalQuestions: spec.totalQuestions,
-      ratingPercentage,
-      passedArea: ratingPercentage >= 50.0,
-      timeSpentSeconds: spec.timeSpentSeconds,
-      timerMode: spec.timerMode ?? 'exam_timer',
-      completedAt: daysAgoAt(spec.daysAgo, 20, 30),
-    } satisfies CloudExamAttempt;
-  })
+  acc.cycles.flatMap((cycle, cycleIndex) =>
+    AREAS.map((area, areaIndex) => {
+      const paper = acc.papers[area];
+      const score = cycle.scores[area];
+      const ratingPercentage = Math.round((score / paper.totalQuestions) * 10000) / 100;
+      const timerMode: TimerMode = cycleIndex === 0 && area === 'PSAD' ? 'stopwatch' : 'exam_timer';
+
+      return {
+        id: `demo-att-${acc.uid}-${area}-${cycleIndex + 1}`,
+        userId: acc.uid,
+        userEmail: acc.email,
+        userDisplayName: acc.displayName,
+        subject: area,
+        year: paper.year,
+        month: paper.month,
+        score,
+        totalQuestions: paper.totalQuestions,
+        ratingPercentage,
+        passedArea: ratingPercentage >= 50.0,
+        timeSpentSeconds: Math.max(3600, acc.paceSeconds[area] - cycleIndex * 480),
+        timerMode,
+        // Areas are sat on consecutive evenings inside a cycle, so the per-subject
+        // order still matches the cycle order the pairing relies on.
+        completedAt: daysAgoAt(cycle.daysAgo - areaIndex, 20, 30),
+      } satisfies CloudExamAttempt;
+    })
+  )
 );
 
 /** Ids of the seeded profiles, for any caller that needs to tell them apart. */
