@@ -37,6 +37,7 @@ import {
   idbLoadCanvas,
 } from '../utils/scratchpadStorage';
 import { Scratchpad } from './Scratchpad';
+import { SlateStudio } from './SlateStudio';
 import { SUBJECT_CONFIGS, SubjectArea } from '../types/exam';
 
 interface ScratchpadHubProps {
@@ -61,6 +62,27 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
   const [exportMenuPadId, setExportMenuPadId] = useState<string | null>(null);
   const [padToDelete, setPadToDelete] = useState<ScratchpadMetadata | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  /**
+   * Which notebook engine the hub is showing.
+   *  • 'v1' — the legacy Inkpad engine bundled at /inkpad.html (same-origin,
+   *           listed by this hub, works offline, no account needed beyond CELE).
+   *  • 'v2' — SLATE, embedded from its own deployment. Its library is separate
+   *           from the V1 sheets listed here, so the hub's grid is not shown.
+   */
+  const [padEngine, setPadEngine] = useState<'v1' | 'v2'>(() => {
+    try {
+      return localStorage.getItem('ce_scratchpad_engine') === 'v2' ? 'v2' : 'v1';
+    } catch {
+      return 'v1';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ce_scratchpad_engine', padEngine);
+    } catch {}
+  }, [padEngine]);
 
   const { user, profile, openAuthModal } = useAuth();
   const activeUser = profile || user;
@@ -308,22 +330,45 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                600+ DPI Precision Engine
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center space-x-1">
-                <Tablet className="w-3 h-3" />
-                <span>Cross-Device & Tablet Ready</span>
-              </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {padEngine === 'v1' ? (
+                <>
+                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                    600+ DPI Precision Engine
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center space-x-1">
+                    <Tablet className="w-3 h-3" />
+                    <span>Cross-Device & Tablet Ready</span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    SLATE V2 Engine
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-xs font-mono bg-sky-500/10 text-sky-300 border border-sky-500/30 flex items-center space-x-1">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Pressure Ink · Endless Pages</span>
+                  </span>
+                </>
+              )}
             </div>
             <h1 className="font-arnie text-2xl sm:text-3xl font-bold text-white tracking-wide flex items-center space-x-3">
-              <PenTool className="w-8 h-8 text-cyan-400" />
-              <span>Scratchpad Hub & Rough Sheets</span>
+              {padEngine === 'v1' ? (
+                <PenTool className="w-8 h-8 text-cyan-400" />
+              ) : (
+                <Layers className="w-8 h-8 text-indigo-400" />
+              )}
+              <span>
+                {padEngine === 'v1'
+                  ? 'Scratchpad Hub & Rough Sheets'
+                  : 'SLATE Studio — Scratchpad V2'}
+              </span>
             </h1>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons — V1 (Inkpad) only; SLATE carries its own toolbar */}
+          {padEngine === 'v1' && (
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               type="button"
@@ -372,10 +417,73 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
               <span>Open Inkpad Studio</span>
             </button>
           </div>
+          )}
+
+          {/* V2 has no hero actions: the version switcher below returns to V1 and
+              the SlateStudio frame toolbar carries its own reload / new-tab /
+              focus controls. Keeping them here would duplicate those controls. */}
         </div>
 
-        {/* Guest / Visitor Auth Banner */}
-        {!activeUser && (
+        {/* Engine Version Switcher — V1 Inkpad ⇄ V2 SLATE */}
+        <div className="relative z-10 mt-6 pt-5 border-t border-slate-800/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div
+              className="inline-flex w-full sm:w-auto items-center justify-center p-1 rounded-2xl bg-slate-950/70 border border-slate-800 backdrop-blur-sm"
+              role="tablist"
+              aria-label="Scratchpad engine version"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={padEngine === 'v1'}
+                onClick={() => setPadEngine('v1')}
+                className={`flex flex-1 sm:flex-none items-center justify-center space-x-2 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  padEngine === 'v1'
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/25'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/70'
+                }`}
+                title="V1 — Inkpad engine bundled with this app (works offline)"
+              >
+                <PenTool className="w-3.5 h-3.5 shrink-0" />
+                <span>V1 · Inkpad</span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={padEngine === 'v2'}
+                onClick={() => setPadEngine('v2')}
+                className={`flex flex-1 sm:flex-none items-center justify-center space-x-2 px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  padEngine === 'v2'
+                    ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/25'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/70'
+                }`}
+                title="V2 — SLATE Studio, the newer notebook engine (own library & cloud sync)"
+              >
+                <Layers className="w-3.5 h-3.5 shrink-0" />
+                <span>V2 · SLATE</span>
+                <span
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold shrink-0 ${
+                    padEngine === 'v2'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                  }`}
+                >
+                  NEW
+                </span>
+              </button>
+            </div>
+
+            <p className="text-[10px] text-slate-400 leading-relaxed max-w-md sm:text-right">
+              {padEngine === 'v1'
+                ? 'V1 keeps every rough sheet inside this app — offline-ready and listed below.'
+                : 'V2 runs the newer SLATE engine with its own notebook library and cloud sync.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Guest / Visitor Auth Banner — V1 only, SLATE handles its own sign-in */}
+        {!activeUser && padEngine === 'v1' && (
           <div className="mt-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
             <div className="flex items-center space-x-2.5">
               <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
@@ -407,6 +515,12 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
         )}
       </div>
 
+      {/* V2 — SLATE Studio (embedded on its own origin, own notebook library) */}
+      {padEngine === 'v2' && <SlateStudio onSwitchToV1={() => setPadEngine('v1')} />}
+
+      {/* V1 — Inkpad notebook library (same-origin sheets listed below) */}
+      {padEngine === 'v1' && (
+        <>
       {/* Search & Tabs Filter Toolbar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/80 p-3 rounded-2xl border border-slate-800 backdrop-blur-md">
         {/* Tabs */}
@@ -663,6 +777,8 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
             );
           })}
         </div>
+      )}
+        </>
       )}
 
       {/* Modal: Create New Scratchpad */}
