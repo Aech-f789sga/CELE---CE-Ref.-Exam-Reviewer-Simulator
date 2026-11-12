@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from '../context/ThemeContext';
+import { SLATE_URL, NotebookEngine, engineLabel } from '../utils/notebookEngines';
 import {
   Minus,
   Square,
@@ -10,6 +11,7 @@ import {
   Palette,
   GripHorizontal,
   PenTool,
+  Layers,
 } from 'lucide-react';
 
 export interface ScratchpadProps {
@@ -23,6 +25,13 @@ export interface ScratchpadProps {
   documentId?: string;
   onSaveBundle?: () => void;
   initialMode?: 'library' | 'editor';
+  /** Notebook engine to host. Defaults to the bundled V1 Inkpad. */
+  engine?: NotebookEngine;
+  /**
+   * When supplied, a compact V1/V2 switcher is rendered in the titlebar so the
+   * engine can be changed without closing the pad mid-exam.
+   */
+  onEngineChange?: (engine: NotebookEngine) => void;
 }
 
 export const Scratchpad: React.FC<ScratchpadProps> = ({
@@ -35,9 +44,15 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
   title,
   documentId,
   onSaveBundle,
+  engine = 'v1',
+  onEngineChange,
 }) => {
   const { themeConfig } = useTheme();
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  const isSlate = engine === 'v2';
+  const frameSrc = isSlate ? SLATE_URL : '/inkpad.html';
+  const frameTitle = isSlate ? 'SLATE — Scratchpad V2' : 'Inkpad Handwritten Notes';
 
   // Adapt to Theme Toggle
   const [adaptToTheme, setAdaptToTheme] = useState<boolean>(() => {
@@ -96,6 +111,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
 
   const sendThemeToIframe = useCallback(
     (adapt: boolean) => {
+      // SLATE is a separate app that does not implement the INKPAD_* bridge, so
+      // there is no theme channel to push into it.
+      if (isSlate) return;
       if (!iframeRef.current || !iframeRef.current.contentWindow) return;
       const themeVars = {
         '--app-bg-page': themeConfig.bgPage,
@@ -114,10 +132,11 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         '*'
       );
     },
-    [themeConfig]
+    [themeConfig, isSlate]
   );
 
   const sendOpenNotebookToIframe = useCallback(() => {
+    if (isSlate) return;
     if (!iframeRef.current || !iframeRef.current.contentWindow) return;
     if (documentId) {
       iframeRef.current.contentWindow.postMessage(
@@ -129,7 +148,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         '*'
       );
     }
-  }, [documentId, title]);
+  }, [documentId, title, isSlate]);
 
   // Sync theme when iframe loads or themeConfig changes
   useEffect(() => {
@@ -294,14 +313,14 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
           style={{
-            backgroundColor: adaptToTheme ? themeConfig.accent : '#5b8cff',
+            backgroundColor: isSlate ? '#6366f1' : adaptToTheme ? themeConfig.accent : '#5b8cff',
             color: '#08050e',
           }}
         >
-          <PenTool className="w-3.5 h-3.5" />
+          {isSlate ? <Layers className="w-3.5 h-3.5" /> : <PenTool className="w-3.5 h-3.5" />}
         </div>
         <span className="text-xs font-bold text-white pr-1">
-          {title || 'Inkpad Scratchpad'} (Minimized)
+          {title || `${engineLabel(engine)} Scratchpad`} (Minimized)
         </span>
         <button
           type="button"
@@ -367,40 +386,83 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         }}
         onPointerDown={handleDragPointerDown}
       >
-        {/* Left: Drag grip & Title */}
-        <div className="flex items-center gap-2 min-w-0 pointer-events-none">
+        {/* Left: Drag grip, engine badge & Title */}
+        <div className="flex items-center gap-2 min-w-0 flex-1 pointer-events-none">
           {isWindowed && <GripHorizontal className="w-4 h-4 text-slate-400 shrink-0" />}
           <div
             className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0"
             style={{
-              backgroundColor: adaptToTheme ? themeConfig.accent : '#5b8cff',
+              backgroundColor: isSlate ? '#6366f1' : adaptToTheme ? themeConfig.accent : '#5b8cff',
               color: '#08050e',
             }}
           >
-            <PenTool className="w-3 h-3" />
+            {isSlate ? <Layers className="w-3 h-3" /> : <PenTool className="w-3 h-3" />}
           </div>
-          <span className="text-xs font-bold text-white truncate max-w-[200px] sm:max-w-[280px]">
-            {title || 'Inkpad – Handwritten Notes'}
+          <span className="text-xs font-bold text-white truncate min-w-0">
+            {title || (isSlate ? 'SLATE – Handwritten Notes' : 'Inkpad – Handwritten Notes')}
           </span>
+
+          {/* Engine switcher — only when the host wants to expose it */}
+          {onEngineChange && (
+            <div
+              className="flex items-center p-0.5 rounded-lg border border-white/15 bg-black/40 shrink-0 pointer-events-auto"
+              onPointerDown={(e) => e.stopPropagation()}
+              role="tablist"
+              aria-label="Scratchpad engine"
+            >
+              {(['v1', 'v2'] as NotebookEngine[]).map((id) => {
+                const active = engine === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => onEngineChange(id)}
+                    className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold font-mono uppercase transition-colors cursor-pointer ${
+                      active
+                        ? id === 'v2'
+                          ? 'bg-indigo-500 text-white'
+                          : 'bg-cyan-500 text-slate-950'
+                        : 'text-slate-400 hover:text-white hover:bg-white/10'
+                    }`}
+                    title={
+                      id === 'v1'
+                        ? 'Use Inkpad (V1) — sheets saved with this exam, works offline'
+                        : 'Use SLATE (V2) — separate notebook library with its own cloud sync'
+                    }
+                  >
+                    {id}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1.5 shrink-0" onPointerDown={(e) => e.stopPropagation()}>
-          {/* Adapt to Theme Toggle */}
-          <button
-            type="button"
-            onClick={handleToggleAdapt}
-            className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition-all cursor-pointer mr-1"
-            style={{
-              backgroundColor: adaptToTheme ? 'rgba(91, 140, 255, 0.2)' : 'transparent',
-              borderColor: adaptToTheme ? (themeConfig.accent || '#5b8cff') : 'rgba(255, 255, 255, 0.2)',
-              color: adaptToTheme ? '#ffffff' : '#9a9aa0',
-            }}
-            title="Toggle whether Inkpad adapts to the active app theme or stays native"
-          >
-            <Palette className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{adaptToTheme ? 'Theme: Adaptive' : 'Theme: Native'}</span>
-          </button>
+          {/* Adapt to Theme Toggle — V1 only, SLATE cannot receive the theme vars */}
+          {!isSlate && (
+            <button
+              type="button"
+              onClick={handleToggleAdapt}
+              className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition-all cursor-pointer mr-1"
+              style={{
+                backgroundColor: adaptToTheme ? 'rgba(91, 140, 255, 0.2)' : 'transparent',
+                borderColor: adaptToTheme ? (themeConfig.accent || '#5b8cff') : 'rgba(255, 255, 255, 0.2)',
+                color: adaptToTheme ? '#ffffff' : '#9a9aa0',
+              }}
+              title="Toggle whether Inkpad adapts to the active app theme or stays native"
+            >
+              <Palette className="w-3.5 h-3.5" />
+              {/* The docked column is only ~370px wide, so the label is dropped
+                  there — the tooltip and accent border carry the meaning. */}
+              <span className={isDocked ? 'hidden' : 'hidden sm:inline'}>
+                {adaptToTheme ? 'Theme: Adaptive' : 'Theme: Native'}
+              </span>
+            </button>
+          )}
 
           {/* Minimize */}
           <button
@@ -448,20 +510,24 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({
         </div>
       </div>
 
-      {/* Main Body: Pristine Inkpad HTML via iFrame */}
+      {/* Main Body: the active notebook engine in an iFrame */}
       <div className="flex-1 w-full h-full relative overflow-hidden bg-black/10">
         <iframe
+          key={engine}
           ref={iframeRef}
-          src="/inkpad.html"
+          src={frameSrc}
           className="w-full h-full border-0 block"
           style={{
             pointerEvents: isDragging || isResizing ? 'none' : 'auto',
           }}
+          allow={isSlate ? 'clipboard-read; clipboard-write; fullscreen; download' : undefined}
+          allowFullScreen={isSlate}
+          referrerPolicy={isSlate ? 'strict-origin-when-cross-origin' : undefined}
           onLoad={() => {
             sendThemeToIframe(adaptToTheme);
             sendOpenNotebookToIframe();
           }}
-          title="Inkpad Handwritten Notes"
+          title={frameTitle}
         />
       </div>
 

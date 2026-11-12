@@ -37,6 +37,7 @@ import {
   Eye,
   ThumbsUp,
   ThumbsDown,
+  Layers,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
@@ -44,6 +45,7 @@ import { MathView } from './MathView';
 import { deletePausedSession, getExamStorageBase } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
 import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
+import { NotebookEngine, loadEngine, saveEngine } from '../utils/notebookEngines';
 
 interface ExamEngineProps {
   subject: SubjectArea;
@@ -97,7 +99,20 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const [showSolutionForCurrent, setShowSolutionForCurrent] = useState(false);
   const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
   const [isScratchpadDocked, setIsScratchpadDocked] = useState(false);
+  /**
+   * Notebook engine for rough work. Shares the app-wide preference with the
+   * Scratchpad Hub, so the engine picked there is pre-selected here.
+   */
+  const [scratchpadEngine, setScratchpadEngine] = useState<NotebookEngine>(() => loadEngine());
   const [showPacingDetails, setShowPacingDetails] = useState(false);
+
+  const handleScratchpadEngineChange = (next: NotebookEngine) => {
+    setScratchpadEngine(next);
+    saveEngine(next);
+    // SLATE needs real width for its library rail; the docked column is too
+    // narrow for it, so open it as a floating window instead.
+    if (next === 'v2' && isScratchpadDocked) setIsScratchpadDocked(false);
+  };
 
   const subjectConfig = SUBJECT_CONFIGS[subject];
   const examStorageBase = getExamStorageBase(subject, year, month, source);
@@ -469,6 +484,42 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
               </span>
             )}
           </button>
+
+          {/* Scratchpad engine selector — V1 Inkpad vs V2 SLATE */}
+          <div
+            className="flex items-center p-0.5 rounded-xl bg-slate-950/70 border border-slate-700 shadow-sm"
+            role="tablist"
+            aria-label="Scratchpad engine"
+            title="Choose which notebook engine the exam scratchpad uses"
+          >
+            {(['v1', 'v2'] as NotebookEngine[]).map((id) => {
+              const active = scratchpadEngine === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => handleScratchpadEngineChange(id)}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-colors cursor-pointer ${
+                    active
+                      ? id === 'v2'
+                        ? 'bg-indigo-500 text-white shadow-sm'
+                        : 'bg-cyan-500 text-slate-950 shadow-sm'
+                      : 'text-slate-400 hover:text-white hover:bg-white/10'
+                  }`}
+                  title={
+                    id === 'v1'
+                      ? 'V1 · Inkpad — sheets tied to this exam, works offline'
+                      : 'V2 · SLATE — newer engine, own notebook library and cloud sync'
+                  }
+                >
+                  {id === 'v2' ? <Layers className="w-3 h-3" /> : <PenTool className="w-3 h-3" />}
+                  <span>{id}</span>
+                </button>
+              );
+            })}
+          </div>
 
           {isPauseEligible && (
             <button
@@ -859,6 +910,8 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
               storageKeyPrefix={examStoragePrefix}
               title={`${subject} ${month} ${year} Exam Rough Sheets`}
               documentId={examStorageBase}
+              engine={scratchpadEngine}
+              onEngineChange={handleScratchpadEngineChange}
             />
           </div>
         )}
@@ -1040,6 +1093,8 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           storageKeyPrefix={examStoragePrefix}
           title={`${subject} ${month} ${year} Exam Rough Sheets`}
           documentId={examStorageBase}
+          engine={scratchpadEngine}
+          onEngineChange={handleScratchpadEngineChange}
         />
       )}
 
@@ -1048,11 +1103,26 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
         <button
           type="button"
           onClick={() => setIsScratchpadOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center space-x-2 px-4 py-2.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-2xl shadow-cyan-500/30 border border-cyan-300 transition-all hover:scale-105 cursor-pointer group"
-          title="Open Scratchpad for rough calculations and notes"
+          className={`fixed bottom-6 right-6 z-40 flex items-center space-x-2 px-4 py-2.5 rounded-full font-bold text-xs shadow-2xl border transition-all hover:scale-105 cursor-pointer group ${
+            scratchpadEngine === 'v2'
+              ? 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-indigo-500/30 border-indigo-300'
+              : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-cyan-500/30 border-cyan-300'
+          }`}
+          title={`Open the ${scratchpadEngine === 'v2' ? 'SLATE (V2)' : 'Inkpad (V1)'} scratchpad for rough calculations and notes`}
         >
-          <PenTool className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          {scratchpadEngine === 'v2' ? (
+            <Layers className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          ) : (
+            <PenTool className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          )}
           <span>Scratchpad</span>
+          <span
+            className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold uppercase ${
+              scratchpadEngine === 'v2' ? 'bg-white/20 text-white' : 'bg-slate-950/20 text-slate-900'
+            }`}
+          >
+            {scratchpadEngine === 'v2' ? 'V2' : 'V1'}
+          </span>
         </button>
       )}
 

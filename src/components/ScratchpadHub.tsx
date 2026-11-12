@@ -38,6 +38,7 @@ import {
 } from '../utils/scratchpadStorage';
 import { Scratchpad } from './Scratchpad';
 import { SlateStudio } from './SlateStudio';
+import { NotebookEngine, loadEngine, saveEngine } from '../utils/notebookEngines';
 import { SUBJECT_CONFIGS, SubjectArea } from '../types/exam';
 
 interface ScratchpadHubProps {
@@ -69,19 +70,14 @@ export const ScratchpadHub: React.FC<ScratchpadHubProps> = ({
    *           listed by this hub, works offline, no account needed beyond CELE).
    *  • 'v2' — SLATE, embedded from its own deployment. Its library is separate
    *           from the V1 sheets listed here, so the hub's grid is not shown.
+   *
+   * The preference is shared with the exam scratchpad, so choosing V2 here also
+   * pre-selects V2 mid-exam.
    */
-  const [padEngine, setPadEngine] = useState<'v1' | 'v2'>(() => {
-    try {
-      return localStorage.getItem('ce_scratchpad_engine') === 'v2' ? 'v2' : 'v1';
-    } catch {
-      return 'v1';
-    }
-  });
+  const [padEngine, setPadEngine] = useState<NotebookEngine>(() => loadEngine());
 
   useEffect(() => {
-    try {
-      localStorage.setItem('ce_scratchpad_engine', padEngine);
-    } catch {}
+    saveEngine(padEngine);
   }, [padEngine]);
 
   const { user, profile, openAuthModal } = useAuth();

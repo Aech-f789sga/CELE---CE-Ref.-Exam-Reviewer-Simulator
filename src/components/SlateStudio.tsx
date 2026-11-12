@@ -15,6 +15,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { SLATE_URL } from '../utils/notebookEngines';
 
 /**
  * SLATE — Scratchpad V2
@@ -31,7 +32,7 @@ import { useTheme } from '../context/ThemeContext';
  *  • Upstream fixes land the moment SLATE is redeployed — no copy to re-sync.
  */
 
-export const SLATE_URL = 'https://slate-omega-henna.vercel.app/';
+export { SLATE_URL };
 
 interface SlateStudioProps {
   /** Optional callback so the hub can keep the version switcher in sync. */
