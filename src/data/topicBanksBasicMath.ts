@@ -72,7 +72,7 @@ function q(
   };
 }
 
-export const BM_ALGEBRA_PENDING = [25, 27, 42, 52];
+export const BM_ALGEBRA_PENDING = [42, 52];
 
 export const BM_ALGEBRA: TopicQuestion[] = [
   q(2, 'The most populous metropolitan region in the United States is New York City, although it is only the sixth most populous metropolis in the world. Tokyo is the most populous metropolitan region. Mexico City is the fifth most populous metropolis in the world. Mexico City\u2019s population is 0.03 million more than New York\u2019s, and Tokyo\u2019s is twice that of New York, decreased by 2.19 million. Write the sum of the populations of these three metropolitan regions as an algebraic expression. Let x be the population of New York (in millions).',
@@ -181,6 +181,12 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['25.3', '32.5', '35.2', '23.5'], 6),
   q(73, 'If a task is learned at a performance level $P_0$, then after a time interval $t$ the performance level $P$ satisfies\n\n$$\\log P=\\log P_0-c\\log(t+1)$$\n\nwhere $c$ is a constant that depends on the type of task and $t$ is measured in months. If your score on a history test is 90, what score would you expect to get on a similar test after a year? (Assume that $c=0.2$.)',
     ['55', '44', '54', '45'], 6),
+  q(25, 'A first number is 4 less than a second number. Four times the first number is 6 more than twice the second. Find the second number.',
+    ['7', '5', '9', '11'], 2),
+  q(27, 'Lynn Pike, a pharmacist, needs 70 liters of a 50% alcohol solution. She has available a 30% alcohol solution and an 80% alcohol solution. How many liters of 80% solution should she mix to obtain 70 liters of a 50% alcohol solution?',
+    ['28', '26', '22', '25'], 2),
+  q(28, 'A manufacturing company recently purchased $\\$3000$ worth of new equipment to offer new personalized stationery to its customers. The cost of producing a package of personalized stationery is $\\$3.00$, and it is sold for $\\$5.50$. Find the number of packages that must be sold for the company to break even.',
+    ['1100', '1200', '1300', '1000'], 2),
   q(26, 'Two cars leave Indianapolis, one traveling east and the other west. After 3 hours, they are 297 miles apart. If one car is traveling 5 mph faster than the other, what is the speed of the faster car?',
     ['52 mph', '25 mph', '55 mph', '22 mph'], 2),
 ];
