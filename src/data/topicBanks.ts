@@ -28,6 +28,7 @@
  */
 import type { Question } from '../types/exam';
 import { BM_ALGEBRA } from './topicBanksBasicMath';
+import { CAL_DIFF } from './topicBanksCalculus';
 
 export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics';
 
@@ -74,7 +75,7 @@ export interface TopicQuestion extends Question {
  * The bank. Each topic lives in its own module so it can be transcribed,
  * reviewed and committed independently; this array is the assembly point.
  */
-export const TOPIC_QUESTIONS: TopicQuestion[] = [...BM_ALGEBRA];
+export const TOPIC_QUESTIONS: TopicQuestion[] = [...BM_ALGEBRA, ...CAL_DIFF];
 
 /** How many items each topic currently holds. */
 export function topicCount(topicId: string): number {
