@@ -1,0 +1,79 @@
+/**
+ * Access control for the "By topics" exam type.
+ *
+ * Default is **locked**: the mode is visible to the administrator and hidden
+ * from everyone else. The admin can flip it open from the admin panel, and the
+ * flag lives in Firestore rather than localStorage so one switch reaches every
+ * device instead of only the browser it was flipped in.
+ *
+ * Storage is `app_config/topic_exams`, a document the rules already cover:
+ * `allow read: if true` (the client has to know whether to show the entry
+ * *before* anyone signs in) and `allow write: if isAdmin()`. So the client can
+ * be trusted to *read* the flag but never to assert it — a tampered client
+ * cannot unlock the mode for itself, it can only lie to itself about a value
+ * that grants it nothing but UI.
+ *
+ * That last point is the design constraint worth stating plainly: this gates
+ * *visibility*, not content. The topic questions ship in the bundle, so a
+ * determined user can read them regardless. If the questions ever need to be
+ * genuinely secret, they have to move behind a rule-gated read — which is a
+ * different change, and this module's `readTopicLock()` is where that would
+ * start.
+ */
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../services/firebase';
+
+const COLLECTION = 'app_config';
+const DOC_ID = 'topic_exams';
+
+export interface TopicLock {
+  /** True when everyone may open the mode. */
+  unlocked: boolean;
+  /** Where the value came from, so the UI can be honest about staleness. */
+  source: 'firestore' | 'fallback';
+}
+
+let cache: TopicLock | null = null;
+let inflight: Promise<TopicLock> | null = null;
+
+/** Locked unless the project says otherwise. */
+const LOCKED: TopicLock = { unlocked: false, source: 'fallback' };
+
+/**
+ * Read the flag. Cached after the first successful read; failures fall back to
+ * *locked*, because a network error must never be the thing that opens a
+ * restricted mode.
+ */
+export async function readTopicLock(force = false): Promise<TopicLock> {
+  if (!force && cache) return cache;
+  if (inflight) return inflight;
+  inflight = (async () => {
+    try {
+      const snap = await getDoc(doc(db, COLLECTION, DOC_ID));
+      const data = snap.data() as { unlocked?: unknown } | undefined;
+      const unlocked = data?.unlocked === true;
+      cache = { unlocked, source: 'firestore' };
+    } catch {
+      cache = cache ?? LOCKED;
+    } finally {
+      inflight = null;
+    }
+    return cache!;
+  })();
+  return inflight;
+}
+
+/**
+ * Admin only. Authorisation lives in the rules (`allow write: if isAdmin()`),
+ * not here — the caller already knows whether the signed-in user is the admin
+ * via `useAuth()`, and a client-side check would be decoration.
+ */
+export async function setTopicUnlocked(unlocked: boolean): Promise<void> {
+  await setDoc(doc(db, COLLECTION, DOC_ID), { unlocked }, { merge: true });
+  cache = { unlocked, source: 'firestore' };
+}
+
+/** Drop the cache so the next read hits the network. */
+export function forgetTopicLock(): void {
+  cache = null;
+}
