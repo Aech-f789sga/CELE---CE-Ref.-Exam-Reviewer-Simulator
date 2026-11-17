@@ -263,6 +263,23 @@ function MainApp() {
     setIsExamFinished(false);
   };
 
+  /**
+   * By topics: the paper is already drawn, so there is no sitting to look up.
+   * Same guards as a normal start — an account is still required for scoring
+   * and for the leaderboard to stay meaningful.
+   */
+  const handleStartTopicExam = (questions: import('./data/topicBanks').TopicQuestion[]) => {
+    if (!activeUser) {
+      openAuthModal('Please sign in or create an account first to start the examination.');
+      return;
+    }
+    setResumedSession(null);
+    setExamMode('interactive');
+    setActiveQuestions(questions);
+    setIsExamRunning(true);
+    setIsExamFinished(false);
+  };
+
   const handleResumeExam = (session: PausedExamSession) => {
     if (!activeUser) {
       openAuthModal('Please sign in or create an account first to resume your exam session.');
@@ -598,6 +615,7 @@ function MainApp() {
 
               {currentTab === 'setup' && (
                 <SubjectSelector
+                  onStartTopicExam={handleStartTopicExam}
                   selectedSubject={selectedSubject}
                   onSubjectChange={handleSubjectChange}
                   selectedSource={selectedSource}

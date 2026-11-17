@@ -43,6 +43,7 @@ import {
   Heart,
 } from 'lucide-react';
 import { Scene3D } from './Scene3D';
+import { TopicExamModal } from './TopicExamModal';
 import { TerrariumOrb3D } from './TerrariumOrb3D';
 import { Matilda3D } from './Matilda3D';
 import { ParticleSystem3D } from './ParticleSystem3D';
@@ -74,6 +75,8 @@ interface SubjectSelectorProps {
   examMode: ExamMode;
   onExamModeChange: (mode: ExamMode) => void;
   onStartExam: () => void;
+  /** Draw a random paper from the chosen topics (By topics mode). */
+  onStartTopicExam?: (questions: import('../data/topicBanks').TopicQuestion[]) => void;
   onResumeExam: (session: PausedExamSession) => void;
   onNavigateToFlashcards?: () => void;
   onOpenTour?: () => void;
@@ -96,12 +99,14 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   examMode,
   onExamModeChange,
   onStartExam,
+  onStartTopicExam,
   onResumeExam,
   onNavigateToFlashcards,
   onOpenTour,
   onOpenDonation,
 }) => {
   const [showCustomTimeInput, setShowCustomTimeInput] = useState(false);
+  const [topicOpen, setTopicOpen] = useState(false);
   const [pausedSessionsList, setPausedSessionsList] = useState<PausedExamSession[]>(() => getAllPausedSessions());
 
   useEffect(() => {
@@ -250,6 +255,27 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             )}
           </div>
         </div>
+
+        {/* By topics — the third exam type, sits alongside the reference source */}
+        {onStartTopicExam && (
+          <button
+            type="button"
+            data-tour="by-topics"
+            onClick={() => setTopicOpen(true)}
+            className="w-full flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/50 hover:border-amber-500/50 hover:bg-amber-500/5 p-3.5 text-left transition-all group"
+          >
+            <span className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/40">
+              <Layers className="w-4 h-4 text-amber-400" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-xs font-bold text-white">By topics</span>
+              <span className="block text-[11px] text-slate-400">
+                Drill Algebra, Calculus or Statics only — random items from the topics you pick
+              </span>
+            </span>
+            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 transition-colors" />
+          </button>
+        )}
 
         {/* Reference Source Toggle */}
         <div data-tour="reference-source" className="rounded-xl border border-slate-800 bg-slate-950/50 p-3.5 space-y-2.5">
@@ -1017,6 +1043,16 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
+      )}
+
+      {topicOpen && (
+        <TopicExamModal
+          onClose={() => setTopicOpen(false)}
+          onStart={(qs) => {
+            setTopicOpen(false);
+            onStartTopicExam?.(qs);
+          }}
+        />
       )}
 
       {/* In-App Discard Confirmation Modal */}
