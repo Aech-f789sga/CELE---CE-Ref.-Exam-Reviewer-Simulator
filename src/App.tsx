@@ -27,6 +27,7 @@ import {
 } from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { SubjectSelector } from './components/SubjectSelector';
+import { UpdatePrompt } from './components/UpdatePrompt';
 import { ExamEngine } from './components/ExamEngine';
 import { ExamResults } from './components/ExamResults';
 import { PerformanceReview } from './components/PerformanceReview';
@@ -513,6 +514,9 @@ function MainApp() {
           onOpenTour={() => setIsTourOpen(true)}
           onOpenContactAdmin={() => handleOpenContactAdmin('message')}
         />
+
+        {/* Offers the new build when the service worker has one waiting */}
+        <UpdatePrompt />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           {/* VIEW 1: Active Exam Engine */}
