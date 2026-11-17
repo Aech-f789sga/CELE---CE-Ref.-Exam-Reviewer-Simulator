@@ -70,7 +70,7 @@ function q(
   };
 }
 
-export const BM_ALGEBRA_PENDING = [1, 17, 18, 25, 27, 42];
+export const BM_ALGEBRA_PENDING = [1, 17, 18, 25, 27, 42, 52];
 
 export const BM_ALGEBRA: TopicQuestion[] = [
   q(2, 'The most populous metropolitan region in the United States is New York City, although it is only the sixth most populous metropolis in the world. Tokyo is the most populous metropolitan region. Mexico City is the fifth most populous metropolis in the world. Mexico City\u2019s population is 0.03 million more than New York\u2019s, and Tokyo\u2019s is twice that of New York, decreased by 2.19 million. Write the sum of the populations of these three metropolitan regions as an algebraic expression. Let x be the population of New York (in millions).',
@@ -123,6 +123,36 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['5 hours', '6 hours', '7 hours', '8 hours'], 4),
   q(45, 'Connie can clean her house in 2 hours. If Alvaro helps her, they can clean the house in 1 hour and 15 minutes together. How long would it take Alvaro to clean the house by himself?',
     ['3 hours and 20 minutes', '3 hours and 30 minutes', '2 hours and 20 minutes', '2 hours and 30 minutes'], 4),
+  q(48, 'An installer of underground irrigation systems wants to cut a 20-foot length of plastic tubing into two pieces. The longer piece is to be 2 feet longer than twice the shorter piece. Find the length of the longer piece.',
+    ['10', '14', '16', '18'], 5),
+  q(49, 'Tom has 150 feet of fencing to enclose a rectangular garden. If the length is to be 5 feet less than 3 times the width, find the area of the garden.',
+    ['1200', '1000', '1300', '1100'], 5),
+  q(50, 'A man budgets from $300 to $600 for trees and bushes to landscape his yard. After shopping around, he finds that good trees cost $150 and mature bushes cost $75. What is the maximum number of bushes he can afford to buy?',
+    ['8', '9', '10', '7'], 5),
+  q(51, 'One integer is 5 less than another and their product is 84. Find the smaller integer.',
+    ['7', '8', '6', '9'], 5),
+  q(53, 'The formula for the area of a parallelogram is bh. The area of a parallelogram is 200 square centimeters. If its base is twice its height, how long is the base?',
+    ['20', '30', '40', '10'], 5),
+  q(54, 'The volume of a rectangular solid is given by V = lwh. The volume is 210 cubic centimeters. Find the width if its length is 10 centimeters and its height is 1 centimeter longer than twice its width.',
+    ['1 cm', '2 cm', '3 cm', '4 cm'], 5),
+  q(55, 'Steve Detmer takes 1 1/2 times as long to go 72 miles upstream in his boat as he does to return. If the boat cruises at 30 mph in still water, what is the speed of the current?',
+    ['4', '5', '6', '7'], 5),
+  q(56, 'At one bank, a sum of money invested for one year will earn $96 interest. If invested in bonds, the same money would earn $120, because the interest rate paid by the bonds is 1% greater than that paid by the bank. Find the bank\u2019s rate of interest.',
+    ['3%', '5%', '6%', '4%'], 5),
+  q(57, 'The distance traveled in a given time is directly proportional to the speed. If a car travels 70 miles at 30 mph, how far will it travel in the same time at 45 mph?',
+    ['150 mi', '110 mi', '105 mi', '155 mi'], 5),
+  q(58, 'A company president flew 680 miles in a corporate jet but returned in a smaller plane that could fly only half as fast. If the total travel time was 6 hours, find the speed of the smaller plane.',
+    ['170 mph', '160 mph', '150 mph', '140 mph'], 5),
+  q(59, 'A plane drops 575 feet as it flies a horizontal distance of 1 mile. How much altitude will it lose if it flies a horizontal distance of 7 miles?',
+    ['4520 ft', '4025 ft', '2045 ft', '2540 ft'], 5),
+  q(60, 'The intensity of light received from a light source varies inversely with the square of the distance from the source. If the intensity 4 feet from an object is 8 candelas, find the intensity at a distance of 2 feet.',
+    ['23', '34', '32', '43'], 5),
+  q(61, 'The bacteria in a laboratory culture increased from an initial population of 500 to 1,500 in 3 hours. How long will it take for the population to reach 10,000?',
+    ['7.17 hrs', '8.18 hrs', '6.16 hrs', '9.19 hrs'], 5),
+  q(62, 'In 1995, suppose a town named Jackson had a population of 15,500 and was constantly increasing by 10% per year. If this yearly increase continues, predict the city\u2019s population in 2015.',
+    ['114,530', '141,530', '153,140', '135,140'], 5),
+  q(63, 'A large golf country club holds a singles tournament each year. At the start of the tournament there are 512 players. After each round, half the players are eliminated. How many players remain after 6 rounds?',
+    ['6', '4', '8', '10'], 5),
   q(26, 'Two cars leave Indianapolis, one traveling east and the other west. After 3 hours, they are 297 miles apart. If one car is traveling 5 mph faster than the other, what is the speed of the faster car?',
     ['52 mph', '25 mph', '55 mph', '22 mph'], 2),
 ];
