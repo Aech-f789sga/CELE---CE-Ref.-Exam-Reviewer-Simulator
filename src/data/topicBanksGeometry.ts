@@ -15,6 +15,10 @@
  *   - Item 221 prints angle B as "15″" (seconds). That is the degree glyph
  *     mangled, not a real angle: read as $15^\circ$ the item yields the key's
  *     41 cm², read as 15 seconds it has no solution. Transcribed as degrees.
+ *   - Item 262's stem gives "radius of 68 feet" with a 14-foot clearance, but
+ *     all four choices use radius 34 (1156 = 34²) and a centre height of 48,
+ *     i.e. the booklet meant a *diameter* of 68 ft. Stem and choices are both
+ *     transcribed verbatim; the key answers (a), which is consistent with 34.
  */
 import type { TopicQuestion } from './topicBanks';
 import { makeBmItem } from './basicMathItems';
@@ -160,4 +164,16 @@ export const BM_GEOMETRY: TopicQuestion[] = [
     ['3 units', '2 units', '1 unit', '4 units'], 22),
   q(258, 'A semielliptical archway over a one-way road has a height of 10 feet and a width of 40 feet. Your truck has a width of 10 feet and a height of 9 feet. Will your truck clear the opening of the archway?',
     ['The height of the archway 5 feet from the center is approximately 9.86 feet. Because your truck\u2019s height is 9 feet, there is enough room for the truck to clear the archway.', 'The height of the archway 5 feet from the center is approximately 9.68 feet. Because your truck\u2019s height is 9 feet, there is no enough room for the truck to clear the archway.', 'The height of the archway 5 feet from the center is approximately 9.68 feet. Because your truck\u2019s height is 9 feet, there is enough room for the truck to clear the archway.', 'The height of the archway 5 feet from the center is approximately 9.86 feet. Because your truck\u2019s height is 9 feet, there is no enough room for the truck to clear the archway.'], 22),
+  q(259, 'A satellite dish is in the shape of a parabolic surface. Signals coming from a satellite strike the surface of the dish and are reflected to the focus, where the receiver is located. The satellite dish shown has a diameter of 12 feet and a depth of 2 feet. The parabola is positioned in a rectangular coordinate system with its vertex at the origin. The receiver should be placed at the focus $(0,p)$. The value of $p$ is given by the equation $a=1/4p$. How far from the base of the dish should the receiver be placed?',
+    ['4.5', '3.2', '2.1', '5.3'], 23),
+  q(260, 'A parabolic arch supports a roadway as shown. Write the equation of the arch, taking axes as shown. Use your equation to find the vertical distance from the roadway to the arch at a horizontal distance of 50.0 m from the center. The arch spans 224 m and rises 115 m above its springing line.',
+    ['28.9 m', '26.9 m', '24.9 m', '22.9 m'], 23),
+  q(261, 'The path of a particular punt follows the quadratic function: $h(x) = -1/8(x-5)^2 + 50$, where $h(x)$ is the height of the ball in yards and $x$ corresponds to the horizontal distance in yards. Assume $x = 0$ corresponds to midfield (the 50 yard line). For example, $x= -20$ corresponds to the punter’s own 30 yard line, whereas $x = 20$ corresponds to the other team’s 30 yard line. Find the maximum height the ball achieves.',
+    ['40 yards', '50 yards', '45 yards', '35 yards'], 23),
+  q(262, 'The Ferris wheel has a radius of 68 feet. The clearance between the wheel and the ground is 14 feet. The rectangular coordinate system has its origin on the ground directly below the center of the wheel. Use the coordinate system to write the equation of the circular wheel.',
+    ['$x^2+(y-48)^2=1156$', '$x^2+(y+48)^2=1156$', '$(x+48)^2+y^2=1156$', '$(x-48)^2+y^2=1156$'], 23),
+  q(263, 'The shape of the Gateway Arch in St. Louis is approximately a parabola 630 feet high and 630 feet wide. How high is the arch 100 feet from its foundation?',
+    ['373 ft', '337 ft', '333 ft', '377 ft'], 23),
+  q(264, 'The amount of trash in a county landfill is modeled by the function\n\n$$T(x)=150x+32{,}000$$\n\nwhere $x$ is the number of years since 1996 and $T(x)$ is measured in thousands of tons. At what rate is the amount of trash in the landfill increasing per year?',
+    ['150', '100', '105', '155'], 23),
 ];
