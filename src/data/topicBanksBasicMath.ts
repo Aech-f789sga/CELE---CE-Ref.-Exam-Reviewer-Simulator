@@ -14,63 +14,9 @@
  * lesson: do not record a defect until the item has been read at 3–4×.
  */
 import type { TopicQuestion } from './topicBanks';
+import { makeBmItem } from './basicMathItems';
 
-const KEY = [
-  'A', 'B', 'B', 'C', 'A', 'D', 'C', 'C', 'A', 'C',
-  'A', 'C', 'B', 'C', 'D', 'B', 'D', 'A', 'C', 'C',
-  'B', 'A', 'B', 'C', 'D', 'A', 'A', 'B', 'B', 'C',
-  'A', 'B', 'B', 'B', 'A', 'D', 'C', 'B', 'C', 'A',
-  'D', 'B', 'C', 'B', 'A', 'A', 'C', 'B', 'D', 'A',
-  'A', 'A', 'B', 'C', 'C', 'D', 'C', 'A', 'B', 'C',
-  'B', 'A', 'C', 'B', 'B', 'A', 'C', 'B', 'B', 'C',
-  'A', 'D', 'C', 'A', 'B', 'A', 'D', 'D', 'A', 'D',
-  'C', 'D', 'C', 'A', 'D', 'B', 'B', 'C', 'C', 'C',
-  'A', 'D', 'A', 'C', 'D', 'C', 'D', 'C', 'B', 'A',
-  'A', 'A', 'A', 'D', 'A', 'A', 'B', 'C', 'D', 'C',
-  'B', 'C', 'D', 'B', 'B', 'A', 'A', 'B', 'B', 'C',
-  'B', 'B', 'B', 'B', 'B', 'A', 'D', 'B', 'C', 'A',
-  'B', 'B', 'C', 'A', 'D', 'D', 'B', 'A', 'C', 'A',
-  'D', 'B', 'C', 'D', 'A', 'C', 'B', 'D', 'B', 'D',
-  'D', 'A', 'A', 'D', 'B', 'B', 'B', 'C', 'C', 'C',
-  'D', 'C', 'D', 'B', 'C', 'D', 'B', 'C', 'A', 'C',
-  'B', 'A', 'C', 'B', 'D', 'D', 'C', 'A', 'D', 'B',
-  'C', 'A', 'B', 'A', 'D', 'A', 'D', 'C', 'B', 'D',
-  'A', 'A', 'C', 'C', 'A', 'B', 'C', 'D', 'B', 'B',
-  'C', 'B', 'C', 'A', 'A', 'D', 'B', 'C', 'C', 'A',
-  'A', 'B', 'D', 'B', 'C', 'A', 'A', 'C', 'B', 'A',
-  'A', 'C', 'D', 'B', 'B', 'C', 'B', 'A', 'D', 'B',
-  'A', 'B', 'D', 'D', 'C', 'B', 'D', 'B', 'B', 'A',
-  'B', 'C', 'D', 'B', 'C', 'D', 'A', 'B', 'A', 'B',
-  'C', 'B', 'B', 'C', 'A', 'A', 'A', 'C', 'A', 'D',
-  'B', 'A', 'B', 'A', 'C', 'D', 'C', 'D', 'C',
-];
-
-function q(
-  number: number,
-  text: string,
-  opts: [string, string, string, string],
-  page: number
-): TopicQuestion {
-  return {
-    id: `bm-alg-${number}`,
-    number,
-    pageNumber: page,
-    subject: 'MSTC',
-    year: 0,
-    month: 'May',
-    category: 'Algebra',
-    text,
-    options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
-    correctAnswer: (KEY[number - 1] ?? 'A') as 'A' | 'B' | 'C' | 'D',
-    referenceSource: 'Gillesania',
-    topicId: 'bm-algebra',
-    solution: {
-      summary: 'Printed key only — this booklet carries no worked solutions.',
-      steps: [],
-      finalAnswer: KEY[number - 1] ?? '',
-    },
-  };
-}
+const q = makeBmItem('bm-algebra', 'Algebra', 'bm-alg');
 
 export const BM_ALGEBRA_PENDING: number[] = [];
 
