@@ -8,6 +8,13 @@
  * Math is LaTeX (`$...$`); ExamEngine typesets text and choices through
  * MathView/KaTeX. Items whose figure is only described in the booklet keep the
  * printed wording, since every quantity needed to solve them is in the stem.
+ *
+ * Two transcription notes:
+ *   - Item 210's choice (c) is printed "b911 ft²" in the booklet — a broken
+ *     glyph, confirmed at 6.5×. It is kept verbatim; the key answers (a).
+ *   - Item 221 prints angle B as "15″" (seconds). That is the degree glyph
+ *     mangled, not a real angle: read as $15^\circ$ the item yields the key's
+ *     41 cm², read as 15 seconds it has no solution. Transcribed as degrees.
  */
 import type { TopicQuestion } from './topicBanks';
 import { makeBmItem } from './basicMathItems';
@@ -71,4 +78,18 @@ export const BM_GEOMETRY: TopicQuestion[] = [
     ['6.63 cm', '6.36 cm', '3.66 cm', '3.36 cm'], 18),
   q(217, 'A circular piece of sheet metal has a diameter of 20 in. The edges are to be cut off to form a rectangle of area $160\\ \\mathrm{in^2}$. What are the dimensions of the rectangle?',
     ['8.9 in by 17.9 in', '9.8 in by 16.3 in', '9.8 in by 17.9 in', '8.9 in by 16.3 in'], 18),
+  q(218, 'The longest drive to the center of a square city from the outskirts is 10 miles. Within the last decade the city has expanded in area by $50\\ \\mathrm{mi^2}$. Assuming the city has always been square in shape, find the corresponding change in the longest drive to the center of the city.',
+    ['2.34 mi', '3.34 mi', '1.34 mi', '4.34 mi'], 18),
+  q(219, 'A farmer owns two square lots of unequal size, together containing $6568\\ \\mathrm{m^2}$. If the lots were contiguous, it would require 356 m of fence to enclose them in a single closure of six sides. Find the dimension of the smallest lot.',
+    ['78', '22', '41', '59'], 19),
+  q(220, 'A circle is tangent to two perpendicular lines. A smaller circle is drawn inside such that it is tangent to the lines and the bigger circle. What is the area of the smaller circle if the bigger circle has an area of $50.4\\ \\mathrm{cm^2}$?',
+    ['1.48 cm\u00b2', '2.48 cm\u00b2', '3.48 cm\u00b2', '4.48 cm\u00b2'], 19),
+  q(221, 'Find the area of triangle ABC, given c = 23 cm, A= $20^\\circ$, and B = $15^\\circ$.',
+    ['41 cm\u00b2', '32 cm\u00b2', '49 cm\u00b2', '38 cm\u00b2'], 19),
+  q(222, 'Three circles with radii 3, 5, and 9 cm are externally tangent. What is the area of the triangle formed by joining their centers?',
+    ['12', '24', '48', '36'], 19),
+  q(223, 'Find the distance $AB$ between the centers of the two rollers in the figure. The roller centred at $A$ has a 23.4 in. diameter and the roller centred at $B$ has a 15.8 in. diameter; both rest on the same level ground, with their points of contact 38.8 in. apart.',
+    ['38.896 in', '38.968 in', '38.886 in', '38.986 in'], 19),
+  q(224, 'Seven cables of equal diameter are contained within a circular conduit, as in the figure. If the inside diameter of the conduit is 25.6 cm, find the cross-sectional area not occupied by the cables.',
+    ['113.48 cm\u00b2', '114.38 cm\u00b2', '141.38 cm\u00b2', '131.48 cm\u00b2'], 19),
 ];
