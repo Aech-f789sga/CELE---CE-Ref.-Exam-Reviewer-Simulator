@@ -5,15 +5,16 @@
  *
  * ## Key status
  *
- * No separate Calculus key was supplied. The Basic Math key's second page
- * carries a block numbered **201–246**, which is almost certainly this paper —
- * Calculus runs ~46 items across its 10 pages, and 201 is not a Basic Math
- * range (Algebra is 1–50, Trigonometry 126–189, Geometry 190–246... which
- * overlaps, so the mapping is not proven). Until that is confirmed these items
- * are marked `keyPending`: they can be practised, and the UI must not score
- * them, because a wrong key is worse than no key.
+ * No separate Calculus key was supplied, and the Basic Math key does not cover
+ * this paper. That key is a single 1–269 run over the Basic Math booklet only
+ * (Algebra 1–125, Trigonometry 126–189, Geometry 190–269 — all now transcribed),
+ * so the "201–246" block noted here earlier was simply part of Geometry, not a
+ * Calculus key. These items therefore stay `keyPending`: they can be practised,
+ * but the UI must not score them, because a wrong key is worse than no key.
  *
- * Items 1–4 are transcribed; the rest of the section is still to come.
+ * Items 1–4 are transcribed; the rest of the section is still to come. Those
+ * four are paraphrased rather than verbatim and should be re-read at 3–4× and
+ * rewritten before the section is extended.
  */
 import type { TopicQuestion } from './topicBanks';
 
