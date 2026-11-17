@@ -29,6 +29,7 @@
 import type { Question } from '../types/exam';
 import { BM_ALGEBRA } from './topicBanksBasicMath';
 import { BM_TRIG } from './topicBanksTrig';
+import { BM_GEOMETRY } from './topicBanksGeometry';
 import { CAL_DIFF } from './topicBanksCalculus';
 
 export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics';
@@ -79,6 +80,7 @@ export interface TopicQuestion extends Question {
 export const TOPIC_QUESTIONS: TopicQuestion[] = [
   ...BM_ALGEBRA,
   ...BM_TRIG,
+  ...BM_GEOMETRY,
   ...CAL_DIFF,
 ];
 
