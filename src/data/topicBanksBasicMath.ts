@@ -8,11 +8,10 @@
  * Math is written as LaTeX (`$...$`) because ExamEngine renders question
  * text and choices through MathView, which typesets it with KaTeX.
  *
- * Items 17 and 18 are **not included**: the scan's fraction and option
- * layout for those three is unreadable at the resolution available (item 1's
- * choices are stacked fractions, 17 and 18 have an option whose value is lost
- * under the watermark). They are listed in `BM_ALGEBRA_PENDING` rather than
- * guessed — a fabricated distractor is worse than a missing item.
+ * Four items are listed in `BM_ALGEBRA_PENDING` rather than guessed: 25 and
+ * 52 each have a blank choice, 27's page ends mid-stem, and 42's stem is cut
+ * off at the section-opener reference. A fabricated distractor would be worse
+ * than a missing item.
  */
 import type { TopicQuestion } from './topicBanks';
 
@@ -73,7 +72,7 @@ function q(
   };
 }
 
-export const BM_ALGEBRA_PENDING = [17, 18, 25, 27, 42, 52];
+export const BM_ALGEBRA_PENDING = [25, 27, 42, 52];
 
 export const BM_ALGEBRA: TopicQuestion[] = [
   q(2, 'The most populous metropolitan region in the United States is New York City, although it is only the sixth most populous metropolis in the world. Tokyo is the most populous metropolitan region. Mexico City is the fifth most populous metropolis in the world. Mexico City\u2019s population is 0.03 million more than New York\u2019s, and Tokyo\u2019s is twice that of New York, decreased by 2.19 million. Write the sum of the populations of these three metropolitan regions as an algebraic expression. Let x be the population of New York (in millions).',
@@ -158,6 +157,10 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['6', '4', '8', '10'], 5),
   q(1, 'A 5-foot section is cut from the end of a rope that is $l$ feet long. If the remaining rope is divided into three equal pieces, find an expression for the length of each of the equal pieces.',
     ['$\\dfrac{l-5}{3}$', '$\\dfrac{l-3}{3}$', '$\\dfrac{l-3}{5}$', '$\\dfrac{l-5}{5}$'], 1),
+  q(17, 'The length of a rectangle is 4 meters longer than twice its width. If the perimeter of the rectangle is 26 meters, find its length.',
+    ['6', '7', '9', '10'], 2),
+  q(18, 'The vertex angle of an isosceles triangle is $56^\circ$. Find the measure of each base angle.',
+    ['$62^\circ$', '$52^\circ$', '$42^\circ$', '$32^\circ$'], 2),
   q(26, 'Two cars leave Indianapolis, one traveling east and the other west. After 3 hours, they are 297 miles apart. If one car is traveling 5 mph faster than the other, what is the speed of the faster car?',
     ['52 mph', '25 mph', '55 mph', '22 mph'], 2),
 ];
