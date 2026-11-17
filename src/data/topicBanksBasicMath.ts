@@ -70,7 +70,7 @@ function q(
   };
 }
 
-export const BM_ALGEBRA_PENDING = [1, 17, 18, 25, 27];
+export const BM_ALGEBRA_PENDING = [1, 17, 18, 25, 27, 42];
 
 export const BM_ALGEBRA: TopicQuestion[] = [
   q(2, 'The most populous metropolitan region in the United States is New York City, although it is only the sixth most populous metropolis in the world. Tokyo is the most populous metropolitan region. Mexico City is the fifth most populous metropolis in the world. Mexico City\u2019s population is 0.03 million more than New York\u2019s, and Tokyo\u2019s is twice that of New York, decreased by 2.19 million. Write the sum of the populations of these three metropolitan regions as an algebraic expression. Let x be the population of New York (in millions).',
@@ -111,6 +111,18 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['100', '120', '130', '140'], 2),
   q(23, 'If the perimeter of an equilateral triangle is less than 15 feet, how long could each side be?',
     ['x > 5', 'x < 5', 'x \u2264 5', 'x \u2265 5'], 2),
+  q(39, 'In a study relating sleep and death rate, the data are modelled by y = ax\u00b2 + bx + c. Which model fits?',
+    ['y = 104.5x\u00b2 \u2212 1501.5x + 6061', 'y = 104.5x\u00b2 \u2212 1510.5x + 6016', 'y = 104.5x\u00b2 \u2212 1501.5x + 6016', 'y = 140.5x\u00b2 \u2212 1501.5x + 6016'], 4),
+  q(40, 'Acme Car rental charges $4 a day plus $0.15 per mile, whereas Interstate charges $20 a day and $0.05 per mile. How many miles must be driven to make the daily cost of an Acme rental a better deal than an Interstate rental?',
+    ['x < 160', 'x > 160', 'x < 116', 'x > 116'], 4),
+  q(41, 'The formula S = C/(1 \u2212 r) describes a product\u2019s selling price S in terms of its cost C and its markup rate r in decimal form. Solve the formula for r.',
+    ['r = (S \u2212 C)/(\u2212S)', 'r = (S \u2212 C)/(\u2212C)', 'r = (C \u2212 S)/(\u2212C)', 'r = (C \u2212 S)/(\u2212S)'], 4),
+  q(43, 'You can design a Web site in 15 hours. Your friend can design the same site in 10 hours. How long will it take to design the Web site if you both work together?',
+    ['4 hours', '5 hours', '6 hours', '3 hours'], 4),
+  q(44, 'You and your friend design a modest site in 4 hours. Your friend is the faster worker. Working alone, you require 6 more hours than she does. How many hours does it take your friend to design a Web site if she works alone?',
+    ['5 hours', '6 hours', '7 hours', '8 hours'], 4),
+  q(45, 'Connie can clean her house in 2 hours. If Alvaro helps her, they can clean the house in 1 hour and 15 minutes together. How long would it take Alvaro to clean the house by himself?',
+    ['3 hours and 20 minutes', '3 hours and 30 minutes', '2 hours and 20 minutes', '2 hours and 30 minutes'], 4),
   q(26, 'Two cars leave Indianapolis, one traveling east and the other west. After 3 hours, they are 297 miles apart. If one car is traveling 5 mph faster than the other, what is the speed of the faster car?',
     ['52 mph', '25 mph', '55 mph', '22 mph'], 2),
 ];
