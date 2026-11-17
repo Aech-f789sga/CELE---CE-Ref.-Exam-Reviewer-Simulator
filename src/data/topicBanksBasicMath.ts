@@ -2,16 +2,16 @@
  * Basic Mathematics — Algebra.
  *
  * Source: Margallo's Buckling Review Center practice set, "Basic Mathematics –
- * Algebra, Trigonometry & Geometry", pages 1–11. Answers from the printed key
- * (items 1–50).
+ * Algebra, Trigonometry & Geometry", pages 1–11, items 1–125. Answers from the
+ * printed key.
  *
  * Math is written as LaTeX (`$...$`) because ExamEngine renders question
  * text and choices through MathView, which typesets it with KaTeX.
  *
- * Four items are listed in `BM_ALGEBRA_PENDING` rather than guessed: 25 and
- * 52 each have a blank choice, 27's page ends mid-stem, and 42's stem is cut
- * off at the section-opener reference. A fabricated distractor would be worse
- * than a missing item.
+ * All 125 items are present. Items 25, 27, 42 and 52 were once believed to be
+ * booklet defects (blank choice, page break mid-stem, stem cut off); every one
+ * of them turned out to be a misread at 2× and is fully legible at 4–5×. The
+ * lesson: do not record a defect until the item has been read at 3–4×.
  */
 import type { TopicQuestion } from './topicBanks';
 
@@ -72,7 +72,7 @@ function q(
   };
 }
 
-export const BM_ALGEBRA_PENDING = [42, 52];
+export const BM_ALGEBRA_PENDING: number[] = [];
 
 export const BM_ALGEBRA: TopicQuestion[] = [
   q(2, 'The most populous metropolitan region in the United States is New York City, although it is only the sixth most populous metropolis in the world. Tokyo is the most populous metropolitan region. Mexico City is the fifth most populous metropolis in the world. Mexico City\u2019s population is 0.03 million more than New York\u2019s, and Tokyo\u2019s is twice that of New York, decreased by 2.19 million. Write the sum of the populations of these three metropolitan regions as an algebraic expression. Let x be the population of New York (in millions).',
@@ -141,6 +141,8 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['8', '9', '10', '7'], 5),
   q(51, 'One integer is 5 less than another and their product is 84. Find the smaller integer.',
     ['7', '8', '6', '9'], 5),
+  q(52, 'Assume that a rectangle has an area of 52 square centimeters and that its length is 1 centimeter more than 3 times its width. Find the perimeter of the rectangle.',
+    ['34', '44', '54', '24'], 5),
   q(53, 'The formula for the area of a parallelogram is bh. The area of a parallelogram is 200 square centimeters. If its base is twice its height, how long is the base?',
     ['20', '30', '40', '10'], 5),
   q(54, 'The volume of a rectangular solid is given by V = lwh. The volume is 210 cubic centimeters. Find the width if its length is 10 centimeters and its height is 1 centimeter longer than twice its width.',
