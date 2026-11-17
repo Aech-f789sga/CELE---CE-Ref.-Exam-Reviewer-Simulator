@@ -38,10 +38,16 @@ const STORAGE_KEY_TEXT_OUTLINE = 'ce_board_text_outline';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * The theme a fresh install starts on, and where "reset to defaults" returns.
+ * Defined once so the two cannot drift apart.
+ */
+export const DEFAULT_THEME_ID: AppThemeId = 'engineering_dark';
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [themeId, setThemeIdState] = useState<AppThemeId>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_THEME) as AppThemeId;
-    return saved && THEME_CONFIGS[saved] ? saved : 'aurora_glass';
+    return saved && THEME_CONFIGS[saved] ? saved : DEFAULT_THEME_ID;
   });
 
   const [fontId, setFontIdState] = useState<FontFamilyId>(() => {
@@ -75,7 +81,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return saved !== null ? saved === 'true' : true; // Default ON so changing themes always guarantees contrast
   });
 
-  const themeConfig = THEME_CONFIGS[themeId] || THEME_CONFIGS.aurora_glass;
+  const themeConfig = THEME_CONFIGS[themeId] || THEME_CONFIGS[DEFAULT_THEME_ID];
 
   const setThemeId = (id: AppThemeId) => {
     setThemeIdState(id);
@@ -137,7 +143,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const resetToDefaults = () => {
-    setThemeId('aurora_glass');
+    setThemeId(DEFAULT_THEME_ID);
     setFontId('arial');
     setFontSizeId('medium');
     setFontScale(100);
