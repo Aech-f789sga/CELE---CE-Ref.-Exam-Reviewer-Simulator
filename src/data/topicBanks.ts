@@ -27,6 +27,7 @@
  * labelling, which the topic hub overrides.
  */
 import type { Question } from '../types/exam';
+import { BM_ALGEBRA } from './topicBanksBasicMath';
 
 export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics';
 
@@ -69,97 +70,11 @@ export interface TopicQuestion extends Question {
   keyPending?: boolean;
 }
 
-const KEY_BASIC_MATH = [
-  'A', 'B', 'B', 'C', 'A', 'D', 'C', 'C', 'A', 'C',
-  'A', 'C', 'B', 'C', 'D', 'B', 'D', 'A', 'C', 'C',
-  'B', 'A', 'B', 'C', 'D', 'A', 'A', 'B', 'B', 'C',
-  'A', 'B', 'B', 'B', 'A', 'D', 'C', 'B', 'C', 'A',
-  'D', 'B', 'C', 'B', 'A', 'A', 'C', 'B', 'D', 'A',
-];
-
-function bm(
-  id: string,
-  number: number,
-  topicId: string,
-  text: string,
-  options: [string, string, string, string],
-  page: number
-): TopicQuestion {
-  return {
-    id,
-    number,
-    pageNumber: page,
-    subject: 'MSTC',
-    year: 0,
-    month: 'May',
-    category: TOPICS.find((t) => t.id === topicId)?.name ?? 'Algebra',
-    text,
-    options: options.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
-    correctAnswer: (KEY_BASIC_MATH[number - 1] ?? 'A') as 'A' | 'B' | 'C' | 'D',
-    referenceSource: 'Gillesania',
-    topicId,
-    solution: {
-      summary: 'Printed key only — this booklet carries no worked solutions.',
-      steps: [],
-      finalAnswer: KEY_BASIC_MATH[number - 1] ?? '',
-    },
-  };
-}
-
 /**
- * The bank. Basic Math Algebra is transcribed from the booklet pages; the
- * remaining topics are being transcribed in the same pass and append here.
+ * The bank. Each topic lives in its own module so it can be transcribed,
+ * reviewed and committed independently; this array is the assembly point.
  */
-export const TOPIC_QUESTIONS: TopicQuestion[] = [
-  bm(
-    'bm-alg-2', 2, 'bm-algebra',
-    'The most populous metropolitan region in the United States is New York City, although it is only the sixth most populous metropolis in the world. Tokyo is the most populous metropolitan region. Mexico City is the fifth most populous metropolis in the world. Mexico City\u2019s population is 0.03 million more than New York\u2019s, and Tokyo\u2019s is twice that of New York, decreased by 2.19 million. Write the sum of the populations of these three metropolitan regions as an algebraic expression. Let x be the population of New York (in millions).',
-    ['4x \u2212 2.61', '4x \u2212 2.16', '4x \u2212 1.26', '4x \u2212 1.62'],
-    1
-  ),
-  bm(
-    'bm-alg-3', 3, 'bm-algebra',
-    'After examining 240 sweaters, a quality-control inspector found 5 with defective stitching, 8 with mismatched designs, and 2 with incorrect labels. What percent were defective?',
-    ['5.25%', '6.25%', '4.25%', '7.25%'],
-    1
-  ),
-  bm(
-    'bm-alg-4', 4, 'bm-algebra',
-    'One-third of the movie audience left the theater in disgust. If 78 angry patrons walked out, how many were there originally?',
-    ['324', '342', '234', '243'],
-    1
-  ),
-  bm(
-    'bm-alg-5', 5, 'bm-algebra',
-    'If 2,484 union members represent 90% of a factory\u2019s work force, how many workers are employed?',
-    ['2,760', '2,670', '2,076', '2,607'],
-    1
-  ),
-  bm(
-    'bm-alg-6', 6, 'bm-algebra',
-    'Find the original cost of a car that is worth $10,250 after depreciating $7,500.',
-    ['$16,650', '$15,550', '$14,450', '$17,750'],
-    1
-  ),
-  bm(
-    'bm-alg-8', 8, 'bm-algebra',
-    'A camera that was originally priced at $452 is on sale for $384.20. Find the percent of markdown.',
-    ['10%', '12%', '15%', '18%'],
-    1
-  ),
-  bm(
-    'bm-alg-9', 9, 'bm-algebra',
-    'A new fax machine was recently purchased for an office in Hopedale for $464.40 including tax. If the tax rate in Hopedale is 8%, find the price of the fax machine before tax.',
-    ['$430', '$330', '$440', '$340'],
-    1
-  ),
-  bm(
-    'bm-alg-10', 10, 'bm-algebra',
-    'In 2009, the population of Brazil was 191.5 million. This represented a decrease in population of 3.7% from 2000. What was the population (in million) of Brazil in 2000?',
-    ['189.9', '188.8', '198.9', '199.9'],
-    1
-  ),
-];
+export const TOPIC_QUESTIONS: TopicQuestion[] = [...BM_ALGEBRA];
 
 /** How many items each topic currently holds. */
 export function topicCount(topicId: string): number {
