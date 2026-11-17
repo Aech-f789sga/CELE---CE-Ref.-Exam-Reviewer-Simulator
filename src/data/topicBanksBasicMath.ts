@@ -215,6 +215,8 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['11 in by 11 in', '13 in by 13 in', '9 in by 9 in', '15 in by 15 in'], 8),
   q(7, 'In 1956, a Chevrolet BelAir automobile sold for $\\$4{,}000$. Today, it is worth about $\\$28{,}600$. Find the percent that its value has increased, called the percent of increase.',
     ['651%', '516%', '615%', '561%'], 1),
+  q(24, 'America\u2019s consumption of red meat has decreased most years since 2000, while consumption of poultry has increased. The function $y=-0.56x+113.6$ approximates the annual pounds of red meat consumed per capita, where $x$ is the number of years since 2000. The function $y=0.76x+68.57$ approximates the annual pounds of poultry consumed per capita, where $x$ is also the number of years since 2000. If this trend continues, determine the year when the annual consumption of red meat and poultry will be equal.',
+    ['34.41', '31.41', '34.11', '31.11'], 2),
   q(87, 'In the vicinity of a bonfire the temperature $T$ in $^{\\circ}\\mathrm{C}$ at a distance of $x$ meters from the center of the fire was given by\n\n$$T=\\dfrac{600{,}000}{x^2+300}$$\n\nAt what range of distances from the fire\u2019s center was the temperature less than $500\\ ^{\\circ}\\mathrm{C}$?',
     ['$x \\ge 30$', '$x > 30$', '$x < 30$', '$x \\le 30$'], 8),
   q(88, 'Two car rental companies have advertised weekly specials on full-size cars. Hertz is advertising an $\\$80$ rental fee plus an additional $\\$0.10$ per mile. Thrifty is advertising $\\$60$ and $\\$0.20$ per mile. How many miles must you drive for the rental car from Hertz to be the better deal?',
