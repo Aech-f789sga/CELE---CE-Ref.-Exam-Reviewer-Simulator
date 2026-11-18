@@ -105,7 +105,13 @@ const SITUATIONS: Record<number, string> = {
   40:
     'The frame supports a suspended weight $W = 40$ lb. Determine the forces on members $ABCD$ and $CEG$. Dimensions 6 in, 6 in, 6 in, 8 in, 8 in and 3 in.',
   41:
-    'Refer to the frame shown in the figure. Given: Weight, $W = 600$ N; $h_1 = 10$ m; $h_2 = 6$ m; $s = 8$ m; $r = 4$ m.',
+    'Refer to the frame shown in the figure. Given: Weight, $W = 600$ N; $h_1 = 10$ m; $h_2 = 6$ m; $s = 8$ m; $r = 4$ m. The weight hangs from a rope over a pulley of radius $r$ at the top of the vertical member; member $AC$ is hinged to that member at $B$.',
+  42:
+    'Refer to the Pratt roof truss shown. Joints run $A$ to $H$ along the bottom and top chords; the truss is 2.4 m deep, with panel widths 3.8 m, 3.2 m, 3.2 m and 3.8 m, carrying 5.7 kN at each end and 10.5 kN, 9.6 kN, 10.5 kN at the upper joints.',
+  43:
+    'Refer to the loaded truss below. The truss is 8 m deep with six 4 m panels (6 at 4 m = 24 m) and carries 30 kN and 60 kN loads at its upper joints.',
+  44:
+    'Refer to the Howe roof truss shown. State whether each member is in tension or compression.',
 };
 
 /**
@@ -523,4 +529,27 @@ export const STAT_FRAMES: TopicQuestion[] = [  // Situation 36 — items 105–1
     ['186.7', '35.6', '126.7', '66.7'], 14, 40),
   qr(119, 'Determine the vertical component of reaction (lb) at pin E.',
     ['106.7', '80.0', '95.0', '0'], 14, 40),
+  // Situation 41 — items 120–122
+  qr(120, 'Determine the horizontal component (N) of the hinge force at B as it acts upon member AC.',
+    ['960', '1080', '1600', '1350'], 15, 41),
+  qr(121, 'Determine the vertical component (N) of the hinge force at B as it acts upon member AC.',
+    ['1500', '1200', '1000', '1600'], 15, 41),
+  qr(122, 'Determine the reaction (N) at support C.',
+    ['900', '1345', '1000', '1835'], 15, 41),
+
+  // Situation 42 — items 123–125
+  qr(123, 'Determine the force (kN) in each member BD.',
+    ['51.2', '82.3', '16.2', '47.2'], 15, 42),
+  qr(124, 'Determine the force (kN) in each member CD.',
+    ['17.5 (C)', '17.5 (T)', '13.1 (T)', '13.1 (C)'], 15, 42),
+  qr(125, 'Determine the force (kN) in each member CE.',
+    ['30.6', '58.6', '47.3', '28.0'], 15, 42),
+
+  // Situation 43 — items 126–128
+  qr(126, 'Determine the reaction (kN) at support F.',
+    ['79.5', '198.0', '71.6', '166.4'], 15, 43),
+  qr(127, 'Determine the force in member GL.',
+    ['20 kN [C]', '20 kN [T]', '45 kN [C]', '45 kN [T]'], 15, 43),
+  qr(128, 'Determine the force (kN) in member EL.',
+    ['0.46', '129.5', '0.60', '0.33'], 15, 43),
 ];
