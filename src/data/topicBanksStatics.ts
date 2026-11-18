@@ -127,7 +127,13 @@ const SITUATIONS: Record<number, string> = {
   51:
     'The bar $BC$ is supported by a rough floor at $C$ and pin connected at $B$. A vertical force $F$ acts at $B$. The dimensions are 500 mm and 500 mm horizontally to $C$ and 200 mm beyond, with $C$ 600 mm below $B$.',
   52:
-    'In the figure, two blocks are connected by a solid strut attached to each block with frictionless pins. Given: $\\theta = 60^\\circ$; $\\alpha = 30^\\circ$.',
+    'In the figure, two blocks are connected by a solid strut attached to each block with frictionless pins. Given: $\\theta = 60^\\circ$; $\\alpha = 30^\\circ$. Block $A$ rests on a horizontal surface and block $B$ on an incline.',
+  53:
+    'The mass of the van is 2250 kg and the coefficient of static friction between its tires and the road is 0.6. Its front wheels are locked and its rear wheels can turn freely. The wheelbase is 3 m, the centre of gravity is 1.2 m from the rear axle and 1 m above the road, and the van stands on a slope of angle $\\alpha$.',
+  54:
+    'A 40-kg packing crate is pulled by a rope as shown. The coefficient of static friction between the crate and the floor is 0.35. If $\\alpha = 40^\\circ$, determine the following: the crate is 0.8 m wide and 0.5 m tall, with the rope attached at $B$ on the top right corner.',
+  55:
+    'A tool chest has 800 N weight that acts through the midpoint of the chest. The chest is supported by feet at $A$ and rollers at $B$. The surface has a coefficient of friction of 0.3.',
 };
 
 /**
@@ -528,6 +534,35 @@ export const STAT_EQUIL: TopicQuestion[] = [
   // Situation 52 — item 153
   qe(153, 'If the coefficient of friction under each block is 0.25 and B weighs 270 N, find the minimum weight (N) of A to prevent motion.',
     ['600', '800', '500', '700'], 18, 52),
+  // Situation 52 — items 154–155
+  qe(154, 'Block A weighs 400 N and B weighs 300 N. If $f = 0.20$ under B, compute the minimum coefficient of friction under A to prevent motion.',
+    ['0.20', '0.75', '0.50', '0.40'], 19, 52),
+  qe(155, 'If $f = 0.30$ under both blocks and A weighs 400 N, find the maximum weight (N) of B that can be started up the incline by applying to A a rightward horizontal force of P 500 N.',
+    ['296', '263', '352', '318'], 19, 52),
+
+  // Situation 53 — items 156–158
+  qe(156, 'What is the largest value of $\\alpha$ (in degrees) for which it can remain in equilibrium?',
+    ['19.8', '24.2', '16.7', '17.4'], 19, 53),
+  qe(157, 'What is the corresponding reaction (N) at the rear wheels.',
+    ['15,096', '9,058', '5,032', '3,086'], 19, 53),
+  qe(158, 'What is the largest value of $\\alpha$ (in degrees) for which the van can remain in equilibrium if it points up the slope?',
+    ['16.7', '11.3', '13.5', '19.8'], 19, 53),
+
+  // Situation 54 — items 159–161
+  qe(159, 'the magnitude of the force P required to slide the crate.',
+    ['139 N', '175 N', '305 N', '151 N'], 19, 54),
+  qe(160, 'the magnitude of the force P required to tip the crate.',
+    ['139 N', '175 N', '305 N', '151 N'], 19, 54),
+  qe(161, 'whether the crate will slide or tip.',
+    ['It will slide first', 'It will tip first', 'It will slide and tip at the same time', "Can't determine"], 19, 54),
+
+  // Situation 55 — items 162–164
+  qe(162, 'Determine the value of the horizontal force P (N) necessary to cause sliding of the chest to the right.',
+    ['210', '171', '120', '223'], 19, 55),
+  qe(163, 'Determine the value of the horizontal force P (N) necessary to cause tipping of the chest to the right.',
+    ['400', '286', '280', '200'], 19, 55),
+  qe(164, 'When P = 150 N, determine the reaction (N) at point A.',
+    ['614', '632', '641', '786'], 19, 55),
 ];
 
 /** Section: FRAMES. */
