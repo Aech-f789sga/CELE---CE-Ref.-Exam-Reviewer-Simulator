@@ -71,7 +71,13 @@ const SITUATIONS: Record<number, string> = {
   23:
     'Force $P$ is supported by two cables and a bar. Point $A$ lies in the $yz$ plane, and points $B$ and $C$ lie in the $xz$ plane. Given: $P = 3$ kip. The dimensions are 4 ft, 4 ft, 6 ft, 12 ft, 12 ft and 5 ft.',
   24:
-    'Three cables are used to tether a balloon as shown. Knowing that the tension in cable $AC$ is 444 N.',
+    'Three cables are used to tether a balloon as shown. Knowing that the tension in cable $AC$ is 444 N. The anchors sit 5.60 m, 4.20 m, 3.30 m, 2.40 m and 4.20 m out from the pin.',
+  25:
+    'A transmission tower is held by three guy wires attached to a pin at $A$ and anchored by bolts at $B$, $C$ and $D$. The tension in wire $AB$ is 630 lb. The anchor offsets are 90 ft, 30 ft, 20 ft, 45 ft, 60 ft, 30 ft and 65 ft.',
+  26:
+    'The shear-leg derrick shown in the figure supports a vertical load of $W = 2000$ N applied at $A$. Points $B$, $C$ and $D$ are in the same horizontal plane; $A$, $O$ and $D$ are in the $XY$ plane. Dimensions 20 m, 10 m, 15 m, 10 m and 5 m.',
+  27:
+    'Neglecting the weights of the pulleys, determine the force $T$ required to support the weight $W = 100$ N.',
 };
 
 /**
@@ -360,4 +366,19 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['240', '397', '496', '662'], 8, 24),
   qe(71, 'Determine the tension in cable AB in N.',
     ['268', '496', '240', '821'], 8, 24),
+  // Situation 25 — items 72–74
+  qe(72, 'The vertical force P (lb) exerted by the tower on the pin at $A$.',
+    ['1107', '1188', '1572', '1271'], 9, 25),
+  qe(73, 'The corresponding tension in AC (lb).',
+    ['322', '138', '467', '200'], 9, 25),
+  qe(74, 'The corresponding tension in AD (lb).',
+    ['561', '814', '484', '703'], 9, 25),
+
+  // Situation 26 — items 75–77
+  qe(75, 'Determine the force (N) in member AB.',
+    ['2494', '1871', '1247', '3742'], 9, 26),
+  qe(76, 'Determine the force (N) in member AD.',
+    ['1374', '2748', '1031', '2236'], 9, 26),
+  qe(77, 'Determine the force (N) in member AC.',
+    ['2748', '1374', '2236', '559'], 9, 26),
 ];
