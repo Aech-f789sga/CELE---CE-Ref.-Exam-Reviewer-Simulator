@@ -88,6 +88,12 @@ const SITUATIONS: Record<number, string> = {
     'A 50-kg crate is attached to the trolley-beam system shown. The trolley runs on a horizontal beam from $A$ to $B$; the crate hangs from it, and a cable runs from $D$ to the trolley at $55^\\circ$ to the vertical. Dimensions 1.4 m and 0.4 m locate $D$ above the beam, and $b$ is the horizontal distance from $B$ to the load line.',
   32:
     'The uniform 18 kg bar $OA$ is held in the position shown by the smooth pin at $O$ and the cable $AB$. Given: length of bar $OA$, $L = 1.5$ m; distance between supports, $x = 1.2$ m. $\\theta$ is the angle the bar makes with the horizontal.',
+  33:
+    'The wheel-loads (600 lb and 200 lb) on a jeep are given in the figure. The jeep rests on a beam $AB$ of span 15 ft; the 600 lb load is $x$ from $A$, and the 200 lb load is 4 ft to its right.',
+  34:
+    'The sign has a mass of 100 kg with center of mass at $G$. It is held by a ball-and-socket joint at $A$ and by wires $BC$ and $BD$. Dimensions 1 m and 2 m locate $B$ and the wire anchors relative to the sign.',
+  35:
+    'A 2.4-m boom is held by a ball-and-socket joint at $C$ and by two cables $AD$ and $AE$. The boom carries a 3.6 kN load. Dimensions 0.6 m, 0.8 m, 1.2 m, 1.2 m, 1.2 m, 1.8 m and 0.8 m locate $A$, $D$, $E$ and the load.',
 };
 
 /**
@@ -435,4 +441,23 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['10.1', '99.5', '79.6', '66.3'], 11, 32),
   qe(94, 'Determine the magnitude of the external pin reaction (N) at $O$ when $\\theta = 60^\\circ$.',
     ['147', '265', '232', '246'], 11, 32),
+  // Situation 32 — item 95
+  qe(95, 'Determine the maximum vertical load (N) that could be carried at point A when $\\theta = 50^\\circ$. Given: Allowable tensile force in the cable = 250 N',
+    ['57.6', '136.9', '186.5', '84.2'], 12, 32),
+
+  // Situation 33 — items 96–98
+  qe(96, 'Determine the reaction (lb) at A when $x = 6$ ft.',
+    ['427', '373', '293', '507'], 12, 33),
+  qe(97, 'Determine the distance $x$ (ft) so that the reaction of the beam at $A$ is twice as great as the reaction at $B$.',
+    ['5.3', '9.0', '4.0', '6.5'], 12, 33),
+  qe(98, 'Determine the distance $x$ (ft) so that the larger load and the resultant of the two loads is located equidistant to midspan.',
+    ['7.0', '6.5', '6.0', '4.5'], 12, 33),
+
+  // Situation 34 — items 99–101
+  qe(99, 'Determine the reaction at the ball-and-socket joint $A$.',
+    ['860.8', '820.8', '766.2', '832.4'], 12, 34),
+  qe(100, 'Determine the tension in wires $BC$ (N).',
+    ['327.0', '588.6', '735.8', '367.9'], 12, 34),
+  qe(101, 'Determine the tension in wires $BD$ (N).',
+    ['163.5', '735.8', '367.9', '294.3'], 12, 34),
 ];
