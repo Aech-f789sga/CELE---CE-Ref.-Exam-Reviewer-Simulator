@@ -17,8 +17,15 @@
  *   FRICTION                         144–164 stat-equil
  *   CABLES                           165–176 stat-equil
  *
- * 167 items are live in the three topic arrays; 9 are held in STAT_PENDING
- * because their figures could not be resolved (see SITUATIONS_PENDING).
+ * All 176 items are live in the three topic arrays.
+ *
+ * ## Figures
+ *
+ * Every situation's figure is cropped from the booklet into
+ * `public/images/statics/situation-NN.png` and attached via `figureSvg`, so an
+ * item is solved from the printed drawing rather than from a prose description
+ * of it. `FIGURED` lists the situations that have a crop; add to it as more
+ * are cut. Situations 6-8 are the first three.
  *
  * ## Situations
  *
@@ -29,10 +36,11 @@
  * wording in `situationText`, and `text` repeats it so the item still stands on
  * its own in a flat list.
  *
- * `Question` has no image field, so a figure is described in words inside
- * `SITUATIONS`. A description only counts as trustworthy if solving the item
- * against it lands on one of the four printed choices; where that check was not
- * possible the description is marked in `SITUATIONS_PENDING` instead.
+ * `situationText` therefore carries only what the booklet prints as text — the
+ * given values and the question's own wording. The geometry lives in the
+ * attached figure crop, not in prose: describing a 3D drawing in words is both
+ * lossy and error-prone, and early attempts to do so produced descriptions that
+ * did not reconcile with the printed answer choices.
  */
 import type { TopicQuestion } from './topicBanks';
 
@@ -155,25 +163,39 @@ const SITUATIONS: Record<number, string> = {
     'The system of knotted cords shown in the figure support the indicated weights (300 lb and 400 lb). The cords meet at knots $A$, $C$ and $D$; the angles shown are $90^\\circ$, $105^\\circ$, $30^\\circ$, $30^\\circ$ and $75^\\circ$.',
   59:
     'A uniform 80-m pipe that weighs 960 kN is supported entirely by a cable $AB$ of negligible weight. The span is 80 m, the support at $A$ is 20 m above the lowest point and the support at $B$ is 7.2 m above it.',
+  6:
+    'Knowing that the tension in cable $AB$ is 1425 N and the tension in cable $AC$ is 2130 N, determine the following:',
+  7:
+    'The magnitudes of the three forces acting on the plate are $T_1 = 100$ kN, $T_2 = 80$ kN and $T_3 = 50$ kN.',
+  8:
+    'Refer to the given figure. The resultant of the three forces shown is a counterclockwise couple of magnitude 150 N-m.',
 };
 
 /**
- * Situations whose figure is transcribed but NOT yet resolved, so their items
- * are held out of the live bank. Each entry says what the figure shows and why
- * the reading is still open. Move the situation into `SITUATIONS` once a
- * reading has been confirmed by solving an item against the printed choices.
+ * Situations that have a cropped figure in `public/images/statics/`.
+ * Extend this set as more figures are cropped; items whose situation is absent
+ * simply render without a figure.
  */
-const SITUATIONS_PENDING: Record<number, string> = {
-  6:
-    'A rectangular plate $ABCD$ hangs in the $x$-$y$-$z$ frame, carried by cables $AB$ and $AC$ from a point $A$ above it. Given: tension in cable $AB$ is 1425 N, tension in cable $AC$ is 2130 N. ' +
-    'The printed dimensions are 360 mm, 920 mm, 900 mm and 600 mm, but which edge each one measures is not resolvable at scan resolution.',
-  7:
-    'A rectangular plate lies in the $x$-$y$ plane, held by three forces $T_1$, $T_2$, $T_3$; the printed dimensions are 2 m, 3 m and 2 m, with $T_1$ and $T_3$ applied at the corners and $T_2$ vertical at the centre.',
-  8:
-    'A $6 \\times 5$ grid of 1.0 m squares with $O$ at the bottom-left corner, $x$ to the right and $y$ up. ' +
-    '$P_1$ acts at $A(4, 5)$ on the top edge, up and to the left along a $45^\\circ$ line; $P_3$ acts at $B(3, 0)$ on the bottom edge, down and to the right along a $45^\\circ$ line; $P_2$ acts at $O$, horizontally to the left. ' +
-    'Note: as drawn, $P_1$ and $P_3$ are antiparallel and $P_2$ is horizontal, so $\\sum F$ cannot vanish and the system cannot reduce to a pure couple — the printed statement and the figure disagree, or a dimension is misread.',
-};
+const FIGURED = new Set<number>([6, 7, 8]);
+
+/**
+ * Wraps a figure crop in the markup `EngineeringFigure` expects.
+ *
+ * `figureSvg` is injected with `dangerouslySetInnerHTML`, so it must be HTML,
+ * not a bare URL — handing it a URL string renders the path as text.
+ */
+function staticsFigure(n: number): string | undefined {
+  if (!FIGURED.has(n)) return undefined;
+  const src = `/images/statics/situation-${String(n).padStart(2, '0')}.png`;
+  return `<div class="flex flex-col items-center justify-center w-full py-2">
+  <img
+    src="${src}"
+    alt="Statics Situation ${n} figure"
+    class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+    loading="eager"
+  />
+</div>`;
+}
 
 function makeStaticsItem(topicId: string, category: string, idPrefix: string) {
   return (
@@ -191,6 +213,8 @@ function makeStaticsItem(topicId: string, category: string, idPrefix: string) {
     month: 'May',
     category,
     text: `${SITUATIONS[situation]}\n\n${text}`,
+    figureSvg: staticsFigure(situation),
+    figureCaption: `Situation ${situation}`,
     options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
     correctAnswer: 'A',
     keyPending: true,
@@ -252,6 +276,29 @@ export const STAT_FORCES: TopicQuestion[] = [
     ['27.6', '19.3', '39.3', '10.3'], 2, 5),
   qf(15, 'Given: Forces, A = 60 kN, C = 50 kN; Angles, $\\alpha = 25^\\circ$, $\\beta = 60^\\circ$. Given: Force B = 80 kN, Resultant = 100 kN. Determine angle $\\phi$ in degrees.',
     ['84.1', '5.9', '46.3', '43.7'], 2, 5),
+  // Situation 6 — items 16–18
+  qf(16, 'The x-component of the force (N) exerted by cable AB on the plate at B.',
+    ['750', '450', '903', '1125'], 3, 6),
+  qf(17, 'The z-component of the force (N) exerted by cable AC on the plate at C.',
+    ['1380', '900', '1350', '1718'], 3, 6),
+  qf(18, 'The resultant of the two tension (N) cables at A.',
+    ['3036', '3117', '3421', '3270'], 3, 6),
+
+  // Situation 7 — items 19–21
+  qf(19, 'Replace these forces with a single equivalent force R (kN).',
+    ['213', '208', '224', '229'], 3, 7),
+  qf(20, 'Find the x - coordinate of the point where the resultant intersects the plate.',
+    ['0.708', '0.630', '0.716', '1.289'], 3, 7),
+  qf(21, 'Find the y - coordinate of the point where the resultant intersects the plate.',
+    ['0.708', '0.630', '0.716', '1.289'], 3, 7),
+
+  // Situation 8 — items 22–24
+  qf(22, 'Calculate the magnitude of the force $P_1$ (N).',
+    ['31.8', '77.3', '41.6', '49.2'], 3, 8),
+  qf(23, 'Calculate the magnitude of the force $P_2$ (N).',
+    ['69.2', '17.6', '23.1', '11.5'], 3, 8),
+  qf(24, 'Calculate the magnitude of the force $P_3$ (N).',
+    ['44.1', '107.1', '57.7', '68.2'], 3, 8),
   // Situation 9 — items 25–26
   qf(25, 'Calculate the moment (N-m) of the 90-N force about point $O$ for the condition $\\theta = 15^\\circ$.',
     ['33.5', '55.6', '70.8', '83.5'], 3, 9),
@@ -321,64 +368,6 @@ export const STAT_FORCES: TopicQuestion[] = [
  * wired into `TOPIC_QUESTIONS` — an item whose figure is wrong is worse than
  * an item that is missing, because it teaches the wrong method.
  */
-function makePendingItem(
-  number: number,
-  text: string,
-  opts: [string, string, string, string],
-  page: number,
-  situation: number
-): TopicQuestion {
-  return {
-    id: `stat-pending-${number}`,
-    number,
-    pageNumber: page,
-    subject: 'MSTC',
-    year: 0,
-    month: 'May',
-    category: 'Forces & Resultants',
-    text: `${SITUATIONS_PENDING[situation]}\n\n${text}`,
-    options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
-    correctAnswer: 'A',
-    keyPending: true,
-    referenceSource: 'Gillesania',
-    topicId: 'stat-forces',
-    situation,
-    situationText: SITUATIONS_PENDING[situation],
-    solution: {
-      summary: 'Figure not yet resolved for this situation.',
-      steps: [],
-      finalAnswer: '',
-      note: 'Held out of the bank until the figure is confirmed.',
-    },
-  };
-}
-
-export const STAT_PENDING: TopicQuestion[] = [
-  // Situation 6 — items 16–18
-  makePendingItem(16, 'The x-component of the force (N) exerted by cable AB on the plate at B.',
-    ['750', '450', '903', '1125'], 3, 6),
-  makePendingItem(17, 'The z-component of the force (N) exerted by cable AC on the plate at C.',
-    ['1380', '900', '1350', '1718'], 3, 6),
-  makePendingItem(18, 'The resultant of the two tension (N) cables at A.',
-    ['3036', '3117', '3421', '3270'], 3, 6),
-
-  // Situation 7 — items 19–21
-  makePendingItem(19, 'Replace these forces with a single equivalent force R (kN).',
-    ['213', '208', '224', '229'], 3, 7),
-  makePendingItem(20, 'Find the x - coordinate of the point where the resultant intersects the plate.',
-    ['0.708', '0.630', '0.716', '1.289'], 3, 7),
-  makePendingItem(21, 'Find the y - coordinate of the point where the resultant intersects the plate.',
-    ['0.708', '0.630', '0.716', '1.289'], 3, 7),
-
-  // Situation 8 — items 22–24
-  makePendingItem(22, 'Calculate the magnitude of the force $P_1$ (N).',
-    ['31.8', '77.3', '41.6', '49.2'], 3, 8),
-  makePendingItem(23, 'Calculate the magnitude of the force $P_2$ (N).',
-    ['69.2', '17.6', '23.1', '11.5'], 3, 8),
-  makePendingItem(24, 'Calculate the magnitude of the force $P_3$ (N).',
-    ['44.1', '107.1', '57.7', '68.2'], 3, 8),
-];
-
 /** Section: EQUILIBRIUM – 2D CONCURRENT FORCES. */
 export const STAT_EQUIL: TopicQuestion[] = [
   // Situation 17 — items 48–50
@@ -619,7 +608,8 @@ export const STAT_EQUIL: TopicQuestion[] = [
 ];
 
 /** Section: FRAMES. */
-export const STAT_FRAMES: TopicQuestion[] = [  // Situation 36 — items 105–107
+export const STAT_FRAMES: TopicQuestion[] = [
+  // Situation 36 — items 105–107
   qr(105, 'Determine the horizontal component of reaction (N) at C.',
     ['125', '93.75', '156.25', '250'], 13, 36),
   qr(106, 'Determine the reaction (N) at C.',
