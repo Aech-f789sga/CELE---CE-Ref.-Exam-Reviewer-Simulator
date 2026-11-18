@@ -1,27 +1,30 @@
 /**
- * Calculus — Differential Calculus (partial).
+ * Calculus — Differential, Integral, and Differential Equations.
  *
- * Source: Margallo's Buckling practice set, "Calculus", pages 1–10.
+ * Source: Margallo's Buckling practice set, "Calculus", pages 1–10. The booklet
+ * is numbered straight through, 1–137, and its sections are:
+ *   Differential Calculus   1–70    (pages 1–6)
+ *   Integral Calculus       71–114  (pages 6–8)
+ *   Differential Equations  115–137 (pages 8–10)
+ * They share one `CAL_KEY`, but sit under three `topicId`s so the drill can
+ * take one section at a time.
  *
- * ## Key status
- *
- * No separate Calculus key was supplied, and the Basic Math key does not cover
- * this paper. That key is a single 1–269 run over the Basic Math booklet only
- * (Algebra 1–125, Trigonometry 126–189, Geometry 190–269 — all now transcribed),
- * so the "201–246" block noted here earlier was simply part of Geometry, not a
- * Calculus key. These items therefore stay `keyPending`: they can be practised,
- * but the UI must not score them, because a wrong key is worse than no key.
- *
- * Items 1–12 are transcribed verbatim from page 1; the rest of the section is
- * still to come.
+ * The key was supplied separately as "Answer Key Calculus.pdf" and parsed from
+ * its text layer: 137 entries, no gaps, no conflicts. It was cross-checked
+ * against independently solved items 2, 4–11, 13, 15–19 before being applied.
  */
 import type { TopicQuestion } from './topicBanks';
 
-/**
- * Both Calculus sections share this builder: the booklet is numbered straight
- * through (Differential 1-70, Integral 71-99) but the two sit under different
- * `topicId`s so the drill can pick one section at a time.
- */
+/** Printed answer key, items 1–137 in order. */
+const CAL_KEY =
+  'DCABCCBACACABAADCBCCBAAAABBDDDBCBDCABBABDACACABBCCBACAC' +
+  'DACBDAABADCBADDACADCACDCDCBCBADCBCADABACACADABBABBBBBDA' +
+  'BADCADBDBBABDABCADAACDCADCA';
+
+function keyFor(number: number): 'A' | 'B' | 'C' | 'D' {
+  return CAL_KEY[number - 1] as 'A' | 'B' | 'C' | 'D';
+}
+
 function makeCalcItem(topicId: string, category: string, idPrefix: string) {
   return (
     number: number,
@@ -38,15 +41,14 @@ function makeCalcItem(topicId: string, category: string, idPrefix: string) {
     category,
     text,
     options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
-    correctAnswer: 'A',
-    keyPending: true,
+    correctAnswer: keyFor(number),
     referenceSource: 'Gillesania',
     topicId,
     solution: {
-      summary: 'No printed key supplied for this paper yet.',
+      summary: 'Answer per the printed key.',
       steps: [],
       finalAnswer: '',
-      note: 'Answer key pending — this item is not scored.',
+      note: '',
     },
   });
 }
@@ -54,8 +56,6 @@ function makeCalcItem(topicId: string, category: string, idPrefix: string) {
 const q = makeCalcItem('cal-diff', 'Differential Calculus', 'cal-diff');
 const qi = makeCalcItem('cal-int', 'Integral Calculus', 'cal-int');
 const qd = makeCalcItem('cal-de', 'Differential Equations', 'cal-de');
-
-export const CAL_DIFF_PENDING: number[] = [];
 
 export const CAL_DIFF: TopicQuestion[] = [
   q(1, 'Find $dy/dx$ for the following curves. Interpret the result and determine the points (if any) at which the curve has a horizontal or a vertical tangent line.\n\n$$x=t,\\quad y=2\\sqrt{t},\\ \\text{for } t\\ge 0$$',
