@@ -100,6 +100,12 @@ const SITUATIONS: Record<number, string> = {
     'Neglecting the weight of the frame. A 300 N/m distributed load acts downward on the horizontal member $AB$. $AB$ spans 6 m from $A$ to $B$, with a vertical post at $A$ 3 m + 3 m tall carrying $C$ and $E$, and a member $BD$ 4 m long running down to a roller at $D$; $F$ is the support under $B$.',
   38:
     'Neglecting the weight of the frame, find the following: a braced frame with members $AB$ and $DE$ horizontal, crossed diagonals, a 400 lb load acting horizontally at $B$, and dimensions 6 ft, 4 ft, 4 ft and 8 ft.',
+  39:
+    'Refer to the folding table as shown. Neglect friction and the weights of the members. Given: $a = 0.6$ m; $b = 0.8$ m; $c = 1.2$ m. The top $AB$ carries a uniform load $w$; the legs cross at $C$ and bear at $D$ and $E$.',
+  40:
+    'The frame supports a suspended weight $W = 40$ lb. Determine the forces on members $ABCD$ and $CEG$. Dimensions 6 in, 6 in, 6 in, 8 in, 8 in and 3 in.',
+  41:
+    'Refer to the frame shown in the figure. Given: Weight, $W = 600$ N; $h_1 = 10$ m; $h_2 = 6$ m; $s = 8$ m; $r = 4$ m.',
 };
 
 /**
@@ -496,4 +502,25 @@ export const STAT_FRAMES: TopicQuestion[] = [  // Situation 36 — items 105–1
   // Situation 38 — item 111
   qr(111, 'The reaction at E.',
     ['400', '200', '100', '300'], 13, 38),
+  // Situation 38 — items 112–113
+  qr(112, 'The vertical component of reaction (N) at C.',
+    ['100', '200', '300', '400'], 14, 38),
+  qr(113, 'The horizontal component of reaction (N) at B.',
+    ['200', '400', '300', '100'], 14, 38),
+
+  // Situation 39 — items 114–116
+  qr(114, 'Compute the magnitude of the pin reaction (N) at $A$ when $w = 300$ N/m.',
+    ['450', '94', '244', '411'], 14, 39),
+  qr(115, 'Compute the magnitude of the pin reaction (N) at $C$ when $w = 200$ N/m.',
+    ['267', '168', '416', '277'], 14, 39),
+  qr(116, 'Compute the intensity of the uniform load $w$ (N/m) so that reaction at B is 400 N.',
+    ['292', '393', '582', '267'], 14, 39),
+
+  // Situation 40 — items 117–119
+  qr(117, 'Determine the reaction (lb) at A.',
+    ['58.2', '42.2', '40.0', '53.5'], 14, 40),
+  qr(118, 'Determine the horizontal component of reaction (lb) at pin C.',
+    ['186.7', '35.6', '126.7', '66.7'], 14, 40),
+  qr(119, 'Determine the vertical component of reaction (lb) at pin E.',
+    ['106.7', '80.0', '95.0', '0'], 14, 40),
 ];
