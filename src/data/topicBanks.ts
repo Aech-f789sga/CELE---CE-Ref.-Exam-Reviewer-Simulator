@@ -31,6 +31,7 @@ import { BM_ALGEBRA } from './topicBanksBasicMath';
 import { BM_TRIG } from './topicBanksTrig';
 import { BM_GEOMETRY } from './topicBanksGeometry';
 import { CAL_DIFF, CAL_INT, CAL_DE } from './topicBanksCalculus';
+import { STAT_FORCES } from './topicBanksStatics';
 
 export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics';
 
@@ -84,6 +85,7 @@ export const TOPIC_QUESTIONS: TopicQuestion[] = [
   ...CAL_DIFF,
   ...CAL_INT,
   ...CAL_DE,
+  ...STAT_FORCES,
 ];
 
 /** How many items each topic currently holds. */
