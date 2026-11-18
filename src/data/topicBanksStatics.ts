@@ -46,6 +46,18 @@ const SITUATIONS: Record<number, string> = {
     'A bracket is fastened to a girder by two rivets $A$ and $B$ and supports a 2-kN force. Rivets $A$ and $B$ lie on a vertical line 250 mm apart. The 2-kN force acts horizontally to the right at a point 100 mm below the line through $B$ and 300 mm to the right of the rivet line.',
   11:
     'Bar $OA$ is 1.5 m long, pivoted at $O$ and inclined at $60^\\circ$ above the horizontal. Cable $AB$ runs from $A$ to a point $B$ on the ground 1.2 m to the left of $O$, and prevents the bar from rotating clockwise. At $A$ the $t$ axis lies along the bar pointing away from $O$, and the $n$ axis is perpendicular to the bar.',
+  12:
+    'The streetlight $A$ is attached to the end of the horizontal boom $AO$. The light weighs 100 N and is subjected to a wind load of 20 N acting in the negative $y$-direction. $P$ and $Q$ are the tensions in two cables attached at point $B$. The resultant of the four forces shown is a force $R$ acting at point $O$. Boom $AO$ is 4 m long, $B$ is 2 m from $O$, and the cable anchorage points $C$ and $D$ are 2 m above $O$ and 1.5 m either side of the post.',
+  13:
+    'The three forces are perpendicular to the triangular plate. The plate is a right triangle with $O$ at the apex, a 3 m leg running to the left and a 4 m leg running to the right. A 40 kN force acts at $O$, and 20 kN and 50 kN act at the far ends of the 3 m and 4 m legs respectively, all in the $+z$ direction.',
+  14:
+    'A table stands on legs at the corners of its top, with $O$ at the centre of the top. $a = 1.2$ m and $b = 1.0$ m. $F_1$, $F_2$ and $F_3$ act vertically at three of the corners, and $F$ acts vertically on the top, offset $d$ from $O$.',
+  15:
+    'A vertical dam wall 20 m long holds water 5 m deep on the shallow side and 8 m deep on the deep side. The pressure at the base is 312 N/m$^2$ on the shallow side and 499 N/m$^2$ on the deep side. $B$ is at the top of the wall and $A$ at its base.',
+  16:
+    'A high-rise building 180 m tall and 60 m wide is acted on by wind pressure that varies linearly with height, from 1.8 N/m$^2$ near the base to 3.2 N/m$^2$ higher up; 120 m, 80 m and 60 m dimensions mark the building and its setback.',
+  17:
+    'A 200-kg crate is supported as shown. $A$ and $C$ are 8 m apart on a horizontal ceiling. Cable $AB$ is 6.5 m long and makes $34^\\circ$ with the horizontal; cable $BC$ runs from $B$ up to $C$, where a downward force $F$ is applied. The crate hangs from $B$.',
 };
 
 /**
@@ -165,6 +177,45 @@ export const STAT_FORCES: TopicQuestion[] = [
     ['509.5', '627.4', '554.7', '672.2'], 4, 11),
   qf(32, 'If the moment of the cable tension about point O is 150 N-m, determine the $t$-component (N) of this cable force acting on point $A$ of the bar.',
     ['494.9', '202.1', '100.0', '225.5'], 4, 11),
+  // Situation 12 — items 33–35
+  qf(33, 'Determine the tension $P$.',
+    ['129.7', '224.1', '518.9', '896.2'], 5, 12),
+  qf(34, 'Determine the tension $Q$.',
+    ['129.7', '224.1', '518.9', '896.2'], 5, 12),
+  qf(35, 'Determine the force $R$.',
+    ['336.7', '305.6', '304.3', '335.6'], 5, 12),
+
+  // Situation 13 — items 36–38
+  qf(36, 'Determine the resulting moment (kN-m) of the three forces about pt. $O$.',
+    ['209', '260', '140', '170'], 5, 13),
+  qf(37, 'What must be the weight (kN) of the plate so that moment about $x$ and $y$ axis is equal?',
+    ['420', '210', '105', '52'], 5, 13),
+  qf(38, 'What must be the weight of the plate so that the resulting moment about point $O$ is 100 kN-m?',
+    ['21.4', '75.96', '42.86', '37.98'], 5, 13),
+
+  // Situation 14 — items 39–41
+  qf(39, 'Compute the combined moment (N-m) of the four parallel forces about point $O$ (the center of the table) using $F = 40$ N and $d = 0.4$ m.',
+    ['16.3', '11.9', '3.2', '5.1'], 5, 14),
+  qf(40, 'To lift the table without tilting, determine the magnitude of the force F (N).',
+    ['68', '32', '8', '28'], 5, 14),
+  qf(41, 'To lift the table without tilting, determine the distance $d$ (m).',
+    ['0.429', '0.350', '0.450', '0.150'], 5, 14),
+
+  // Situation 15 — items 42–44
+  qf(42, 'Determine the resultant force (N) of the water pressure acting on the dam.',
+    ['1,216', '24,320', '39,140', '13,604'], 5, 15),
+  qf(43, 'Determine the location (meters) of resultant force of the water pressure acting on the dam from B.',
+    ['2.39', '5.61', '4.77', '3.22'], 5, 15),
+  qf(44, 'Determine the moment (kN-m) due to water pressure acting on the dam at point A.',
+    ['2.91', '136.4', '58.0', '6.82'], 5, 15),
+
+  // Situation 16 — items 45–47
+  qf(45, 'Determine the resultant force (kN) caused by the wind.',
+    ['91.97', '76.97', '68.98', '83.98'], 6, 16),
+  qf(46, 'Determine the location of the resultant force from xy plane.',
+    ['136 m', '115 m', '98 m', '83 m'], 6, 16),
+  qf(47, 'Determine the location of the resultant force from yz plane.',
+    ['59 m', '34 m', '71 m', '81 m'], 6, 16),
 ];
 
 /**
@@ -229,4 +280,15 @@ export const STAT_PENDING: TopicQuestion[] = [
     ['69.2', '17.6', '23.1', '11.5'], 3, 8),
   makePendingItem(24, 'Calculate the magnitude of the force $P_3$ (N).',
     ['44.1', '107.1', '57.7', '68.2'], 3, 8),
+];
+
+/** Section: EQUILIBRIUM – 2D CONCURRENT FORCES. */
+export const STAT_EQUIL: TopicQuestion[] = [
+  // Situation 17 — items 48–50
+  qe(48, 'Determine the force F (N) required to keep the crate in equilibrium.',
+    ['1628', '1098', '112', '166'], 6, 17),
+  qe(49, 'Determine the force (N) in cable AB to maintain equilibrium.',
+    ['1145', '1594', '117', '162'], 6, 17),
+  qe(50, 'If the allowable tensile force in the cable is 2000 N, determine the maximum weight (kg) of the crate it could carry.',
+    ['309', '246', '349', '404'], 6, 17),
 ];
