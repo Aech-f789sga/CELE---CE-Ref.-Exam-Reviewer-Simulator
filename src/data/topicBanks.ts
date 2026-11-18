@@ -72,6 +72,14 @@ export interface TopicQuestion extends Question {
   topicId: string;
   /** Set when the source prints no key yet, so scoring must stay off. */
   keyPending?: boolean;
+  /**
+   * The booklet's "Situation N" that this item hangs off. Items sharing a
+   * situation share one figure, so they must stay contiguous and be read
+   * together — a paired item is unsolvable on its own.
+   */
+  situation?: number;
+  /** The situation's shared wording, repeated on each of its items. */
+  situationText?: string;
 }
 
 /**
