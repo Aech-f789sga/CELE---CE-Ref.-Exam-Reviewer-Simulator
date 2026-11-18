@@ -82,6 +82,12 @@ const SITUATIONS: Record<number, string> = {
     'The hoist shown is used in a machine shop to position heavy workpieces in a lathe. Cable $CD$ and bar $CE$ meet at $C$; the pulley arrangement carries the load $W$.',
   29:
     'A horizontal beam runs from a pin support at $A$ through $C$ to $B$. A 4 kN load acts at $B$. $C$ is 1.5 m to the right of $A$ and $B$ a further 1.5 m on. A strut runs from $A$ down 1.5 m to $D$ and from $D$ up to $C$.',
+  30:
+    'The boom supports the two vertical loads $F_1$ and $F_2$. Neglect the size of the collars at $D$ and $B$ and the thickness of the boom. The boom is pinned at $A$, $D$ is 1.5 m along it from $A$, $B$ is a further 1 m on, and cable $CB$ makes $30^\\circ$ with the boom.',
+  31:
+    'A 50-kg crate is attached to the trolley-beam system shown. The trolley runs on a horizontal beam from $A$ to $B$; the crate hangs from it, and a cable runs from $D$ to the trolley at $55^\\circ$ to the vertical. Dimensions 1.4 m and 0.4 m locate $D$ above the beam, and $b$ is the horizontal distance from $B$ to the load line.',
+  32:
+    'The uniform 18 kg bar $OA$ is held in the position shown by the smooth pin at $O$ and the cable $AB$. Given: length of bar $OA$, $L = 1.5$ m; distance between supports, $x = 1.2$ m. $\\theta$ is the angle the bar makes with the horizontal.',
 };
 
 /**
@@ -408,4 +414,25 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['12.0', '4.0', '7.3', '8.0'], 10, 29),
   qe(86, 'Determine the reaction (kN) on the beam at $C$.',
     ['8.0', '5.7', '11.3', '16.9'], 10, 29),
+  // Situation 30 — items 87–89
+  qe(87, 'Compute the vertical component of force (N) at the pin $A$. Set $F_1 = 800$ N and $F_2 = 350$ N.',
+    ['525', '681', '571', '716'], 11, 30),
+  qe(88, 'Compute the force (N) in cable $CB$. Set $F_1 = 800$ N and $F_2 = 350$ N.',
+    ['782', '724', '451', '418'], 11, 30),
+  qe(89, 'If the cable $CB$ can sustain a maximum load of 1500 N before it fails, what is the magnitude of the maximum reaction (N) at pin $A$ if $F_1 = 2F_2$?',
+    ['1671', '1749', '1569', '1147'], 11, 30),
+
+  // Situation 31 — items 90–92
+  qe(90, 'Determine the tension (kg) in cable. Given: $a = 1.55$ m.',
+    ['41.5', '94.6', '75.1', '52.6'], 11, 31),
+  qe(91, 'Determine the reaction (kg) at $B$. Given: $a = 1.15$ m.',
+    ['42.2', '61.9', '28.7', '47.4'], 11, 31),
+  qe(92, 'If the reaction at B is 588 N, find distance $a$ in meters.',
+    ['2.39', '2.14', '1.49', '1.66'], 11, 31),
+
+  // Situation 32 — items 93–94
+  qe(93, 'Determine the tension (N) in the cable when $\\theta = 60^\\circ$.',
+    ['10.1', '99.5', '79.6', '66.3'], 11, 32),
+  qe(94, 'Determine the magnitude of the external pin reaction (N) at $O$ when $\\theta = 60^\\circ$.',
+    ['147', '265', '232', '246'], 11, 32),
 ];
