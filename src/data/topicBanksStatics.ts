@@ -117,7 +117,13 @@ const SITUATIONS: Record<number, string> = {
   46:
     'Refer to the given figure. A 12 kN load acts at $H$ and a 6 kN load at $J$; the truss has six 3 m panels (6 @ 3 m) and is 4 m deep in two 4 m tiers.',
   47:
-    'Refer to the given truss. Given: $s = 5$ m; $h = 4$ m.',
+    'Refer to the given truss. Given: $s = 5$ m; $h = 4$ m. The roof loads act perpendicular to the inclined members, at $30^\\circ$ to the horizontal.',
+  48:
+    'The roof truss shown in the figure is supported on rollers at $A$ and hinged at $B$. The wind loads are perpendicular to the inclined members. Given: $P_1 = 100$ N; $P_2 = 200$ N; $s = 6$ m; $h = 9$ m.',
+  49:
+    'The uniform 50-kg plank in the given figure is resting on friction surfaces at $A$ and $B$. The coefficients of static friction are $\\mu_A = 0.2$ and $\\mu_B = 0.5$, with the surface at $B$ inclined at $40^\\circ$. The plank is 5 m long. If an 80-kg man starts walking from $A$ toward $B$, determine the following:',
+  50:
+    'The top of the 15-kg ladder has a small roller, and at the ground the coefficient of static friction is 0.25. The mass center of the painter is directly below her feet.',
 };
 
 /**
@@ -492,6 +498,13 @@ export const STAT_EQUIL: TopicQuestion[] = [
   qe(104, 'Determine y-component of the reaction (kN) at C.',
     ['5.40', '1.80', '5.13', '4.80'], 13, 35),
 
+  // Situation 49 — items 144–146
+  qe(144, 'Distance $x$ when the plank will start to slide in meters.',
+    ['0.58', '2.9', '2.1', '0.91'], 17, 49),
+  qe(145, 'Reaction (N) at A.',
+    ['776.1', '694.1', '707.9', '1174'], 17, 49),
+  qe(146, 'Reaction (N) at B.',
+    ['534.4', '597.5', '545.0', '233.3'], 17, 49),
 ];
 
 /** Section: FRAMES. */
@@ -581,4 +594,19 @@ export const STAT_FRAMES: TopicQuestion[] = [  // Situation 36 — items 105–1
     ['4 kN (C)', '4 kN (T)', '8 kN (T)', '8 kN (C)'], 16, 46),
   qr(137, 'By inspection, identify the number of zero-force members in the truss.',
     ['3', '4', '5', '6'], 16, 46),
+  // Situation 47 — items 138–140
+  qr(138, 'Determine the force (kN) in member BC. Given: $P_1 = 30$ kN and $P_2 = 60$ kN',
+    ['75.0', '48.0', '24.0', '37.5'], 17, 47),
+  qr(139, 'Determine the force (kN) in member BH. Given: $P_1 = 25$ kN and $P_2 = 50$ kN',
+    ['56.3', '50.0', '60.0', '45.0'], 17, 47),
+  qr(140, 'If the reaction at support A is 115 kN, determine the force (kN) in member CH. Given: $P_2 = 2P_1$',
+    ['73.6', '101.6', '124.1', '92.0'], 17, 47),
+
+  // Situation 48 — items 141–143
+  qr(141, 'Determine the reaction at A in N.',
+    ['495', '425', '415', '575'], 17, 48),
+  qr(142, 'Determine the reaction at E in N.',
+    ['550', '425', '532', '488'], 17, 48),
+  qr(143, 'Determine the force in member GH in N.',
+    ['975', '1122', '842', '631'], 17, 48),
 ];
