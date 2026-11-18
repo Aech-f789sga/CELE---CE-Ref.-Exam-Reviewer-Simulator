@@ -111,7 +111,13 @@ const SITUATIONS: Record<number, string> = {
   43:
     'Refer to the loaded truss below. The truss is 8 m deep with six 4 m panels (6 at 4 m = 24 m) and carries 30 kN and 60 kN loads at its upper joints.',
   44:
-    'Refer to the Howe roof truss shown. State whether each member is in tension or compression.',
+    'Refer to the Howe roof truss shown. State whether each member is in tension or compression. Joints run $A$ to $H$; the truss is 6 ft deep with four 8 ft panels and carries 300 lb at $A$ and $H$ and 600 lb at $B$, $D$ and $F$.',
+  45:
+    'Refer to the given truss below, of the loaded truss. All triangles are isosceles. A 6 kN load acts at $B$ and an 8 kN load at $E$; the truss is 4 m deep with 6 m base panels.',
+  46:
+    'Refer to the given figure. A 12 kN load acts at $H$ and a 6 kN load at $J$; the truss has six 3 m panels (6 @ 3 m) and is 4 m deep in two 4 m tiers.',
+  47:
+    'Refer to the given truss. Given: $s = 5$ m; $h = 4$ m.',
 };
 
 /**
@@ -552,4 +558,27 @@ export const STAT_FRAMES: TopicQuestion[] = [  // Situation 36 — items 105–1
     ['20 kN [C]', '20 kN [T]', '45 kN [C]', '45 kN [T]'], 15, 43),
   qr(128, 'Determine the force (kN) in member EL.',
     ['0.46', '129.5', '0.60', '0.33'], 15, 43),
+  // Situation 44 — items 129–131
+  qr(129, 'Determine the force (lb) in member BD.',
+    ['1000 C', '750 C', '1600 C', '1500 C'], 16, 44),
+  qr(130, 'Determine the force (lb) in member BE.',
+    ['500 C', '375 C', '500 T', '375 T'], 16, 44),
+  qr(131, 'Determine the force (lb) in member DE.',
+    ['300 T', '1320 T', '600 T', '1200 T'], 16, 44),
+
+  // Situation 45 — items 132–134
+  qr(132, 'Calculate the force in member BE (kN).',
+    ['2.5 (C)', '3.3 (C)', '2.5 (T)', '3.3 (T)'], 16, 45),
+  qr(133, 'Calculate the force in member BC (kN).',
+    ['15.0 (T)', '9.0 (T)', '15.0 (C)', '9.0 (C)'], 16, 45),
+  qr(134, 'Calculate the force in member AE (kN).',
+    ['7.5 (T)', '7.5 (C)', '10.5 (C)', '10.5 (T)'], 16, 45),
+
+  // Situation 46 — items 135–137
+  qr(135, 'Determine the force (kN) supported by member DF.',
+    ['6 kN (C)', '6 kN (T)', '7.5 (T)', '7.5 (C)'], 16, 46),
+  qr(136, 'Determine the force (kN) supported by member HI.',
+    ['4 kN (C)', '4 kN (T)', '8 kN (T)', '8 kN (C)'], 16, 46),
+  qr(137, 'By inspection, identify the number of zero-force members in the truss.',
+    ['3', '4', '5', '6'], 16, 46),
 ];
