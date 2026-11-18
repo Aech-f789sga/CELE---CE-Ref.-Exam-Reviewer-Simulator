@@ -133,7 +133,13 @@ const SITUATIONS: Record<number, string> = {
   54:
     'A 40-kg packing crate is pulled by a rope as shown. The coefficient of static friction between the crate and the floor is 0.35. If $\\alpha = 40^\\circ$, determine the following: the crate is 0.8 m wide and 0.5 m tall, with the rope attached at $B$ on the top right corner.',
   55:
-    'A tool chest has 800 N weight that acts through the midpoint of the chest. The chest is supported by feet at $A$ and rollers at $B$. The surface has a coefficient of friction of 0.3.',
+    'A tool chest has 800 N weight that acts through the midpoint of the chest. The chest is supported by feet at $A$ and rollers at $B$. The surface has a coefficient of friction of 0.3. The chest is 100 cm wide and 140 cm tall, with $A$ and $B$ 15 cm in from each side and 70 cm apart.',
+  56:
+    'The cable supports the three loads shown. Given: $P_2 = 600$ N and $y_D = 3$ m. The cable runs $A$-$B$-$C$-$D$-$E$ over 3 m, 6 m, 6 m and 3 m horizontal spans, with $B$ and $D$ each 1 m below the supports and $C$ 4 m below them.',
+  57:
+    'The cable $ABCD$ is held in the position shown by the horizontal force $P$. $AB$ spans 6 m horizontally, $BC$ rises 6 m over a 4 m run to $D$, and 40 N weights hang at $B$ and $C$; $h$ is the sag of $B$.',
+  58:
+    'The system of knotted cords shown in the figure support the indicated weights (300 lb and 400 lb).',
 };
 
 /**
@@ -563,6 +569,27 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['400', '286', '280', '200'], 19, 55),
   qe(164, 'When P = 150 N, determine the reaction (N) at point A.',
     ['614', '632', '641', '786'], 19, 55),
+  // Situation 56 — items 165–167
+  qe(165, 'Determine the magnitude of $P_1$ in Newtons.',
+    ['160', '320', '950', '520'], 20, 56),
+  qe(166, 'Determine the reaction at support E in Newtons.',
+    ['800', '1076', '720', '1018'], 20, 56),
+  qe(167, 'Find sag $y_B$ in meters.',
+    ['3.33', '2.33', '1.69', '2.69'], 20, 56),
+
+  // Situation 57 — items 168–170
+  qe(168, 'Determine $P$ in Newtons.',
+    ['80.0', '26.7', '120.0', '53.3'], 20, 57),
+  qe(169, 'Determine the force (N) in segment $BC$ of the cable.',
+    ['66.7', '126.5', '48.1', '89.4'], 20, 57),
+  qe(170, 'Determine the force (N) in segment $CD$ of the cable.',
+    ['84.3', '113.1', '96.1', '144.2'], 20, 57),
+
+  // Situation 58 — items 171–172
+  qe(171, 'Compute the tensile force (lb) in cord D.',
+    ['293', '359', '400', '207'], 20, 58),
+  qe(172, 'Compute the tensile force (lb) in cord A.',
+    ['699', '846', '993', '646'], 20, 58),
 ];
 
 /** Section: FRAMES. */
