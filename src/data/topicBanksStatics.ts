@@ -1,17 +1,29 @@
 /**
- * Statics of Rigid Bodies.
+ * Statics of Rigid Bodies — COMPLETE, items 1–176 across 21 pages.
  *
- * Source: Margallo's Buckling practice set, "Statics of Rigid Bodies", 21 pages.
+ * Source: Margallo's Buckling practice set, "Statics of Rigid Bodies".
  *
  * ## Key status
  *
  * No answer key has been supplied for this booklet, so every item is
  * `keyPending` and the UI must not score it.
  *
+ * ## Layout
+ *
+ *   RESULTANT                        1–47    stat-forces
+ *   EQUILIBRIUM – 2D/3D CONCURRENT   48–104  stat-equil
+ *   EQUILIBRIUM – 2D NONCONCURRENT   105–104 ...
+ *   FRAMES / TRUSSES                 105–143 stat-frames
+ *   FRICTION                         144–164 stat-equil
+ *   CABLES                           165–176 stat-equil
+ *
+ * 167 items are live in the three topic arrays; 9 are held in STAT_PENDING
+ * because their figures could not be resolved (see SITUATIONS_PENDING).
+ *
  * ## Situations
  *
  * The booklet is built out of "Situation N" blocks: one figure plus a few
- * questions that all read off it. A single question is often unsolvable alone —
+ * questions that all read off it. A lone question is often unsolvable —
  * "Determine the resultant" means nothing without the situation's figure and
  * given values. So items stay contiguous by situation, each carries the shared
  * wording in `situationText`, and `text` repeats it so the item still stands on
@@ -19,7 +31,8 @@
  *
  * `Question` has no image field, so a figure is described in words inside
  * `SITUATIONS`. A description only counts as trustworthy if solving the item
- * against it lands on one of the four printed choices.
+ * against it lands on one of the four printed choices; where that check was not
+ * possible the description is marked in `SITUATIONS_PENDING` instead.
  */
 import type { TopicQuestion } from './topicBanks';
 
@@ -139,7 +152,9 @@ const SITUATIONS: Record<number, string> = {
   57:
     'The cable $ABCD$ is held in the position shown by the horizontal force $P$. $AB$ spans 6 m horizontally, $BC$ rises 6 m over a 4 m run to $D$, and 40 N weights hang at $B$ and $C$; $h$ is the sag of $B$.',
   58:
-    'The system of knotted cords shown in the figure support the indicated weights (300 lb and 400 lb).',
+    'The system of knotted cords shown in the figure support the indicated weights (300 lb and 400 lb). The cords meet at knots $A$, $C$ and $D$; the angles shown are $90^\\circ$, $105^\\circ$, $30^\\circ$, $30^\\circ$ and $75^\\circ$.',
+  59:
+    'A uniform 80-m pipe that weighs 960 kN is supported entirely by a cable $AB$ of negligible weight. The span is 80 m, the support at $A$ is 20 m above the lowest point and the support at $B$ is 7.2 m above it.',
 };
 
 /**
@@ -590,6 +605,17 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['293', '359', '400', '207'], 20, 58),
   qe(172, 'Compute the tensile force (lb) in cord A.',
     ['699', '846', '993', '646'], 20, 58),
+  // Situation 58 — item 173
+  qe(173, 'Compute the tensile force (lb) in cord B.',
+    ['678', '707', '424', '914'], 21, 58),
+
+  // Situation 59 — items 174–176
+  qe(174, 'Determine the maximum tensile force (Kn) in the cable.',
+    ['832', '768', '600', '960'], 21, 59),
+  qe(175, 'Determine the minimum tensile force (Kn) in the cable.',
+    ['500', '300', '600', '750'], 21, 59),
+  qe(176, 'Determine the total length (m) of the cable.\n\nHint:/n/n$$L=//int//sqrt{1+//left(//frac{wx}{T_{min}}//right)^2}dx$$',
+    ['86.0', '82.0', '84.0', '71.3'], 21, 59),
 ];
 
 /** Section: FRAMES. */
