@@ -123,7 +123,11 @@ const SITUATIONS: Record<number, string> = {
   49:
     'The uniform 50-kg plank in the given figure is resting on friction surfaces at $A$ and $B$. The coefficients of static friction are $\\mu_A = 0.2$ and $\\mu_B = 0.5$, with the surface at $B$ inclined at $40^\\circ$. The plank is 5 m long. If an 80-kg man starts walking from $A$ toward $B$, determine the following:',
   50:
-    'The top of the 15-kg ladder has a small roller, and at the ground the coefficient of static friction is 0.25. The mass center of the painter is directly below her feet.',
+    'The top of the 15-kg ladder has a small roller, and at the ground the coefficient of static friction is 0.25. The mass center of the painter is directly below her feet. The ladder is 4 m long and its foot is 1.5 m from the wall; $s$ is measured up the ladder to the painter.',
+  51:
+    'The bar $BC$ is supported by a rough floor at $C$ and pin connected at $B$. A vertical force $F$ acts at $B$. The dimensions are 500 mm and 500 mm horizontally to $C$ and 200 mm beyond, with $C$ 600 mm below $B$.',
+  52:
+    'In the figure, two blocks are connected by a solid strut attached to each block with frictionless pins. Given: $\\theta = 60^\\circ$; $\\alpha = 30^\\circ$.',
 };
 
 /**
@@ -505,6 +509,25 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['776.1', '694.1', '707.9', '1174'], 17, 49),
   qe(146, 'Reaction (N) at B.',
     ['534.4', '597.5', '545.0', '233.3'], 17, 49),
+  // Situation 50 — items 147–149
+  qe(147, 'Determine the distance $s$ (in meters) to which the 90-kg painter can climb without causing the 4-m ladder to slip at its lower end A.',
+    ['1.21', '2.55', '3.22', '0.96'], 18, 50),
+  qe(148, 'Determine the reaction at A in N.',
+    ['2575', '1082', '1030', '1062'], 18, 50),
+  qe(149, 'Determine the reaction at B in kg.',
+    ['29.4', '258', '177', '26.3'], 18, 50),
+
+  // Situation 51 — items 150–152
+  qe(150, 'If F = 5 kN determine the reaction (kN) at C.',
+    ['9.50', '2.64', '2.50', '2.08'], 18, 51),
+  qe(151, 'If F = 5 kN determine the reaction (kN) at A.',
+    ['9.50', '2.64', '2.50', '2.08'], 18, 51),
+  qe(152, 'If F = 2 kN what is the minimum coefficient of static friction for which bar $BC$ will not slip at $C$?',
+    ['0.108', '0.215', '0.333', '0.405'], 18, 51),
+
+  // Situation 52 — item 153
+  qe(153, 'If the coefficient of friction under each block is 0.25 and B weighs 270 N, find the minimum weight (N) of A to prevent motion.',
+    ['600', '800', '500', '700'], 18, 52),
 ];
 
 /** Section: FRAMES. */
