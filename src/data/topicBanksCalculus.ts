@@ -17,34 +17,42 @@
  */
 import type { TopicQuestion } from './topicBanks';
 
-function q(
-  number: number,
-  text: string,
-  opts: [string, string, string, string],
-  page: number
-): TopicQuestion {
-  return {
-    id: `cal-diff-${number}`,
+/**
+ * Both Calculus sections share this builder: the booklet is numbered straight
+ * through (Differential 1-70, Integral 71-99) but the two sit under different
+ * `topicId`s so the drill can pick one section at a time.
+ */
+function makeCalcItem(topicId: string, category: string, idPrefix: string) {
+  return (
+    number: number,
+    text: string,
+    opts: [string, string, string, string],
+    page: number
+  ): TopicQuestion => ({
+    id: `${idPrefix}-${number}`,
     number,
     pageNumber: page,
     subject: 'MSTC',
     year: 0,
     month: 'May',
-    category: 'Differential Calculus',
+    category,
     text,
     options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
     correctAnswer: 'A',
     keyPending: true,
     referenceSource: 'Gillesania',
-    topicId: 'cal-diff',
+    topicId,
     solution: {
       summary: 'No printed key supplied for this paper yet.',
       steps: [],
       finalAnswer: '',
       note: 'Answer key pending — this item is not scored.',
     },
-  };
+  });
 }
+
+const q = makeCalcItem('cal-diff', 'Differential Calculus', 'cal-diff');
+const qi = makeCalcItem('cal-int', 'Integral Calculus', 'cal-int');
 
 export const CAL_DIFF_PENDING: number[] = [];
 
@@ -177,4 +185,37 @@ export const CAL_DIFF: TopicQuestion[] = [
     ['$r = 3/2\pi$ m, $h = 2/3$ m', '$r = 2/3\pi$ m, $h = 2/3$ m', '$r = 3/2\pi$ m, $h = 3/2$ m', '$r = 2/3\pi$ m, $h = 3/2$ m'], 5),
   q(64, 'A gutter with a rectangular cross section is made by bending up equal amounts from the ends of a 30-cm-wide piece of tin. What are the dimensions of the cross section so that the volume is a maximum?',
     ['h = 7.5 cm, w = 15 cm', 'h = 5.0 cm, w = 20 cm', 'h = 5.0 cm, w = 15 cm', 'h = 7.5 cm, w = 20 cm'], 5),
+  q(65, 'A circular cylindrical metal container, open at the top, is to have a capacity of 24\u03c0 in\u00b3. The cost of the material used for the bottom of the container is 15 cents per in\u00b2, and that of the material used for the curved part is 5 cents per in\u00b2. If there is no waste of material, find the dimensions that will minimize the cost of the material.',
+    ['r = 6 in, h = 2 in', 'r = 4 in, h = 8 in', 'r = 8 in, h = 4 in', 'r = 2 in, h = 6 in'], 6),
+  q(66, 'A person in a rowboat 2 miles from the nearest point on a straight shoreline wishes to reach a house 6 miles farther down the shore. If the person can row at a rate of 3 mi/hr and walk at a rate of 5 mi/ hr, find the least amount of time required to reach the house.',
+    ['1 hr and 24 mins', '1 hr and 34 mins', '1 hr and 44 mins', '1 hr and 54 mins'], 6),
+  q(67, 'Verify that the function satisfies the hypotheses of Rolle\u2019s theorem. Then find all values c in the given interval that satisfy the conclusion of Rolle\u2019s theorem. $f(x) = x^2 - 6x + 1$, $[0, 6]$.',
+    ['2', '3', '4', '5'], 6),
+  q(68, 'Verify that the given function satisfies the hypotheses of the mean value theorem. Then find all numbers c that satisfy the conclusion of the mean value theorem. $f(x) = x^3 + 3x - 1$, $[0, 2]$',
+    ['$2\sqrt{3}/3$', '$2\sqrt{2}/3$', '$3\sqrt{3}/2$', '$3\sqrt{2}/2$'], 6),
+  q(69, 'Determine whether the function $f(x) = 2x^3 - 3x + 1$ satisfies the conditions of the Mean Value Theorem on the interval [-2, 2] If so, find the point(s) guaranteed to exist by the theorem.',
+    ['x = \u00b11.55', 'x = \u00b11.51', 'x = \u00b11.11', 'x = \u00b11.15'], 6),
+  q(70, 'Determine whether the function $f(x) = 2x^3 - 3x + 1$ satisfies the conditions of the Mean Value Theorem on the interval [-2, 2]. If so, find the point(s) guaranteed to exist by the theorem.\n\nHint:/n/n$$/dfrac{f(b)-f(a)}{b-a}=f/u2032(x_0)$$',
+    ['2.15', '0.15', '3.15', '1.15'], 6),
+];
+
+export const CAL_INT: TopicQuestion[] = [
+  qi(71, 'Find the area of the region R bounded by the graphs of $y = x^3$, $y = x + 6$, and the x-axis.',
+    ['28', '32', '34', '36'], 6),
+  qi(72, 'Find the area of the region lying above the x axis and under the parabola $y = 4x - x^2$.',
+    ['8.67', '9.67', '10.67', '11.67'], 6),
+  qi(73, 'Find the area of the region bounded by the parabola $y = x^2 - 7x + 6$, the x axis, and the lines x = 2 and x = 6.',
+    ['18.7', '19.7', '20.7', '21.7'], 6),
+  qi(74, 'Find the area of the region bounded by the given curves: $y = x^2 - 4$, $y = 8 - 2x^2$',
+    ['28', '29', '31', '32'], 6),
+  qi(75, 'Find the area of the region bounded by the given curves: $y = \tan x$, $x = 0$, $x = \pi/4$',
+    ['0.473', '0.743', '0.347', '0.734'], 6),
+  qi(76, 'Find the area of the region bounded by the graphs of $y = x^3$, $y = x + 6$, and the x-axis.',
+    ['28', '26', '24', '22'], 6),
+  qi(77, 'Find the area of the region bounded by the graphs of the given functions: $y = -x^2 + 6$, $y = x^2 + 4x$.',
+    ['$63/4$', '$46/3$', '$64/3$', '$43/6$'], 6),
+  qi(78, 'Find the area of the region bounded by the graphs of the equations $2y^2 = x + 4$ and $y^2 = x$.',
+    ['$34/3$', '$30/3$', '$31/3$', '$32/3$'], 6),
+  qi(79, 'Find the area of the region bounded above by the curve $y = 2e^{-x} + x$, below by the curve $y = e^x/2$, on the left by $x = 0$, and on the right by $x = 1$.',
+    ['0.590', '0.509', '0.905', '0.950'], 6),
 ];
