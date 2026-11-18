@@ -77,7 +77,11 @@ const SITUATIONS: Record<number, string> = {
   26:
     'The shear-leg derrick shown in the figure supports a vertical load of $W = 2000$ N applied at $A$. Points $B$, $C$ and $D$ are in the same horizontal plane; $A$, $O$ and $D$ are in the $XY$ plane. Dimensions 20 m, 10 m, 15 m, 10 m and 5 m.',
   27:
-    'Neglecting the weights of the pulleys, determine the force $T$ required to support the weight $W = 100$ N.',
+    'Neglecting the weights of the pulleys, determine the force $T$ required to support the weight $W = 100$ N. Three arrangements are shown: (a) one pulley, (b) two pulleys, (c) three pulleys.',
+  28:
+    'The hoist shown is used in a machine shop to position heavy workpieces in a lathe. Cable $CD$ and bar $CE$ meet at $C$; the pulley arrangement carries the load $W$.',
+  29:
+    'A horizontal beam runs from a pin support at $A$ through $C$ to $B$. A 4 kN load acts at $B$. $C$ is 1.5 m to the right of $A$ and $B$ a further 1.5 m on. A strut runs from $A$ down 1.5 m to $D$ and from $D$ up to $C$.',
 };
 
 /**
@@ -381,4 +385,27 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['1374', '2748', '1031', '2236'], 9, 26),
   qe(77, 'Determine the force (N) in member AC.',
     ['2748', '1374', '2236', '559'], 9, 26),
+  // Situation 27 — items 78–80
+  qe(78, '(a) One pulley',
+    ['50 N', '100 N', '200 N', '10 N'], 10, 27),
+  qe(79, '(b) Two pulleys',
+    ['300 N', '25 N', '33 N', '400 N'], 10, 27),
+  qe(80, '(c) Three pulleys',
+    ['600 N', '16.7 N', '12.5 N', '800 N'], 10, 27),
+
+  // Situation 28 — items 81–83
+  qe(81, 'Determine the force (N) in cable CD when W = 100 N.',
+    ['153', '229', '67', '219'], 10, 28),
+  qe(82, 'Determine the force (N) in bar CE when W = 150 N.',
+    ['221', '138', '331', '229'], 10, 28),
+  qe(83, 'Given: Cable between pulleys A and B can support a force of 300 N. All other cables can support a force of 500 N. Bar CE can support a compressive force of 600 N. Determine the largest weight W that may be lifted.',
+    ['600', '333', '218', '272'], 10, 28),
+
+  // Situation 29 — items 84–86
+  qe(84, 'Determine the horizontal component of reaction at the pin $A$.',
+    ['8.0', '16.0', '8.0', '4.0'], 10, 29),
+  qe(85, 'Determine the vertical component of reaction (kN) at the pin $A$.',
+    ['12.0', '4.0', '7.3', '8.0'], 10, 29),
+  qe(86, 'Determine the reaction (kN) on the beam at $C$.',
+    ['8.0', '5.7', '11.3', '16.9'], 10, 29),
 ];
