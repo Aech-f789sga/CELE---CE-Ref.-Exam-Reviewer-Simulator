@@ -58,6 +58,20 @@ const SITUATIONS: Record<number, string> = {
     'A high-rise building 180 m tall and 60 m wide is acted on by wind pressure that varies linearly with height, from 1.8 N/m$^2$ near the base to 3.2 N/m$^2$ higher up; 120 m, 80 m and 60 m dimensions mark the building and its setback.',
   17:
     'A 200-kg crate is supported as shown. $A$ and $C$ are 8 m apart on a horizontal ceiling. Cable $AB$ is 6.5 m long and makes $34^\\circ$ with the horizontal; cable $BC$ runs from $B$ up to $C$, where a downward force $F$ is applied. The crate hangs from $B$.',
+  18:
+    'A block is suspended from the midpoint $B$ of a cord $ABC$ whose supports $A$ and $C$ are 0.4 m apart. The sag at $B$ is $d = 0.15$ m.',
+  19:
+    'Three spheres, each of mass 2 kg and 350 mm in diameter, rest in a box 760 mm wide. Sphere $A$ sits on top of $B$ and $C$; spheres $B$ and $C$ rest on the floor, one against each side wall.',
+  20:
+    'The masses of the frictionless cylinders $A$ and $B$ are 2.0 kg and 1.0 kg respectively. The smallest value of the force $P$ that will lift cylinder $A$ off the horizontal surface is 55.5 N. Cylinder $A$ has a radius of 20 mm and rests on the floor against cylinder $B$.',
+  21:
+    'A tower 30 m tall is guyed by cables running from its top to anchor points on the ground. The anchors are 10 m, 15 m and 12.5 m out from the base, with a further 10 m dimension on the far side.',
+  22:
+    'The tripod is subjected to a vertical 2-kN force at its apex $D$. The weight of the legs is negligible compared with the applied load. The legs are 1100 mm long; the base spacing dimensions are 520 mm, 400 mm, 440 mm and 600 mm.',
+  23:
+    'Force $P$ is supported by two cables and a bar. Point $A$ lies in the $yz$ plane, and points $B$ and $C$ lie in the $xz$ plane. Given: $P = 3$ kip. The dimensions are 4 ft, 4 ft, 6 ft, 12 ft, 12 ft and 5 ft.',
+  24:
+    'Three cables are used to tether a balloon as shown. Knowing that the tension in cable $AC$ is 444 N.',
 };
 
 /**
@@ -291,4 +305,59 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['1145', '1594', '117', '162'], 6, 17),
   qe(50, 'If the allowable tensile force in the cable is 2000 N, determine the maximum weight (kg) of the crate it could carry.',
     ['309', '246', '349', '404'], 6, 17),
+  // Situation 18 — items 51–53
+  qe(51, 'If the mass of the block is 5 kg and sag $d = 0.15$ m, determine the force (N) in cord ABC.',
+    ['40.9', '30.7', '47.1', '81.8'], 7, 18),
+  qe(52, 'If the allowable tension in the cable is 75 N, determine the maximum weight (kg) of the block it could carry using $d = 0.15$ m',
+    ['12.2', '9.2', '4.6', '90'], 7, 18),
+  qe(53, 'If the allowable tension in the cable is 70 N, determine the minimum sag "d" (m) that will support the block if its mass is 7 kg.',
+    ['0.1126', '0.1011', '0.3553', '0.0100'], 7, 18),
+
+  // Situation 19 — items 54–56
+  qe(54, 'Find the reaction (N) of B on A.',
+    ['7.1', '36.3', '16.7', '12.1'], 7, 19),
+  qe(55, 'Find the reaction (N) of the wall on C.',
+    ['4.16', '21.26', '7.09', '9.78'], 7, 19),
+  qe(56, 'Find the reaction (N) of the floor on B.',
+    ['9.8', '19.6', '29.4', '39.2'], 7, 19),
+
+  // Situation 20 — items 57–59
+  qe(57, 'Calculate the radius $R$ (mm) of the cylinder $B$.',
+    ['8', '10', '12', '15'], 7, 20),
+  qe(58, 'Calculate the normal reaction (N) between the two cylinders.',
+    ['61.4', '57.3', '58.9', '56.1'], 7, 20),
+  qe(59, 'Calculate the reaction at the horizontal surface (N) of cylinder B.',
+    ['29.4', '30.3', '28.9', '19.6'], 7, 20),
+
+  // Situation 21 — items 60–62
+  qe(60, 'If cable AD is tightened by a turnbuckle and develops a tension of 1300 lb, determine the tension (lb) developed in cable AB.',
+    ['750', '583.', '2100', '808'], 7, 21),
+  qe(61, 'If cable AD is tightened by a turnbuckle and develops a tension of 1300 lb, determine the tension (lb) developed in cable AC.',
+    ['500', '875', '1400', '538'], 8, 21),
+  qe(62, 'If the tension developed in either cable AB or AC cannot exceed 1000 lb, determine the maximum tension (lb) that can be developed in cable AD when it is tightened by the turnbuckle.',
+    ['2229', '1610', '2414', '1486'], 8, 21),
+
+  // Situation 22 — items 63–65
+  qe(63, 'Compute the compression in leg AD in kN.',
+    ['1.036', '0.216', '0.925', '1.726'], 8, 22),
+  qe(64, 'Compute the compression in leg CD in kN.',
+    ['0.898', '0.349', '0.376', '1.106'], 8, 22),
+  qe(65, 'Compute the compression in leg BD in kN.',
+    ['0.898', '0.349', '0.376', '1.106'], 8, 22),
+
+  // Situation 23 — items 66–68
+  qe(66, 'Determine the force (kip) supported by the cable AC.',
+    ['4.57', '1.21', '5.25', '1.88'], 8, 23),
+  qe(67, 'Determine the force (kip) supported by the cable AB.',
+    ['1.88', '5.25', '4.57', '1.21'], 8, 23),
+  qe(68, 'Determine the force (kip) supported by bar AO.',
+    ['3.92', '7.83', '6.20', '9.46'], 8, 23),
+
+  // Situation 24 — items 69–71
+  qe(69, 'Determine the vertical force exerted by the balloon at A in N.',
+    ['940', '956', '870', '978'], 8, 24),
+  qe(70, 'Determine the tension in cable AD in N.',
+    ['240', '397', '496', '662'], 8, 24),
+  qe(71, 'Determine the tension in cable AB in N.',
+    ['268', '496', '240', '821'], 8, 24),
 ];
