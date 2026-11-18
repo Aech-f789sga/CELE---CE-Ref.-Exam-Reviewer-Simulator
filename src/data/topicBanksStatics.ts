@@ -10,9 +10,9 @@
  *
  * ## Layout
  *
- *   RESULTANT                        1–47    stat-forces
- *   EQUILIBRIUM – 2D/3D CONCURRENT   48–104  stat-equil
- *   EQUILIBRIUM – 2D NONCONCURRENT   105–104 ...
+ *   RESULTANT (2D/3D concurrent, nonconcurrent, distributed)
+ *                                    1–47    stat-forces
+ *   EQUILIBRIUM (2D/3D concurrent)   48–104  stat-equil
  *   FRAMES / TRUSSES                 105–143 stat-frames
  *   FRICTION                         144–164 stat-equil
  *   CABLES                           165–176 stat-equil
