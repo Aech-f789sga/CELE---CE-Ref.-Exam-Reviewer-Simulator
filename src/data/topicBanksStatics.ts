@@ -42,6 +42,10 @@ const SITUATIONS: Record<number, string> = {
     'Three forces act on a hook. Force $A$ acts up and to the right at $\\alpha$ above the $+x$ axis; force $B$ acts down and to the right at $\\beta$ below the $+x$ axis; force $C$ acts down and to the left, $\\phi$ being measured from the downward vertical to $C$.',
   9:
     'An L-shaped bracket is fixed at $O$ and hangs down. Its vertical leg is 800 mm long; from the bottom of that leg a horizontal leg runs 600 mm to the right and ends at $A$. A force $F = 90$ N acts at $A$, directed up and to the left at angle $\\theta$ from the vertical.',
+  10:
+    'A bracket is fastened to a girder by two rivets $A$ and $B$ and supports a 2-kN force. Rivets $A$ and $B$ lie on a vertical line 250 mm apart. The 2-kN force acts horizontally to the right at a point 100 mm below the line through $B$ and 300 mm to the right of the rivet line.',
+  11:
+    'Bar $OA$ is 1.5 m long, pivoted at $O$ and inclined at $60^\\circ$ above the horizontal. Cable $AB$ runs from $A$ to a point $B$ on the ground 1.2 m to the left of $O$, and prevents the bar from rotating clockwise. At $A$ the $t$ axis lies along the bar pointing away from $O$, and the $n$ axis is perpendicular to the bar.',
 };
 
 /**
@@ -144,6 +148,23 @@ export const STAT_FORCES: TopicQuestion[] = [
     ['33.5', '55.6', '70.8', '83.5'], 3, 9),
   qf(26, 'Determine the value of $\\theta$ for which the moment about $O$ is zero.',
     ['$53.1^\\circ$', '$36.9^\\circ$', '$48.6^\\circ$', '$41.4^\\circ$'], 3, 9),
+  // Situation 9 — item 27
+  qf(27, 'Determine the value of $\\theta$ for which the moment about $O$ is a maximum.',
+    ['$0^\\circ$', '$30^\\circ$', '$45^\\circ$', '$90^\\circ$'], 4, 9),
+
+  // Situation 10 — items 28–29
+  qf(28, 'Determine the force at rivet A in kN.',
+    ['0.8', '2.8', '2.4', '1.7'], 4, 10),
+  qf(29, 'Determine the force at rivet B in kN.',
+    ['1.7', '2.4', '0.8', '2.8'], 4, 10),
+
+  // Situation 11 — items 30–32
+  qf(30, 'If the cable tension is 750 N, determine the $n$-component (N) of this force acting on point $A$ of the bar.',
+    ['457.5', '624.2', '514.3', '332.6'], 4, 11),
+  qf(31, 'If the cable tension is 700 N, determine the $t$-component (N) of this force acting on point $A$ of the bar.',
+    ['509.5', '627.4', '554.7', '672.2'], 4, 11),
+  qf(32, 'If the moment of the cable tension about point O is 150 N-m, determine the $t$-component (N) of this cable force acting on point $A$ of the bar.',
+    ['494.9', '202.1', '100.0', '225.5'], 4, 11),
 ];
 
 /**
