@@ -57,6 +57,12 @@ const SIT1 =
 const SIT2 =
   'The cable carrying $P$ rises 100 mm over a horizontal run of 200 mm; the cable carrying the 1.6 kN force drops 150 mm over a horizontal run of 200 mm.';
 
+const SIT4 =
+  'A bracket at $O$ carries two rods: a horizontal rod running to the left with a 700 N force applied at its end pointing horizontally away from $O$, and an inclined rod above it with a 400 N force applied at its end pointing up and to the left along the rod. $\\theta$ is the angle at $O$ between the two rods.';
+
+const SIT5 =
+  'Force $A$ acts up and to the right at $\\alpha$ above the $+x$ axis; force $B$ acts down and to the right at $\\beta$ below the $+x$ axis; force $C$ acts down and to the left, $\\phi$ being measured from the downward vertical to $C$.';
+
 const SIT3 =
   '$T_1$ acts up and to the left at $60^\\circ$ above the negative $x$-axis, $T_2$ acts vertically upward, and $T_3$ acts up and to the right at $40^\\circ$ above the positive $x$-axis.';
 
@@ -79,4 +85,16 @@ export const STAT_FORCES: TopicQuestion[] = [
     ['$79.6^\\circ$', '$87.8^\\circ$', '$84.0^\\circ$', '$66.3^\\circ$'], 1),
   qf(9, `Situation 3. Three forces are applied to the eye bolt as shown. ${SIT3}\n\nGiven that $T_2 = 300$ N and the resultant of the three forces is 2000 N acting $15^\\circ$ to the left of $T_2$, determine the magnitude of $T_3$ (N).`,
     ['1284', '1607', '678', '373'], 1),
+  qf(10, `Situation 4. Refer to the given figure. ${SIT4}\n\nDetermine the resultant (N) of the two forces when $\\theta = 85^\\circ$.`,
+    ['775', '836', '1099', '304'], 2),
+  qf(11, `Situation 4. Refer to the given figure. ${SIT4}\n\nAt what angle $\\theta$ (in degrees) must the 400-N force be applied in order that the resultant $\\mathbf{R}$ of the two forces have a magnitude of 1000 N?`,
+    ['18.2', '51.3', '128.7', '33.1'], 2),
+  qf(12, `Situation 4. Refer to the given figure. ${SIT4}\n\nWhen R = 1000N, what will be the angle $\\beta$ (in degrees) between $\\mathbf{R}$ and the horizontal?`,
+    ['7.18', '71.81', '12.62', '18.19'], 2),
+  qf(13, `Situation 5. Three forces are acting upon a hook as shown. Given: Forces, A = 60 kN, C = 50 kN; Angles, $\\alpha = 25^\\circ$, $\\beta = 60^\\circ$. ${SIT5}\n\nDetermine the resultant (kN) of the force system when force B = 40 kN and angle $\\phi = 50^\\circ$.`,
+    ['54.9', '45.6', '63.6', '59.2'], 2),
+  qf(14, `Situation 5. Three forces are acting upon a hook as shown. Given: Forces, A = 60 kN, C = 50 kN; Angles, $\\alpha = 25^\\circ$, $\\beta = 60^\\circ$. ${SIT5}\n\nGiven: Angle $\\phi = 80^\\circ$; Resultant is acting along the positive x axis. Determine force B in kN.`,
+    ['27.6', '19.3', '39.3', '10.3'], 2),
+  qf(15, `Situation 5. Three forces are acting upon a hook as shown. Given: Forces, A = 60 kN, C = 50 kN; Angles, $\\alpha = 25^\\circ$, $\\beta = 60^\\circ$. ${SIT5}\n\nGiven: Force B = 80 kN, Resultant = 100 kN. Determine angle $\\phi$ in degrees.`,
+    ['84.1', '5.9', '46.3', '43.7'], 2),
 ];
