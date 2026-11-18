@@ -94,6 +94,12 @@ const SITUATIONS: Record<number, string> = {
     'The sign has a mass of 100 kg with center of mass at $G$. It is held by a ball-and-socket joint at $A$ and by wires $BC$ and $BD$. Dimensions 1 m and 2 m locate $B$ and the wire anchors relative to the sign.',
   35:
     'A 2.4-m boom is held by a ball-and-socket joint at $C$ and by two cables $AD$ and $AE$. The boom carries a 3.6 kN load. Dimensions 0.6 m, 0.8 m, 1.2 m, 1.2 m, 1.2 m, 1.8 m and 0.8 m locate $A$, $D$, $E$ and the load.',
+  36:
+    'Refer to the given frame. A 250 N load acts horizontally at $B$. The frame is a triangle $ACD$ with a horizontal member $BD$, pinned at $A$ and on a roller at $E$. The four horizontal panels are 1.5 m each; $C$ is 2 m above $BD$ and $BD$ is 2 m above the base.',
+  37:
+    'Neglecting the weight of the frame. A 300 N/m distributed load acts downward on the horizontal member $AB$. $AB$ spans 6 m from $A$ to $B$, with a vertical post at $A$ 3 m + 3 m tall carrying $C$ and $E$, and a member $BD$ 4 m long running down to a roller at $D$; $F$ is the support under $B$.',
+  38:
+    'Neglecting the weight of the frame, find the following: a braced frame with members $AB$ and $DE$ horizontal, crossed diagonals, a 400 lb load acting horizontally at $B$, and dimensions 6 ft, 4 ft, 4 ft and 8 ft.',
 };
 
 /**
@@ -460,4 +466,34 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['327.0', '588.6', '735.8', '367.9'], 12, 34),
   qe(101, 'Determine the tension in wires $BD$ (N).',
     ['163.5', '735.8', '367.9', '294.3'], 12, 34),
+  // Situation 35 — items 102–104
+  qe(102, 'Determine the tension (kN) in cable AD.',
+    ['2.60', '6.24', '2.89', '3.90'], 13, 35),
+  qe(103, 'Determine the tension (kN) in cable AE.',
+    ['6.72', '2.80', '3.11', '4.20'], 13, 35),
+  qe(104, 'Determine y-component of the reaction (kN) at C.',
+    ['5.40', '1.80', '5.13', '4.80'], 13, 35),
+
+];
+
+/** Section: FRAMES. */
+export const STAT_FRAMES: TopicQuestion[] = [  // Situation 36 — items 105–107
+  qr(105, 'Determine the horizontal component of reaction (N) at C.',
+    ['125', '93.75', '156.25', '250'], 13, 36),
+  qr(106, 'Determine the reaction (N) at C.',
+    ['156.25', '93.75', '125', '250'], 13, 36),
+  qr(107, 'Determine the reaction (N) at B.',
+    ['509', '375', '387', '94'], 13, 36),
+
+  // Situation 37 — items 108–110
+  qr(108, 'Find the tension (N) in cable CD.',
+    ['1800', '3600', '2400', '4800'], 13, 37),
+  qr(109, 'Find the reaction (N) at pin B.',
+    ['900', '2012', '2563', '3711'], 13, 37),
+  qr(110, 'Find the reaction at support F.',
+    ['900', '2012', '2563', '3711'], 13, 37),
+
+  // Situation 38 — item 111
+  qr(111, 'The reaction at E.',
+    ['400', '200', '100', '300'], 13, 38),
 ];
