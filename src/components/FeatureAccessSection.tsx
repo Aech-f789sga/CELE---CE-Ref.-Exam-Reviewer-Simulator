@@ -18,10 +18,21 @@ interface Props {
   unlocked: boolean | null;
   saving: boolean;
   error: string | null;
+  /** Where the current value came from, so a silent fallback is visible. */
+  readSource?: 'firestore' | 'fallback' | null;
+  /** Firebase error code from the read, e.g. `permission-denied`. */
+  readError?: string | null;
   onToggle: (next: boolean) => void;
 }
 
-export function FeatureAccessSection({ unlocked, saving, error, onToggle }: Props) {
+export function FeatureAccessSection({
+  unlocked,
+  saving,
+  error,
+  readSource = null,
+  readError = null,
+  onToggle,
+}: Props) {
   const { themeConfig } = useTheme();
   const busy = saving || unlocked === null;
 
@@ -89,6 +100,17 @@ export function FeatureAccessSection({ unlocked, saving, error, onToggle }: Prop
         The switch applies to everyone else immediately — it is stored in Firestore, not in this
         browser. It gates visibility only: the topic items ship inside the app bundle.
       </p>
+
+      {/* Diagnostic. "Locked" and "denied" look identical from the outside and
+          need different fixes, so say which one this is. */}
+      <div
+        data-testid="topic-lock-source"
+        className={`text-[10px] font-tech-mono ${readError ? 'text-rose-300' : 'text-slate-500'}`}
+      >
+        read: {readSource ?? 'pending'}
+        {readError ? ` (${readError})` : ''}
+        {readSource === 'fallback' && !readError ? ' — not confirmed by the server' : ''}
+      </div>
     </div>
   );
 }

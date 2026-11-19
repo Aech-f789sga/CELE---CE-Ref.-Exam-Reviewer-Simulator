@@ -22,7 +22,7 @@
  * different change, and this module's `readTopicLock()` is where that would
  * start.
  */
-import { doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocFromServer, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 const COLLECTION = 'app_config';
@@ -33,6 +33,20 @@ export interface TopicLock {
   unlocked: boolean;
   /** Where the value came from, so the UI can be honest about staleness. */
   source: 'firestore' | 'fallback';
+  /**
+   * Firebase error code when the read failed — `permission-denied`, `unavailable`
+   * and so on. Surfaced in the admin panel because "locked" and "denied" look
+   * identical from the outside, and they need very different fixes.
+   */
+  error?: string;
+}
+
+/** Pull the Firebase error code out of whatever was thrown. */
+export function errorCode(err: unknown): string {
+  const code = (err as { code?: unknown })?.code;
+  if (typeof code === 'string') return code;
+  const msg = (err as { message?: unknown })?.message;
+  return typeof msg === 'string' ? msg : 'unknown';
 }
 
 let cache: TopicLock | null = null;
@@ -74,12 +88,26 @@ export function watchTopicLock(onChange: (lock: TopicLock) => void): () => void 
   if (!unsubscribeSnapshot) {
     unsubscribeSnapshot = onSnapshot(
       doc(db, COLLECTION, DOC_ID),
-      (snap) => publish(fromSnapshot(snap.data() as { unlocked?: unknown } | undefined)),
-      () => {
+      (snap) => {
+        /*
+         * Ignore our own unacknowledged writes.
+         *
+         * Firestore fires the listener immediately with the local mutation
+         * while the write is still in flight. Acting on that makes a *refused*
+         * write look successful for a moment -- the switch springs open, then
+         * snaps back on the next snapshot -- which is precisely the "it works
+         * until I reload" report this code is here to stop producing. Only a
+         * server-confirmed value is allowed to move the switch.
+         */
+        if (snap.metadata.hasPendingWrites) return;
+        publish(fromSnapshot(snap.data() as { unlocked?: unknown } | undefined));
+      },
+      (err) => {
         // Denied or offline. Firestore ends the listener on error, so clear the
         // handle as well and let the next subscriber try again.
         unsubscribeSnapshot = null;
-        if (!cache) publish(LOCKED);
+        const error = errorCode(err);
+        publish(cache ? { ...cache, error } : { unlocked: false, source: 'fallback', error });
       }
     );
   }
@@ -104,8 +132,9 @@ export async function readTopicLock(force = false): Promise<TopicLock> {
     try {
       const snap = await getDoc(doc(db, COLLECTION, DOC_ID));
       publish(fromSnapshot(snap.data() as { unlocked?: unknown } | undefined));
-    } catch {
-      publish(cache ?? LOCKED);
+    } catch (err) {
+      const error = errorCode(err);
+      publish(cache ? { ...cache, error } : { unlocked: false, source: 'fallback', error });
     } finally {
       inflight = null;
     }
@@ -123,7 +152,23 @@ export async function readTopicLock(force = false): Promise<TopicLock> {
  * then confirms the same value to every other client.
  */
 export async function setTopicUnlocked(unlocked: boolean): Promise<void> {
-  await setDoc(doc(db, COLLECTION, DOC_ID), { unlocked }, { merge: true });
+  const ref = doc(db, COLLECTION, DOC_ID);
+  await setDoc(ref, { unlocked }, { merge: true });
+
+  /*
+   * Read it back from the server before claiming success.
+   *
+   * `setDoc` resolves as soon as the write is queued, so an offline client, or
+   * one whose write is rejected after acknowledgement, resolves happily while
+   * nothing is actually stored. That looks exactly like a switch that works
+   * until the page reloads. Reading back from the server — not the cache —
+   * turns that into a visible failure instead of a silent lie.
+   */
+  const snap = await getDocFromServer(ref);
+  if ((snap.data()?.unlocked === true) !== unlocked) {
+    throw Object.assign(new Error('write-not-confirmed'), { code: 'write-not-confirmed' });
+  }
+
   publish({ unlocked, source: 'firestore' });
 }
 

@@ -28,16 +28,38 @@ service cloud.firestore {
       return resource.data;
     }
 
+    // Case-insensitive on purpose. The client compares with
+    // `email.trim().toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase()`, so
+    // an exact `==` here would let an account whose address differs only in
+    // capitalisation into the panel while Firestore still refused every write
+    // -- a denial that looks exactly like a missing rule.
     function isDesignatedAdminEmail() {
       return isSignedIn() && (
-        request.auth.token.email == 'derrickdarrack@gmail.com'
+        request.auth.token.email is string &&
+        request.auth.token.email.lower() == 'derrickdarrack@gmail.com'
       );
+    }
+
+    // Who counts as ADMIN. The client decides the same question in
+    // AuthContext (`isUserAdmin(email) || profile.role === 'admin'`), and the
+    // two MUST agree: if the client lets someone into the admin panel while
+    // this function disagrees, every write they make is silently refused and
+    // the panel looks broken. That is exactly what happened to the By-topics
+    // switch, so the profile role is accepted here too.
+    //
+    // Accepting it is safe, because `users` below only lets a document be
+    // written with role 'admin' by the designated address or by an existing
+    // admin -- a normal account cannot promote itself through this door.
+    function isProfileAdmin() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isAdmin() {
       return isSignedIn() && (
         isDesignatedAdminEmail() ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        isProfileAdmin()
       );
     }
 

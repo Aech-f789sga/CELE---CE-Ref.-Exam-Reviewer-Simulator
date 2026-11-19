@@ -71,7 +71,7 @@ import {
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
 import { FeatureAccessSection } from './FeatureAccessSection';
-import { setTopicUnlocked, watchTopicLock } from '../data/topicLock';
+import { errorCode, setTopicUnlocked, watchTopicLock, type TopicLock } from '../data/topicLock';
 
 interface AdminPanelProps {
   onNavigateToExam?: (subject: 'MSTC' | 'HPGE' | 'PSAD') => void;
@@ -116,13 +116,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   >('inbox');
 
   // "By topics" access switch (app_config/topic_exams)
-  const [topicUnlocked, setTopicUnlocked] = useState<boolean | null>(null);
+  const [topicLock, setTopicLock] = useState<TopicLock | null>(null);
   const [topicSaving, setTopicSaving] = useState<boolean>(false);
   const [topicError, setTopicError] = useState<string | null>(null);
+  const topicUnlocked = topicLock ? topicLock.unlocked : null;
 
   useEffect(() => {
     // Live, so the switch reflects a change made on another device too.
-    return watchTopicLock((lock) => setTopicUnlocked(lock.unlocked));
+    return watchTopicLock(setTopicLock);
   }, []);
 
   const toggleTopicAccess = async (next: boolean) => {
@@ -131,14 +132,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
     try {
       // The write publishes to every watcher, so the switch updates itself.
       await setTopicUnlocked(next);
-    } catch {
-      // A denial here has two likely causes and the admin needs both: the
-      // account may not hold the ADMIN role, or the `app_config` rule may not
-      // have been deployed yet -- without it the default-deny catch-all
-      // refuses the write no matter who is signed in.
+    } catch (err) {
+      // Name the actual cause. A denial here has three very different reasons:
+      // the account is not ADMIN, the rule was never deployed, or the write
+      // never reached the server at all. Say which account Firestore judged,
+      // because the fix depends on it and it is not otherwise visible.
+      const code = errorCode(err);
+      const who = user?.email || profile?.email || 'this account';
+      const uid = user?.uid ? ` (uid ${user.uid})` : '';
+      const offline = code === 'unavailable' || code === 'deadline-exceeded';
       setTopicError(
-        'Could not save. Either this account is not recognised as ADMIN in Firestore, or the ' +
-          'app_config rule in firestore.rules has not been deployed.'
+        code === 'write-not-confirmed'
+          ? 'Firestore accepted the write but did not keep it, so nothing was saved. The ' +
+            'app_config rule is probably missing from the published ruleset.'
+          : offline
+            ? `Firestore could not be reached from ${who}${uid}, so nothing was saved. ` +
+              'Check the connection and try again.'
+            : `Firestore refused the write from ${who}${uid}. That address has to be ` +
+              `${designatedAdminEmail}, or an admins/${user?.uid ?? '<uid>'} document has to ` +
+              `exist, or the app_config rule has not been published (${code}).`
       );
     } finally {
       setTopicSaving(false);
@@ -2027,6 +2039,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
           unlocked={topicUnlocked}
           saving={topicSaving}
           error={topicError}
+          readSource={topicLock?.source ?? null}
+          readError={topicLock?.error ?? null}
           onToggle={(next) => void toggleTopicAccess(next)}
         />
       )}
