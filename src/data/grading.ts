@@ -84,7 +84,30 @@ export function summariseScore(
  * a drill that mixes Algebra with Statics would otherwise rank on a percentage
  * computed from whichever items happened to be scorable, which is not a score
  * anyone can compare against another learner's.
+ *
+ * This answers only the key question. A topic drill is excluded regardless of
+ * its keys — see {@link isTopicDrill}.
  */
 export function isPublishable(summary: ScoreSummary): boolean {
   return summary.pending === 0 && summary.scorable > 0;
+}
+
+/**
+ * True when this paper was assembled from topic banks — a **drill**, not a
+ * sitting.
+ *
+ * Drills are practice. They are drawn at random from a topic, they have no
+ * year or month of their own, and two learners' drills are never the same
+ * paper, so a percentage from one says nothing about either of them. Ranking
+ * them against board-paper attempts would also be unfair in the other
+ * direction: a drill is short and narrowly scoped, which makes a high score
+ * cheap.
+ *
+ * So they are never written as an attempt. Detection is by the `topicId` the
+ * bank stamps on every item, because that is the only marker a drill carries —
+ * the subject/year/month on the surrounding state still hold whatever was last
+ * selected on the setup screen, which is why relying on those was wrong.
+ */
+export function isTopicDrill(questions: { topicId?: string }[]): boolean {
+  return questions.some((q) => typeof q.topicId === 'string' && q.topicId.length > 0);
 }

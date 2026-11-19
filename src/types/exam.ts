@@ -168,6 +168,15 @@ export interface Question {
   workedSolution?: boolean;
   /** Which review reference the item was transcribed from. */
   referenceSource?: ReferenceSource;
+  /**
+   * Set on by-topics items: which topic bank the question was drawn from.
+   *
+   * Its presence is also how the app tells a **drill** apart from a sitting. A
+   * drill is assembled on the fly from topic banks, has no year or month of its
+   * own, and is not a board paper — so it is never recorded as an attempt and
+   * never reaches the leaderboards. See `isTopicDrill` in `data/grading.ts`.
+   */
+  topicId?: string;
   solution: QuestionSolution;
 }
 

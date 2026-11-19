@@ -72,7 +72,7 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
-import { isPublishable, summariseScore } from './data/grading';
+import { isPublishable, isTopicDrill, summariseScore } from './data/grading';
 import { watchTopicLock } from './data/topicLock';
 
 function CustomBgLayer() {
@@ -372,12 +372,21 @@ function MainApp() {
      * Statics drill — and such an attempt must not reach the leaderboards: a
      * recorded 0/176 would rank the learner last for a paper that cannot be
      * passed yet, and would drag down the GWA computed from it.
+     *
+     * A topic drill is excluded even when every item is keyed. Drills are
+     * practice: randomly drawn, short, narrowly scoped, and different for every
+     * learner, so ranking one against a board paper is meaningless in both
+     * directions. Note that this cannot be inferred from `selectedSubject` /
+     * `selectedYear` — those still hold whatever was last picked on the setup
+     * screen, which is exactly how drills used to end up filed as "MSTC May"
+     * attempts and counted on the leaderboards.
      */
+    const topicDrill = isTopicDrill(activeQuestions);
     const summary = summariseScore(activeQuestions, userAnswers);
     const correctCount = summary.correct;
     const ratingPercentage = summary.percentage ?? 0;
     const passedArea = summary.percentage !== null && ratingPercentage >= 50.0;
-    const gradable = isPublishable(summary);
+    const gradable = isPublishable(summary) && !topicDrill;
     const attemptId = `attempt-${Date.now()}`;
     const scratchpadId = getExamStorageBase(selectedSubject, selectedYear, selectedMonth, selectedSource);
     const storageKeyPrefix = `${scratchpadId}_`;
@@ -442,7 +451,9 @@ function MainApp() {
       }
     } else {
       console.info(
-        `Attempt not recorded: ${summary.pending} of ${activeQuestions.length} items have no answer key yet.`
+        topicDrill
+          ? `Drill not recorded: a by-topics drill is practice and does not count towards the leaderboards.`
+          : `Attempt not recorded: ${summary.pending} of ${activeQuestions.length} items have no answer key yet.`
       );
     }
 

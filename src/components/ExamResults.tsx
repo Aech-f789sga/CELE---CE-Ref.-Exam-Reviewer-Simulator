@@ -30,7 +30,7 @@ import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
 import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
-import { isKeyPending, summariseScore } from '../data/grading';
+import { isKeyPending, isTopicDrill, summariseScore } from '../data/grading';
 import { getExamStorageBase } from '../utils/storage';
 import {
   exportScratchpadBundle,
@@ -163,6 +163,12 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const prcContribution = Math.round(ratingPercentage * subjectConfig.weight * 100) / 100;
   /** Nothing on the paper can be graded — the Statics drill, today. */
   const allPending = !scoreKnown && summary.pending > 0;
+  /**
+   * A drill, not a sitting. `subject`/`year`/`month` still hold the last setup
+   * selection, so the header would otherwise claim "MSTC · May 0 Examination" —
+   * which is where the old behaviour came from: a drill filed as a board paper.
+   */
+  const topicDrill = isTopicDrill(questions);
 
   // Trigger celebration confetti if passed
   useEffect(() => {
@@ -233,13 +239,22 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-xs font-semibold">
-              <span className="font-tech-mono text-amber-400">{subject}</span>
-              <span className="text-slate-400">•</span>
-              <span className="text-slate-300">{month} {year} Examination</span>
+              {topicDrill ? (
+                <>
+                  <Layers className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="text-slate-300">By topics · Practice drill</span>
+                </>
+              ) : (
+                <>
+                  <span className="font-tech-mono text-amber-400">{subject}</span>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-300">{month} {year} Examination</span>
+                </>
+              )}
             </div>
 
             <h1 className="font-arnie text-3xl sm:text-4xl font-bold text-white tracking-wide">
-              {subjectConfig.name}
+              {topicDrill ? 'By-topics Drill' : subjectConfig.name}
             </h1>
 
             <p className="text-slate-300 text-sm max-w-xl">
@@ -252,6 +267,12 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                   come from a booklet whose answer key has not been encoded yet, so they are not
                   scored and no key is shown. Your answers are kept with this report. Statics
                   scores will be announced once the answer key is encoded on the site.
+                </>
+              ) : topicDrill ? (
+                <>
+                  Scored against the printed key for these items. A drill is{' '}
+                  <strong className="text-amber-400">practice</strong>, so this sitting is not
+                  recorded and does not count towards your GWA or the leaderboards.
                 </>
               ) : questions.some((q) => q.workedSolution) ? (
                 <>
@@ -276,6 +297,11 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                   <Lock className="w-4 h-4 text-amber-400" />
                   <span>SCORE PENDING — ANSWER KEY NOT YET ENCODED</span>
                 </span>
+              ) : topicDrill ? (
+                <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-slate-800 text-slate-200 border border-slate-600 text-xs font-bold font-tech-mono">
+                  <Layers className="w-4 h-4 text-amber-400" />
+                  <span>DRILL SCORE — NOT A PRC AREA RESULT</span>
+                </span>
               ) : isSubjectPassed ? (
                 <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-tech-mono">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -288,7 +314,11 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                 </span>
               )}
 
-              {scoreKnown ? (
+              {topicDrill ? (
+                <span className="px-3 py-1 rounded-xl bg-slate-800 text-slate-400 text-xs font-tech-mono border border-slate-700">
+                  Not counted towards your GWA or the leaderboards
+                </span>
+              ) : scoreKnown ? (
                 <span className="px-3 py-1 rounded-xl bg-slate-800 text-slate-300 text-xs font-tech-mono border border-slate-700">
                   PRC Weight: {subjectConfig.weightPercent}% (Contributes: {prcContribution.toFixed(2)}%)
                 </span>
@@ -328,23 +358,33 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
         {/* Action Buttons Toolbar */}
         <div className="mt-8 pt-6 border-t border-slate-800 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-          <button
-            type="button"
-            onClick={onRetakeSameArea}
-            className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold font-arnie tracking-wide transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4 text-amber-400" />
-            <span>Retake {subject}</span>
-          </button>
+          {/*
+            Both of these start a *board paper* — `onRetakeSameArea` re-runs the
+            setup selection, and the next area is a subject. On a drill report
+            they would silently launch the wrong thing, filed under whatever
+            paper was last selected, so they are left out here.
+          */}
+          {!topicDrill && (
+            <>
+              <button
+                type="button"
+                onClick={onRetakeSameArea}
+                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold font-arnie tracking-wide transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4 text-amber-400" />
+                <span>Retake {subject}</span>
+              </button>
 
-          <button
-            type="button"
-            onClick={() => onTakeNextArea(nextSubject)}
-            className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold font-arnie tracking-wide transition-colors shadow-md cursor-pointer"
-          >
-            <span>Take Next Area ({nextSubject})</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+              <button
+                type="button"
+                onClick={() => onTakeNextArea(nextSubject)}
+                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold font-arnie tracking-wide transition-colors shadow-md cursor-pointer"
+              >
+                <span>Take Next Area ({nextSubject})</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
 
           <button
             type="button"
@@ -830,7 +870,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
           onClose={() => setIsScratchpadOpen(false)}
           isDocked={false}
           storageKeyPrefix={scratchpadPrefix}
-          title={`${subject} ${month} ${year} Exam Rough Sheets (${
+          title={`${topicDrill ? 'By-topics drill' : `${subject} ${month} ${year}`} Exam Rough Sheets (${
             scoreKnown ? `${ratingPercentage}%` : 'score pending'
           })`}
           documentId={scratchpadDocId}
