@@ -303,7 +303,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
               <span className="block text-[11px] text-slate-400">
                 {topicExamLocked
                   ? 'Drill by subject matter — the admin has not opened this yet'
-                  : 'Drill Algebra, Calculus or Statics only — random items from the topics you pick'}
+                  : 'Random items by the topics you pick'}
               </span>
             </span>
             {topicExamLocked ? (
