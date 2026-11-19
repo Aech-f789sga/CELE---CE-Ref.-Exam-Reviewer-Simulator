@@ -103,28 +103,111 @@ export function topicCount(topicId: string): number {
   return TOPIC_QUESTIONS.filter((q) => q.topicId === topicId).length;
 }
 
+/** How many items to draw from one topic: an exact count, or everything it holds. */
+export type TopicQuota = number | 'all';
+
 /**
- * Randomly draw `perTopic` items from each chosen topic.
+ * Resolve a quota against what a topic actually holds.
  *
- * Topics are drawn independently so a thin topic cannot starve a rich one, and
- * the result is shuffled across topics so a paper is not "all Algebra, then all
- * Trigonometry". If a topic has fewer items than asked for, every item it has is
- * used — silently substituting from another topic would misrepresent the drill.
+ * `'all'` is resolved at draw time rather than frozen when the learner picks
+ * it, so "everything in Algebra" still means everything after more items are
+ * transcribed. A number larger than the pool is capped at the pool — asking for
+ * 40 from a 12-item topic sits you on 12 rather than silently borrowing from a
+ * neighbour.
+ */
+export function resolveQuota(topicId: string, quota: TopicQuota): number {
+  const have = topicCount(topicId);
+  if (quota === 'all') return have;
+  const want = Math.floor(quota);
+  if (!Number.isFinite(want) || want <= 0) return 0;
+  return Math.min(want, have);
+}
+
+/** One topic's line in the drill the learner is assembling. */
+export interface TopicPlanRow {
+  topicId: string;
+  name: string;
+  /** What was asked for: a count, or the whole topic. */
+  quota: TopicQuota;
+  /** What will actually be drawn, once the pool is taken into account. */
+  count: number;
+  /** How many items the topic holds. */
+  available: number;
+  /** True when this topic departs from the drill-wide default. */
+  overridden: boolean;
+}
+
+export interface TopicPlan {
+  rows: TopicPlanRow[];
+  /** Items the drill will contain. */
+  draw: number;
+  /** Items the chosen topics hold in total. */
+  available: number;
+}
+
+/**
+ * Work out what a by-topic drill will actually contain.
+ *
+ * One default applies to every chosen topic; a topic that appears in
+ * `overrides` steps away from it, either to its own count or to `'all'`. Kept
+ * separate from the modal so the arithmetic — default propagation, clamping to
+ * the pool, what "all" means — can be exercised without a DOM.
+ *
+ * `topicIds` is honoured in the order given, and unknown ids are skipped.
+ */
+export function planTopicDrill(
+  topicIds: string[],
+  defaultQuota: TopicQuota,
+  overrides: Record<string, TopicQuota> = {}
+): TopicPlan {
+  const rows: TopicPlanRow[] = [];
+  for (const id of topicIds) {
+    const topic = TOPICS.find((t) => t.id === id);
+    if (!topic) continue;
+    const overridden = id in overrides;
+    const quota = overridden ? overrides[id] : defaultQuota;
+    const available = topicCount(id);
+    rows.push({
+      topicId: id,
+      name: topic.name,
+      quota,
+      count: resolveQuota(id, quota),
+      available,
+      overridden,
+    });
+  }
+  return {
+    rows,
+    draw: rows.reduce((a, r) => a + r.count, 0),
+    available: rows.reduce((a, r) => a + r.available, 0),
+  };
+}
+
+/**
+ * Randomly draw a quota of items from each chosen topic.
+ *
+ * Each topic is drawn independently so a thin topic cannot starve a rich one,
+ * and the result is shuffled across topics so a paper is not "all Algebra, then
+ * all Trigonometry". A topic asked for more than it holds simply contributes
+ * everything it has — silently substituting from another topic would
+ * misrepresent the drill.
+ *
+ * `quotas` is keyed by topic id; iteration follows the key order, so pass it in
+ * the order the topics should be drawn.
  */
 export function pickTopicQuestions(
-  topicIds: string[],
-  perTopic: number,
+  quotas: Record<string, TopicQuota>,
   rng: () => number = Math.random
 ): TopicQuestion[] {
   const out: TopicQuestion[] = [];
-  for (const id of topicIds) {
+  for (const [id, quota] of Object.entries(quotas)) {
     const pool = TOPIC_QUESTIONS.filter((q) => q.topicId === id);
     const shuffled = [...pool];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    out.push(...shuffled.slice(0, Math.max(0, perTopic)));
+    out.push(...shuffled.slice(0, resolveQuota(id, quota)));
   }
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -132,9 +215,4 @@ export function pickTopicQuestions(
   }
   // renumber so the paper reads 1..n regardless of source numbering
   return out.map((q, i) => ({ ...q, number: i + 1 }));
-}
-
-/** Total items available across the chosen topics. */
-export function availableFor(topicIds: string[]): number {
-  return topicIds.reduce((a, id) => a + topicCount(id), 0);
 }
