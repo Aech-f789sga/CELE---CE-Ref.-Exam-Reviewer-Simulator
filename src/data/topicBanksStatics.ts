@@ -21,11 +21,10 @@
  *
  * ## Figures
  *
- * Every situation's figure is cropped from the booklet into
+ * All 59 situations have their figure cropped from the booklet into
  * `public/images/statics/situation-NN.png` and attached via `figureSvg`, so an
  * item is solved from the printed drawing rather than from a prose description
- * of it. `FIGURED` lists the situations that have a crop; add to it as more
- * are cut. Situations 6-8 are the first three.
+ * of it. `FIGURED` lists the situations that have a crop; it is complete.
  *
  * ## Situations
  *
@@ -45,138 +44,119 @@
 import type { TopicQuestion } from './topicBanks';
 
 /**
- * Shared wording + figure description for each "Situation N".
+ * Shared wording for each "Situation N", transcribed from the booklet.
  *
- * Everything a solver needs that is not already in the question itself lives
- * here: force magnitudes, angles, dimensions, and where each figure label sits.
+ * Only what the booklet prints as text: the given values and the situation's
+ * own wording. Nothing here describes the drawing — the crop does that, and a
+ * prose paraphrase of a 3D drawing is both lossy and easy to get wrong.
  */
 const SITUATIONS: Record<number, string> = {
-  1:
-    'A steel tank is to be positioned in an excavation. At point $A$ on top of the tank a 425 lb force acts up and to the left at $30^\\circ$ above the horizontal, and a force $P$ acts up and to the right at angle $\\alpha$ above the horizontal.',
+  1: 'A steel tank is to be positioned in an excavation as shown.',
   2:
-    'It is desired to remove the spike from the timber by applying force along its horizontal axis. An obstruction $A$ prevents direct access, so that two forces, one 1.6 kN and the other $P$, are applied by cables. The cable carrying $P$ rises 100 mm over a horizontal run of 200 mm; the cable carrying the 1.6 kN force drops 150 mm over a horizontal run of 200 mm.',
-  3:
-    'Three forces are applied to an eye bolt. $T_1$ acts up and to the left at $60^\\circ$ above the negative $x$-axis, $T_2$ acts vertically upward, and $T_3$ acts up and to the right at $40^\\circ$ above the positive $x$-axis.',
-  4:
-    'A bracket at $O$ carries two rods: a horizontal rod running to the left with a 700 N force applied at its end pointing horizontally away from $O$, and an inclined rod above it with a 400 N force applied at its end pointing up and to the left along the rod. $\\theta$ is the angle at $O$ between the two rods.',
+    'It is desired to remove the spike from the timber by applying force along its horizontal axis. An obstruction $A$ prevents direct access, so that two forces, one 1.6 kN and the other $P$, are applied by cables as shown.',
+  3: 'Three forces are applied to the eye bolt as shown.',
+  4: 'Refer to the given figure.',
   5:
-    'Three forces act on a hook. Force $A$ acts up and to the right at $\\alpha$ above the $+x$ axis; force $B$ acts down and to the right at $\\beta$ below the $+x$ axis; force $C$ acts down and to the left, $\\phi$ being measured from the downward vertical to $C$.',
-  9:
-    'An L-shaped bracket is fixed at $O$ and hangs down. Its vertical leg is 800 mm long; from the bottom of that leg a horizontal leg runs 600 mm to the right and ends at $A$. A force $F = 90$ N acts at $A$, directed up and to the left at angle $\\theta$ from the vertical.',
-  10:
-    'A bracket is fastened to a girder by two rivets $A$ and $B$ and supports a 2-kN force. Rivets $A$ and $B$ lie on a vertical line 250 mm apart. The 2-kN force acts horizontally to the right at a point 100 mm below the line through $B$ and 300 mm to the right of the rivet line.',
-  11:
-    'Bar $OA$ is 1.5 m long, pivoted at $O$ and inclined at $60^\\circ$ above the horizontal. Cable $AB$ runs from $A$ to a point $B$ on the ground 1.2 m to the left of $O$, and prevents the bar from rotating clockwise. At $A$ the $t$ axis lies along the bar pointing away from $O$, and the $n$ axis is perpendicular to the bar.',
-  12:
-    'The streetlight $A$ is attached to the end of the horizontal boom $AO$. The light weighs 100 N and is subjected to a wind load of 20 N acting in the negative $y$-direction. $P$ and $Q$ are the tensions in two cables attached at point $B$. The resultant of the four forces shown is a force $R$ acting at point $O$. Boom $AO$ is 4 m long, $B$ is 2 m from $O$, and the cable anchorage points $C$ and $D$ are 2 m above $O$ and 1.5 m either side of the post.',
-  13:
-    'The three forces are perpendicular to the triangular plate. The plate is a right triangle with $O$ at the apex, a 3 m leg running to the left and a 4 m leg running to the right. A 40 kN force acts at $O$, and 20 kN and 50 kN act at the far ends of the 3 m and 4 m legs respectively, all in the $+z$ direction.',
-  14:
-    'A table stands on legs at the corners of its top, with $O$ at the centre of the top. $a = 1.2$ m and $b = 1.0$ m. $F_1$, $F_2$ and $F_3$ act vertically at three of the corners, and $F$ acts vertically on the top, offset $d$ from $O$.',
-  15:
-    'A vertical dam wall 20 m long holds water 5 m deep on the shallow side and 8 m deep on the deep side. The pressure at the base is 312 N/m$^2$ on the shallow side and 499 N/m$^2$ on the deep side. $B$ is at the top of the wall and $A$ at its base.',
-  16:
-    'A high-rise building 180 m tall and 60 m wide is acted on by wind pressure that varies linearly with height, from 1.8 N/m$^2$ near the base to 3.2 N/m$^2$ higher up; 120 m, 80 m and 60 m dimensions mark the building and its setback.',
-  17:
-    'A 200-kg crate is supported as shown. $A$ and $C$ are 8 m apart on a horizontal ceiling. Cable $AB$ is 6.5 m long and makes $34^\\circ$ with the horizontal; cable $BC$ runs from $B$ up to $C$, where a downward force $F$ is applied. The crate hangs from $B$.',
-  18:
-    'A block is suspended from the midpoint $B$ of a cord $ABC$ whose supports $A$ and $C$ are 0.4 m apart. The sag at $B$ is $d = 0.15$ m.',
-  19:
-    'Three spheres, each of mass 2 kg and 350 mm in diameter, rest in a box 760 mm wide. Sphere $A$ sits on top of $B$ and $C$; spheres $B$ and $C$ rest on the floor, one against each side wall.',
-  20:
-    'The masses of the frictionless cylinders $A$ and $B$ are 2.0 kg and 1.0 kg respectively. The smallest value of the force $P$ that will lift cylinder $A$ off the horizontal surface is 55.5 N. Cylinder $A$ has a radius of 20 mm and rests on the floor against cylinder $B$.',
-  21:
-    'A tower 30 m tall is guyed by cables running from its top to anchor points on the ground. The anchors are 10 m, 15 m and 12.5 m out from the base, with a further 10 m dimension on the far side.',
-  22:
-    'The tripod is subjected to a vertical 2-kN force at its apex $D$. The weight of the legs is negligible compared with the applied load. The legs are 1100 mm long; the base spacing dimensions are 520 mm, 400 mm, 440 mm and 600 mm.',
-  23:
-    'Force $P$ is supported by two cables and a bar. Point $A$ lies in the $yz$ plane, and points $B$ and $C$ lie in the $xz$ plane. Given: $P = 3$ kip. The dimensions are 4 ft, 4 ft, 6 ft, 12 ft, 12 ft and 5 ft.',
-  24:
-    'Three cables are used to tether a balloon as shown. Knowing that the tension in cable $AC$ is 444 N. The anchors sit 5.60 m, 4.20 m, 3.30 m, 2.40 m and 4.20 m out from the pin.',
-  25:
-    'A transmission tower is held by three guy wires attached to a pin at $A$ and anchored by bolts at $B$, $C$ and $D$. The tension in wire $AB$ is 630 lb. The anchor offsets are 90 ft, 30 ft, 20 ft, 45 ft, 60 ft, 30 ft and 65 ft.',
-  26:
-    'The shear-leg derrick shown in the figure supports a vertical load of $W = 2000$ N applied at $A$. Points $B$, $C$ and $D$ are in the same horizontal plane; $A$, $O$ and $D$ are in the $XY$ plane. Dimensions 20 m, 10 m, 15 m, 10 m and 5 m.',
-  27:
-    'Neglecting the weights of the pulleys, determine the force $T$ required to support the weight $W = 100$ N. Three arrangements are shown: (a) one pulley, (b) two pulleys, (c) three pulleys.',
-  28:
-    'The hoist shown is used in a machine shop to position heavy workpieces in a lathe. Cable $CD$ and bar $CE$ meet at $C$; the pulley arrangement carries the load $W$.',
-  29:
-    'A horizontal beam runs from a pin support at $A$ through $C$ to $B$. A 4 kN load acts at $B$. $C$ is 1.5 m to the right of $A$ and $B$ a further 1.5 m on. A strut runs from $A$ down 1.5 m to $D$ and from $D$ up to $C$.',
-  30:
-    'The boom supports the two vertical loads $F_1$ and $F_2$. Neglect the size of the collars at $D$ and $B$ and the thickness of the boom. The boom is pinned at $A$, $D$ is 1.5 m along it from $A$, $B$ is a further 1 m on, and cable $CB$ makes $30^\\circ$ with the boom.',
-  31:
-    'A 50-kg crate is attached to the trolley-beam system shown. The trolley runs on a horizontal beam from $A$ to $B$; the crate hangs from it, and a cable runs from $D$ to the trolley at $55^\\circ$ to the vertical. Dimensions 1.4 m and 0.4 m locate $D$ above the beam, and $b$ is the horizontal distance from $B$ to the load line.',
-  32:
-    'The uniform 18 kg bar $OA$ is held in the position shown by the smooth pin at $O$ and the cable $AB$. Given: length of bar $OA$, $L = 1.5$ m; distance between supports, $x = 1.2$ m. $\\theta$ is the angle the bar makes with the horizontal.',
-  33:
-    'The wheel-loads (600 lb and 200 lb) on a jeep are given in the figure. The jeep rests on a beam $AB$ of span 15 ft; the 600 lb load is $x$ from $A$, and the 200 lb load is 4 ft to its right.',
-  34:
-    'The sign has a mass of 100 kg with center of mass at $G$. It is held by a ball-and-socket joint at $A$ and by wires $BC$ and $BD$. Dimensions 1 m and 2 m locate $B$ and the wire anchors relative to the sign.',
-  35:
-    'A 2.4-m boom is held by a ball-and-socket joint at $C$ and by two cables $AD$ and $AE$. The boom carries a 3.6 kN load. Dimensions 0.6 m, 0.8 m, 1.2 m, 1.2 m, 1.2 m, 1.8 m and 0.8 m locate $A$, $D$, $E$ and the load.',
-  36:
-    'Refer to the given frame. A 250 N load acts horizontally at $B$. The frame is a triangle $ACD$ with a horizontal member $BD$, pinned at $A$ and on a roller at $E$. The four horizontal panels are 1.5 m each; $C$ is 2 m above $BD$ and $BD$ is 2 m above the base.',
-  37:
-    'Neglecting the weight of the frame. A 300 N/m distributed load acts downward on the horizontal member $AB$. $AB$ spans 6 m from $A$ to $B$, with a vertical post at $A$ 3 m + 3 m tall carrying $C$ and $E$, and a member $BD$ 4 m long running down to a roller at $D$; $F$ is the support under $B$.',
-  38:
-    'Neglecting the weight of the frame, find the following: a braced frame with members $AB$ and $DE$ horizontal, crossed diagonals, a 400 lb load acting horizontally at $B$, and dimensions 6 ft, 4 ft, 4 ft and 8 ft.',
-  39:
-    'Refer to the folding table as shown. Neglect friction and the weights of the members. Given: $a = 0.6$ m; $b = 0.8$ m; $c = 1.2$ m. The top $AB$ carries a uniform load $w$; the legs cross at $C$ and bear at $D$ and $E$.',
-  40:
-    'The frame supports a suspended weight $W = 40$ lb. Determine the forces on members $ABCD$ and $CEG$. Dimensions 6 in, 6 in, 6 in, 8 in, 8 in and 3 in.',
-  41:
-    'Refer to the frame shown in the figure. Given: Weight, $W = 600$ N; $h_1 = 10$ m; $h_2 = 6$ m; $s = 8$ m; $r = 4$ m. The weight hangs from a rope over a pulley of radius $r$ at the top of the vertical member; member $AC$ is hinged to that member at $B$.',
-  42:
-    'Refer to the Pratt roof truss shown. Joints run $A$ to $H$ along the bottom and top chords; the truss is 2.4 m deep, with panel widths 3.8 m, 3.2 m, 3.2 m and 3.8 m, carrying 5.7 kN at each end and 10.5 kN, 9.6 kN, 10.5 kN at the upper joints.',
-  43:
-    'Refer to the loaded truss below. The truss is 8 m deep with six 4 m panels (6 at 4 m = 24 m) and carries 30 kN and 60 kN loads at its upper joints.',
-  44:
-    'Refer to the Howe roof truss shown. State whether each member is in tension or compression. Joints run $A$ to $H$; the truss is 6 ft deep with four 8 ft panels and carries 300 lb at $A$ and $H$ and 600 lb at $B$, $D$ and $F$.',
-  45:
-    'Refer to the given truss below, of the loaded truss. All triangles are isosceles. A 6 kN load acts at $B$ and an 8 kN load at $E$; the truss is 4 m deep with 6 m base panels.',
-  46:
-    'Refer to the given figure. A 12 kN load acts at $H$ and a 6 kN load at $J$; the truss has six 3 m panels (6 @ 3 m) and is 4 m deep in two 4 m tiers.',
-  47:
-    'Refer to the given truss. Given: $s = 5$ m; $h = 4$ m. The roof loads act perpendicular to the inclined members, at $30^\\circ$ to the horizontal.',
-  48:
-    'The roof truss shown in the figure is supported on rollers at $A$ and hinged at $B$. The wind loads are perpendicular to the inclined members. Given: $P_1 = 100$ N; $P_2 = 200$ N; $s = 6$ m; $h = 9$ m.',
-  49:
-    'The uniform 50-kg plank in the given figure is resting on friction surfaces at $A$ and $B$. The coefficients of static friction are $\\mu_A = 0.2$ and $\\mu_B = 0.5$, with the surface at $B$ inclined at $40^\\circ$. The plank is 5 m long. If an 80-kg man starts walking from $A$ toward $B$, determine the following:',
-  50:
-    'The top of the 15-kg ladder has a small roller, and at the ground the coefficient of static friction is 0.25. The mass center of the painter is directly below her feet. The ladder is 4 m long and its foot is 1.5 m from the wall; $s$ is measured up the ladder to the painter.',
-  51:
-    'The bar $BC$ is supported by a rough floor at $C$ and pin connected at $B$. A vertical force $F$ acts at $B$. The dimensions are 500 mm and 500 mm horizontally to $C$ and 200 mm beyond, with $C$ 600 mm below $B$.',
-  52:
-    'In the figure, two blocks are connected by a solid strut attached to each block with frictionless pins. Given: $\\theta = 60^\\circ$; $\\alpha = 30^\\circ$. Block $A$ rests on a horizontal surface and block $B$ on an incline.',
-  53:
-    'The mass of the van is 2250 kg and the coefficient of static friction between its tires and the road is 0.6. Its front wheels are locked and its rear wheels can turn freely. The wheelbase is 3 m, the centre of gravity is 1.2 m from the rear axle and 1 m above the road, and the van stands on a slope of angle $\\alpha$.',
-  54:
-    'A 40-kg packing crate is pulled by a rope as shown. The coefficient of static friction between the crate and the floor is 0.35. If $\\alpha = 40^\\circ$, determine the following: the crate is 0.8 m wide and 0.5 m tall, with the rope attached at $B$ on the top right corner.',
-  55:
-    'A tool chest has 800 N weight that acts through the midpoint of the chest. The chest is supported by feet at $A$ and rollers at $B$. The surface has a coefficient of friction of 0.3. The chest is 100 cm wide and 140 cm tall, with $A$ and $B$ 15 cm in from each side and 70 cm apart.',
-  56:
-    'The cable supports the three loads shown. Given: $P_2 = 600$ N and $y_D = 3$ m. The cable runs $A$-$B$-$C$-$D$-$E$ over 3 m, 6 m, 6 m and 3 m horizontal spans, with $B$ and $D$ each 1 m below the supports and $C$ 4 m below them.',
-  57:
-    'The cable $ABCD$ is held in the position shown by the horizontal force $P$. $AB$ spans 6 m horizontally, $BC$ rises 6 m over a 4 m run to $D$, and 40 N weights hang at $B$ and $C$; $h$ is the sag of $B$.',
-  58:
-    'The system of knotted cords shown in the figure support the indicated weights (300 lb and 400 lb). The cords meet at knots $A$, $C$ and $D$; the angles shown are $90^\\circ$, $105^\\circ$, $30^\\circ$, $30^\\circ$ and $75^\\circ$.',
-  59:
-    'A uniform 80-m pipe that weighs 960 kN is supported entirely by a cable $AB$ of negligible weight. The span is 80 m, the support at $A$ is 20 m above the lowest point and the support at $B$ is 7.2 m above it.',
+    'Three forces are acting upon a hook as shown. Given: Forces, $A = 60$ kN, $C = 50$ kN. Angles, $\\alpha = 25^\\circ$, $\\beta = 60^\\circ$.',
   6:
     'Knowing that the tension in cable $AB$ is 1425 N and the tension in cable $AC$ is 2130 N, determine the following:',
   7:
     'The magnitudes of the three forces acting on the plate are $T_1 = 100$ kN, $T_2 = 80$ kN and $T_3 = 50$ kN.',
   8:
     'Refer to the given figure. The resultant of the three forces shown is a counterclockwise couple of magnitude 150 N-m.',
+  9: 'Refer to the given figure.',
+  10:
+    'The bracket is fastened to the girder by means of the two rivets $A$ and $B$ and supports the 2-kN force. Replace this force by a force acting along the centerline between the rivets and a couple. Then redistribute this force and couple by replacing it by two forces, one at $A$ and the other at $B$, and ascertain the forces supported by the rivets.',
+  11: 'The cable $AB$ prevents bar $OA$ from rotating clockwise about the pivot $O$.',
+  12:
+    'The streetlight $A$ is attached to the end of the horizontal boom $ABO$. The light, which weighs 100 N, is subjected to a wind load of 20 N acting in the negative $y$-direction. The forces $P$ and $Q$ represent the tensions in the two cables that are attached at point $B$. The resultant of the four forces shown is a force $R$ acting at point $O$.',
+  13: 'The three forces are perpendicular to the triangular plate.',
+  14:
+    'Refer to the given figure. Given: $a = 1.2$ m, $b = 1.0$ m, $F_1 = 30$ N, $F_2 = 20$ N, $F_3 = 18$ N.',
+  15: 'The figure shows the water pressure acting on the sides of a dam that is 20-m long.',
+  16:
+    'At a certain time during a hurricane, the wind pressure acting on the wall of a high-rise building varies linearly as shown.',
+  17: 'A 200-kg crate is being supported as shown in the position below.',
+  18:
+    'If the block is suspended from the pulley $B$ and the sag of the cord is $d$. Neglect the size of the pulley.',
+  19:
+    'In the given figure, three spheres each with 2-kg mass and each 350 mm in diameter rest in a box 760 mm wide.',
+  20:
+    'The masses of the frictionless cylinders $A$ and $B$ are 2.0 kg and 1.0 kg, respectively. The smallest value of the force $P$ that will lift cylinder $A$ off the horizontal surface is 55.5 N.',
+  21: 'Refer to the given figure.',
+  22:
+    'The tripod is subjected to a vertical 2-kN force. The weight of the legs is negligible compared with the applied load.',
+  23:
+    'Force $P$ is supported by two cables and a bar. Point $A$ lies in the $yz$ plane, and points $B$ and $C$ lie in the $xz$ plane. Given: $P = 3$ kip',
+  24:
+    'Three cables are used to tether a balloon as shown. Knowing that the tension in cable $AC$ is 444 N.',
+  25:
+    'A transmission tower is held by three guy wires attached to a pin at $A$ and anchored by bolts at $B$, $C$, and $D$. If the tension in wire $AB$ is 630 lb, determine the following:',
+  26:
+    'The shear-leg derrick shown in the figure supports a vertical load of $W = 2000$ N applied at $A$. Points $B$, $C$, and $D$ are in the same horizontal plane $A$, $O$, and $D$ are in the $XY$ plane.',
+  27:
+    'Neglecting the weights of the pulleys, determine the force $T$ required to support the weight $W = 100$ N.',
+  28: 'The hoist shown is used in a machine shop to position heavy workpieces in a lathe.',
+  29: 'Refer to the given figure.',
+  30:
+    'The boom supports the two vertical loads. Neglect the size of the collars at $D$ and $B$ and the thickness of the boom.',
+  31: 'A 50-kg crate is attached to the trolley-beam system shown.',
+  32:
+    'The uniform 18-kg bar $OA$ is held in the position shown by the smooth pin at $O$ and the cable $AB$. Given: Length of bar $OA$, $L = 1.5$ m; Distance between supports, $x = 1.2$ m',
+  33: 'The wheel-loads (600 lb and 200 lb) on a jeep are given in the figure.',
+  34: 'The sign has a mass of 100 kg with center of mass at $G$.',
+  35:
+    'A 2.4-m boom is held by a ball-and-socket joint at $C$ and by two cables $AD$ and $AE$.',
+  36: 'Refer to the given frame below.',
+  37: 'Neglecting the weight of the frame.',
+  38: 'Neglecting the weight of the frame, find the following:',
+  39:
+    'Refer to the folding table as shown. Neglect friction and the weights of the members. Given: $a = 0.6$ m; $b = 0.8$ m; $c = 1.2$ m',
+  40:
+    'The frame supports a suspended weight $W = 40$ lb. Determine the forces on members $ABCD$ and $CEG$.',
+  41:
+    'Refer to the frame shown in the figure. Given: Weight, $W = 600$ N; $h_1 = 10$ m; $h_2 = 6$ m; $s = 8$ m; $r = 4$ m',
+  42: 'Refer to the Pratt roof truss shown.',
+  43: 'Refer to the loaded truss below.',
+  44:
+    'Refer to the Howe roof truss shown. State whether each member is in tension or compression.',
+  45: 'Refer to the given truss below. All triangles are isosceles.',
+  46: 'Refer to the given figure.',
+  47: 'Refer to the given truss. Given: $s = 5$ m; $h = 4$ m',
+  48:
+    'The roof truss shown in the figure is supported on rollers at $A$ and hinged at $B$. The wind loads are perpendicular to the inclined members. Given: $P_1 = 100$ N; $P_2 = 200$ N; $s = 6$ m; $h = 9$ m.',
+  49:
+    'The uniform 50-kg plank in the given figure is resting on friction surfaces at $A$ and $B$. The coefficients of static friction are shown in the figure. If a 80-kg man starts walking from $A$ toward $B$, determine the following:',
+  50:
+    'The top of the 15-kg ladder has a small roller, and at the ground the coefficient of static friction is 0.25. The mass center of the painter is directly below her feet.',
+  51: 'The bar $BC$ is supported by a rough floor at $C$ and pin connected at $B$.',
+  52:
+    'In the figure, two blocks are connected by a solid strut attached to each block with frictionless pins. Given: $\\theta = 60^\\circ$, $\\alpha = 30^\\circ$',
+  53:
+    'The mass of the van is 2250 kg and the coefficient of static friction between its tires and the road is 0.6. Its front wheels are locked and its rear wheels can turn freely.',
+  54:
+    'A 40-kg packing crate is pulled by a rope as shown. The coefficient of static friction between the crate and the floor is 0.35. If $\\alpha = 40^\\circ$, determine the following:',
+  55:
+    'A tool chest has 800 N weight that acts through the midpoint of the chest. The chest is supported by feet at $A$ and rollers at $B$. The surface has a coefficient of friction of 0.3.',
+  56:
+    'The cable supports the three loads shown. Given: $P_2 = 600$ N and $y_B = 3$ m',
+  57:
+    'The cable $ABCD$ is held in the position shown by the horizontal force $P$.',
+  58:
+    'The system of knotted cords shown in the figure support the indicated weights (300 lb and 400 lb).',
+  59:
+    'A uniform 80-m pipe that weighs 960 kN is supported entirely by a cable $AB$ of negligible weight.',
 };
 
 /**
  * Situations that have a cropped figure in `public/images/statics/`.
- * Extend this set as more figures are cropped; items whose situation is absent
- * simply render without a figure.
+ * Every situation in this booklet prints a drawing, so the set is the full
+ * 1-59. An item whose situation were absent would simply render without a
+ * figure.
  */
-const FIGURED = new Set<number>([6, 7, 8]);
+const FIGURED = new Set<number>(
+  Array.from({ length: 59 }, (_, i) => i + 1),
+);
 
 /**
  * Wraps a figure crop in the markup `EngineeringFigure` expects.
@@ -362,12 +342,6 @@ export const STAT_FORCES: TopicQuestion[] = [
     ['59 m', '34 m', '71 m', '81 m'], 6, 16),
 ];
 
-/**
- * Transcribed but held out of the live bank: the figures for situations 6, 7
- * and 8 are not yet resolved (see `SITUATIONS_PENDING`). These items are NOT
- * wired into `TOPIC_QUESTIONS` — an item whose figure is wrong is worse than
- * an item that is missing, because it teaches the wrong method.
- */
 /** Section: EQUILIBRIUM – 2D CONCURRENT FORCES. */
 export const STAT_EQUIL: TopicQuestion[] = [
   // Situation 17 — items 48–50
@@ -603,7 +577,7 @@ export const STAT_EQUIL: TopicQuestion[] = [
     ['832', '768', '600', '960'], 21, 59),
   qe(175, 'Determine the minimum tensile force (Kn) in the cable.',
     ['500', '300', '600', '750'], 21, 59),
-  qe(176, 'Determine the total length (m) of the cable.\n\nHint:/n/n$$L=//int//sqrt{1+//left(//frac{wx}{T_{min}}//right)^2}dx$$',
+  qe(176, 'Determine the total length (m) of the cable.\n\nHint:\n\n$$L=\\int\\sqrt{1+\\left(\\frac{wx}{T_{min}}\\right)^2}\\,dx$$',
     ['86.0', '82.0', '84.0', '71.3'], 21, 59),
 ];
 
