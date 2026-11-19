@@ -300,7 +300,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
               ) : topicDrill ? (
                 <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-slate-800 text-slate-200 border border-slate-600 text-xs font-bold font-tech-mono">
                   <Layers className="w-4 h-4 text-amber-400" />
-                  <span>DRILL SCORE — NOT A PRC AREA RESULT</span>
+                  <span>DRILL SCORE — PRACTICE ONLY</span>
                 </span>
               ) : isSubjectPassed ? (
                 <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-tech-mono">
@@ -504,6 +504,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
               <h2 className="font-arnie text-lg font-bold text-white tracking-wide">
                 {allPending ? (
                   'Answer Key Not Yet Encoded'
+                ) : topicDrill ? (
+                  isWorkedSet ? 'Worked Solutions' : 'Answer Key & Your Responses'
                 ) : (
                   <>
                     {solutionPageRange
@@ -525,6 +527,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                       ? ` (${workedCount} worked, ${questions.length - workedCount} keyed)`
                       : ''
                   }`
+                ) : topicDrill ? (
+                  'Printed key for these items, with your response beside each one'
                 ) : (
                   'Official PRC Examination Master Key & Candidate Response Comparison'
                 )}

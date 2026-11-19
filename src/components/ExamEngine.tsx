@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Question,
   SubjectArea,
@@ -43,7 +43,7 @@ import {
 import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
-import { isKeyPending } from '../data/grading';
+import { isKeyPending, isTopicDrill } from '../data/grading';
 import { deletePausedSession, getExamStorageBase } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
 import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
@@ -130,6 +130,12 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
    * mark every answer wrong — see `data/grading.ts`.
    */
   const currentKeyPending = isKeyPending(currentQuestion);
+  /**
+   * A drill, not a board paper. The engine's pace coaching compares against the
+   * board-exam standard, which is the wrong yardstick here — a drill is short
+   * and self-set, so it has its own pace.
+   */
+  const topicDrill = useMemo(() => isTopicDrill(questions), [questions]);
 
   // Timer reference
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -467,7 +473,10 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                   )}
                   {paceStatus === 'on_track' && (
                     <span className="text-amber-300">
-                      🎯 <strong>Optimal pace:</strong> You are matching the official PRC Civil Engineering board examination pace standard. Maintain this focus!
+                      🎯 <strong>Optimal pace:</strong>{' '}
+                      {topicDrill
+                        ? 'You are matching your target pace for this drill. Maintain this focus!'
+                        : 'You are matching the official PRC Civil Engineering board examination pace standard. Maintain this focus!'}
                     </span>
                   )}
                 </div>
