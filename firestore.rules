@@ -140,5 +140,15 @@ service cloud.firestore {
       allow create: if isValidId(interactionId) && isValidFeatureInteraction(incoming());
       allow update, delete: if isAdmin();
     }
+
+    // App-wide switches, e.g. whether the By-topics exam is open to reviewees.
+    // Read is public on purpose: the client has to know whether to show the
+    // entry before anyone signs in, and the value is a single boolean. Writing
+    // is the admin's alone, so a tampered client cannot open the mode for
+    // itself -- it can only lie to itself about a value that grants it UI.
+    match /app_config/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

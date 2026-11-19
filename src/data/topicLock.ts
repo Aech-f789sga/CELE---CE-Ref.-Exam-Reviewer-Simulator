@@ -6,12 +6,14 @@
  * flag lives in Firestore rather than localStorage so one switch reaches every
  * device instead of only the browser it was flipped in.
  *
- * Storage is `app_config/topic_exams`, a document the rules already cover:
+ * Storage is `app_config/topic_exams`. `firestore.rules` grants it
  * `allow read: if true` (the client has to know whether to show the entry
  * *before* anyone signs in) and `allow write: if isAdmin()`. So the client can
  * be trusted to *read* the flag but never to assert it — a tampered client
  * cannot unlock the mode for itself, it can only lie to itself about a value
- * that grants it nothing but UI.
+ * that grants it nothing but UI. That rule has to be deployed for any of this
+ * to work: without it the default-deny catch-all refuses the read, and every
+ * caller falls back to locked.
  *
  * That last point is the design constraint worth stating plainly: this gates
  * *visibility*, not content. The topic questions ship in the bundle, so a
@@ -61,7 +63,10 @@ function fromSnapshot(data: { unlocked?: unknown } | undefined): TopicLock {
  * last subscriber leaves.
  *
  * A failed listener keeps the last known value rather than opening the mode --
- * same rule as `readTopicLock`.
+ * same rule as `readTopicLock`. If there is no last known value it resolves to
+ * *locked* instead of staying pending: a denied or offline read must give the
+ * switch a definite position, because a spinner is not a safe state -- it
+ * leaves the admin unable to act and unable to see why.
  */
 export function watchTopicLock(onChange: (lock: TopicLock) => void): () => void {
   listeners.add(onChange);
@@ -71,7 +76,10 @@ export function watchTopicLock(onChange: (lock: TopicLock) => void): () => void 
       doc(db, COLLECTION, DOC_ID),
       (snap) => publish(fromSnapshot(snap.data() as { unlocked?: unknown } | undefined)),
       () => {
-        /* offline or denied: leave the cache alone, never fail open */
+        // Denied or offline. Firestore ends the listener on error, so clear the
+        // handle as well and let the next subscriber try again.
+        unsubscribeSnapshot = null;
+        if (!cache) publish(LOCKED);
       }
     );
   }

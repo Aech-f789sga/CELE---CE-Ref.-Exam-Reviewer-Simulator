@@ -132,7 +132,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
       // The write publishes to every watcher, so the switch updates itself.
       await setTopicUnlocked(next);
     } catch {
-      setTopicError('Could not save. Check that your account has the ADMIN role in Firestore.');
+      // A denial here has two likely causes and the admin needs both: the
+      // account may not hold the ADMIN role, or the `app_config` rule may not
+      // have been deployed yet -- without it the default-deny catch-all
+      // refuses the write no matter who is signed in.
+      setTopicError(
+        'Could not save. Either this account is not recognised as ADMIN in Firestore, or the ' +
+          'app_config rule in firestore.rules has not been deployed.'
+      );
     } finally {
       setTopicSaving(false);
     }
