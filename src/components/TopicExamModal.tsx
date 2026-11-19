@@ -13,10 +13,12 @@
  * items. One default covers every chosen topic, and any topic can be pinned to
  * its own count — or to "All", meaning everything the bank holds for it.
  *
- * Access: locked by default. `readTopicLock()` reads the admin's flag from
+ * Access: locked by default. `watchTopicLock()` follows the admin's switch in
  * `app_config/topic_exams`; the admin always sees the entry, everyone else sees
- * it only once it has been unlocked. As noted in topicLock.ts this gates
- * visibility, not secrecy — the items ship in the bundle.
+ * it only once it has been unlocked — and if the admin closes the mode while
+ * this is already open, the body swaps to a "not open yet" notice rather than
+ * letting a drill start. As noted in topicLock.ts this gates visibility, not
+ * secrecy — the items ship in the bundle.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { X, Shuffle, Lock, CheckCircle2, Minus, Plus, RotateCcw } from 'lucide-react';
@@ -29,7 +31,7 @@ import {
   type TopicQuestion,
   type TopicQuota,
 } from '../data/topicBanks';
-import { readTopicLock } from '../data/topicLock';
+import { watchTopicLock } from '../data/topicLock';
 import { useAuth } from '../context/AuthContext';
 
 interface Props {
@@ -156,18 +158,14 @@ export function TopicExamModal({ onClose, onStart }: Props) {
   /** Topics pinned away from the default. `'all'` means the whole topic. */
   const [overrides, setOverrides] = useState<Record<string, TopicQuota>>({});
 
-  useEffect(() => {
-    let alive = true;
-    void readTopicLock().then((l) => {
-      if (alive) {
-        setUnlocked(l.unlocked);
+  useEffect(
+    () =>
+      watchTopicLock((lock) => {
+        setUnlocked(lock.unlocked);
         setChecked(true);
-      }
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
+      }),
+    []
+  );
 
   const allowed = isAdmin || unlocked;
   const chosen = useMemo(() => TOPICS.filter((t) => picked.has(t.id)), [picked]);

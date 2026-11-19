@@ -72,6 +72,7 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
+import { watchTopicLock } from './data/topicLock';
 
 function CustomBgLayer() {
   const [bg, setBg] = useState<string | null>(null);
@@ -160,6 +161,16 @@ function MainApp() {
       setCurrentTab('setup');
     }
   }, [authLoading, isAdmin, currentTab]);
+
+  /**
+   * "By topics" is admin-gated. The switch lives in Firestore, so follow it
+   * live rather than reading once: the admin can open or close the mode while
+   * someone already has the page loaded. Failing closed means the entry simply
+   * stays hidden, which is the safe direction.
+   */
+  const [topicExamOpen, setTopicExamOpen] = useState<boolean>(false);
+  useEffect(() => watchTopicLock((lock) => setTopicExamOpen(lock.unlocked)), []);
+  const canOpenTopicExam = isAdmin || topicExamOpen;
 
   // Selection states
   const [selectedSource, setSelectedSource] = useState<ReferenceSource>('Gillesania');
@@ -615,7 +626,7 @@ function MainApp() {
 
               {currentTab === 'setup' && (
                 <SubjectSelector
-                  onStartTopicExam={handleStartTopicExam}
+                  onStartTopicExam={canOpenTopicExam ? handleStartTopicExam : undefined}
                   selectedSubject={selectedSubject}
                   onSubjectChange={handleSubjectChange}
                   selectedSource={selectedSource}

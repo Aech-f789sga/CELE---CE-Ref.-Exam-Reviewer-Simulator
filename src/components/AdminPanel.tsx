@@ -21,7 +21,6 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  AlertTriangle,
   MessageSquare,
   Inbox,
   CornerDownRight,
@@ -71,6 +70,8 @@ import {
   FeatureInteraction,
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
+import { FeatureAccessSection } from './FeatureAccessSection';
+import { setTopicUnlocked, watchTopicLock } from '../data/topicLock';
 
 interface AdminPanelProps {
   onNavigateToExam?: (subject: 'MSTC' | 'HPGE' | 'PSAD') => void;
@@ -110,7 +111,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [activitySearchTerm, setActivitySearchTerm] = useState<string>('');
 
   // Admin section navigation
-  const [adminSection, setAdminSection] = useState<'inbox' | 'users' | 'activity' | 'announcements' | 'all'>('inbox');
+  const [adminSection, setAdminSection] = useState<
+    'inbox' | 'users' | 'activity' | 'announcements' | 'features' | 'all'
+  >('inbox');
+
+  // "By topics" access switch (app_config/topic_exams)
+  const [topicUnlocked, setTopicUnlocked] = useState<boolean | null>(null);
+  const [topicSaving, setTopicSaving] = useState<boolean>(false);
+  const [topicError, setTopicError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Live, so the switch reflects a change made on another device too.
+    return watchTopicLock((lock) => setTopicUnlocked(lock.unlocked));
+  }, []);
+
+  const toggleTopicAccess = async (next: boolean) => {
+    setTopicSaving(true);
+    setTopicError(null);
+    try {
+      // The write publishes to every watcher, so the switch updates itself.
+      await setTopicUnlocked(next);
+    } catch {
+      setTopicError('Could not save. Check that your account has the ADMIN role in Firestore.');
+    } finally {
+      setTopicSaving(false);
+    }
+  };
 
   // Inbox reply & filter states
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
@@ -613,6 +639,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
             <Megaphone className="w-4 h-4" />
             <span>Announcements</span>
             <span className="text-[10px] opacity-75 font-mono">({announcementsList.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminSection('features')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              adminSection === 'features'
+                ? 'bg-amber-500 text-slate-950 shadow-lg scale-102 font-black'
+                : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Feature Access</span>
+            <span
+              className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                topicUnlocked
+                  ? adminSection === 'features'
+                    ? 'bg-emerald-500 text-slate-950'
+                    : 'bg-emerald-500/20 text-emerald-300'
+                  : adminSection === 'features'
+                    ? 'bg-slate-950 text-amber-300'
+                    : 'bg-slate-800 text-slate-400'
+              }`}
+            >
+              {topicUnlocked === null ? '…' : topicUnlocked ? 'Open' : 'Locked'}
+            </span>
           </button>
 
           <button
@@ -1960,6 +2012,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* SECTION 5: Feature Access — exam modes the admin can open or close */}
+      {(adminSection === 'features' || adminSection === 'all') && (
+        <FeatureAccessSection
+          unlocked={topicUnlocked}
+          saving={topicSaving}
+          error={topicError}
+          onToggle={(next) => void toggleTopicAccess(next)}
+        />
       )}
     </div>
   );
