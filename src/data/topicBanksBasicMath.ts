@@ -61,7 +61,7 @@ export const BM_ALGEBRA: TopicQuestion[] = [
     ['x > 5', 'x < 5', 'x \u2264 5', 'x \u2265 5'], 2),
   q(38, 'Technology is now promising to bring light, fast, and beautiful wheelchairs to millions of disabled people. A company is planning to manufacture these radically different wheelchairs. Fixed cost will be $\\$500{,}000$ and it will cost $\\$400$ to produce each wheelchair. Each wheelchair will be sold for $\\$600$. Determine the break-even point.',
     ['$(1500,\\ 2{,}500{,}000)$', '$(2500,\\ 1{,}500{,}000)$', '$(1000,\\ 2{,}500{,}000)$', '$(2500,\\ 1{,}000{,}000)$'], 3),
-  q(39, 'In a study relating sleep and death rate, the data are modelled by y = ax\u00b2 + bx + c. Which model fits?',
+  q(39, 'In a study relating sleep and death rate, the following data were obtained. Use the function $y=ax^2+bx+c$ to model the data.\n\n| $x$ (Average Number of Hours of Sleep) | $y$ (Death Rate per Year per 100,000 Males) |\n|---|---|\n| 4 | 1682 |\n| 7 | 626 |\n| 9 | 967 |',
     ['y = 104.5x\u00b2 \u2212 1501.5x + 6061', 'y = 104.5x\u00b2 \u2212 1510.5x + 6016', 'y = 104.5x\u00b2 \u2212 1501.5x + 6016', 'y = 140.5x\u00b2 \u2212 1501.5x + 6016'], 4),
   q(40, 'Acme Car rental charges $4 a day plus $0.15 per mile, whereas Interstate charges $20 a day and $0.05 per mile. How many miles must be driven to make the daily cost of an Acme rental a better deal than an Interstate rental?',
     ['x < 160', 'x > 160', 'x < 116', 'x > 116'], 4),
