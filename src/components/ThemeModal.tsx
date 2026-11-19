@@ -361,6 +361,28 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                               <span>CYBERDECK · VIDEO + AUDIO</span>
                             </span>
                           )}
+                          {(item.id === 'v2' || item.id === 'v2_dark') && (
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full border tracking-wide flex items-center space-x-1"
+                              style={{
+                                backgroundColor:
+                                  item.category === 'dark'
+                                    ? 'rgba(71, 158, 245, 0.18)'
+                                    : 'rgba(15, 108, 189, 0.12)',
+                                borderColor:
+                                  item.category === 'dark'
+                                    ? 'rgba(71, 158, 245, 0.55)'
+                                    : 'rgba(15, 108, 189, 0.45)',
+                                color: item.category === 'dark' ? '#96c6fa' : '#0f6cbd',
+                              }}
+                            >
+                              <Layers
+                                className="w-2.5 h-2.5 mr-0.5"
+                                style={{ color: item.category === 'dark' ? '#96c6fa' : '#0f6cbd' }}
+                              />
+                              <span>FLUENT 2</span>
+                            </span>
+                          )}
                           <span
                             className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
                             style={{

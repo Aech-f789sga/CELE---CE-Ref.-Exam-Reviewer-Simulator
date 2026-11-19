@@ -2035,3 +2035,946 @@ html[data-theme='cyberdeck_2077'] .max-w-3xl.rounded-3xl {
   }
 }
 
+/* =========================================================================
+   MICROSOFT FLUENT 2 WEB  ·  theme "v2"
+   data-theme="v2" (light)  ·  data-theme="v2_dark" (dark)
+   -------------------------------------------------------------------------
+   Token source: the Fluent 2 Web UI kit variables
+   (Figma › Microsoft Fluent 2 Web, community file, variables page), mirrored
+   1:1 onto the Fluent UI React v9 alias tokens that ship the same kit on web.
+
+   The kit is built in two layers, and so is this skin:
+     1. global tokens   — raw values (radius, type ramp, elevation, motion)
+     2. alias tokens    — semantic slots (bg-1..4, fg-1..3, stroke-1..3,
+                          brand, brand-hover, on-brand, scrim)
+
+   Every rule below consumes an alias token, so light and dark differ only in
+   the token block. Nothing here glows, blurs or gradients: Fluent separates
+   surfaces with a 1px neutral stroke plus one step of elevation, and it is
+   flat by design. Radii collapse to the Fluent scale (2 / 4 / 6 / 8px), the
+   typeface becomes Segoe UI Variable, and every amber accent in the app is
+   re-pointed at the Microsoft brand ramp through the Tailwind v4 palette
+   variables.
+   ========================================================================= */
+
+/* ---------- 1. global tokens ---------- */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) {
+  --f-radius-s: 2px;
+  --f-radius-m: 4px;
+  --f-radius-l: 6px;
+  --f-radius-xl: 8px;
+
+  --f-font-text: 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', 'Inter',
+    -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --f-font-display: 'Segoe UI Variable Display', 'Segoe UI Variable Text', 'Segoe UI',
+    'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+
+  /* elevation ramp — Fluent's shadows are two-layer, never colored */
+  --f-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --f-shadow-4: 0 2px 4px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --f-shadow-8: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --f-shadow-16: 0 8px 16px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --f-shadow-28: 0 14px 28px rgba(0, 0, 0, 0.24), 0 0 8px rgba(0, 0, 0, 0.2);
+  --f-shadow-64: 0 32px 64px rgba(0, 0, 0, 0.24), 0 0 8px rgba(0, 0, 0, 0.2);
+
+  --f-curve: cubic-bezier(0.33, 0, 0.67, 1);
+  --f-dur-fast: 100ms;
+  --f-dur-normal: 200ms;
+}
+
+/* ---------- 2. alias tokens · light ---------- */
+html[data-theme='v2'] {
+  --f-bg-1: #ffffff; /* colorNeutralBackground1 */
+  --f-bg-2: #fafafa; /* colorNeutralBackground2 */
+  --f-bg-3: #f5f5f5; /* colorNeutralBackground3 */
+  --f-bg-4: #f0f0f0; /* colorNeutralBackground4 */
+  --f-bg-hover: #f5f5f5;
+  --f-bg-pressed: #e0e0e0;
+
+  --f-fg-1: #242424; /* colorNeutralForeground1 */
+  --f-fg-2: #424242; /* colorNeutralForeground2 */
+  --f-fg-3: #616161; /* colorNeutralForeground3 */
+  --f-fg-4: #707070;
+  --f-fg-disabled: #bdbdbd;
+
+  --f-stroke-1: #d1d1d1; /* colorNeutralStroke1 */
+  --f-stroke-2: #e0e0e0; /* colorNeutralStroke2 */
+  --f-stroke-3: #f0f0f0; /* colorNeutralStroke3 */
+  --f-stroke-accessible: #616161;
+
+  --f-brand: #0f6cbd; /* colorBrandBackground */
+  --f-brand-hover: #115ea3; /* colorBrandBackgroundHover */
+  --f-brand-pressed: #0c3b5e; /* colorBrandBackgroundPressed */
+  --f-brand-subtle: #ebf3fc; /* colorBrandBackground2 */
+  --f-brand-subtle-hover: #dff0fb;
+  --f-brand-text: #0f6cbd; /* colorBrandForeground1 */
+  --f-on-brand: #ffffff; /* colorNeutralForegroundOnBrand */
+
+  --f-focus: #000000; /* Fluent focus ring: 2px dark inner, 1px light outer */
+  --f-scrim: rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- 3. alias tokens · dark ---------- */
+html[data-theme='v2_dark'] {
+  --f-bg-1: #292929;
+  --f-bg-2: #1f1f1f;
+  --f-bg-3: #141414;
+  --f-bg-4: #0f0f0f;
+  --f-bg-hover: #333333;
+  --f-bg-pressed: #3d3d3d;
+
+  --f-fg-1: #ffffff;
+  --f-fg-2: #d6d6d6;
+  --f-fg-3: #adadad;
+  --f-fg-4: #9a9a9a;
+  --f-fg-disabled: #5c5c5c;
+
+  --f-stroke-1: #666666;
+  --f-stroke-2: #525252;
+  --f-stroke-3: #3d3d3d;
+  --f-stroke-accessible: #adadad;
+
+  /* Fluent dark keeps the brand *background* dark (#115ea3) and pushes the
+     bright blue (#479ef5) to foreground/text duty. Using the foreground value
+     as a fill turns every primary surface into a glowing slab. */
+  --f-brand: #115ea3; /* colorBrandBackground */
+  --f-brand-hover: #146cbe; /* colorBrandBackgroundHover */
+  --f-brand-pressed: #0e4775; /* colorBrandBackgroundPressed */
+  --f-brand-subtle: #082338;
+  --f-brand-subtle-hover: #0a2e4a;
+  --f-brand-text: #479ef5; /* colorBrandForeground1 */
+  --f-on-brand: #ffffff; /* colorNeutralForegroundOnBrand */
+
+  --f-focus: #ffffff;
+  --f-scrim: rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- 4. palette remap: amber -> Microsoft brand ramp ----------
+   Tailwind v4 resolves every amber utility (bg, text, border, ring, gradient
+   stop and opacity tint) through these variables, so re-pointing the ramp
+   re-skins the entire app's accent language in one place. */
+html[data-theme='v2'] {
+  --color-amber-50: #f5f9fd;
+  --color-amber-100: #ebf3fc;
+  --color-amber-200: #cfe4fa;
+  --color-amber-300: #115ea3;
+  --color-amber-400: #115ea3;
+  --color-amber-500: #0f6cbd;
+  --color-amber-600: #0e4775;
+  --color-amber-700: #0c3b5e;
+  --color-amber-800: #0a2e4a;
+  --color-amber-900: #082338;
+  --color-amber-950: #061724;
+
+  --color-yellow-200: #cfe4fa;
+  --color-yellow-300: #115ea3;
+  --color-yellow-400: #0f6cbd;
+  --color-yellow-500: #0f6cbd;
+  --color-yellow-600: #0e4775;
+
+  /* success -> Fluent green */
+  --color-emerald-100: #f1faf1;
+  --color-emerald-200: #dff6dd;
+  --color-emerald-300: #0e700e;
+  --color-emerald-400: #0e700e;
+  --color-emerald-500: #107c10;
+  --color-emerald-600: #0c5e0c;
+  --color-emerald-700: #094509;
+  --color-emerald-950: #052505;
+  --color-green-300: #0e700e;
+  --color-green-400: #0e700e;
+  --color-green-500: #107c10;
+
+  /* danger -> Fluent red */
+  --color-rose-100: #fdf3f4;
+  --color-rose-200: #fbe4e6;
+  --color-rose-300: #c50f1f;
+  --color-rose-400: #c50f1f;
+  --color-rose-500: #d13438;
+  --color-rose-600: #a4262c;
+  --color-rose-950: #3b0509;
+  --color-red-300: #c50f1f;
+  --color-red-400: #c50f1f;
+  --color-red-500: #d13438;
+
+  /* info -> Fluent teal */
+  --color-cyan-300: #038387;
+  --color-cyan-400: #038387;
+  --color-cyan-500: #038387;
+  --color-cyan-600: #026b6e;
+  --color-cyan-900: #013c3d;
+  --color-cyan-950: #012b2c;
+  --color-teal-400: #038387;
+  --color-teal-500: #038387;
+  --color-sky-400: #038387;
+  --color-sky-500: #038387;
+
+  /* ---------- secondary hues ----------
+     The app was authored on dark slate, so secondary accents are routinely
+     written as `bg-X-500/20 text-X-300 border-X-500/30`. A 300-level shade is
+     a *light* colour: on a white Fluent surface that badge label disappears.
+     Each family is therefore re-pointed at its Fluent 300/400 level being the
+     dark "on-tint" ink and the 500 level being the fill. */
+  --color-blue-100: #ebf3fc;
+  --color-blue-200: #cfe4fa;
+  --color-blue-300: #115ea3;
+  --color-blue-400: #0f6cbd;
+  --color-blue-500: #0f6cbd;
+  --color-blue-600: #115ea3;
+  --color-blue-700: #0e4775;
+  --color-blue-800: #0c3b5e;
+  --color-blue-900: #082338;
+  --color-blue-950: #061724;
+
+  --color-sky-300: #115ea3;
+  --color-sky-600: #0e4775;
+
+  /* Fluent "grape" carries indigo / violet / purple */
+  --color-indigo-100: #f2ecf8;
+  --color-indigo-200: #e0d0ee;
+  --color-indigo-300: #5c2e91;
+  --color-indigo-400: #5c2e91;
+  --color-indigo-500: #5c2e91;
+  --color-indigo-600: #4b2377;
+  --color-indigo-900: #2b1442;
+  --color-indigo-950: #1c0d2b;
+
+  --color-violet-300: #5c2e91;
+  --color-violet-400: #5c2e91;
+  --color-violet-500: #5c2e91;
+
+  --color-purple-100: #f2ecf8;
+  --color-purple-200: #e0d0ee;
+  --color-purple-300: #5c2e91;
+  --color-purple-400: #5c2e91;
+  --color-purple-500: #5c2e91;
+  --color-purple-600: #4b2377;
+  --color-purple-900: #2b1442;
+  --color-purple-950: #1c0d2b;
+
+  /* Fluent pink */
+  --color-pink-100: #fce4f3;
+  --color-pink-200: #f8c9e6;
+  --color-pink-300: #b8308a;
+  --color-pink-400: #b8308a;
+  --color-pink-500: #e43ba6;
+  --color-pink-600: #b8308a;
+
+  /* Fluent orange */
+  --color-orange-300: #ca5010;
+  --color-orange-400: #ca5010;
+  --color-orange-500: #ca5010;
+  --color-orange-600: #a33d0b;
+}
+
+html[data-theme='v2_dark'] {
+  --color-amber-50: #ebf3fc;
+  --color-amber-100: #cfe4fa;
+  --color-amber-200: #96c6fa;
+  --color-amber-300: #96c6fa;
+  --color-amber-400: #479ef5;
+  --color-amber-500: #115ea3;
+  --color-amber-600: #0f6cbd;
+  --color-amber-700: #2886de;
+  --color-amber-800: #0c3b5e;
+  --color-amber-900: #082338;
+  --color-amber-950: #061724;
+
+  --color-yellow-200: #96c6fa;
+  --color-yellow-300: #96c6fa;
+  --color-yellow-400: #479ef5;
+  --color-yellow-500: #479ef5;
+  --color-yellow-600: #62abf5;
+
+  --color-emerald-100: #052505;
+  --color-emerald-200: #094509;
+  --color-emerald-300: #6ccb5f;
+  --color-emerald-400: #6ccb5f;
+  --color-emerald-500: #54b054;
+  --color-emerald-600: #4b9c46;
+  --color-emerald-700: #3f863c;
+  --color-emerald-950: #021a02;
+  --color-green-300: #6ccb5f;
+  --color-green-400: #6ccb5f;
+  --color-green-500: #54b054;
+
+  --color-rose-100: #3b0509;
+  --color-rose-200: #5c0910;
+  --color-rose-300: #ff99a4;
+  --color-rose-400: #f1707b;
+  --color-rose-500: #dc626d;
+  --color-rose-600: #c23540;
+  --color-rose-950: #2a0407;
+  --color-red-300: #ff99a4;
+  --color-red-400: #f1707b;
+  --color-red-500: #dc626d;
+
+  --color-cyan-300: #3fb8bb;
+  --color-cyan-400: #3fb8bb;
+  --color-cyan-500: #038387;
+  --color-cyan-600: #026b6e;
+  --color-cyan-900: #012b2c;
+  --color-cyan-950: #011f20;
+  --color-teal-400: #3fb8bb;
+  --color-teal-500: #038387;
+  --color-sky-400: #3fb8bb;
+  --color-sky-500: #038387;
+
+  /* in dark the neutral ramp can be re-pointed directly: every slate step is
+     monotonic, so bg/text/border utilities all land on the Fluent surface,
+     foreground and stroke slots at once. */
+  --color-slate-50: #fafafa;
+  --color-slate-100: #f0f0f0;
+  --color-slate-200: #e6e6e6;
+  --color-slate-300: #d6d6d6;
+  --color-slate-400: #adadad;
+  --color-slate-500: #8a8a8a;
+  --color-slate-600: #6b6b6b;
+  --color-slate-700: #525252;
+  --color-slate-800: #3d3d3d;
+  --color-slate-900: #292929;
+  --color-slate-950: #1a1a1a;
+
+  /* secondary hues: same families, dark-theme ends of the Fluent ramps */
+  --color-blue-300: #77b7f7;
+  --color-blue-400: #96c6fa;
+  --color-blue-500: #115ea3;
+  --color-blue-600: #0f6cbd;
+  --color-blue-700: #2886de;
+  --color-blue-900: #082338;
+  --color-sky-300: #77b7f7;
+
+  --color-indigo-300: #c9a7e0;
+  --color-indigo-400: #b696d7;
+  --color-indigo-500: #8764b8;
+  --color-indigo-600: #5c2e91;
+
+  --color-violet-300: #c9a7e0;
+  --color-violet-400: #b696d7;
+  --color-violet-500: #8764b8;
+
+  --color-purple-300: #c9a7e0;
+  --color-purple-400: #b696d7;
+  --color-purple-500: #8764b8;
+  --color-purple-600: #5c2e91;
+
+  --color-pink-300: #f2a7d8;
+  --color-pink-400: #e97bc4;
+  --color-pink-500: #e43ba6;
+  --color-pink-600: #b8308a;
+
+  --color-orange-300: #f4a26b;
+  --color-orange-400: #ee8c4c;
+  --color-orange-500: #ca5010;
+}
+
+@layer base {
+
+/* =========================================================================
+   5. TYPE — Segoe UI Variable owns every text node while v2 is active
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) body,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-arnie-brand,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-reader,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-arnie,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-tech-mono,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-sans,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-mono,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-serif,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) button,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) select {
+  font-family: var(--f-font-text) !important;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) h1,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) h2,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) h3,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-arnie {
+  font-family: var(--f-font-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.012em;
+  text-shadow: none !important;
+}
+
+/* Fluent captions are sentence case with normal tracking, never wide all-caps */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .uppercase {
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Fluent never outlines text — drop the contrast protection while v2 is on */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-reader,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .font-arnie,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .text-contrast-outline,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) h1,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) h2,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) h3 {
+  text-shadow: none !important;
+}
+
+/* =========================================================================
+   6. CANVAS & SURFACES
+   ========================================================================= */
+html[data-theme='v2'] body {
+  background-color: var(--f-bg-3) !important;
+  background-image: radial-gradient(1100px 340px at 50% -6%, rgba(15, 108, 189, 0.07), transparent 70%) !important;
+  background-attachment: fixed !important;
+  color: var(--f-fg-1) !important;
+}
+
+html[data-theme='v2_dark'] body {
+  background-color: var(--f-bg-2) !important;
+  background-image: radial-gradient(1100px 340px at 50% -6%, rgba(71, 158, 245, 0.09), transparent 70%) !important;
+  background-attachment: fixed !important;
+  color: var(--f-fg-1) !important;
+}
+
+/* ---------- light: cards / wells / strokes ----------
+   Substring selectors so every opacity variant (bg-slate-900\/90, \/70, ...)
+   lands on the same Fluent slot without enumerating each one. */
+html[data-theme='v2'] [class*='bg-slate-900'],
+html[data-theme='v2'] .app-card-bg {
+  background-color: var(--f-bg-1) !important;
+  border-color: var(--f-stroke-2) !important;
+}
+
+html[data-theme='v2'] [class*='bg-slate-950'],
+html[data-theme='v2'] .app-card-subtle-bg {
+  background-color: var(--f-bg-2) !important;
+  border-color: var(--f-stroke-2) !important;
+}
+
+html[data-theme='v2'] [class*='bg-slate-800'],
+html[data-theme='v2'] [class*='bg-slate-700'] {
+  background-color: var(--f-bg-3) !important;
+  border-color: var(--f-stroke-2) !important;
+}
+
+html[data-theme='v2'] [class*='bg-slate-600'] {
+  background-color: #ececec !important;
+}
+
+/* <body> itself carries .bg-slate-900 from index.html — the canvas must win
+   over the card rule, or the whole page turns into one white card. */
+html[data-theme='v2'] body.bg-slate-900 {
+  background-color: var(--f-bg-3) !important;
+  background-image: radial-gradient(1100px 340px at 50% -6%, rgba(15, 108, 189, 0.07), transparent 70%) !important;
+  color: var(--f-fg-1) !important;
+}
+
+html[data-theme='v2_dark'] body.bg-slate-900 {
+  background-color: var(--f-bg-2) !important;
+  background-image: radial-gradient(1100px 340px at 50% -6%, rgba(71, 158, 245, 0.09), transparent 70%) !important;
+  color: var(--f-fg-1) !important;
+}
+
+/* ---------- light: text ---------- */
+html[data-theme='v2'] .text-white,
+html[data-theme='v2'] .text-slate-50,
+html[data-theme='v2'] .text-slate-100,
+html[data-theme='v2'] .text-slate-200,
+html[data-theme='v2'] .text-slate-950 {
+  color: var(--f-fg-1) !important;
+}
+
+html[data-theme='v2'] .text-slate-300 {
+  color: var(--f-fg-2) !important;
+}
+
+html[data-theme='v2'] .text-slate-400,
+html[data-theme='v2'] .text-slate-500 {
+  color: var(--f-fg-3) !important;
+}
+
+html[data-theme='v2'] .text-slate-600 {
+  color: #8a8a8a !important;
+}
+
+/* ---------- light: strokes ---------- */
+html[data-theme='v2'] [class*='border-slate-900'],
+html[data-theme='v2'] [class*='border-slate-800'],
+html[data-theme='v2'] [class*='border-slate-700'],
+html[data-theme='v2'] [class*='border-slate-600'] {
+  border-color: var(--f-stroke-2) !important;
+}
+
+/* text that sits on a filled brand surface must stay on-brand */
+html[data-theme='v2'] [class~='bg-amber-500'].text-slate-950,
+html[data-theme='v2'] [class~='bg-amber-400'].text-slate-950,
+html[data-theme='v2'] [class~='bg-amber-500'] .text-slate-950,
+html[data-theme='v2'] [class~='bg-amber-400'] .text-slate-950,
+html[data-theme='v2'] [class~='bg-amber-500'].text-white,
+html[data-theme='v2'] [class~='bg-amber-400'].text-white,
+html[data-theme='v2'] [class~='bg-amber-500'] .text-white,
+html[data-theme='v2'] [class~='bg-amber-400'] .text-white {
+  color: var(--f-on-brand) !important;
+}
+
+/* ---------- dark: brand fill keeps white label, light-blue fill keeps ink ---------- */
+html[data-theme='v2_dark'] [class~='bg-amber-500'].text-slate-950,
+html[data-theme='v2_dark'] [class~='bg-amber-500'] .text-slate-950 {
+  color: #ffffff !important;
+}
+
+html[data-theme='v2_dark'] .bg-amber-500:hover:not([class*='bg-clip-text']) {
+  background-color: #0f6cbd !important;
+}
+
+/* =========================================================================
+   7. GEOMETRY — collapse the app's rounded scale onto Fluent's
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .rounded-3xl,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .rounded-2xl {
+  border-radius: var(--f-radius-l) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .rounded-xl,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .rounded-lg,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .rounded-md,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .rounded {
+  border-radius: var(--f-radius-m) !important;
+}
+
+/* =========================================================================
+   8. ELEVATION — one Fluent step per Tailwind shadow, never a colored glow
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .shadow-sm {
+  box-shadow: var(--f-shadow-2) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .shadow,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .shadow-md {
+  box-shadow: var(--f-shadow-4) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .shadow-lg,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .shadow-xl {
+  box-shadow: var(--f-shadow-8) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .shadow-2xl {
+  box-shadow: var(--f-shadow-16) !important;
+}
+
+/* arbitrary / colored shadows (glows) collapse to the hairline elevation */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='shadow-['] {
+  box-shadow: var(--f-shadow-2) !important;
+}
+
+/* cards lift one step on hover, the way Fluent's card does */
+html[data-theme='v2'] .bg-slate-900\/90:hover,
+html[data-theme='v2'] .bg-slate-900:hover,
+html[data-theme='v2_dark'] .bg-slate-900\/90:hover,
+html[data-theme='v2_dark'] .bg-slate-900:hover {
+  box-shadow: var(--f-shadow-4);
+}
+
+/* =========================================================================
+   9. GRADIENTS — Fluent surfaces are flat. Gradient *text* becomes solid
+   foreground; gradient *fills* fall back to their token color.
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='bg-clip-text'] {
+  background-image: none !important;
+  color: var(--f-fg-1) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='bg-gradient-to-']:not([class*='bg-clip-text']) {
+  background-image: none !important;
+}
+
+/* A gradient that was carrying the whole fill has to hand its colour to a
+   flat surface, otherwise the element goes transparent.
+   NOTE: only *full-opacity* stops become a solid brand fill — a low-opacity
+   gradient (from-amber-500/15) is a tint, and painting it solid turns a quiet
+   chip into a second primary button. Hence the exact-token [class~=…] match. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-500']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-400']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-yellow-400']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-yellow-500']:not([class*='bg-clip-text']) {
+  background-color: var(--f-brand) !important;
+  color: var(--f-on-brand) !important;
+}
+
+/* tinted brand gradients read as a quiet brand wash instead */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-']:not([class~='from-amber-500']):not([class~='from-amber-400']):not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-']:not([class~='from-yellow-400']):not([class~='from-yellow-500']):not([class*='bg-clip-text']) {
+  background-color: var(--f-brand-subtle) !important;
+}
+
+/* …and its hover state deepens the wash instead of going white-on-white */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-']:not([class~='from-amber-500']):not([class~='from-amber-400']):hover,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-']:not([class~='from-yellow-400']):not([class~='from-yellow-500']):hover {
+  background-color: var(--f-brand-subtle-hover) !important;
+  color: var(--f-brand-text) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-']:not([class~='from-amber-500']):not([class~='from-amber-400']):hover *,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-']:not([class~='from-yellow-400']):not([class~='from-yellow-500']):hover * {
+  color: var(--f-brand-text) !important;
+}
+
+/* Tinted accent chips are written as `bg-X-500/20 text-X-300 hover:text-white`.
+   On a light Fluent surface the hover label would turn white on a near-white
+   tint, so it steps up to the strong foreground instead. (Dark skin is fine —
+   there the tint really is dark.) */
+html[data-theme='v2'] [class*='-500/15'][class*='hover:text-white']:hover,
+html[data-theme='v2'] [class*='-500/20'][class*='hover:text-white']:hover,
+html[data-theme='v2'] [class*='-500/25'][class*='hover:text-white']:hover {
+  color: var(--f-fg-1) !important;
+}
+
+html[data-theme='v2'] [class*='-500/15'][class*='hover:text-white']:hover *,
+html[data-theme='v2'] [class*='-500/20'][class*='hover:text-white']:hover *,
+html[data-theme='v2'] [class*='-500/25'][class*='hover:text-white']:hover * {
+  color: var(--f-fg-1) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-500'] .text-white,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-500'] [class*='text-slate-9'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-400'] .text-white,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-400'] [class*='text-slate-9'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-yellow-400'] .text-white,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-yellow-400'] [class*='text-slate-9'] {
+  color: var(--f-on-brand) !important;
+}
+
+/* A dark control nested inside an on-brand panel stays dark: the panel carries
+   the accent, the control stays neutral — same as Fluent's brand-primary
+   surface with a neutral button on top. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-'] [class*='bg-slate-950'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-'] [class*='bg-slate-950'] {
+  background-color: #1b1b1b !important;
+  color: #ffffff !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-'] [class*='bg-slate-950'] *,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-'] [class*='bg-slate-950'] * {
+  color: #ffffff !important;
+}
+
+/* …but the eyebrow chip keeps a light-blue label so it still reads as a chip */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-'] [class*='bg-slate-950'] [class*='text-amber-'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-'] [class*='bg-slate-950'] [class*='text-amber-'] {
+  color: #479ef5 !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-amber-'] [class*='bg-slate-950']:not([class*='bg-slate-950/50']):hover,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-yellow-'] [class*='bg-slate-950']:not([class*='bg-slate-950/50']):hover {
+  background-color: #2d2d2d !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-cyan-']:not([class*='bg-clip-text']) {
+  background-color: #038387 !important;
+  color: #ffffff !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-slate-']:not([class*='bg-clip-text']) {
+  background-color: var(--f-bg-2) !important;
+}
+
+/* =========================================================================
+   10. CONTROLS — Fluent button / input / focus language
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) button {
+  border-radius: var(--f-radius-m) !important;
+  font-weight: 600;
+  letter-spacing: 0;
+  transform: none !important;
+  transition:
+    background-color var(--f-dur-fast) var(--f-curve),
+    border-color var(--f-dur-fast) var(--f-curve),
+    color var(--f-dur-fast) var(--f-curve),
+    box-shadow var(--f-dur-fast) var(--f-curve) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+/* A solid white button is a light-theme artefact (e.g. the Google sign-in
+   provider button). On the dark skin it becomes a neutral raised control so it
+   stops glowing out of the dialog. White "paper" surfaces are divs/images and
+   are deliberately left alone. */
+html[data-theme='v2_dark'] button[class*='bg-white']:not([class*='bg-white/']) {
+  background-color: var(--f-bg-3) !important;
+  color: var(--f-fg-1) !important;
+  border: 1px solid var(--f-stroke-2) !important;
+  box-shadow: var(--f-shadow-2) !important;
+}
+
+html[data-theme='v2_dark'] button[class*='bg-white']:not([class*='bg-white/']):hover {
+  background-color: var(--f-bg-hover) !important;
+}
+
+html[data-theme='v2_dark'] button[class*='bg-white']:not([class*='bg-white/']) :is(span, p, strong) {
+  color: inherit !important;
+}
+
+/* Fluent focus indicator: 2px ring hugging the control, offset from the edge */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) button:focus-visible,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) a:focus-visible,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input:focus-visible,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) select:focus-visible,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea:focus-visible,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [tabindex]:focus-visible {
+  outline: 2px solid var(--f-focus) !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 1px var(--f-bg-1) !important;
+}
+
+/* Fluent TextField: 1px neutral stroke, brand underline on focus */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='text'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='number'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='search'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='email'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='password'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='tel'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='url'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) select {
+  border-radius: var(--f-radius-m) !important;
+  border: 1px solid var(--f-stroke-1) !important;
+  background-color: var(--f-bg-1) !important;
+  color: var(--f-fg-1) !important;
+  box-shadow: none !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input:hover:not(:disabled),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea:hover:not(:disabled),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) select:hover:not(:disabled) {
+  border-color: var(--f-stroke-accessible) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input:focus,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea:focus,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) select:focus {
+  border-color: var(--f-stroke-1) !important;
+  border-bottom: 2px solid var(--f-brand-text) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input::placeholder,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea::placeholder {
+  color: var(--f-fg-3) !important;
+  opacity: 1;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='checkbox'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) input[type='radio'] {
+  accent-color: var(--f-brand);
+  border-radius: var(--f-radius-s) !important;
+}
+
+/* =========================================================================
+   11. APP BAR — white command surface with a single hairline
+   ========================================================================= */
+html[data-theme='v2'] header,
+html[data-theme='v2_dark'] header {
+  background-color: var(--f-bg-1) !important;
+  border-color: var(--f-stroke-2) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-theme='v2'] header .rounded-xl,
+html[data-theme='v2_dark'] header .rounded-xl {
+  border-radius: var(--f-radius-m) !important;
+}
+
+/* Fluent tab: the selected item is a quiet brand tint, not a solid block */
+html[data-theme='v2'] header [data-active='true'],
+html[data-theme='v2_dark'] header [data-active='true'] {
+  background-color: var(--f-brand-subtle) !important;
+  color: var(--f-brand-text) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme='v2'] header [data-active='true'] svg,
+html[data-theme='v2_dark'] header [data-active='true'] svg {
+  color: var(--f-brand-text) !important;
+}
+
+html[data-theme='v2'] header [data-active='false']:hover,
+html[data-theme='v2_dark'] header [data-active='false']:hover {
+  background-color: var(--f-bg-hover) !important;
+  color: var(--f-fg-1) !important;
+}
+
+/* =========================================================================
+   12. HERO — Fluent 2 hero: a white card with a brand wash and display type
+   ========================================================================= */
+html[data-theme='v2'] .hero-aurora,
+html[data-theme='v2_dark'] .hero-aurora {
+  background-color: var(--f-bg-1) !important;
+  background-image:
+    radial-gradient(120% 170% at 92% -30%, var(--f-brand-subtle) 0%, transparent 62%),
+    radial-gradient(90% 130% at -10% 130%, var(--f-brand-subtle) 0%, transparent 58%) !important;
+  background-size: 100% 100% !important;
+  border: 1px solid var(--f-stroke-2) !important;
+  border-radius: var(--f-radius-xl) !important;
+  box-shadow: var(--f-shadow-4) !important;
+}
+
+html[data-theme='v2'] .hero-aurora h1,
+html[data-theme='v2_dark'] .hero-aurora h1 {
+  font-family: var(--f-font-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--f-fg-1) !important;
+  background: none !important;
+  text-shadow: none !important;
+}
+
+/* the engineering grid belongs to the CAD themes, not to Fluent */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .bg-blueprint-grid,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .bg-blueprint-dot {
+  background-image: none !important;
+}
+
+/* =========================================================================
+   13. TABLES — Fluent DataGrid
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .exam-table-card {
+  border: 1px solid var(--f-stroke-2) !important;
+  border-radius: var(--f-radius-l) !important;
+  background-color: var(--f-bg-1) !important;
+  box-shadow: none !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .exam-table-header {
+  background-color: var(--f-bg-2) !important;
+  color: var(--f-fg-2) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) table thead th {
+  background-color: var(--f-bg-2) !important;
+  color: var(--f-fg-3) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--f-stroke-2) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) table tbody tr {
+  border-bottom: 1px solid var(--f-stroke-3) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) table tbody tr:hover {
+  background-color: var(--f-bg-hover) !important;
+}
+
+/* =========================================================================
+   14. DIALOGS — 8px radius, deep single shadow, flat scrim
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .fixed.inset-0[class*='bg-slate-950'],
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .bg-black\/80 {
+  background-color: var(--f-scrim) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .fixed.inset-0 > .rounded-2xl,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .fixed.inset-0 > .rounded-3xl {
+  border-radius: var(--f-radius-xl) !important;
+  border-color: var(--f-stroke-2) !important;
+  box-shadow: var(--f-shadow-64) !important;
+}
+
+/* =========================================================================
+   15. MISC — scrollbars, selection, cursors, glass
+   ========================================================================= */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) ::-webkit-scrollbar-thumb {
+  background: #c8c8c8;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+html[data-theme='v2_dark'] ::-webkit-scrollbar-thumb {
+  background: #5c5c5c;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) ::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+html[data-theme='v2_dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #7a7a7a;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) ::selection {
+  background: var(--f-brand);
+  color: var(--f-on-brand);
+}
+
+/* Fluent is used with a normal pointer — retire the inverted reticle */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .glass,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) .glass-strong {
+  background: var(--f-bg-1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid var(--f-stroke-2) !important;
+  box-shadow: var(--f-shadow-4) !important;
+}
+
+@media (pointer: fine) {
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) *,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) *::before,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) *::after {
+    cursor: auto !important;
+  }
+
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) button,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) a,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) [role='button'],
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) label,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) select,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) summary,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) .cursor-pointer {
+    cursor: pointer !important;
+  }
+
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) input,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) textarea {
+    cursor: text !important;
+  }
+
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) button:disabled {
+    cursor: not-allowed !important;
+  }
+}
+
+/* =========================================================================
+   16. REDUCED MOTION
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) *,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) *::before,
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+} /* @layer base — v2 skin */

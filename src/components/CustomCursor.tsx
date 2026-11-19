@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 /**
  * CustomCursor
@@ -14,6 +15,8 @@ import React, { useEffect, useState, useRef } from 'react';
  *   for a true photographic negative effect that inverts all pixels beneath the circle.
  */
 export const CustomCursor: React.FC = () => {
+  const { themeConfig } = useTheme();
+  const isFluent = themeConfig.id === 'v2' || themeConfig.id === 'v2_dark';
   const [visible, setVisible] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
@@ -87,6 +90,9 @@ export const CustomCursor: React.FC = () => {
   });
 
   if (isTouchDevice) return null;
+  // Fluent 2 keeps the native pointer — the inverted reticle is a 3D-theme
+  // signature and would fight the flat Fluent surfaces.
+  if (isFluent) return null;
 
   return (
     <div

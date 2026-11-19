@@ -12,7 +12,9 @@ export type AppThemeId =
   | 'cyber_cad'
   | 'emerald_matrix'
   | 'underwave'
-  | 'cyberdeck_2077';
+  | 'cyberdeck_2077'
+  | 'v2'
+  | 'v2_dark';
 
 export type FontFamilyId =
   | 'sans'
@@ -343,6 +345,51 @@ export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
     accentText: '#08050e',
     accentBadge: 'rgba(234, 234, 34, 0.16)',
     gridStyle: 'rgba(234, 234, 34, 0.08)',
+  },
+  // MICROSOFT FLUENT 2 WEB — light
+  // Values are the Fluent 2 alias tokens (Fluent UI React v9 / Fluent 2 Web
+  // Figma variables): neutral background 1-3, foreground 1-3, stroke 1-2,
+  // brand background / brand foreground 1.
+  v2: {
+    id: 'v2',
+    name: 'Fluent 2 (v2)',
+    category: 'light',
+    accentName: 'Microsoft Brand Blue',
+    description:
+      'Microsoft Fluent 2 Web design language: Segoe UI Variable, 4px controls, 1px neutral strokes, elevation-only depth and the #0F6CBD brand ramp. Flat, quiet and built for long reading sessions.',
+    bgPage: '#f5f5f5', // colorNeutralBackground3
+    bgCard: '#ffffff', // colorNeutralBackground1
+    bgCardSubtle: '#fafafa', // colorNeutralBackground2
+    border: '#e0e0e0', // colorNeutralStroke2
+    textPrimary: '#242424', // colorNeutralForeground1
+    textSecondary: '#424242', // colorNeutralForeground2
+    textMuted: '#616161', // colorNeutralForeground3
+    accent: '#0f6cbd', // colorBrandBackground
+    accentHover: '#115ea3', // colorBrandBackgroundHover
+    accentText: '#ffffff', // colorNeutralForegroundOnBrand
+    accentBadge: 'rgba(15, 108, 189, 0.10)',
+    gridStyle: 'rgba(15, 108, 189, 0.06)',
+  },
+  // MICROSOFT FLUENT 2 WEB — dark
+  v2_dark: {
+    id: 'v2_dark',
+    name: 'Fluent 2 Dark (v2)',
+    category: 'dark',
+    accentName: 'Fluent Blue on Graphite',
+    description:
+      'The same Fluent 2 skin after dark: graphite #1F1F1F canvas, #292929 surfaces, #525252 strokes and the #479EF5 brand blue Microsoft uses for dark themes.',
+    bgPage: '#1f1f1f', // colorNeutralBackground2
+    bgCard: '#292929', // colorNeutralBackground1
+    bgCardSubtle: '#333333', // colorNeutralBackground5
+    border: '#525252', // colorNeutralStroke2
+    textPrimary: '#ffffff',
+    textSecondary: '#d6d6d6', // colorNeutralForeground2
+    textMuted: '#adadad', // colorNeutralForeground3
+    accent: '#479ef5', // colorBrandForeground1 (dark)
+    accentHover: '#62abf5',
+    accentText: '#0a1a29',
+    accentBadge: 'rgba(71, 158, 245, 0.16)',
+    gridStyle: 'rgba(255, 255, 255, 0.04)',
   },
 };
 

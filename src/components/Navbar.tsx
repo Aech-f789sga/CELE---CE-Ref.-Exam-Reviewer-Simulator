@@ -144,6 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <>
                 <button
                   data-tour="tab-setup"
+                  data-active={currentTab === 'setup'}
                   onClick={() => setCurrentTab('setup')}
                   title="Exam Portal"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -160,6 +161,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   data-tour="tab-leaderboard"
+                  data-active={currentTab === 'leaderboard'}
                   onClick={() => setCurrentTab('leaderboard')}
                   title="Leaderboard"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -176,6 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   data-tour="tab-announcements"
+                  data-active={currentTab === 'announcements'}
                   onClick={() => setCurrentTab('announcements')}
                   title="Announcements"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -192,6 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   data-tour="tab-performance"
+                  data-active={currentTab === 'performance'}
                   onClick={() => setCurrentTab('performance')}
                   title="Performance"
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
@@ -208,6 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   data-tour="scratchpad-tab"
+                  data-active={currentTab === 'scratchpad'}
                   onClick={() => setCurrentTab('scratchpad')}
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'scratchpad' ? 'shadow-md font-semibold' : 'hover:opacity-80'
@@ -224,6 +229,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   data-tour="flashcards-tab"
+                  data-active={currentTab === 'flashcards'}
                   onClick={() => setCurrentTab('flashcards')}
                   className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                     currentTab === 'flashcards' ? 'shadow-md font-semibold' : 'hover:opacity-80'
@@ -241,6 +247,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {/* Admin Tab (Only visible to admin) */}
                 {isAdmin && (
                   <button
+                    data-active={currentTab === 'admin'}
                     onClick={() => setCurrentTab('admin')}
                     className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
                       currentTab === 'admin'
