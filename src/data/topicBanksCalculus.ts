@@ -21,6 +21,34 @@ const CAL_KEY =
   'DACBDAABADCBADDACADCACDCDCBCBADCBCADABACACADABBABBBBBDA' +
   'BADCADBDBBABDABCADAACDCADCA';
 
+/**
+ * Figures cropped from the booklet into `public/images/calculus/`, keyed by
+ * item number. Only items whose stem actually carries a drawing are listed.
+ */
+const CAL_FIGURES: Record<number, string> = {
+  33: 'cal-q33',
+  40: 'cal-q40',
+  41: 'cal-q41',
+  80: 'cal-q80',
+};
+
+/**
+ * `figureSvg` is injected with `dangerouslySetInnerHTML`, so it must be HTML,
+ * not a bare URL — a URL string would render as text.
+ */
+function calcFigure(n: number): string | undefined {
+  const slug = CAL_FIGURES[n];
+  if (!slug) return undefined;
+  return `<div class="flex flex-col items-center justify-center w-full py-2">
+  <img
+    src="/images/calculus/${slug}.png"
+    alt="Calculus question ${n} figure"
+    class="max-w-md w-full h-auto object-contain rounded-lg bg-white p-2.5 shadow-sm border border-slate-200"
+    loading="eager"
+  />
+</div>`;
+}
+
 function keyFor(number: number): 'A' | 'B' | 'C' | 'D' {
   return CAL_KEY[number - 1] as 'A' | 'B' | 'C' | 'D';
 }
@@ -42,6 +70,8 @@ function makeCalcItem(topicId: string, category: string, idPrefix: string) {
     text,
     options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
     correctAnswer: keyFor(number),
+    figureSvg: calcFigure(number),
+    figureCaption: `Question ${number}`,
     referenceSource: 'Gillesania',
     topicId,
     solution: {
