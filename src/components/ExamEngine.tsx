@@ -793,8 +793,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                   <div className="font-bold text-amber-300 text-sm">Answer recorded — not yet graded</div>
                   <p className="text-amber-100/80 mt-1">
                     No answer key has been encoded for Statics yet, so this item cannot be marked
-                    right or wrong. Your answer is saved and will be graded once the key is
-                    published.
+                    right or wrong. Your answer is saved with this sitting.
                   </p>
                 </div>
               </div>

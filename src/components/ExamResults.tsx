@@ -250,8 +250,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                     {summary.pending} of {questions.length} items
                   </strong>{' '}
                   come from a booklet whose answer key has not been encoded yet, so they are not
-                  scored and no key is shown. Your answers are recorded. Scores for these items
-                  will be reported once the Statics key is published on the site.
+                  scored and no key is shown. Your answers are kept with this report. Statics
+                  scores will be announced once the answer key is encoded on the site.
                 </>
               ) : questions.some((q) => q.workedSolution) ? (
                 <>
