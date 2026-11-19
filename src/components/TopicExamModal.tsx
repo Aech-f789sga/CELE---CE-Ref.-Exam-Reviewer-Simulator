@@ -34,6 +34,24 @@ import {
 import { watchTopicLock } from '../data/topicLock';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Which body the modal shows. Pure so the three-way choice — and the way it
+ * moves when the admin flips the switch — can be tested without a DOM.
+ *
+ * `checking` exists because claiming "locked" before the first read lands would
+ * be a claim we cannot back, and it would flicker away a moment later. The
+ * admin never waits on it: they are allowed regardless of the flag.
+ */
+export function topicAccessView(args: {
+  checked: boolean;
+  isAdmin: boolean;
+  unlocked: boolean;
+}): 'checking' | 'locked' | 'ready' {
+  if (!args.checked && !args.isAdmin) return 'checking';
+  if (!args.isAdmin && !args.unlocked) return 'locked';
+  return 'ready';
+}
+
 interface Props {
   onClose: () => void;
   onStart: (questions: TopicQuestion[]) => void;
@@ -167,7 +185,7 @@ export function TopicExamModal({ onClose, onStart }: Props) {
     []
   );
 
-  const allowed = isAdmin || unlocked;
+  const view = topicAccessView({ checked, isAdmin, unlocked });
   const chosen = useMemo(() => TOPICS.filter((t) => picked.has(t.id)), [picked]);
   const { rows, draw, available: total } = planTopicDrill(
     chosen.map((t) => t.id),
@@ -228,14 +246,18 @@ export function TopicExamModal({ onClose, onStart }: Props) {
           </button>
         </div>
 
-        {!allowed ? (
+        {view === 'checking' ? (
+          // The admin's flag has not landed yet. Saying "locked" here would be
+          // a claim we cannot back, and it would flicker away a moment later.
+          <div className="p-6 text-sm text-slate-400">Checking access…</div>
+        ) : view === 'locked' ? (
           <div className="p-6 flex items-start gap-3 text-sm text-slate-300">
             <Lock className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <div className="font-semibold text-white">Not open yet</div>
+              <div className="font-semibold text-white">Locked by the admin</div>
               <p className="text-slate-400 mt-1">
-                By-topic drills are still being prepared. The administrator can open them from the
-                admin panel.
+                By-topic drills have not been opened yet. When the admin unlocks them this window
+                opens on its own — there is no need to reload.
               </p>
             </div>
           </div>

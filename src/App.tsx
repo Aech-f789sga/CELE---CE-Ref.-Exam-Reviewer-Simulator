@@ -165,12 +165,24 @@ function MainApp() {
   /**
    * "By topics" is admin-gated. The switch lives in Firestore, so follow it
    * live rather than reading once: the admin can open or close the mode while
-   * someone already has the page loaded. Failing closed means the entry simply
-   * stays hidden, which is the safe direction.
+   * someone already has the page loaded, and that has to take effect without a
+   * refresh. The entry stays visible either way -- a locked mode is worth
+   * advertising -- so this only decides whether it reads as open or locked.
+   *
+   * `known` keeps the entry from claiming "Locked" during the first round-trip.
+   * Until the flag lands it simply looks normal, and the modal says it is
+   * checking rather than guessing.
    */
-  const [topicExamOpen, setTopicExamOpen] = useState<boolean>(false);
-  useEffect(() => watchTopicLock((lock) => setTopicExamOpen(lock.unlocked)), []);
-  const canOpenTopicExam = isAdmin || topicExamOpen;
+  const [topicExamState, setTopicExamState] = useState<{ known: boolean; open: boolean }>({
+    known: false,
+    open: false,
+  });
+  useEffect(
+    () => watchTopicLock((lock) => setTopicExamState({ known: true, open: lock.unlocked })),
+    []
+  );
+  const canOpenTopicExam = isAdmin || topicExamState.open;
+  const topicExamLocked = topicExamState.known && !canOpenTopicExam;
 
   // Selection states
   const [selectedSource, setSelectedSource] = useState<ReferenceSource>('Gillesania');
@@ -626,7 +638,8 @@ function MainApp() {
 
               {currentTab === 'setup' && (
                 <SubjectSelector
-                  onStartTopicExam={canOpenTopicExam ? handleStartTopicExam : undefined}
+                  onStartTopicExam={handleStartTopicExam}
+                  topicExamLocked={topicExamLocked}
                   selectedSubject={selectedSubject}
                   onSubjectChange={handleSubjectChange}
                   selectedSource={selectedSource}

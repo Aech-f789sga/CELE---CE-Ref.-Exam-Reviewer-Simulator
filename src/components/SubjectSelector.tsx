@@ -77,6 +77,12 @@ interface SubjectSelectorProps {
   onStartExam: () => void;
   /** Draw a random paper from the chosen topics (By topics mode). */
   onStartTopicExam?: (questions: import('../data/topicBanks').TopicQuestion[]) => void;
+  /**
+   * The admin has not opened By-topics yet. The entry stays visible so people
+   * know the mode exists, but it advertises the lock instead of inviting a
+   * click that goes nowhere.
+   */
+  topicExamLocked?: boolean;
   onResumeExam: (session: PausedExamSession) => void;
   onNavigateToFlashcards?: () => void;
   onOpenTour?: () => void;
@@ -100,6 +106,7 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   onExamModeChange,
   onStartExam,
   onStartTopicExam,
+  topicExamLocked = false,
   onResumeExam,
   onNavigateToFlashcards,
   onOpenTour,
@@ -256,24 +263,54 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           </div>
         </div>
 
-        {/* By topics — the third exam type, sits alongside the reference source */}
+        {/* By topics — the third exam type, sits alongside the reference source.
+            Always visible: a locked mode is worth advertising, and the modal
+            explains the lock and opens by itself once the admin flips it. */}
         {onStartTopicExam && (
           <button
             type="button"
             data-tour="by-topics"
             onClick={() => setTopicOpen(true)}
-            className="w-full flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/50 hover:border-amber-500/50 hover:bg-amber-500/5 p-3.5 text-left transition-all group"
+            className={
+              'w-full flex items-center gap-3 rounded-xl border p-3.5 text-left transition-all group ' +
+              (topicExamLocked
+                ? 'border-slate-800 bg-slate-950/30 hover:border-slate-700'
+                : 'border-slate-800 bg-slate-950/50 hover:border-amber-500/50 hover:bg-amber-500/5')
+            }
           >
-            <span className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/40">
-              <Layers className="w-4 h-4 text-amber-400" />
+            <span
+              className={
+                'p-2 rounded-lg border ' +
+                (topicExamLocked
+                  ? 'bg-slate-800/60 border-slate-700'
+                  : 'bg-amber-500/15 border-amber-500/40')
+              }
+            >
+              <Layers className={`w-4 h-4 ${topicExamLocked ? 'text-slate-500' : 'text-amber-400'}`} />
             </span>
             <span className="flex-1 min-w-0">
-              <span className="block text-xs font-bold text-white">By topics</span>
+              <span className="flex items-center gap-2 flex-wrap">
+                <span className={`block text-xs font-bold ${topicExamLocked ? 'text-slate-300' : 'text-white'}`}>
+                  By topics
+                </span>
+                {topicExamLocked && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-slate-800 text-[10px] font-bold text-slate-400">
+                    <Lock className="w-2.5 h-2.5" />
+                    Locked
+                  </span>
+                )}
+              </span>
               <span className="block text-[11px] text-slate-400">
-                Drill Algebra, Calculus or Statics only — random items from the topics you pick
+                {topicExamLocked
+                  ? 'Drill by subject matter — the admin has not opened this yet'
+                  : 'Drill Algebra, Calculus or Statics only — random items from the topics you pick'}
               </span>
             </span>
-            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 transition-colors" />
+            {topicExamLocked ? (
+              <Lock className="w-4 h-4 text-slate-600" />
+            ) : (
+              <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 transition-colors" />
+            )}
           </button>
         )}
 

@@ -54,7 +54,8 @@ export function FeatureAccessSection({ unlocked, saving, error, onToggle }: Prop
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Topic drills across Algebra, Trigonometry, Geometry, Calculus and Statics. While this is
-            off, the entry stays hidden for reviewees and only you can open it.
+            off, reviewees still see the entry but it shows as locked; unlocking takes effect on
+            their screens straight away, with no reload.
           </p>
         </div>
 
