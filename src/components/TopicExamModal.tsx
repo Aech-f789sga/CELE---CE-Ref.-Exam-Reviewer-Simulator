@@ -216,10 +216,7 @@ export function TopicExamModal({ onClose, onStart }: Props) {
               By topics
             </div>
             <h2 className="text-lg font-bold text-white leading-tight">Drill by subject matter</h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Pick the topics you want and how many items each — a number of your own, or every item
-              the topic holds. The paper is drawn at random.
-            </p>
+            <p className="text-xs text-slate-400 mt-1">More topics will be added in the future.</p>
           </div>
           <button
             type="button"
