@@ -1,0 +1,90 @@
+/**
+ * What a paper is worth when part of it has no answer key yet.
+ *
+ * The Statics booklet (Margallo's) was transcribed complete — 176 items across
+ * three topics — but no key was ever supplied for it. Each of those items
+ * therefore carries `keyPending: true` and a placeholder in `correctAnswer`.
+ * Comparing an answer against that placeholder marks every single response
+ * wrong, which is worse than saying nothing: it produces a confident 0% and a
+ * "FAILED" verdict for a learner who may have answered everything correctly.
+ *
+ * So the rule is: **a pending item is not wrong, it is unknown**, and it is
+ * excluded from every figure rather than counted as a miss. That distinction
+ * lives here, once, because four places need it and they must not disagree —
+ * the engine (what to reveal), the results screen (what to report), the submit
+ * handler (what to save) and the leaderboards (what to rank).
+ *
+ * When the key is eventually encoded, deleting `keyPending` from the bank is
+ * the entire migration: every caller goes back to scoring normally, because
+ * none of them special-case a topic, only the flag.
+ */
+import type { Question } from '../types/exam';
+
+/** An answer map keyed by question id. */
+export type AnswerMap = Record<string, string | undefined>;
+
+/** True when this item's key has not been supplied, so it cannot be graded. */
+export function isKeyPending(q: Pick<Question, 'keyPending'> | null | undefined): boolean {
+  return q?.keyPending === true;
+}
+
+export interface ScoreSummary {
+  /** Items that carry a real key and therefore count towards the score. */
+  scorable: number;
+  /** Items excluded because no key exists yet. */
+  pending: number;
+  /** Correct answers, counted over `scorable` only. */
+  correct: number;
+  /**
+   * Percentage over `scorable`, or `null` when nothing on the paper can be
+   * graded yet. `null` is deliberately not `0`: a paper with no key has no
+   * score, and rendering 0% would be a claim the data cannot support.
+   */
+  percentage: number | null;
+  /** True when at least one item was left out of the figures. */
+  partial: boolean;
+}
+
+/**
+ * Score a paper, ignoring items whose key has not been supplied.
+ *
+ * A worked item (Besavilla) is scorable: the learner self-marks it, so its
+ * `correctAnswer` is the self-mark rather than a printed key.
+ */
+export function summariseScore(
+  questions: Pick<Question, 'id' | 'correctAnswer' | 'keyPending'>[],
+  answers: AnswerMap
+): ScoreSummary {
+  let scorable = 0;
+  let pending = 0;
+  let correct = 0;
+
+  for (const q of questions) {
+    if (isKeyPending(q)) {
+      pending++;
+      continue;
+    }
+    scorable++;
+    if (answers[q.id] === q.correctAnswer) correct++;
+  }
+
+  return {
+    scorable,
+    pending,
+    correct,
+    percentage: scorable === 0 ? null : Math.round((correct / scorable) * 10000) / 100,
+    partial: pending > 0,
+  };
+}
+
+/**
+ * Whether an attempt may be published to the leaderboards.
+ *
+ * A partially-keyed paper is excluded as well as a wholly-keyed-pending one:
+ * a drill that mixes Algebra with Statics would otherwise rank on a percentage
+ * computed from whichever items happened to be scorable, which is not a score
+ * anyone can compare against another learner's.
+ */
+export function isPublishable(summary: ScoreSummary): boolean {
+  return summary.pending === 0 && summary.scorable > 0;
+}

@@ -293,7 +293,11 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                                   ? 'border-amber-500/60 bg-amber-500/15 text-amber-200'
                                   : 'border-slate-800 bg-slate-950/50 text-slate-300 hover:border-slate-700')
                             }
-                            title={empty ? 'No items transcribed yet' : `${n} items available`}
+                            title={
+                              empty
+                                ? 'No items transcribed yet'
+                                : `${n} items available${t.keyPending ? ' — answer key not yet encoded, so they will not be scored' : ''}`
+                            }
                           >
                             {on && !empty ? (
                               <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
@@ -301,6 +305,14 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                               <span className="w-3.5 h-3.5 rounded-full border border-current shrink-0" />
                             )}
                             <span className="flex-1 min-w-0 truncate">{t.name}</span>
+                            {t.keyPending && (
+                              <span
+                                className="shrink-0 rounded px-1 py-0.5 text-[8px] font-black uppercase tracking-wider text-amber-400/90 border border-amber-500/40"
+                                title="Answer key not yet encoded — items open, but nothing is scored"
+                              >
+                                no key
+                              </span>
+                            )}
                             <span className="font-tech-mono text-[10px] opacity-70">{n}</span>
                           </button>
                         );
@@ -372,6 +384,14 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                     </div>
                   ))}
                 </div>
+              )}
+
+              {chosen.some((t) => t.keyPending) && (
+                <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-[10px] leading-relaxed text-amber-200/90">
+                  Statics answer keys have not been encoded yet. The items open normally and your
+                  answers are kept, but nothing from Statics is marked right or wrong — your report
+                  will say the score is pending until the key is published.
+                </p>
               )}
 
               <div className="flex items-center justify-between gap-3">

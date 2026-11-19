@@ -152,6 +152,16 @@ export interface Question {
    */
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   /**
+   * The source booklet prints no answer key for this item yet.
+   *
+   * `correctAnswer` then holds a placeholder, not a fact, so nothing may compare
+   * against it: the engine must not reveal a verdict, the results screen must
+   * not score the item, and no attempt containing one may be published to the
+   * leaderboards. See `data/grading.ts` for the arithmetic, which every caller
+   * shares so they cannot drift apart.
+   */
+  keyPending?: boolean;
+  /**
    * `true` for Besavilla-style worked examples: no A–D choices, the scanned
    * worked solution is revealed on demand and the learner marks themselves.
    */

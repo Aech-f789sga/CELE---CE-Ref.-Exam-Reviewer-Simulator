@@ -14,8 +14,9 @@
  *   Calculus ...... same series (Differential, Integral, Differential Equations).
  *   Statics ....... same series. **No answer key yet** — items are transcribed
  *                   with `correctAnswer` left as the printed placeholder and
- *                   `keyPending: true` so the UI can refuse to score them
- *                   rather than marking every answer wrong.
+ *                   `keyPending: true` so the UI refuses to score them rather
+ *                   than marking every answer wrong. The arithmetic for that
+ *                   lives in `grading.ts`; the flag is the only switch.
  *
  * ## Why `subject` is carried as 'MSTC'
  *

@@ -24,11 +24,13 @@ import {
   Download,
   Layers,
   BookOpen,
+  Lock,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { MathView } from './MathView';
 import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
+import { isKeyPending, summariseScore } from '../data/grading';
 import { getExamStorageBase } from '../utils/storage';
 import {
   exportScratchpadBundle,
@@ -65,7 +67,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   onViewPerformance,
   onExitHome,
 }) => {
-  const [filterType, setFilterType] = useState<'all' | 'incorrect' | 'correct'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'incorrect' | 'correct' | 'pending'>('all');
   const [expandedSolutions, setExpandedSolutions] = useState<Record<string, boolean>>({});
   const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
@@ -145,28 +147,33 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const subjectConfig = SUBJECT_CONFIGS[subject];
 
   // Calculate score
-  let correctCount = 0;
-  questions.forEach((q) => {
-    if (userAnswers[q.id] === q.correctAnswer) {
-      correctCount++;
-    }
-  });
-
-  const totalQuestions = questions.length;
-  const ratingPercentage = Math.round((correctCount / totalQuestions) * 10000) / 100;
-  const isSubjectPassed = ratingPercentage >= 50.0; // PRC rule: ≥ 50% in each subject
+  /*
+   * Items with no encoded key are left out of the figures rather than counted
+   * as misses. Their `correctAnswer` is a placeholder, so grading them would
+   * report a confident 0% and a FAILED verdict for a paper nobody could have
+   * passed. `percentage` is null when the whole paper is unkeyed — the Statics
+   * drill today — and null is rendered as "not scored yet", never as 0%.
+   */
+  const summary = summariseScore(questions, userAnswers);
+  const correctCount = summary.correct;
+  const totalQuestions = summary.scorable;
+  const scoreKnown = summary.percentage !== null;
+  const ratingPercentage = summary.percentage ?? 0;
+  const isSubjectPassed = scoreKnown && ratingPercentage >= 50.0; // PRC rule: ≥ 50% in each subject
   const prcContribution = Math.round(ratingPercentage * subjectConfig.weight * 100) / 100;
+  /** Nothing on the paper can be graded — the Statics drill, today. */
+  const allPending = !scoreKnown && summary.pending > 0;
 
   // Trigger celebration confetti if passed
   useEffect(() => {
-    if (ratingPercentage >= 70.0) {
+    if (scoreKnown && ratingPercentage >= 70.0) {
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
       });
     }
-  }, [ratingPercentage]);
+  }, [ratingPercentage, scoreKnown]);
 
   const toggleExpand = (qId: string) => {
     setExpandedSolutions((prev) => ({
@@ -197,6 +204,10 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
   // Filtered questions for solutions list
   const filteredQuestions = questions.filter((q) => {
+    // An unkeyed item is neither correct nor incorrect — there is no key to
+    // compare against — so it is its own category rather than a "mistake".
+    if (isKeyPending(q)) return filterType === 'all' || filterType === 'pending';
+    if (filterType === 'pending') return false;
     const isCorrect = userAnswers[q.id] === q.correctAnswer;
     if (filterType === 'correct') return isCorrect;
     if (filterType === 'incorrect') return !isCorrect;
@@ -213,9 +224,11 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
     <div className="max-w-5xl mx-auto space-y-8 pb-24">
       {/* Scorecard Hero */}
       <div className={`rounded-3xl p-6 sm:p-8 border-2 shadow-2xl relative overflow-hidden bg-blueprint-grid ${
-        isSubjectPassed
-          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 border-emerald-500/40'
-          : 'bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950/40 border-rose-500/40'
+        !scoreKnown
+          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-amber-500/40'
+          : isSubjectPassed
+            ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 border-emerald-500/40'
+            : 'bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950/40 border-rose-500/40'
       }`}>
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left">
@@ -231,7 +244,16 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
             <p className="text-slate-300 text-sm max-w-xl">
               Completed in {formatTime(timeSpentSeconds)}.{' '}
-              {questions.some((q) => q.workedSolution) ? (
+              {summary.pending > 0 ? (
+                <>
+                  <strong className="text-amber-400">
+                    {summary.pending} of {questions.length} items
+                  </strong>{' '}
+                  come from a booklet whose answer key has not been encoded yet, so they are not
+                  scored and no key is shown. Your answers are recorded. Scores for these items
+                  will be reported once the Statics key is published on the site.
+                </>
+              ) : questions.some((q) => q.workedSolution) ? (
                 <>
                   Every worked item below is scored from your own self-mark against the
                   booklet&apos;s <strong className="text-amber-400">printed solution</strong>
@@ -249,7 +271,12 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
             {/* PRC Subject Status Tag */}
             <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2">
-              {isSubjectPassed ? (
+              {!scoreKnown ? (
+                <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold font-tech-mono">
+                  <Lock className="w-4 h-4 text-amber-400" />
+                  <span>SCORE PENDING — ANSWER KEY NOT YET ENCODED</span>
+                </span>
+              ) : isSubjectPassed ? (
                 <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-tech-mono">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>PRC AREA CRITERION SATISFIED (≥ 50.00%)</span>
@@ -261,24 +288,40 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                 </span>
               )}
 
-              <span className="px-3 py-1 rounded-xl bg-slate-800 text-slate-300 text-xs font-tech-mono border border-slate-700">
-                PRC Weight: {subjectConfig.weightPercent}% (Contributes: {prcContribution.toFixed(2)}%)
-              </span>
+              {scoreKnown ? (
+                <span className="px-3 py-1 rounded-xl bg-slate-800 text-slate-300 text-xs font-tech-mono border border-slate-700">
+                  PRC Weight: {subjectConfig.weightPercent}% (Contributes: {prcContribution.toFixed(2)}%)
+                </span>
+              ) : (
+                <span className="px-3 py-1 rounded-xl bg-slate-800 text-slate-400 text-xs font-tech-mono border border-slate-700">
+                  Not counted towards your GWA or the leaderboards
+                </span>
+              )}
             </div>
           </div>
 
           {/* Rating Badge */}
           <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-xl shrink-0 min-w-[200px]">
             <span className="text-[11px] text-slate-400 uppercase tracking-widest font-semibold font-tech-mono">
-              AREA RATING
+              {scoreKnown ? 'AREA RATING' : 'SCORE'}
             </span>
             <div className="font-arnie text-5xl font-bold tracking-tight text-white my-1">
-              <span className={isSubjectPassed ? 'text-emerald-400' : 'text-rose-400'}>
-                {ratingPercentage.toFixed(1)}%
+              <span
+                className={
+                  !scoreKnown
+                    ? 'text-amber-400'
+                    : isSubjectPassed
+                      ? 'text-emerald-400'
+                      : 'text-rose-400'
+                }
+              >
+                {scoreKnown ? `${ratingPercentage.toFixed(1)}%` : '—'}
               </span>
             </div>
-            <span className="text-xs text-slate-400 font-tech-mono">
-              {correctCount} / {totalQuestions} Correct
+            <span className="text-xs text-slate-400 font-tech-mono text-center">
+              {scoreKnown
+                ? `${correctCount} / ${totalQuestions} Correct`
+                : `${summary.pending} item${summary.pending === 1 ? '' : 's'} awaiting key`}
             </span>
           </div>
         </div>
@@ -419,24 +462,39 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </div>
             <div>
               <h2 className="font-arnie text-lg font-bold text-white tracking-wide">
-                {solutionPageRange
-                  ? `Booklet ${solutionPageRange.includes('–') ? 'pp.' : 'p.'} ${solutionPageRange}: `
-                  : 'Page 11: '}
-                {isWorkedSet ? 'Worked Solutions' : 'Official Answer Keys'}
+                {allPending ? (
+                  'Answer Key Not Yet Encoded'
+                ) : (
+                  <>
+                    {solutionPageRange
+                      ? `Booklet ${solutionPageRange.includes('–') ? 'pp.' : 'p.'} ${solutionPageRange}: `
+                      : 'Page 11: '}
+                    {isWorkedSet ? 'Worked Solutions' : 'Official Answer Keys'}
+                  </>
+                )}
               </h2>
               <p className="text-[11px] text-slate-400">
-                {isWorkedSet
-                  ? `Printed solutions from the review book, scored against your self-marks${
-                      workedCount < questions.length
-                        ? ` (${workedCount} worked, ${questions.length - workedCount} keyed)`
-                        : ''
-                    }`
-                  : 'Official PRC Examination Master Key & Candidate Response Comparison'}
+                {allPending ? (
+                  <>
+                    Your responses are recorded. The Statics key has not been published yet, so
+                    nothing here is marked right or wrong and no score is reported.
+                  </>
+                ) : isWorkedSet ? (
+                  `Printed solutions from the review book, scored against your self-marks${
+                    workedCount < questions.length
+                      ? ` (${workedCount} worked, ${questions.length - workedCount} keyed)`
+                      : ''
+                  }`
+                ) : (
+                  'Official PRC Examination Master Key & Candidate Response Comparison'
+                )}
               </p>
             </div>
           </div>
           <span className="text-xs text-amber-400 font-tech-mono font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
-            {correctCount} Correct • {totalQuestions - correctCount} Incorrect
+            {scoreKnown
+              ? `${correctCount} Correct • ${totalQuestions - correctCount} Incorrect`
+              : `${summary.pending} awaiting key`}
           </span>
         </div>
 
@@ -444,21 +502,26 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">
           {questions.map((q) => {
             const userAns = userAnswers[q.id];
-            const isCorrect = userAns === q.correctAnswer;
+            const pending = isKeyPending(q);
+            const isCorrect = !pending && userAns === q.correctAnswer;
             return (
               <div
                 key={q.id}
                 className={`p-2.5 rounded-xl border text-center transition-all ${
-                  isCorrect
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                    : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                  pending
+                    ? 'bg-amber-500/5 border-amber-500/25 text-amber-300/90'
+                    : isCorrect
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
                 }`}
               >
                 <div className="text-[10px] text-slate-400 font-tech-mono mb-1">
                   Q{q.number}
                 </div>
                 <div className="font-tech-mono font-bold text-sm">
-                  {q.workedSolution ? (
+                  {pending ? (
+                    <span className="text-[10px] text-amber-300/90">KEY PENDING</span>
+                  ) : q.workedSolution ? (
                     <span className="text-[11px] text-slate-300">WORKED</span>
                   ) : (
                     <>
@@ -468,7 +531,11 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                 </div>
                 <div className="text-[10px] mt-1 font-tech-mono">
                   You: {userAns ? (
-                    <strong className={isCorrect ? 'text-emerald-400' : 'text-rose-400'}>
+                    <strong
+                      className={
+                        pending ? 'text-slate-200' : isCorrect ? 'text-emerald-400' : 'text-rose-400'
+                      }
+                    >
                       {q.workedSolution ? (isCorrect ? 'SOLVED' : 'MISSED') : userAns}
                     </strong>
                   ) : (
@@ -534,6 +601,19 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
               >
                 Correct ({correctCount})
               </button>
+              {summary.pending > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setFilterType('pending')}
+                  className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+                    filterType === 'pending'
+                      ? 'bg-amber-500/80 text-slate-950 font-bold'
+                      : 'text-amber-300/80 hover:text-amber-200'
+                  }`}
+                >
+                  Awaiting key ({summary.pending})
+                </button>
+              )}
             </div>
 
             <button
@@ -557,16 +637,19 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
         <div className="space-y-4">
           {filteredQuestions.map((q) => {
             const userAns = userAnswers[q.id];
-            const isCorrect = userAns === q.correctAnswer;
+            const pending = isKeyPending(q);
+            const isCorrect = !pending && userAns === q.correctAnswer;
             const isExpanded = expandedSolutions[q.id] ?? true; // default expanded
 
             return (
               <div
                 key={q.id}
                 className={`rounded-2xl border transition-all overflow-hidden ${
-                  isCorrect
-                    ? 'bg-slate-950/70 border-slate-800'
-                    : 'bg-rose-950/10 border-rose-900/40'
+                  pending
+                    ? 'bg-slate-950/70 border-amber-900/40'
+                    : isCorrect
+                      ? 'bg-slate-950/70 border-slate-800'
+                      : 'bg-rose-950/10 border-rose-900/40'
                 }`}
               >
                 {/* Header row */}
@@ -599,7 +682,15 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
 
                   <div className="flex items-center space-x-3 shrink-0">
                     <div className="text-right text-xs font-tech-mono">
-                      {q.workedSolution ? (
+                      {pending ? (
+                        <>
+                          <span className="text-slate-400 text-[10px] block">ANSWER</span>
+                          <strong className="text-amber-300">pending</strong>
+                          {userAns && (
+                            <span className="text-slate-300 ml-1.5">(You: {userAns})</span>
+                          )}
+                        </>
+                      ) : q.workedSolution ? (
                         <>
                           <span className="text-slate-400 text-[10px] block">SELF-MARK</span>
                           <strong className={isCorrect ? 'text-emerald-400' : 'text-rose-400'}>
@@ -645,11 +736,15 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                           <div
                             key={opt.label}
                             className={`p-2 rounded-lg border font-tech-mono flex items-center space-x-2 ${
-                              opt.label === q.correctAnswer
-                                ? 'bg-emerald-500/15 border-emerald-500 text-emerald-200 font-bold'
-                                : userAns === opt.label
-                                ? 'bg-rose-500/15 border-rose-500 text-rose-300'
-                                : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                              pending
+                                ? userAns === opt.label
+                                  ? 'bg-amber-500/15 border-amber-500/60 text-amber-100 font-bold'
+                                  : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                                : opt.label === q.correctAnswer
+                                  ? 'bg-emerald-500/15 border-emerald-500 text-emerald-200 font-bold'
+                                  : userAns === opt.label
+                                    ? 'bg-rose-500/15 border-rose-500 text-rose-300'
+                                    : 'bg-slate-900/60 border-slate-800 text-slate-400'
                             }`}
                           >
                             <span className="font-bold">({opt.label})</span>
@@ -735,7 +830,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
           onClose={() => setIsScratchpadOpen(false)}
           isDocked={false}
           storageKeyPrefix={scratchpadPrefix}
-          title={`${subject} ${month} ${year} Exam Rough Sheets (${ratingPercentage}%)`}
+          title={`${subject} ${month} ${year} Exam Rough Sheets (${
+            scoreKnown ? `${ratingPercentage}%` : 'score pending'
+          })`}
           documentId={scratchpadDocId}
         />
       )}

@@ -72,6 +72,7 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
+import { isPublishable, summariseScore } from './data/grading';
 import { watchTopicLock } from './data/topicLock';
 
 function CustomBgLayer() {
@@ -365,15 +366,18 @@ function MainApp() {
     userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>,
     timeSpentSeconds: number
   ) => {
-    let correctCount = 0;
-    activeQuestions.forEach((q) => {
-      if (userAnswers[q.id] === q.correctAnswer) {
-        correctCount++;
-      }
-    });
-
-    const ratingPercentage = Math.round((correctCount / activeQuestions.length) * 10000) / 100;
-    const passedArea = ratingPercentage >= 50.0;
+    /*
+     * Items whose key has not been encoded are excluded, not marked wrong.
+     * `percentage` is null when the whole paper is unkeyed — today that is any
+     * Statics drill — and such an attempt must not reach the leaderboards: a
+     * recorded 0/176 would rank the learner last for a paper that cannot be
+     * passed yet, and would drag down the GWA computed from it.
+     */
+    const summary = summariseScore(activeQuestions, userAnswers);
+    const correctCount = summary.correct;
+    const ratingPercentage = summary.percentage ?? 0;
+    const passedArea = summary.percentage !== null && ratingPercentage >= 50.0;
+    const gradable = isPublishable(summary);
     const attemptId = `attempt-${Date.now()}`;
     const scratchpadId = getExamStorageBase(selectedSubject, selectedYear, selectedMonth, selectedSource);
     const storageKeyPrefix = `${scratchpadId}_`;
@@ -384,9 +388,9 @@ function MainApp() {
       month: selectedMonth,
       storageKeyPrefix,
       attemptId,
-      score: correctCount,
-      totalQuestions: activeQuestions.length,
-      ratingPercentage,
+      ...(gradable
+        ? { score: correctCount, totalQuestions: summary.scorable, ratingPercentage }
+        : {}),
     }).catch((e) => console.warn('Failed to sync scratchpad record on submit in App:', e));
 
     const newAttempt: ExamAttempt = {
@@ -402,31 +406,44 @@ function MainApp() {
       isInteractive: examMode === 'interactive',
       userAnswers,
       score: correctCount,
-      totalQuestions: activeQuestions.length,
+      totalQuestions: summary.scorable,
       ratingPercentage,
       passedArea,
       scratchpadId,
     };
 
-    const updatedList = saveAttempt(newAttempt);
-    setAttempts(updatedList);
+    /*
+     * An ungradable paper is not written to local history or to Firestore.
+     * Both feed the GWA, the paired-cycle report and the leaderboards, and a
+     * row scored against a placeholder key would follow the learner around
+     * long after the real key arrives. The sitting still ends normally — the
+     * results screen explains that the score is pending.
+     */
+    if (gradable) {
+      const updatedList = saveAttempt(newAttempt);
+      setAttempts(updatedList);
 
-    // If user is authenticated, also sync attempt to Firestore
-    if (activeUser) {
-      recordExamAttempt({
-        userId: activeUser.uid,
-        userEmail: activeUser.email || '',
-        subject: selectedSubject,
-        year: selectedYear,
-        month: selectedMonth,
-        score: correctCount,
-        totalQuestions: activeQuestions.length,
-        ratingPercentage,
-        passedArea,
-        timeSpentSeconds,
-        timerMode,
-        completedAt: new Date().toISOString(),
-      }).catch((e) => console.warn('Cloud attempt record fallback:', e));
+      // If user is authenticated, also sync attempt to Firestore
+      if (activeUser) {
+        recordExamAttempt({
+          userId: activeUser.uid,
+          userEmail: activeUser.email || '',
+          subject: selectedSubject,
+          year: selectedYear,
+          month: selectedMonth,
+          score: correctCount,
+          totalQuestions: summary.scorable,
+          ratingPercentage,
+          passedArea,
+          timeSpentSeconds,
+          timerMode,
+          completedAt: new Date().toISOString(),
+        }).catch((e) => console.warn('Cloud attempt record fallback:', e));
+      }
+    } else {
+      console.info(
+        `Attempt not recorded: ${summary.pending} of ${activeQuestions.length} items have no answer key yet.`
+      );
     }
 
     deletePausedSession(selectedSubject, selectedYear, selectedMonth, selectedSource);

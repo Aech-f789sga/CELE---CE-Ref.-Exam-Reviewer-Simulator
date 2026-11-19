@@ -38,10 +38,12 @@ import {
   ThumbsUp,
   ThumbsDown,
   Layers,
+  Lock,
 } from 'lucide-react';
 import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
+import { isKeyPending } from '../data/grading';
 import { deletePausedSession, getExamStorageBase } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
 import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
@@ -122,6 +124,12 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const isPauseEligible = isInteractive && (timerMode === 'stopwatch' || timerMode === 'no_limit');
   /** Besavilla-style worked example: no A–D choices, self-marked after reveal. */
   const isWorkedItem = !!currentQuestion?.workedSolution;
+  /**
+   * The booklet prints no key for this item, so there is no verdict to give.
+   * `correctAnswer` holds a placeholder on these, and comparing against it would
+   * mark every answer wrong — see `data/grading.ts`.
+   */
+  const currentKeyPending = isKeyPending(currentQuestion);
 
   // Timer reference
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -226,6 +234,8 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const unansweredCount = questions.length - answeredCount;
   const currentAnswer = userAnswers[currentQuestion?.id];
   const isCurrentCorrect = currentAnswer === currentQuestion?.correctAnswer;
+  /** Whether the immediate-feedback panel has a verdict it is entitled to give. */
+  const showVerdict = isInteractive && !!currentAnswer && !currentKeyPending;
 
   // ----------------------------------------------------
   // REAL-TIME PACING INDICATOR CALCULATIONS
@@ -623,6 +633,16 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
 
                 if (isSelected && !isInteractive) {
                   optionStyles = 'border-amber-400 bg-amber-500/15 text-white font-medium shadow-md shadow-amber-500/10';
+                } else if (isInteractive && currentAnswer && currentKeyPending) {
+                  /*
+                   * No key yet, so the choice is recorded and nothing more.
+                   * Green/red here would be a verdict computed against the
+                   * placeholder in `correctAnswer` — every answer would come
+                   * back wrong. The selection reads as "logged, not graded".
+                   */
+                  if (isSelected) {
+                    optionStyles = 'border-amber-400 bg-amber-500/15 text-white font-medium shadow-md shadow-amber-500/10';
+                  }
                 } else if (isInteractive && currentAnswer) {
                   if (isSelected && isCorrect) {
                     optionStyles = 'border-emerald-500 bg-emerald-500/20 text-emerald-200 shadow-md shadow-emerald-500/10 font-bold';
@@ -766,7 +786,21 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
             )}
 
             {/* Interactive Mode Immediate Popups & Solution reveal */}
-            {!isWorkedItem && isInteractive && currentAnswer && (
+            {!isWorkedItem && isInteractive && currentAnswer && currentKeyPending && (
+              <div className="mt-4 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-start space-x-2.5">
+                <Lock className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <div className="text-xs leading-relaxed">
+                  <div className="font-bold text-amber-300 text-sm">Answer recorded — not yet graded</div>
+                  <p className="text-amber-100/80 mt-1">
+                    No answer key has been encoded for Statics yet, so this item cannot be marked
+                    right or wrong. Your answer is saved and will be graded once the key is
+                    published.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {!isWorkedItem && showVerdict && (
               <div className={`mt-4 p-4 rounded-xl border flex flex-col space-y-3 ${
                 isCurrentCorrect
                   ? 'bg-emerald-500/10 border-emerald-500/30'
