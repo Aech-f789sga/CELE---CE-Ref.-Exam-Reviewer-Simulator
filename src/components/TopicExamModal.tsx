@@ -25,12 +25,14 @@ import { X, Shuffle, Lock, CheckCircle2, Minus, Plus, RotateCcw } from 'lucide-r
 import {
   TOPICS,
   TOPIC_SUBJECTS,
+  TOPIC_QUESTIONS,
   topicCount,
   pickTopicQuestions,
   planTopicDrill,
   type TopicQuestion,
   type TopicQuota,
 } from '../data/topicBanks';
+import { loadDifficulty, tallyDifficulty, weightOf, type DifficultyMap } from '../data/itemDifficulty';
 import { watchTopicLock } from '../data/topicLock';
 import { useAuth } from '../context/AuthContext';
 
@@ -167,7 +169,9 @@ function QuotaControl({
 }
 
 export function TopicExamModal({ onClose, onStart }: Props) {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user, profile } = useAuth();
+  /** Whose difficulty ratings steer the draw. */
+  const ownerId = profile?.uid || user?.uid;
   const [unlocked, setUnlocked] = useState<boolean>(false);
   const [checked, setChecked] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(() => new Set(['bm-algebra']));
@@ -196,6 +200,24 @@ export function TopicExamModal({ onClose, onStart }: Props) {
   // usable before anything is picked; each row still clamps to its own ceiling.
   const widest = TOPICS.reduce((a, t) => Math.max(a, topicCount(t.id)), 0);
 
+  /**
+   * The learner's own easy/mid/hard ratings, read once when the modal opens.
+   * They are what makes a drill adaptive: the draw is weighted by them, so the
+   * items marked hard keep coming back and the easy ones step aside.
+   */
+  const [flags] = useState<DifficultyMap>(() => loadDifficulty(ownerId));
+
+  /** Ratings across the chosen topics only, so the note describes this drill. */
+  const rated = useMemo(
+    () =>
+      tallyDifficulty(
+        flags,
+        TOPIC_QUESTIONS.filter((q) => picked.has(q.topicId)).map((q) => q.id)
+      ),
+    [flags, picked]
+  );
+  const ratedTotal = rated.easy + rated.mid + rated.hard;
+
   const toggle = (id: string) => {
     setPicked((prev) => {
       const next = new Set(prev);
@@ -216,7 +238,8 @@ export function TopicExamModal({ onClose, onStart }: Props) {
   const start = () => {
     const quotas: Record<string, TopicQuota> = {};
     for (const r of rows) quotas[r.topicId] = r.quota;
-    const qs = pickTopicQuestions(quotas);
+    // Weighted by the learner's own ratings: hard items lean in, easy lean out.
+    const qs = pickTopicQuestions(quotas, Math.random, (q) => weightOf(flags, q.id));
     if (qs.length) onStart(qs);
   };
 
@@ -384,6 +407,15 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                     </div>
                   ))}
                 </div>
+              )}
+
+              {ratedTotal > 0 && (
+                <p className="rounded-lg border border-slate-700/60 bg-slate-950/50 px-2.5 py-2 text-[10px] leading-relaxed text-slate-400">
+                  <strong className="font-bold text-slate-200">{ratedTotal}</strong>{' '}
+                  of the items you picked are rated — {rated.hard} hard, {rated.mid} mid,{' '}
+                  {rated.easy} easy. Hard items are drawn twice as often as mid, easy half as
+                  often.
+                </p>
               )}
 
               {chosen.some((t) => t.keyPending) && (

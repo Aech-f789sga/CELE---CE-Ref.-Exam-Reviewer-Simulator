@@ -602,6 +602,7 @@ function MainApp() {
               initialUserAnswers={resumedSession?.userAnswers}
               initialFlaggedQuestions={resumedSession?.flaggedQuestions}
               initialSecondsElapsed={resumedSession?.secondsElapsed}
+              ownerId={activeUser?.uid}
               onSubmit={handleSubmitExam}
               onExit={handleExitHome}
               onSaveAndExit={handleSaveAndExitExam}

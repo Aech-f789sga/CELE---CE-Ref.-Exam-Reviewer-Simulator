@@ -18,6 +18,15 @@
  *                   than marking every answer wrong. The arithmetic for that
  *                   lives in `grading.ts`; the flag is the only switch.
  *
+ * ## Adaptive draws
+ *
+ * A drill is redrawn every time, so the learner's own easy/mid/hard rating is
+ * the only way to steer it: items marked hard come back more often, easy ones
+ * less often. The weights and the storage live in `itemDifficulty.ts` and reach
+ * the draw through `pickTopicQuestions`'s third argument. With nothing rated,
+ * every item carries the same weight and the draw is uniform — exactly the
+ * behaviour before ratings existed.
+ *
  * ## Why `subject` is carried as 'MSTC'
  *
  * `Question.subject` is typed to the three board areas. Topic items are not a
@@ -185,6 +194,37 @@ export function planTopicDrill(
 }
 
 /**
+ * Draw `k` items from `pool` without replacement, favouring the heavy ones.
+ *
+ * Uses the Efraimidis–Spirakis construction: give each item the key
+ * `u^(1/w)` for a uniform `u`, keep the `k` largest keys. Each item's chance of
+ * landing in the sample is then proportional to its weight, no item can be
+ * drawn twice, and equal weights degenerate to a uniform shuffle — so a learner
+ * with no ratings gets exactly the old behaviour.
+ *
+ * `k >= pool.length` returns the whole pool: a quota the topic cannot fill must
+ * yield everything it has, and no weighting may shrink that to a subset.
+ */
+export function weightedSample<T>(
+  pool: T[],
+  k: number,
+  weight: (item: T) => number,
+  rng: () => number = Math.random
+): T[] {
+  if (k <= 0) return [];
+  if (k >= pool.length) return [...pool];
+  const keyed = pool.map((item) => {
+    const w = weight(item);
+    // A non-positive or broken weight would make the key meaningless (0^∞ or
+    // NaN), so it falls back to 1: still drawable, just not favoured.
+    const safe = Number.isFinite(w) && w > 0 ? w : 1;
+    return { item, key: Math.pow(rng(), 1 / safe) };
+  });
+  keyed.sort((a, b) => b.key - a.key);
+  return keyed.slice(0, k).map((e) => e.item);
+}
+
+/**
  * Randomly draw a quota of items from each chosen topic.
  *
  * Each topic is drawn independently so a thin topic cannot starve a rich one,
@@ -193,22 +233,22 @@ export function planTopicDrill(
  * everything it has — silently substituting from another topic would
  * misrepresent the drill.
  *
+ * `weight` biases the draw towards the items the learner found hard (see
+ * `itemDifficulty.ts`). It defaults to a constant, which is a uniform draw, so
+ * an unrated learner is unaffected and the function stays usable without one.
+ *
  * `quotas` is keyed by topic id; iteration follows the key order, so pass it in
  * the order the topics should be drawn.
  */
 export function pickTopicQuestions(
   quotas: Record<string, TopicQuota>,
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
+  weight: (q: TopicQuestion) => number = () => 1
 ): TopicQuestion[] {
   const out: TopicQuestion[] = [];
   for (const [id, quota] of Object.entries(quotas)) {
     const pool = TOPIC_QUESTIONS.filter((q) => q.topicId === id);
-    const shuffled = [...pool];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    out.push(...shuffled.slice(0, resolveQuota(id, quota)));
+    out.push(...weightedSample(pool, resolveQuota(id, quota), weight, rng));
   }
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));

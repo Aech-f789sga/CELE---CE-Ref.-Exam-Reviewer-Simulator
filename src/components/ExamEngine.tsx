@@ -44,6 +44,13 @@ import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
 import { isKeyPending, isTopicDrill } from '../data/grading';
+import {
+  DIFFICULTIES,
+  loadDifficulty,
+  setItemDifficulty,
+  type DifficultyMap,
+  type ItemDifficulty,
+} from '../data/itemDifficulty';
 import { deletePausedSession, getExamStorageBase } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
 import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
@@ -63,6 +70,8 @@ interface ExamEngineProps {
   initialUserAnswers?: Record<string, 'A' | 'B' | 'C' | 'D'>;
   initialFlaggedQuestions?: Record<string, boolean>;
   initialSecondsElapsed?: number;
+  /** Whose difficulty ratings to read and write; omitted means a shared bucket. */
+  ownerId?: string;
   onSubmit: (userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>, timeSpentSeconds: number) => void;
   onExit: () => void;
   onSaveAndExit?: (state: {
@@ -72,6 +81,30 @@ interface ExamEngineProps {
     secondsElapsed: number;
   }) => void;
 }
+
+/**
+ * Appearance per rating. Colour carries the meaning — green for the items that
+ * need less repetition, rose for the ones that need more — and the caption
+ * below repeats the consequence in words, because a weighting the learner
+ * cannot see is indistinguishable from no weighting.
+ */
+const DIFFICULTY_STYLE: Record<ItemDifficulty, { label: string; on: string; hint: string }> = {
+  easy: {
+    label: 'Easy',
+    on: 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300',
+    hint: 'Drawn half as often as a mid item',
+  },
+  mid: {
+    label: 'Mid',
+    on: 'border-amber-500/60 bg-amber-500/15 text-amber-300',
+    hint: 'The baseline — neither favoured nor held back',
+  },
+  hard: {
+    label: 'Hard',
+    on: 'border-rose-500/60 bg-rose-500/15 text-rose-300',
+    hint: 'Drawn twice as often as a mid item',
+  },
+};
 
 export const ExamEngine: React.FC<ExamEngineProps> = ({
   subject,
@@ -86,6 +119,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   initialUserAnswers,
   initialFlaggedQuestions,
   initialSecondsElapsed,
+  ownerId,
   onSubmit,
   onExit,
   onSaveAndExit,
@@ -136,6 +170,27 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
    * and self-set, so it has its own pace.
    */
   const topicDrill = useMemo(() => isTopicDrill(questions), [questions]);
+
+  /**
+   * The learner's own easy/mid/hard ratings, which weight the next draw.
+   * Read on mount, re-read if the account changes under us, and written
+   * straight through on each tap so a closed tab cannot lose the rating.
+   */
+  const [difficulty, setDifficulty] = useState<DifficultyMap>(() => loadDifficulty(ownerId));
+
+  useEffect(() => {
+    setDifficulty(loadDifficulty(ownerId));
+  }, [ownerId]);
+
+  const currentDifficulty = currentQuestion ? difficulty[currentQuestion.id] : undefined;
+
+  const rateCurrent = (next: ItemDifficulty) => {
+    if (!currentQuestion) return;
+    // Tapping the rating already set clears it, so a mis-tap is undoable
+    // without a fourth "none" button cluttering the header.
+    const value = currentDifficulty === next ? null : next;
+    setDifficulty(setItemDifficulty(currentQuestion.id, value, ownerId));
+  };
 
   // Timer reference
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -585,35 +640,91 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
         }`}>
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6 relative">
             {/* Header: Question Number & Tags */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <div className="flex items-center space-x-3">
-                <span className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-arnie text-lg font-bold">
-                  #{currentIndex + 1}
-                </span>
-                <div>
-                  <span className="text-xs text-amber-400 font-semibold uppercase tracking-wider block">
-                    {currentQuestion.category}
+            <div className="pb-4 border-b border-slate-800 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center space-x-3">
+                  <span className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-arnie text-lg font-bold">
+                    #{currentIndex + 1}
                   </span>
-                  <span className="text-[11px] text-slate-400">
-                    Booklet Page {currentQuestion.pageNumber} •{' '}
-                    {isWorkedItem ? 'Worked solution — reveal & self-mark' : 'Standard 4 Choices'}
-                  </span>
+                  <div>
+                    <span className="text-xs text-amber-400 font-semibold uppercase tracking-wider block">
+                      {currentQuestion.category}
+                    </span>
+                    <span className="text-[11px] text-slate-400">
+                      Booklet Page {currentQuestion.pageNumber} •{' '}
+                      {isWorkedItem ? 'Worked solution — reveal & self-mark' : 'Standard 4 Choices'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {/*
+                    Rating control, drills only. A whole board paper is fixed, so
+                    rating its items would change nothing; a drill is redrawn
+                    every time, so here the rating is the point.
+                  */}
+                  {topicDrill && (
+                    <div
+                      role="group"
+                      aria-label="How hard this item felt"
+                      className="flex items-center gap-0.5 rounded-xl border border-slate-800 bg-slate-950/70 p-0.5"
+                    >
+                      <span className="pl-1.5 pr-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                        Rate
+                      </span>
+                      {DIFFICULTIES.map((d) => {
+                        const active = currentDifficulty === d;
+                        return (
+                          <button
+                            key={d}
+                            type="button"
+                            aria-pressed={active}
+                            onClick={() => rateCurrent(d)}
+                            title={`${DIFFICULTY_STYLE[d].hint}${active ? ' — tap again to clear' : ''}`}
+                            className={`rounded-lg border px-2 py-1 text-[10px] font-bold transition-colors ${
+                              active
+                                ? DIFFICULTY_STYLE[d].on
+                                : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                            }`}
+                          >
+                            {DIFFICULTY_STYLE[d].label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Flag / Bookmark Button */}
+                  <button
+                    type="button"
+                    onClick={handleToggleFlag}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
+                      flaggedQuestions[currentQuestion.id]
+                        ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Flag className="w-3.5 h-3.5" />
+                    <span>{flaggedQuestions[currentQuestion.id] ? 'Flagged' : 'Flag'}</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Flag / Bookmark Button */}
-              <button
-                type="button"
-                onClick={handleToggleFlag}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
-                  flaggedQuestions[currentQuestion.id]
-                    ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Flag className="w-3.5 h-3.5" />
-                <span>{flaggedQuestions[currentQuestion.id] ? 'Flagged' : 'Flag'}</span>
-              </button>
+              {topicDrill && (
+                <p className="text-[10px] leading-relaxed text-slate-500">
+                  {currentDifficulty ? (
+                    <>
+                      Marked <strong className="font-bold text-slate-300">{DIFFICULTY_STYLE[currentDifficulty].label}</strong>.{' '}
+                      {DIFFICULTY_STYLE[currentDifficulty].hint}. Tap it again to clear.
+                    </>
+                  ) : (
+                    <>
+                      Rate this item and it returns more often if it was hard, less often if it was
+                      easy. Unrated items come up as mid.
+                    </>
+                  )}
+                </p>
+              )}
             </div>
 
             {/* Question Text */}
