@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Question,
   SubjectArea,
@@ -31,6 +31,7 @@ import { MathView } from './MathView';
 import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
 import { isKeyPending, isTopicDrill, summariseScore } from '../data/grading';
+import { breakdownForQuestions } from '../data/analytics';
 import { getExamStorageBase } from '../utils/storage';
 import {
   exportScratchpadBundle,
@@ -169,6 +170,19 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
    * which is where the old behaviour came from: a drill filed as a board paper.
    */
   const topicDrill = isTopicDrill(questions);
+
+  /*
+   * The diagnosis, at the moment it is most useful — immediately after
+   * submitting, while the paper is still fresh. Only topics with at least two
+   * scorable items are listed: a single question is a coin flip, not a
+   * weakness, and showing it would send the learner to the wrong chapter.
+   */
+  const topicRows = useMemo(() => {
+    if (!scoreKnown) return [];
+    return breakdownForQuestions(questions, userAnswers, subject)
+      .rows.filter((row) => row.scorable >= 2)
+      .slice(0, 6);
+  }, [questions, userAnswers, subject, scoreKnown]);
 
   // Trigger celebration confetti if passed
   useEffect(() => {
@@ -355,6 +369,40 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </span>
           </div>
         </div>
+
+        {/* By-topic diagnosis */}
+        {topicRows.length > 0 && (
+          <div className="mt-6 pt-5 border-t border-slate-800">
+            <div className="flex flex-wrap items-center gap-2 mb-2.5">
+              <Layers className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-xs font-semibold text-slate-200">Where this paper was lost</span>
+              <span className="text-[10px] text-slate-500">weakest first · 2+ questions</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {topicRows.map((row) => {
+                const tone =
+                  row.accuracy < 50
+                    ? 'bg-rose-500/15 text-rose-300 border-rose-500/40'
+                    : row.accuracy < 70
+                      ? 'bg-orange-500/15 text-orange-300 border-orange-500/40'
+                      : row.accuracy < 85
+                        ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40'
+                        : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40';
+                return (
+                  <span
+                    key={row.topicId}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] ${tone}`}
+                    title={`${row.correct} of ${row.scorable} correct${row.blank > 0 ? `, ${row.blank} left blank` : ''}`}
+                  >
+                    <span className="truncate max-w-[190px]">{row.label}</span>
+                    <span className="font-bold tabular-nums">{row.accuracy}%</span>
+                    <span className="opacity-60 tabular-nums">{row.scorable}</span>
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons Toolbar */}
         <div className="mt-8 pt-6 border-t border-slate-800 flex flex-wrap items-center justify-center sm:justify-start gap-3">

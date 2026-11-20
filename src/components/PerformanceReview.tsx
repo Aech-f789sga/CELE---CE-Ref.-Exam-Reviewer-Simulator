@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ExamAttempt,
   PairedCycle,
@@ -6,6 +6,9 @@ import {
   SUBJECT_CONFIGS,
 } from '../types/exam';
 import { computePairedCycles, clearAllAttempts, seedSampleAttempts } from '../utils/storage';
+import { getDrillResults } from '../data/drillResults';
+import type { DrillResult } from '../data/drillResults';
+import { AnalyticsSection } from './analytics/AnalyticsSection';
 import {
   Trophy,
   CheckCircle2,
@@ -49,7 +52,24 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   isAdmin = false,
 }) => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [drills, setDrills] = useState<DrillResult[]>(() => getDrillResults());
   const cycles = computePairedCycles(attempts);
+
+  /*
+   * Drills are written from the exam submit handler, which lives in App, so the
+   * ledger changes without this component re-rendering. Listening for the
+   * custom event (and `storage`, for a second tab) keeps the mastery panel in
+   * step without lifting drill state into App for a panel only this screen uses.
+   */
+  useEffect(() => {
+    const sync = () => setDrills(getDrillResults());
+    window.addEventListener('ce_board_drills_updated', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('ce_board_drills_updated', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
 
   // Subject statistics
   const getSubjectMetrics = (subject: SubjectArea) => {
@@ -164,6 +184,9 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* SECTION 0: ANALYTICS — what the scores mean, before the ledger of them */}
+      <AnalyticsSection attempts={attempts} drills={drills} />
 
       {/* SECTION 1: PAIRED EXAM CYCLES (PRC 35% MSTC + 30% HPGE + 35% PSAD) */}
       <div className="space-y-4">

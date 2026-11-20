@@ -82,7 +82,8 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
-import { isPublishable, isTopicDrill, summariseScore } from './data/grading';
+import { isKeyPending, isPublishable, isTopicDrill, summariseScore } from './data/grading';
+import { recordDrillResult } from './data/drillResults';
 import { watchTopicLock } from './data/topicLock';
 
 function CustomBgLayer() {
@@ -595,6 +596,36 @@ function MainApp() {
         }).catch((e) => console.warn('Cloud attempt record fallback:', e));
       }
     } else {
+      /*
+       * A drill is not written as an attempt — that decision stands, because a
+       * drill must never reach the GWA, the paired cycles or the leaderboards.
+       * But throwing the result away entirely left the learner's practice
+       * invisible, and a board paper only yields a question or two per topic.
+       *
+       * So the outcome goes to the drill ledger instead: keyed by the topic the
+       * bank stamped on the items, never scored against a paper, never ranked.
+       * Items without a key are skipped for the same reason they are skipped
+       * everywhere else — unknown is not wrong.
+       */
+      if (topicDrill) {
+        const perTopic = new Map<string, { correct: number; scorable: number }>();
+        for (const q of activeQuestions) {
+          if (!q.topicId || isKeyPending(q)) continue;
+          const row = perTopic.get(q.topicId) ?? { correct: 0, scorable: 0 };
+          row.scorable++;
+          if (userAnswers[q.id] === q.correctAnswer) row.correct++;
+          perTopic.set(q.topicId, row);
+        }
+        for (const [topicId, row] of perTopic) {
+          recordDrillResult({
+            topicId,
+            correct: row.correct,
+            scorable: row.scorable,
+            seconds: timeSpentSeconds,
+          });
+        }
+      }
+
       console.info(
         topicDrill
           ? `Drill not recorded: a by-topics drill is practice and does not count towards the leaderboards.`
