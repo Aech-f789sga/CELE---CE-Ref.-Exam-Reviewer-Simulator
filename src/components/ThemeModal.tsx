@@ -29,6 +29,8 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
+import { FluentFxPanel } from './FluentFxPanel';
+import { isFluentTheme } from '../data/v2Fx';
 
 interface ThemeModalProps {
   isOpen: boolean;
@@ -421,6 +423,10 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                   );
                 })}
               </div>
+
+              {/* Glass, depth and gradient knobs — only meaningful for the two
+                  Fluent skins, so they appear only while one is active. */}
+              {isFluentTheme(themeId) && <FluentFxPanel themeConfig={themeConfig} />}
             </div>
           )}
 

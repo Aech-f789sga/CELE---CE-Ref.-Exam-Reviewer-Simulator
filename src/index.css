@@ -2693,7 +2693,13 @@ html[data-theme='v2'] .text-red-200 {
   color: #ffffff !important;
 }
 
-:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-slate-']:not([class*='bg-clip-text']) {
+/* A gradient that was carrying the whole fill has to hand its colour to a flat
+   surface, otherwise the element goes transparent. `.hero-aurora` is excluded
+   because section 17 turns it into a glass pane and supplies its own fill —
+   without the exclusion this rule wins on specificity (three compound
+   selectors against section 17's two) and paints the hero flat again, which is
+   exactly how the whole effect was invisible the first time round. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='from-slate-']:not([class*='bg-clip-text']):not(.hero-aurora) {
   background-color: var(--f-bg-2) !important;
 }
 
@@ -2998,4 +3004,360 @@ html[data-theme='v2_dark'] ::-webkit-scrollbar-thumb:hover {
   }
 }
 
+/* =========================================================================
+   17. FLUENT FX — glass, gradient and pointer light (v2 / v2_dark only)
+   -------------------------------------------------------------------------
+   Sections 1–16 keep Fluent 2 honest: flat surfaces, one hairline, one step of
+   elevation. This section is the deliberate, reversible exception.
+
+   It is a layer *on top* rather than a rewrite. Every surface keeps its alias
+   token; these rules only decide how much of that token survives into the
+   composite. Switching glass off (`data-v2fx="flat"`) restores sections 1–16
+   exactly, which is what makes it safe to ship switched on.
+
+   Four values drive the whole look, and all four are editable at runtime from
+   the theme dialog (see src/data/v2Fx.ts):
+       --f-fx-blur       backdrop blur, px
+       --f-fx-sheen      specular strength, 0–1
+       --f-grad-a/b/c    the three gradient anchors
+       --f-grad-angle    direction
+   The only hardcoded colours here are the neutral rims and shadows, because
+   those have to track the theme rather than the gradient.
+   ========================================================================= */
+
+/* ---------- 17.1 tunable defaults (JS overwrites these from storage) ---------- */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) {
+  --f-fx-blur: 22px;
+  --f-fx-sheen: 0.55;
+  --f-fx-tilt: 6;
+  /* Long enough that the rotation stays subtle at the edges; a short
+     perspective makes a 4° tilt look like a fisheye. */
+  --f-fx-perspective: 1400px;
+  --f-grad-a: #0f6cbd;
+  --f-grad-b: #7f56d9;
+  --f-grad-c: #0fa8b4;
+  --f-grad-angle: 135deg;
+}
+
+/* Light glass is milky: a white veil thick enough to keep body text on a
+   near-white page, thin enough that the mesh still colours the panel. */
+html[data-theme='v2'] {
+  --f-fx-fill: rgba(255, 255, 255, 0.66);
+  --f-fx-fill-well: rgba(255, 255, 255, 0.4);
+  --f-fx-canvas: 27%;
+  --f-fx-rim: rgba(255, 255, 255, 0.9);
+  --f-fx-border: rgba(15, 23, 42, 0.09);
+  --f-fx-sheen-ink: 255, 255, 255;
+  --f-fx-shadow-ink: 15, 23, 42;
+  --f-fx-shadow-alpha: 0.26;
+  --f-fx-shadow: 0 12px 32px -16px rgba(15, 23, 42, 0.28), 0 2px 6px -3px rgba(15, 23, 42, 0.12);
+  --f-fx-shadow-hover: 0 20px 44px -18px rgba(15, 23, 42, 0.34), 0 3px 10px -3px rgba(15, 23, 42, 0.16);
+}
+
+/* Dark glass is smoked, and the veil is *white*, not the panel token.
+   This is the correction that made the whole effect work: mixing #292929 into
+   the backdrop darkens it, so a "translucent dark panel" over a dark mesh
+   looked identical to an opaque one and the gradient never reached the
+   surface. A 7% white veil lets the blur and the colour through while still
+   separating the panel from the page — which is what frosted glass actually
+   is, a light scatter over whatever is behind it.
+   Wells go the other way (a black veil) so they read as recessed. */
+html[data-theme='v2_dark'] {
+  --f-fx-fill: rgba(255, 255, 255, 0.075);
+  --f-fx-fill-well: rgba(0, 0, 0, 0.22);
+  --f-fx-canvas: 36%;
+  --f-fx-rim: rgba(255, 255, 255, 0.16);
+  --f-fx-border: rgba(255, 255, 255, 0.1);
+  --f-fx-sheen-ink: 255, 255, 255;
+  --f-fx-shadow-ink: 0, 0, 0;
+  --f-fx-shadow-alpha: 0.72;
+  --f-fx-shadow: 0 16px 40px -18px rgba(0, 0, 0, 0.75), 0 2px 8px -3px rgba(0, 0, 0, 0.5);
+  --f-fx-shadow-hover: 0 24px 52px -20px rgba(0, 0, 0, 0.8), 0 4px 12px -4px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------- 17.2 canvas — a mesh for the glass to refract ----------
+   Glass over a flat field reads as nothing at all: blur has no texture to
+   soften. Three wide, low-alpha washes give every panel something to sit on,
+   and they are what makes the gradient anchors visible before any panel is
+   involved.
+
+   Sized in percentages of the viewport, not rem, and faded all the way to
+   100%. Both details are corrections: a fixed 70rem blob on a 1600px page
+   reaches only a third of the way across, so the middle of the page went flat
+   and any panel sitting there looked exactly as opaque as it did before the
+   feature existed — measured rgb(31,31,31), i.e. identical to the bare
+   background. Viewport-relative ellipses keep colour under every panel at
+   every window size, which is the precondition for the glass above it to read
+   as glass.
+
+   `fixed` keeps the mesh still while the page scrolls, so panels drift across
+   it instead of dragging it along. */
+html[data-theme='v2'] body,
+html[data-theme='v2'] body.bg-slate-900 {
+  background-color: var(--f-bg-3) !important;
+  background-image:
+    radial-gradient(ellipse 90% 85% at 0% 0%, color-mix(in srgb, var(--f-grad-a) var(--f-fx-canvas), transparent), transparent 100%),
+    radial-gradient(ellipse 85% 80% at 100% 2%, color-mix(in srgb, var(--f-grad-b) var(--f-fx-canvas), transparent), transparent 100%),
+    radial-gradient(ellipse 95% 90% at 58% 118%, color-mix(in srgb, var(--f-grad-c) var(--f-fx-canvas), transparent), transparent 100%) !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+html[data-theme='v2_dark'] body,
+html[data-theme='v2_dark'] body.bg-slate-900 {
+  background-color: var(--f-bg-2) !important;
+  background-image:
+    radial-gradient(ellipse 90% 85% at 0% 0%, color-mix(in srgb, var(--f-grad-a) var(--f-fx-canvas), transparent), transparent 100%),
+    radial-gradient(ellipse 85% 80% at 100% 2%, color-mix(in srgb, var(--f-grad-b) var(--f-fx-canvas), transparent), transparent 100%),
+    radial-gradient(ellipse 95% 90% at 58% 118%, color-mix(in srgb, var(--f-grad-c) var(--f-fx-canvas), transparent), transparent 100%) !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* The app shell paints `themeConfig.bgPage` as an *inline* style. Inline beats
+   a stylesheet, and it is opaque, so it covers the canvas completely — the
+   whole effect measured as one flat colour until this rule existed. An
+   important declaration outranks an inline one, which is the only reason this
+   is expressible at all without touching the component.
+
+   Matched on two structural classes rather than a child combinator, so it
+   survives the shell being re-wrapped in an error boundary or a provider. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) #root [class*='min-h-screen'][class*='flex-col'] {
+  background-color: transparent !important;
+}
+
+/* ---------- 17.3 every surface becomes translucent ----------
+   Fill only: no blur, no shadow. Blur is expensive and stacking it three deep
+   (page › panel › well) costs more than it shows, so 17.4 grants it to the
+   rounded wrappers only and the small wells just let the panel behind them
+   through. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark'])
+  :is([class*='bg-slate-900'], .app-card-bg, .hero-aurora):not(body) {
+  background-color: var(--f-fx-fill) !important;
+  border-color: var(--f-fx-border) !important;
+}
+
+/* Wells read as recessed, so they take *more* of the backdrop, not less. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark'])
+  :is([class*='bg-slate-950'], [class*='bg-slate-800'], [class*='bg-slate-700'], .app-card-subtle-bg):not(body) {
+  background-color: var(--f-fx-fill-well) !important;
+  border-color: var(--f-fx-border) !important;
+}
+
+/* ---------- 17.4 panels — blur, rim light, lifted shadow ----------
+   The `rounded-2xl / rounded-3xl` pair is this app's panel signature; using it
+   as the gate is what keeps the blur off the hundreds of chips and badges that
+   also carry a slate fill. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark'])
+  :is([class*='bg-slate-900'], [class*='bg-slate-950'], .app-card-bg, .app-card-subtle-bg, .hero-aurora):not(body):is([class*='rounded-2xl'], [class*='rounded-3xl']) {
+  -webkit-backdrop-filter: blur(var(--f-fx-blur)) saturate(160%);
+  backdrop-filter: blur(var(--f-fx-blur)) saturate(160%);
+  /* Two shadows: the cast one, then a 1px inset highlight along the top edge —
+     that inset line is the whole illusion. Without it the panel is a
+     translucent rectangle; with it, it has an edge catching light. */
+  box-shadow: var(--f-fx-shadow), inset 0 1px 0 var(--f-fx-rim) !important;
+}
+
+/* ---------- 17.5 pointer light ----------
+   Two radial highlights, written as background *images* so they need no
+   pseudo-element, no `position: relative` on the host and no `overflow:
+   hidden` — three things a generic rule cannot safely impose on markup it did
+   not write.
+
+   The pair is what sells the 2.5D: one highlight tracks the cursor and one
+   sits mirrored on the far corner, dimmer. A single moving gradient reads as a
+   cursor effect painted on top of a card; two that move in opposition read as
+   light hitting the front and back of a pane. They rest at 50% / 0%, i.e. a
+   top-centre sheen, which is where a real glass edge catches light anyway.
+
+   The two custom properties are registered below (after the layer) so the
+   browser can interpolate them; that is what lets the highlight trail the
+   cursor instead of teleporting. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark'])
+  :is([class*='bg-slate-900'], .app-card-bg, .hero-aurora):not(body):is([class*='rounded-2xl'], [class*='rounded-3xl']):not([class*='bg-gradient-to-']) {
+  background-image:
+    radial-gradient(
+      40rem 26rem at var(--f-mx, 50%) var(--f-my, 0%),
+      rgba(var(--f-fx-sheen-ink), calc(var(--f-fx-sheen) * 0.16)),
+      transparent 62%
+    ),
+    radial-gradient(
+      34rem 22rem at calc(100% - var(--f-mx, 50%)) calc(100% - var(--f-my, 0%)),
+      rgba(var(--f-fx-sheen-ink), calc(var(--f-fx-sheen) * 0.05)),
+      transparent 55%
+    ) !important;
+  transition: var(--f-mx) 120ms var(--f-curve), var(--f-my) 120ms var(--f-curve);
+}
+
+/* ---------- 17.6 interactive lift ----------
+   Hover moves the shadow up one step and tints the hairline toward the first
+   gradient anchor. The tint is the only feedback that reads on a translucent
+   surface: a colour shift survives the blur where a brightness shift does
+   not, because the backdrop is already brightening underneath. */
+@media (hover: hover) and (pointer: fine) {
+  :is(html[data-theme='v2'], html[data-theme='v2_dark'])
+    :is([class*='bg-slate-900'], [class*='bg-slate-950'], .app-card-bg, .app-card-subtle-bg, .hero-aurora):not(body):is([class*='rounded-2xl'], [class*='rounded-3xl']):hover {
+    box-shadow: var(--f-fx-shadow-hover), inset 0 1px 0 var(--f-fx-rim) !important;
+    border-color: color-mix(in srgb, var(--f-grad-a) 34%, var(--f-fx-border)) !important;
+  }
+}
+
+/* ---------- 17.7 2.5D — the panes actually lean ----------
+   Up to here the panels were glass lying flat on the page. This is the part
+   that gives them thickness: the hovered pane rotates a few degrees toward the
+   cursor and its shadow slides to the opposite side, so the light source and
+   the object move independently — the cue that separates a 2.5D surface from a
+   picture of one.
+
+   Two guards matter, and both are load-bearing rather than defensive:
+
+   1. The transform is declared on `:hover` only. A `transform` — even the
+      identity matrix — creates a containing block and a stacking context, so
+      declaring it unconditionally would re-anchor every `position: fixed`
+      dialog that happens to live inside a panel, and re-stack every popover,
+      on every screen, permanently. The base rule keeps only the `transition`,
+      which still animates the way *out* of the hover because a transition
+      animates computed-value changes whether or not the property is declared.
+
+   2. Sticky panels and panels that contain sticky or fixed descendants are
+      excluded. `ExamEngine`'s timer bar is `sticky top-18` and is itself a
+      rounded panel; tilting it would make it scroll away mid-exam. CSS cannot
+      ask "is this position: sticky", but it can ask the class list, which is
+      the same thing in this codebase. */
+@media (hover: hover) and (pointer: fine) {
+  :is(html[data-theme='v2'], html[data-theme='v2_dark'])
+    :is([class*='bg-slate-900'], .app-card-bg, .hero-aurora):not(body):is([class*='rounded-2xl'], [class*='rounded-3xl']):not([class~='sticky'], :has([class~='sticky']), :has([class~='fixed'])) {
+    transition: transform 240ms var(--f-curve), box-shadow 240ms var(--f-curve);
+  }
+
+  :is(html[data-theme='v2'], html[data-theme='v2_dark'])
+    :is([class*='bg-slate-900'], .app-card-bg, .hero-aurora):not(body):is([class*='rounded-2xl'], [class*='rounded-3xl']):not([class~='sticky'], :has([class~='sticky']), :has([class~='fixed'])):hover {
+    transform: perspective(var(--f-fx-perspective))
+      rotateY(calc(var(--f-tx, 0) * var(--f-fx-tilt) * 1deg))
+      rotateX(calc(var(--f-ty, 0) * var(--f-fx-tilt) * -1deg));
+    transform-origin: center;
+    /* The shadow offset is driven by the same two numbers as the rotation, so
+       it lands on the side the pane is leaning away from. A static shadow on a
+       tilting pane is the tell that breaks the illusion. */
+    box-shadow:
+      calc(var(--f-tx, 0) * -18px) calc(var(--f-ty, 0) * -18px) 42px -20px
+        rgba(var(--f-fx-shadow-ink), var(--f-fx-shadow-alpha)),
+      inset 0 1px 0 var(--f-fx-rim) !important;
+    /* Only the pane under the cursor earns its own compositing layer. */
+    will-change: transform;
+  }
+}
+
+/* ---------- 17.8 brand surfaces take the gradient ----------
+   Section 9 flattens these to a solid brand fill so white labels stay legible.
+   That constraint still holds — every stop below is at least 40% `--f-brand`,
+   so the fill never leaves the luminance band where white text works. What
+   changes is that the surface now carries the gradient the learner picked
+   instead of one flat rectangle of blue. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-500']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-400']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-yellow-400']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-yellow-500']:not([class*='bg-clip-text']) {
+  background-image: linear-gradient(
+    var(--f-grad-angle),
+    var(--f-brand) 0%,
+    color-mix(in srgb, var(--f-grad-b) 52%, var(--f-brand)) 58%,
+    color-mix(in srgb, var(--f-grad-c) 40%, var(--f-brand)) 100%
+  ) !important;
+}
+
+/* Primary buttons get the same treatment one notch quieter: a 100%→62% ramp
+   inside the brand hue, so a page full of controls does not turn into a
+   page full of gradients. */
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) button[class~='bg-amber-500']:not([class*='bg-clip-text']),
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) a[class~='bg-amber-500']:not([class*='bg-clip-text']) {
+  background-image: linear-gradient(
+    var(--f-grad-angle),
+    var(--f-brand) 0%,
+    color-mix(in srgb, var(--f-grad-b) 26%, var(--f-brand)) 100%
+  ) !important;
+}
+
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) button[class~='bg-amber-500']:not([class*='bg-clip-text']):hover,
+:is(html[data-theme='v2'], html[data-theme='v2_dark']) a[class~='bg-amber-500']:not([class*='bg-clip-text']):hover {
+  background-image: linear-gradient(
+    var(--f-grad-angle),
+    var(--f-brand-hover) 0%,
+    color-mix(in srgb, var(--f-grad-b) 34%, var(--f-brand-hover)) 100%
+  ) !important;
+}
+
+/* ---------- 17.9 glass off ----------
+   `data-v2fx="flat"` is set by v2Fx.ts when the switch is off. Blur is *removed*
+   rather than zeroed: `blur(0px)` still promotes the element to its own
+   compositing layer and still costs a paint, so a zeroed variable would keep
+   paying for a feature that is switched off. */
+:is(html[data-theme='v2'][data-v2fx='flat'], html[data-theme='v2_dark'][data-v2fx='flat'])
+  :is([class*='bg-slate-900'], [class*='bg-slate-950'], [class*='bg-slate-800'], [class*='bg-slate-700'], .app-card-bg, .app-card-subtle-bg, .hero-aurora):not(body):is([class*='rounded-2xl'], [class*='rounded-3xl']) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-image: none !important;
+  box-shadow: var(--f-shadow-8) !important;
+  /* Glass off means flat in every sense — the lean goes with the blur. */
+  transform: none !important;
+  will-change: auto !important;
+}
+
+:is(html[data-theme='v2'][data-v2fx='flat'], html[data-theme='v2_dark'][data-v2fx='flat'])
+  :is([class*='bg-slate-900'], .app-card-bg, .hero-aurora):not(body) {
+  background-color: var(--f-bg-1) !important;
+  border-color: var(--f-stroke-2) !important;
+}
+
+:is(html[data-theme='v2'][data-v2fx='flat'], html[data-theme='v2_dark'][data-v2fx='flat'])
+  :is([class*='bg-slate-950'], [class*='bg-slate-800'], [class*='bg-slate-700'], .app-card-subtle-bg):not(body) {
+  background-color: var(--f-bg-2) !important;
+  border-color: var(--f-stroke-2) !important;
+}
+
+/* With glass off the mesh has nothing to refract, and a gradient canvas under
+   flat panels just looks like a stain. Fall back to the single top wash from
+   section 6. */
+:is(html[data-theme='v2'][data-v2fx='flat'], html[data-theme='v2_dark'][data-v2fx='flat']) body,
+:is(html[data-theme='v2'][data-v2fx='flat'], html[data-theme='v2_dark'][data-v2fx='flat']) body.bg-slate-900 {
+  background-image: radial-gradient(1100px 340px at 50% -6%, color-mix(in srgb, var(--f-grad-a) 9%, transparent), transparent 70%) !important;
+}
+
+/* No backdrop-filter (old Safari, a browser with it disabled, or a GPU that
+   refuses the layer): translucent panels with nothing blurred behind them turn
+   into a muddy wash. Better to be opaque and plain than translucent and
+   unreadable. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) :is([class*='bg-slate-900'], [class*='bg-slate-950'], .app-card-bg, .app-card-subtle-bg):not(body) {
+    background-color: var(--f-bg-1) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(html[data-theme='v2'], html[data-theme='v2_dark']) [class*='rounded-2xl'] {
+    transition: none !important;
+  }
+}
+
 } /* @layer base — v2 skin */
+
+/* -------------------------------------------------------------------------
+   Pointer-light properties, registered so they interpolate.
+
+   Unregistered custom properties are strings: the browser cannot tween `12%`
+   into `68%`, so the highlight would jump between frames instead of gliding.
+   Registration has to sit outside the layer — `@property` is a top-level rule
+   and is not part of the cascade — but the values it enables are only ever
+   read by section 17, which is v2-only.
+   ------------------------------------------------------------------------- */
+@property --f-mx {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --f-my {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
