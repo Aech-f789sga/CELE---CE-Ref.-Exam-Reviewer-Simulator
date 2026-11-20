@@ -183,8 +183,16 @@ function renderKatex(latex: string, displayMode: boolean = false, isFormula: boo
 
 /**
  * Safely checks if a string between $ delimiters is genuine math.
+ *
+ * `whole` is true when the delimiters span the entire string, which is the
+ * shape of an answer option ("$4$", "$2$") rather than a figure inside a
+ * sentence. It matters for bare numbers: in prose `$50` is a price, but an
+ * option that reads exactly `$4$` is a deliberate math span — nobody writes a
+ * currency amount with a closing dollar sign. Without the distinction the
+ * option rendered as the literal text "$4$" while its neighbours ($1/4$, $1/2$)
+ * rendered as fractions, which is how it was reported.
  */
-function isLegitimateMath(str: string): boolean {
+function isLegitimateMath(str: string, whole = false): boolean {
   const trimmed = str.trim();
   if (!trimmed) return false;
   // Delimiters with spaces adjacent are not valid inline math (standard LaTeX convention)
@@ -192,7 +200,7 @@ function isLegitimateMath(str: string): boolean {
   // If it's a bare number, currency or currency-with-unit (e.g. 50, 1.50, 50,000, 2/kg)
   // Note: a `/` followed by letters means a unit, but a `/` followed by digits is a
   // fraction ($2/3$), so the trailing part deliberately requires letters.
-  if (/^\d[\d,]*(\.\d+)?\s*(k|M|B)?\s*(\/[A-Za-z][A-Za-z/]*)?$/.test(trimmed)) return false;
+  if (/^\d[\d,]*(\.\d+)?\s*(k|M|B)?\s*(\/[A-Za-z][A-Za-z/]*)?$/.test(trimmed)) return whole;
   // A currency amount followed by prose ("50 or ", "100 more ") is not math either.
   if (/^\d[\d,]*(\.\d+)?\s+[A-Za-z]/.test(trimmed)) return false;
 
@@ -220,7 +228,14 @@ function renderInlineContent(text: string): React.ReactNode {
   if (!text) return null;
 
   const parts: React.ReactNode[] = [];
-  const mathRegex = /(?<!\\)\$([^\$\n]+?)(?<!\\)\$/g;
+  /*
+   * The body accepts an escaped dollar, because a currency amount is a
+   * legitimate thing to put in maths: `$\$1{,}970$` is one span that renders as
+   * $1,970. Refusing every `$` in the body meant that pattern never matched, so
+   * the delimiters and the backslashes were printed exactly as written — the
+   * dollar signs that never became maths.
+   */
+  const mathRegex = /(?<!\\)\$((?:\\\$|[^$\n])+?)(?<!\\)\$/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
@@ -230,7 +245,10 @@ function renderInlineContent(text: string): React.ReactNode {
     }
 
     const rawCandidate = match[1];
-    if (isLegitimateMath(rawCandidate)) {
+    // Surrounding whitespace is not part of the span, so trim before asking
+    // whether these delimiters wrap the whole string.
+    const whole = text.trim() === match[0];
+    if (isLegitimateMath(rawCandidate, whole)) {
       const html = renderKatex(rawCandidate, false);
       parts.push(
         <span
@@ -240,8 +258,17 @@ function renderInlineContent(text: string): React.ReactNode {
         />
       );
     } else {
-      // It's not legitimate math (e.g. regular words or a currency amount) - render as plain text
-      parts.push(...renderFormattedText(match[0], `txt-raw-${match.index}`));
+      /*
+       * Not maths — a price, most often. Only the opening dollar sign is spent
+       * as text, and the scan resumes one character later, so the rejected pair
+       * cannot swallow a real span inside it. That matters in a sentence like
+       * "…for $452, on sale from $\$520$…", where pairing the first two dollars
+       * would otherwise consume the second span whole and print it raw.
+       */
+      parts.push(...renderFormattedText(match[0][0], `txt-raw-${match.index}`));
+      lastIndex = match.index + 1;
+      mathRegex.lastIndex = match.index + 1;
+      continue;
     }
 
     lastIndex = match.index + match[0].length;
