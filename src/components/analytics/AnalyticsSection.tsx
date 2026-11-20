@@ -18,9 +18,10 @@
  *     grid that looks broken.
  */
 import React, { useMemo, useState } from 'react';
-import { Activity, AlertTriangle, BarChart3, Gauge, Target, TrendingUp } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, Gauge, Scale, Target, TrendingUp } from 'lucide-react';
 import type { ExamAttempt, SubjectArea } from '../../types/exam';
 import type { DrillResult } from '../../data/drillResults';
+import type { DifficultyMap } from '../../data/itemDifficulty';
 import { MIN_TOPIC_SAMPLE, summariseAnalytics } from '../../data/analytics';
 import type { ReadinessBand } from '../../data/analytics';
 import { ErrorStrip, TopicBars, TrajectoryChart } from './AnalyticsCharts';
@@ -28,6 +29,11 @@ import { ErrorStrip, TopicBars, TrajectoryChart } from './AnalyticsCharts';
 interface AnalyticsSectionProps {
   attempts: ExamAttempt[];
   drills?: DrillResult[];
+  /**
+   * The learner's own easy/mid/hard ratings. Absent means "nothing rated",
+   * which weights every item equally and reduces the panel to raw accuracy.
+   */
+  difficulty?: DifficultyMap;
 }
 
 const BAND_META: Record<ReadinessBand, { label: string; className: string; hint: string }> = {
@@ -60,14 +66,23 @@ const FILTERS: { id: 'all' | SubjectArea; label: string }[] = [
   { id: 'PSAD', label: 'PSAD' },
 ];
 
-export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ attempts, drills = [] }) => {
+export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({
+  attempts,
+  drills = [],
+  difficulty = {},
+}) => {
   const [filter, setFilter] = useState<'all' | SubjectArea>('all');
 
-  const summary = useMemo(() => summariseAnalytics(attempts, drills), [attempts, drills]);
-  const { readiness, topics, errors, trend, pace, actionable, sampleSize } = summary;
+  const summary = useMemo(
+    () => summariseAnalytics(attempts, drills, difficulty),
+    [attempts, drills, difficulty]
+  );
+  const { readiness, topics, errors, trend, pace, actionable, sampleSize, weighting } = summary;
 
   const band = BAND_META[readiness.band];
   const hasAnswers = topics.attemptsUsed > 0 || drills.length > 0;
+  /** Nothing rated yet, so every bar is already its own weighted figure. */
+  const weighted = weighting.rated > 0;
 
   const weakest = actionable[0] ?? topics.rows[0] ?? null;
 
@@ -88,7 +103,15 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ attempts, dr
           <p className="text-[11px] text-slate-400 mt-1">
             {sampleSize > 0
               ? `${sampleSize.toLocaleString()} graded questions across ${topics.attemptsUsed} sitting${topics.attemptsUsed === 1 ? '' : 's'}`
-              : 'Waiting for a completed sitting with recorded answers.'}
+              : drills.length > 0
+                ? /*
+                   * Drills are the only source here, which happens on a fresh
+                   * account: practice is logged per topic but no board paper has
+                   * a recorded answer map yet. Saying "waiting for a sitting"
+                   * next to five populated topic bars reads as a bug.
+                   */
+                  `${drills.length} practice drill${drills.length === 1 ? '' : 's'} logged — board papers add to this once their answers are recorded`
+                : 'Waiting for a completed sitting with recorded answers.'}
           </p>
         </div>
         <span className="text-[10px] text-slate-500">
@@ -134,7 +157,10 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ attempts, dr
               <>
                 <div className="text-sm font-semibold text-white truncate">{weakest.label}</div>
                 <div className="text-[11px] text-slate-400 mt-0.5 tabular-nums">
-                  {weakest.accuracy}% over {weakest.scorable} question{weakest.scorable === 1 ? '' : 's'}
+                  {weakest.weightedAccuracy}% over {weakest.scorable} question{weakest.scorable === 1 ? '' : 's'}
+                  {weakest.rated > 0 && weakest.weightedAccuracy !== weakest.accuracy && (
+                    <span className="text-slate-500"> · {weakest.accuracy}% unweighted</span>
+                  )}
                 </div>
               </>
             ) : (
@@ -172,7 +198,7 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ attempts, dr
 
       {/* Topic mastery */}
       <div className="bg-slate-900/95 border border-slate-800 rounded-2xl p-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-200">
             <Target className="w-3.5 h-3.5 text-amber-400" /> Topic mastery
           </div>
@@ -194,6 +220,28 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ attempts, dr
           </div>
         </div>
 
+        {/*
+         * The weighting is stated before the bars, not after them. A percentage
+         * that has been re-weighted without saying so is just a wrong number,
+         * and this row is the only place the learner can learn that a hard item
+         * counts for four easy ones.
+         */}
+        <div className="flex items-center gap-1.5 mb-3 text-[10px] leading-snug">
+          <Scale className="w-3 h-3 shrink-0 text-slate-500" />
+          {weighted ? (
+            <span className="text-slate-400">
+              Weighted by your own ratings — {weighting.rated.toLocaleString()} item
+              {weighting.rated === 1 ? '' : 's'} rated, easy 1 · mid 2 · hard 4. Overall{' '}
+              <span className="text-slate-300 font-semibold tabular-nums">{weighting.weightedAccuracy}%</span> weighted.
+            </span>
+          ) : (
+            <span className="text-slate-500">
+              Rate a drill item easy / mid / hard and the bars start counting it more — an easy miss costs
+              more than a hard one. Until then these are raw percentages.
+            </span>
+          )}
+        </div>
+
         {!hasAnswers ? (
           <div className="py-6 text-center">
             <p className="text-xs text-slate-400">Topic breakdown needs sittings with recorded answers.</p>
@@ -206,7 +254,15 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ attempts, dr
           <>
             <TopicBars rows={visibleTopics} />
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 pt-3 border-t border-slate-800">
-              <span className="text-[10px] text-slate-500">weakest first</span>
+              <span className="text-[10px] text-slate-500">
+                {weighted ? 'weakest first, by weighted accuracy' : 'weakest first'}
+              </span>
+              {weighting.easyMisses > 0 && (
+                <span className="text-[10px] text-orange-400">
+                  {weighting.easyMisses} mark{weighting.easyMisses === 1 ? '' : 's'} lost to items you had
+                  already rated easy
+                </span>
+              )}
               {thinTopics > 0 && (
                 <span className="text-[10px] text-slate-500">
                   {thinTopics} topic{thinTopics === 1 ? '' : 's'} below {MIN_TOPIC_SAMPLE} questions — hidden until

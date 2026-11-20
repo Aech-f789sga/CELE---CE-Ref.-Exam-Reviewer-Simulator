@@ -32,6 +32,7 @@ import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
 import { isKeyPending, isTopicDrill, summariseScore } from '../data/grading';
 import { breakdownForQuestions } from '../data/analytics';
+import { loadDifficulty } from '../data/itemDifficulty';
 import { getExamStorageBase } from '../utils/storage';
 import {
   exportScratchpadBundle,
@@ -53,6 +54,8 @@ interface ExamResultsProps {
   onTakeNextArea: (nextSubject: SubjectArea) => void;
   onViewPerformance: () => void;
   onExitHome: () => void;
+  /** Whose item ratings to honour when diagnosing this paper. */
+  ownerId?: string;
 }
 
 export const ExamResults: React.FC<ExamResultsProps> = ({
@@ -67,6 +70,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   onTakeNextArea,
   onViewPerformance,
   onExitHome,
+  ownerId,
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'incorrect' | 'correct' | 'pending'>('all');
   const [expandedSolutions, setExpandedSolutions] = useState<Record<string, boolean>>({});
@@ -179,10 +183,16 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
    */
   const topicRows = useMemo(() => {
     if (!scoreKnown) return [];
-    return breakdownForQuestions(questions, userAnswers, subject)
+    /*
+     * The ratings are read at submit time, not held in state: a board paper is
+     * fixed, but an item the learner rated during a drill can appear on it too
+     * (the id is the join), and honouring that rating here is what makes the
+     * strip agree with the mastery panel later.
+     */
+    return breakdownForQuestions(questions, userAnswers, subject, loadDifficulty(ownerId))
       .rows.filter((row) => row.scorable >= 2)
       .slice(0, 6);
-  }, [questions, userAnswers, subject, scoreKnown]);
+  }, [questions, userAnswers, subject, scoreKnown, ownerId]);
 
   // Trigger celebration confetti if passed
   useEffect(() => {
@@ -380,22 +390,32 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             </div>
             <div className="flex flex-wrap gap-2">
               {topicRows.map((row) => {
+                /*
+                 * The chips are ordered by weighted accuracy, so they must also
+                 * *read* weighted accuracy — otherwise a 55% chip can sit below
+                 * a 40% one and look like a sorting bug. The unweighted figure
+                 * moves into the tooltip, where it explains the difference
+                 * without competing with the headline.
+                 */
+                const pct = row.weightedAccuracy;
                 const tone =
-                  row.accuracy < 50
+                  pct < 50
                     ? 'bg-rose-500/15 text-rose-300 border-rose-500/40'
-                    : row.accuracy < 70
+                    : pct < 70
                       ? 'bg-orange-500/15 text-orange-300 border-orange-500/40'
-                      : row.accuracy < 85
+                      : pct < 85
                         ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40'
                         : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40';
                 return (
                   <span
                     key={row.topicId}
                     className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] ${tone}`}
-                    title={`${row.correct} of ${row.scorable} correct${row.blank > 0 ? `, ${row.blank} left blank` : ''}`}
+                    title={`${row.correct} of ${row.scorable} correct${row.blank > 0 ? `, ${row.blank} left blank` : ''}${
+                      row.rated > 0 ? ` · weighted ${row.weightedAccuracy}%, unweighted ${row.accuracy}%` : ''
+                    }`}
                   >
                     <span className="truncate max-w-[190px]">{row.label}</span>
-                    <span className="font-bold tabular-nums">{row.accuracy}%</span>
+                    <span className="font-bold tabular-nums">{pct}%</span>
                     <span className="opacity-60 tabular-nums">{row.scorable}</span>
                   </span>
                 );

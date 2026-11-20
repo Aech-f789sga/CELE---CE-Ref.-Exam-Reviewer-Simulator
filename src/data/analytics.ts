@@ -26,6 +26,8 @@ import { getQuestionsForExam } from './questionBankManager';
 import { isKeyPending } from './grading';
 import { normaliseTopic, topicById, topicsForSubject } from './topics';
 import type { DrillResult } from './drillResults';
+import { DEFAULT_WEIGHT, weightOf } from './itemDifficulty';
+import type { DifficultyMap, ItemDifficulty } from './itemDifficulty';
 
 /** Below this many scorable items a topic percentage is noise, not a signal. */
 export const MIN_TOPIC_SAMPLE = 5;
@@ -43,6 +45,22 @@ export interface TopicRow {
   blank: number;
   /** How many of `scorable` came from drills rather than board papers. */
   fromDrills: number;
+
+  /**
+   * Sum of difficulty weights over this topic's items, and the weighted
+   * correct total. `weightedAccuracy` is their ratio.
+   *
+   * When nothing is rated every item weighs `DEFAULT_WEIGHT`, so the weighted
+   * figure collapses onto the raw one exactly — which is what makes this safe
+   * to switch on for a learner who has never used the rating control.
+   */
+  weight: number;
+  weightedCorrect: number;
+  weightedAccuracy: number;
+  /** Items carrying any rating. Zero means the weighted view is meaningless here. */
+  rated: number;
+  /** Rated `easy` but answered wrong — the careless-error signal. */
+  easyMisses: number;
 }
 
 export interface TopicBreakdown {
@@ -76,19 +94,43 @@ export function resolveAttemptQuestions(attempt: ExamAttempt): Question[] {
   }
 }
 
+function emptyRow(topicId: string, subject: SubjectArea): TopicRow {
+  return {
+    topicId,
+    label: topicById(topicId)?.label ?? topicId,
+    subject,
+    scorable: 0,
+    correct: 0,
+    accuracy: 0,
+    blank: 0,
+    fromDrills: 0,
+    weight: 0,
+    weightedCorrect: 0,
+    weightedAccuracy: 0,
+    rated: 0,
+    easyMisses: 0,
+  };
+}
+
 /**
  * Fold one paper's questions into the accumulator.
  *
  * Shared by the attempt sweep and by the single-paper breakdown so the two can
  * never drift — the results screen and the analytics panel must agree on what
  * "correct" means for the same paper.
+ *
+ * Each item also contributes its difficulty weight. An unrated item (every
+ * board-paper item, since the rating control is drills-only) weighs
+ * `DEFAULT_WEIGHT`, so the weighted total stays proportional to the raw one
+ * and the weighted view degrades to the raw view rather than to nonsense.
  */
 function foldQuestions(
   questions: Question[],
   answers: Record<string, string | undefined>,
   subject: SubjectArea,
   acc: Map<string, TopicRow>,
-  counters: { unmapped: number; scorable: number }
+  counters: { unmapped: number; scorable: number },
+  difficulty: DifficultyMap
 ): void {
   for (const q of questions) {
     if (isKeyPending(q)) continue;
@@ -102,20 +144,30 @@ function foldQuestions(
     }
 
     counters.scorable++;
-    const row = acc.get(topicId) ?? {
-      topicId,
-      label: topicById(topicId)?.label ?? topicId,
-      subject,
-      scorable: 0,
-      correct: 0,
-      accuracy: 0,
-      blank: 0,
-      fromDrills: 0,
-    };
+    const row = acc.get(topicId) ?? emptyRow(topicId, subject);
+
+    const weight = weightOf(difficulty, q.id);
+    const flag: ItemDifficulty | undefined = difficulty[q.id];
+    const correct = answer !== undefined && answer === q.correctAnswer;
 
     row.scorable++;
-    if (answer === undefined) row.blank++;
-    else if (answer === q.correctAnswer) row.correct++;
+    row.weight += weight;
+    if (correct) {
+      row.correct++;
+      row.weightedCorrect += weight;
+    } else if (answer === undefined) {
+      row.blank++;
+    } else if (flag === 'easy') {
+      /*
+       * Answered wrong on an item the learner had already called easy. This is
+       * the most expensive kind of miss in a timed sitting — it is not a gap in
+       * knowledge, it is a slip — and weighting alone would hide it, because an
+       * easy item carries the *lightest* weight. Counting it separately is the
+       * only way the panel can say "you are losing marks you already know".
+       */
+      row.easyMisses++;
+    }
+    if (flag) row.rated++;
 
     acc.set(topicId, row);
   }
@@ -131,7 +183,8 @@ function foldQuestions(
 function accumulateAttempt(
   attempt: ExamAttempt,
   acc: Map<string, TopicRow>,
-  counters: { unmapped: number; scorable: number }
+  counters: { unmapped: number; scorable: number },
+  difficulty: DifficultyMap
 ): boolean {
   const questions = resolveAttemptQuestions(attempt);
   if (questions.length === 0) return false;
@@ -144,8 +197,17 @@ function accumulateAttempt(
   const joinable = answeredIds.some((id) => known.has(id));
   if (!joinable) return false;
 
-  foldQuestions(questions, answers, attempt.subject, acc, counters);
+  foldQuestions(questions, answers, attempt.subject, acc, counters, difficulty);
   return true;
+}
+
+/** Finalise a row: derive both percentages from the totals. */
+function finishRow(row: TopicRow): TopicRow {
+  return {
+    ...row,
+    accuracy: row.scorable === 0 ? 0 : Math.round((row.correct / row.scorable) * 1000) / 10,
+    weightedAccuracy: row.weight === 0 ? 0 : Math.round((row.weightedCorrect / row.weight) * 1000) / 10,
+  };
 }
 
 /**
@@ -156,19 +218,17 @@ function accumulateAttempt(
 export function breakdownForQuestions(
   questions: Question[],
   answers: Record<string, string | undefined>,
-  subject: SubjectArea
+  subject: SubjectArea,
+  difficulty: DifficultyMap = {}
 ): { rows: TopicRow[]; unmapped: number; scorable: number } {
   const acc = new Map<string, TopicRow>();
   const counters = { unmapped: 0, scorable: 0 };
 
-  foldQuestions(questions, answers, subject, acc, counters);
+  foldQuestions(questions, answers, subject, acc, counters, difficulty);
 
   const rows = [...acc.values()]
-    .map((row) => ({
-      ...row,
-      accuracy: row.scorable === 0 ? 0 : Math.round((row.correct / row.scorable) * 1000) / 10,
-    }))
-    .sort((a, b) => a.accuracy - b.accuracy || b.scorable - a.scorable);
+    .map(finishRow)
+    .sort((a, b) => a.weightedAccuracy - b.weightedAccuracy || b.scorable - a.scorable);
 
   return { rows, unmapped: counters.unmapped, scorable: counters.scorable };
 }
@@ -179,10 +239,22 @@ export function breakdownForQuestions(
  * Drills carry their `topicId` directly (the bank stamps it on every item), so
  * they need no classification and are the cheapest way to grow a topic's
  * sample size — which is why the ledger exists at all.
+ *
+ * `difficulty` is the learner's own easy/mid/hard ratings. It is applied to
+ * board-paper items too, even though only drills can be rated, because a
+ * learner may rate an item during a drill and then meet the same item id again
+ * on a paper — the id is the join, so the rating follows it. Items that were
+ * never rated simply carry `DEFAULT_WEIGHT`.
+ *
+ * Rows sort by `weightedAccuracy`, not raw `accuracy`: the point of the
+ * weighting is that a topic where the misses are all on `hard` items is in
+ * better shape than one where the misses are on `easy` items, and a raw
+ * percentage cannot express that difference.
  */
 export function topicBreakdown(
   attempts: ExamAttempt[],
-  drills: DrillResult[] = []
+  drills: DrillResult[] = [],
+  difficulty: DifficultyMap = {}
 ): TopicBreakdown {
   const acc = new Map<string, TopicRow>();
   const counters = { unmapped: 0, scorable: 0 };
@@ -190,7 +262,7 @@ export function topicBreakdown(
   let attemptsSkipped = 0;
 
   for (const attempt of attempts) {
-    if (accumulateAttempt(attempt, acc, counters)) attemptsUsed++;
+    if (accumulateAttempt(attempt, acc, counters, difficulty)) attemptsUsed++;
     else attemptsSkipped++;
   }
 
@@ -199,29 +271,29 @@ export function topicBreakdown(
     if (!def) continue;
     if (drill.scorable <= 0) continue;
 
-    const row = acc.get(drill.topicId) ?? {
-      topicId: drill.topicId,
-      label: def.label,
-      subject: def.subject,
-      scorable: 0,
-      correct: 0,
-      accuracy: 0,
-      blank: 0,
-      fromDrills: 0,
-    };
+    const row = acc.get(drill.topicId) ?? emptyRow(drill.topicId, def.subject);
 
     row.scorable += drill.scorable;
     row.correct += drill.correct;
     row.fromDrills += drill.scorable;
+
+    /*
+     * Older ledger rows predate the weighted fields. They fall back to the
+     * default weight, which makes their weighted total exactly proportional to
+     * their raw one — so a mixed ledger does not distort the ratio, it just
+     * carries less information about the rated items inside it.
+     */
+    row.weight += drill.weight ?? drill.scorable * DEFAULT_WEIGHT;
+    row.weightedCorrect += drill.weightedCorrect ?? drill.correct * DEFAULT_WEIGHT;
+    row.easyMisses += drill.easyMisses ?? 0;
+    row.rated += drill.rated ?? 0;
+
     acc.set(drill.topicId, row);
   }
 
   const rows = [...acc.values()]
-    .map((row) => ({
-      ...row,
-      accuracy: row.scorable === 0 ? 0 : Math.round((row.correct / row.scorable) * 1000) / 10,
-    }))
-    .sort((a, b) => a.accuracy - b.accuracy || b.scorable - a.scorable);
+    .map(finishRow)
+    .sort((a, b) => a.weightedAccuracy - b.weightedAccuracy || b.scorable - a.scorable);
 
   return {
     rows,
@@ -442,14 +514,42 @@ export interface AnalyticsSummary {
   actionable: TopicRow[];
   /** Total scorable items behind the breakdown. */
   sampleSize: number;
+  /**
+   * Difficulty-weighted totals across every topic row.
+   *
+   * Kept alongside `sampleSize` rather than replacing it: the panel needs both
+   * to decide whether to show the weighted column at all, and to explain why a
+   * weighted figure can differ from the raw one.
+   */
+  weighting: {
+    /** Items carrying a rating. Zero means the weighted view has nothing to add. */
+    rated: number;
+    /** Rated `easy` yet answered wrong, across all topics. */
+    easyMisses: number;
+    /** Weighted accuracy across every scorable item, 0–100. */
+    weightedAccuracy: number;
+  };
 }
 
 /** One call for the screen, so the join runs once per render pass. */
 export function summariseAnalytics(
   attempts: ExamAttempt[],
-  drills: DrillResult[] = []
+  drills: DrillResult[] = [],
+  difficulty: DifficultyMap = {}
 ): AnalyticsSummary {
-  const topics = topicBreakdown(attempts, drills);
+  const topics = topicBreakdown(attempts, drills, difficulty);
+
+  let weight = 0;
+  let weightedCorrect = 0;
+  let rated = 0;
+  let easyMisses = 0;
+  for (const row of topics.rows) {
+    weight += row.weight;
+    weightedCorrect += row.weightedCorrect;
+    rated += row.rated;
+    easyMisses += row.easyMisses;
+  }
+
   return {
     topics,
     errors: errorProfile(attempts),
@@ -458,6 +558,11 @@ export function summariseAnalytics(
     readiness: readiness(attempts),
     actionable: topics.rows.filter((r) => r.scorable >= MIN_TOPIC_SAMPLE),
     sampleSize: topics.totalScorable,
+    weighting: {
+      rated,
+      easyMisses,
+      weightedAccuracy: weight === 0 ? 0 : Math.round((weightedCorrect / weight) * 1000) / 10,
+    },
   };
 }
 

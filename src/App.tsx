@@ -84,6 +84,7 @@ import {
 import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
 import { isKeyPending, isPublishable, isTopicDrill, summariseScore } from './data/grading';
 import { recordDrillResult } from './data/drillResults';
+import { loadDifficulty, weightOf } from './data/itemDifficulty';
 import { watchTopicLock } from './data/topicLock';
 
 function CustomBgLayer() {
@@ -608,20 +609,56 @@ function MainApp() {
        * everywhere else — unknown is not wrong.
        */
       if (topicDrill) {
-        const perTopic = new Map<string, { correct: number; scorable: number }>();
+        /*
+         * Each item is folded with the weight it carried *while the learner was
+         * sitting it*, read here rather than from component state: the engine's
+         * ratings are saved to localStorage on every tap, so this read sees the
+         * same map the control was showing. Freezing the weight into the ledger
+         * is deliberate — re-rating an item tomorrow must not rewrite what last
+         * week's drill meant.
+         */
+        const ratings = loadDifficulty(activeUser?.uid);
+
+        const perTopic = new Map<
+          string,
+          { correct: number; scorable: number; weight: number; weightedCorrect: number; easyMisses: number; rated: number }
+        >();
+
         for (const q of activeQuestions) {
           if (!q.topicId || isKeyPending(q)) continue;
-          const row = perTopic.get(q.topicId) ?? { correct: 0, scorable: 0 };
+
+          const row =
+            perTopic.get(q.topicId) ??
+            { correct: 0, scorable: 0, weight: 0, weightedCorrect: 0, easyMisses: 0, rated: 0 };
+
+          const weight = weightOf(ratings, q.id);
+          const flag = ratings[q.id];
+          const isCorrect = userAnswers[q.id] === q.correctAnswer;
+
           row.scorable++;
-          if (userAnswers[q.id] === q.correctAnswer) row.correct++;
+          row.weight += weight;
+          if (isCorrect) {
+            row.correct++;
+            row.weightedCorrect += weight;
+          } else if (flag === 'easy') {
+            // Marked easy, still missed: a slip, not a gap. Worth its own count.
+            row.easyMisses++;
+          }
+          if (flag) row.rated++;
+
           perTopic.set(q.topicId, row);
         }
+
         for (const [topicId, row] of perTopic) {
           recordDrillResult({
             topicId,
             correct: row.correct,
             scorable: row.scorable,
             seconds: timeSpentSeconds,
+            weight: row.weight,
+            weightedCorrect: row.weightedCorrect,
+            easyMisses: row.easyMisses,
+            rated: row.rated,
           });
         }
       }
@@ -813,6 +850,7 @@ function MainApp() {
               onTakeNextArea={handleTakeNextArea}
               onViewPerformance={handleViewPerformance}
               onExitHome={handleExitHome}
+              ownerId={activeUser?.uid}
             />
           )}
 
@@ -915,6 +953,7 @@ function MainApp() {
                   }}
                   onOpenDonation={handleOpenDonation}
                   isAdmin={isAdmin}
+                  ownerId={activeUser?.uid}
                 />
               )}
 

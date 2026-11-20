@@ -8,6 +8,8 @@ import {
 import { computePairedCycles, clearAllAttempts, seedSampleAttempts } from '../utils/storage';
 import { getDrillResults } from '../data/drillResults';
 import type { DrillResult } from '../data/drillResults';
+import { loadDifficulty } from '../data/itemDifficulty';
+import type { DifficultyMap } from '../data/itemDifficulty';
 import { AnalyticsSection } from './analytics/AnalyticsSection';
 import {
   Trophy,
@@ -41,6 +43,12 @@ interface PerformanceReviewProps {
    * not a self-service one.
    */
   isAdmin?: boolean;
+  /**
+   * Whose item ratings to read. Omitted means the shared bucket, which is what
+   * an anonymous session writes to — so the panel always reads the same key the
+   * drill control wrote.
+   */
+  ownerId?: string;
 }
 
 export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
@@ -50,9 +58,11 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
   onOpenScratchpad,
   onOpenDonation,
   isAdmin = false,
+  ownerId,
 }) => {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [drills, setDrills] = useState<DrillResult[]>(() => getDrillResults());
+  const [difficulty, setDifficulty] = useState<DifficultyMap>(() => loadDifficulty(ownerId));
   const cycles = computePairedCycles(attempts);
 
   /*
@@ -60,16 +70,26 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
    * ledger changes without this component re-rendering. Listening for the
    * custom event (and `storage`, for a second tab) keeps the mastery panel in
    * step without lifting drill state into App for a panel only this screen uses.
+   *
+   * The difficulty map is read here rather than passed down from App because it
+   * is written by the drill control, which lives in the exam engine: the two
+   * components never share a render pass, so the only common ground is storage.
+   * `focus` covers the case of rating an item, switching tabs and coming back.
    */
   useEffect(() => {
-    const sync = () => setDrills(getDrillResults());
+    const sync = () => {
+      setDrills(getDrillResults());
+      setDifficulty(loadDifficulty(ownerId));
+    };
     window.addEventListener('ce_board_drills_updated', sync);
     window.addEventListener('storage', sync);
+    window.addEventListener('focus', sync);
     return () => {
       window.removeEventListener('ce_board_drills_updated', sync);
       window.removeEventListener('storage', sync);
+      window.removeEventListener('focus', sync);
     };
-  }, []);
+  }, [ownerId]);
 
   // Subject statistics
   const getSubjectMetrics = (subject: SubjectArea) => {
@@ -186,7 +206,7 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
       </div>
 
       {/* SECTION 0: ANALYTICS — what the scores mean, before the ledger of them */}
-      <AnalyticsSection attempts={attempts} drills={drills} />
+      <AnalyticsSection attempts={attempts} drills={drills} difficulty={difficulty} />
 
       {/* SECTION 1: PAIRED EXAM CYCLES (PRC 35% MSTC + 30% HPGE + 35% PSAD) */}
       <div className="space-y-4">

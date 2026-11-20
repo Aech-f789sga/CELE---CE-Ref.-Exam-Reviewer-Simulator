@@ -184,6 +184,15 @@ export interface TopicBarRow {
   accuracy: number;
   scorable: number;
   blank: number;
+  /**
+   * The difficulty-weighted percentage. Equals `accuracy` whenever no item in
+   * the topic carries a rating, so the bar never invents a number.
+   */
+  weightedAccuracy?: number;
+  /** Items in this topic that carry a rating. */
+  rated?: number;
+  /** Rated `easy` yet answered wrong. */
+  easyMisses?: number;
 }
 
 /*
@@ -199,6 +208,9 @@ const barColour = (accuracy: number): string => {
   return 'bg-emerald-500';
 };
 
+/** Two points of drift is inside the rounding noise of a short topic. */
+const WEIGHT_DRIFT = 2;
+
 export const TopicBars: React.FC<{ rows: TopicBarRow[] }> = ({ rows }) => {
   if (rows.length === 0) {
     return (
@@ -210,23 +222,60 @@ export const TopicBars: React.FC<{ rows: TopicBarRow[] }> = ({ rows }) => {
 
   return (
     <div className="space-y-2.5">
-      {rows.map((row) => (
-        <div key={row.topicId}>
-          <div className="flex items-baseline justify-between gap-2 mb-1">
-            <span className="text-xs text-slate-200 truncate">{row.label}</span>
-            <span className="text-[11px] text-slate-400 tabular-nums shrink-0">
-              {row.accuracy}%
-              <span className="text-slate-600"> · {row.scorable}</span>
-            </span>
+      {rows.map((row) => {
+        const weighted = row.weightedAccuracy ?? row.accuracy;
+        const rated = row.rated ?? 0;
+        const drifted = rated > 0 && Math.abs(weighted - row.accuracy) >= WEIGHT_DRIFT;
+
+        return (
+          <div key={row.topicId}>
+            <div className="flex items-baseline justify-between gap-2 mb-1">
+              <span className="text-xs text-slate-200 truncate">{row.label}</span>
+              <span className="text-[11px] text-slate-400 tabular-nums shrink-0">
+                {weighted}%
+                {/*
+                 * The raw figure is only shown when it disagrees. Printing both
+                 * on every row doubles the number of digits on screen to say
+                 * nothing on the rows where the weighting changes nothing.
+                 */}
+                {drifted && (
+                  <span className="text-slate-600" title="Unweighted accuracy on the same items">
+                    {' '}
+                    vs {row.accuracy}%
+                  </span>
+                )}
+                <span className="text-slate-600"> · {row.scorable}</span>
+              </span>
+            </div>
+            <div className="relative h-1.5 rounded-full bg-slate-800 overflow-hidden">
+              <div
+                className={`h-full rounded-full ${barColour(weighted)}`}
+                style={{ width: `${Math.max(2, Math.min(100, weighted))}%` }}
+              />
+              {drifted && (
+                /*
+                 * The marker sits on top of a coloured fill *and* on the neutral
+                 * track, so it cannot be a fixed light or dark line: a white
+                 * line vanishes on the v2 light skin, a dark one vanishes on the
+                 * dark skins. A mid grey with a thin dark halo reads on every
+                 * fill and every theme without knowing which one is active.
+                 */
+                <span
+                  className="absolute top-0 bottom-0 w-px bg-slate-400 shadow-[0_0_0_1px_rgba(0,0,0,0.45)]"
+                  style={{ left: `${Math.max(0, Math.min(100, row.accuracy))}%` }}
+                  title={`Unweighted ${row.accuracy}%`}
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+            {row.easyMisses ? (
+              <p className="text-[10px] text-orange-400 mt-1">
+                {row.easyMisses} rated-easy item{row.easyMisses === 1 ? '' : 's'} still missed
+              </p>
+            ) : null}
           </div>
-          <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-            <div
-              className={`h-full rounded-full ${barColour(row.accuracy)}`}
-              style={{ width: `${Math.max(2, Math.min(100, row.accuracy))}%` }}
-            />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
