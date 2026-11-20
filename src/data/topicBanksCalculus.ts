@@ -12,6 +12,15 @@
  * The key was supplied separately as "Answer Key Calculus.pdf" and parsed from
  * its text layer: 137 entries, no gaps, no conflicts. It was cross-checked
  * against independently solved items 2, 4–11, 13, 15–19 before being applied.
+ *
+ * One stem was repaired rather than transcribed. Item 126's first time value
+ * did not print — the fraction was lost in the scan, leaving "reads 110 F after
+ * minute and 145 F after 1 minute", which asks for an oven temperature from one
+ * usable reading. The key (C, 390 F) only closes for a half-minute reading:
+ * (145 - To)(70 - To) = (110 - To)^2 gives To = 390 exactly, and k = 2 ln(320/280)
+ * then returns 110 at 0.5 min and 145 at 1 min. The stem now reads "after
+ * 1/2 minute". This is the only item in the bank whose wording was inferred
+ * from its key; every other stem is as printed.
  */
 import type { TopicQuestion } from './topicBanks';
 
@@ -344,7 +353,7 @@ export const CAL_DE: TopicQuestion[] = [
     ['15,600 yrs', '15,500 yrs', '16,600 yrs', '16,500 yrs'], 9),
   qd(125, 'A thermometer is taken from an inside room to the outside, where the air temperature is $5^\\circ$ F. After 1 minute the thermometer reads $55^\\circ$ F, and after 5 minutes it reads $30^\\circ$ F. What is the initial temperature of the inside room?',
     ['$66.44^\\circ$', '$64.46^\\circ$', '$60.44^\\circ$', '$68.46^\\circ$'], 9),
-  qd(126, 'A thermometer reading $70^\\circ$ F is placed in an oven preheated to a constant temperature. Through a glass window in the oven door, an observer records that the thermometer reads $110^\\circ$ F after  minute and $145^\\circ$ F after 1 minute. How hot is the oven?\n\n[The first time value is blank in the booklet \u2014 the fraction did not print.]',
+  qd(126, 'A thermometer reading $70^\\circ$ F is placed in an oven preheated to a constant temperature. Through a glass window in the oven door, an observer records that the thermometer reads $110^\\circ$ F after $\\frac{1}{2}$ minute and $145^\\circ$ F after 1 minute. How hot is the oven?',
     ['$309^\\circ$', '$399^\\circ$', '$390^\\circ$', '$300^\\circ$'], 9),
   qd(127, 'A large tank is filled to capacity with 500 gallons of pure water. Brine containing 2 pounds of salt per gallon is pumped into the tank at a rate of 5 gal/min. The well-mixed solution is pumped out at the same rate. Find the number A(t) of pounds of salt in the tank at time t.',
     ['$1000 - 1000e^{-t/100}$', '$1000 - 1000e^{t/100}$', '$1000 + 1000e^{-t/100}$', '$1000 + 1000e^{t/100}$'], 9),
