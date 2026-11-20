@@ -169,8 +169,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
    * Items with no encoded key are left out of the figures rather than counted
    * as misses. Their `correctAnswer` is a placeholder, so grading them would
    * report a confident 0% and a FAILED verdict for a paper nobody could have
-   * passed. `percentage` is null when the whole paper is unkeyed — the Statics
-   * drill today — and null is rendered as "not scored yet", never as 0%.
+   * passed. `percentage` is null when the whole paper is unkeyed — a Fluid
+   * Mechanics drill, today — and null is rendered as "not scored yet", never
+   * as 0%.
    */
   const summary = summariseScore(questions, userAnswers);
   const correctCount = summary.correct;
@@ -179,7 +180,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const ratingPercentage = summary.percentage ?? 0;
   const isSubjectPassed = scoreKnown && ratingPercentage >= 50.0; // PRC rule: ≥ 50% in each subject
   const prcContribution = Math.round(ratingPercentage * subjectConfig.weight * 100) / 100;
-  /** Nothing on the paper can be graded — the Statics drill, today. */
+  /** Nothing on the paper can be graded — a Fluid Mechanics drill, today. */
   const allPending = !scoreKnown && summary.pending > 0;
   /**
    * A drill, not a sitting. `subject`/`year`/`month` still hold the last setup
