@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   Question,
   SubjectArea,
@@ -51,6 +51,7 @@ import {
   type DifficultyMap,
   type ItemDifficulty,
 } from '../data/itemDifficulty';
+import { clearLiveSession, makeLiveSession, saveLiveSession } from '../data/liveSession';
 import { deletePausedSession, getExamStorageBase } from '../utils/storage';
 import { Scratchpad } from './Scratchpad';
 import { syncExamScratchpadRecord } from '../utils/scratchpadStorage';
@@ -70,6 +71,11 @@ interface ExamEngineProps {
   initialUserAnswers?: Record<string, 'A' | 'B' | 'C' | 'D'>;
   initialFlaggedQuestions?: Record<string, boolean>;
   initialSecondsElapsed?: number;
+  /**
+   * Seconds left on a timed paper being resumed. Without it a restored sitting
+   * would start with a full clock, which is not what resuming means.
+   */
+  initialSecondsRemaining?: number;
   /** Whose difficulty ratings to read and write; omitted means a shared bucket. */
   ownerId?: string;
   onSubmit: (userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>, timeSpentSeconds: number) => void;
@@ -119,6 +125,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   initialUserAnswers,
   initialFlaggedQuestions,
   initialSecondsElapsed,
+  initialSecondsRemaining,
   ownerId,
   onSubmit,
   onExit,
@@ -127,7 +134,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex ?? 0);
   const [userAnswers, setUserAnswers] = useState<Record<string, 'A' | 'B' | 'C' | 'D'>>(initialUserAnswers ?? {});
   const [flaggedQuestions, setFlaggedQuestions] = useState<Record<string, boolean>>(initialFlaggedQuestions ?? {});
-  const [secondsRemaining, setSecondsRemaining] = useState(totalDurationSeconds);
+  const [secondsRemaining, setSecondsRemaining] = useState(
+    initialSecondsRemaining ?? totalDurationSeconds
+  );
   const [secondsElapsed, setSecondsElapsed] = useState(initialSecondsElapsed ?? 0);
   const [isPaused, setIsPaused] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -222,6 +231,82 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
     };
   }, [timerMode, isPaused]);
 
+  /*
+   * Autosave, so a refresh or a closed tab no longer costs the sitting.
+   *
+   * The position, answers and flags exist only in this component, which is why
+   * an interruption used to be unrecoverable — see `data/liveSession.ts`. One
+   * slot is rewritten as the learner works and offered back on the next boot.
+   *
+   * The volatile state is mirrored into a ref on every render so the flush
+   * reads whatever is current without the writer being re-created (and without
+   * a stale closure). The interval and the unload listeners are therefore
+   * registered once per sitting rather than once per keystroke.
+   */
+  const liveStateRef = useRef({
+    currentIndex,
+    userAnswers,
+    flaggedQuestions,
+    secondsElapsed,
+    secondsRemaining,
+  });
+  liveStateRef.current = {
+    currentIndex,
+    userAnswers,
+    flaggedQuestions,
+    secondsElapsed,
+    secondsRemaining,
+  };
+
+  const writeLiveSession = useCallback(() => {
+    const progress = liveStateRef.current;
+    saveLiveSession(
+      makeLiveSession({
+        kind: isTopicDrill(questions) ? 'drill' : 'paper',
+        subject,
+        year,
+        month,
+        source,
+        timerMode,
+        examMode,
+        totalDurationSeconds,
+        questionIds: questions.map((q) => q.id),
+        currentIndex: progress.currentIndex,
+        userAnswers: progress.userAnswers,
+        flaggedQuestions: progress.flaggedQuestions,
+        secondsElapsed: progress.secondsElapsed,
+        secondsRemaining: progress.secondsRemaining,
+        ownerId,
+      })
+    );
+  }, [questions, subject, year, month, source, timerMode, examMode, totalDurationSeconds, ownerId]);
+
+  /*
+   * Answers, position and flags are the irreplaceable part, so they are written
+   * the moment they change. The ticking clock is not, so it rides a heartbeat —
+   * which also keeps `savedAt` fresh, since the away time on a timed paper is
+   * measured from that timestamp.
+   */
+  useEffect(() => {
+    writeLiveSession();
+  }, [currentIndex, userAnswers, flaggedQuestions, writeLiveSession]);
+
+  useEffect(() => {
+    const heartbeat = setInterval(writeLiveSession, 5000);
+    // `pagehide` fires on refresh and on close; `visibilitychange` catches the
+    // mobile case where the app is backgrounded and later killed without either.
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') writeLiveSession();
+    };
+    window.addEventListener('pagehide', writeLiveSession);
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      clearInterval(heartbeat);
+      window.removeEventListener('pagehide', writeLiveSession);
+      document.removeEventListener('visibilitychange', onHide);
+    };
+  }, [writeLiveSession]);
+
   const handleSaveAndExit = () => {
     const storageKeyPrefix = examStoragePrefix;
     syncExamScratchpadRecord({
@@ -244,6 +329,9 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   };
 
   const handleDiscardAndExit = () => {
+    // The learner has explicitly walked away from this sitting, so the autosave
+    // must not offer it back on the next load.
+    clearLiveSession();
     deletePausedSession(subject, year, month, source);
     onExit();
   };
@@ -271,6 +359,10 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
     const timeSpent = timerMode === 'exam_timer'
       ? totalDurationSeconds - secondsRemaining
       : secondsElapsed;
+
+    // Submitted is finished: there is nothing left to resume, and leaving the
+    // slot behind would offer a completed paper back on the next boot.
+    clearLiveSession();
 
     const storageKeyPrefix = examStoragePrefix;
     syncExamScratchpadRecord({

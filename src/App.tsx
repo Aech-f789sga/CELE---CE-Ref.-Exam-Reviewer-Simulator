@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import {
   SubjectArea,
@@ -25,10 +25,20 @@ import {
   getSessionKey,
   getExamStorageBase,
 } from './utils/storage';
+import {
+  belongsTo,
+  clearLiveSession,
+  loadLiveSession,
+  resolveLiveQuestions,
+  resumeElapsed,
+  resumeRemaining,
+  type LiveSession,
+} from './data/liveSession';
 import { Navbar } from './components/Navbar';
 import { SubjectSelector } from './components/SubjectSelector';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { ExamEngine } from './components/ExamEngine';
+import { ResumeSessionModal } from './components/ResumeSessionModal';
 import { ExamResults } from './components/ExamResults';
 import { PerformanceReview } from './components/PerformanceReview';
 import { AdminPanel } from './components/AdminPanel';
@@ -202,8 +212,133 @@ function MainApp() {
   const [lastTimeSpent, setLastTimeSpent] = useState<number>(0);
   const [resumedSession, setResumedSession] = useState<PausedExamSession | null>(null);
 
+  /**
+   * A sitting that was interrupted — a refresh, a closed tab, a killed app —
+   * recovered from the engine's autosave. Offered as a choice on boot rather
+   * than resumed silently, because the learner may have come back for something
+   * else entirely. See `data/liveSession.ts`.
+   */
+  const [interrupted, setInterrupted] = useState<LiveSession | null>(null);
+  /** Whether the boot check has run; it must not re-open on every re-render. */
+  const [interruptedChecked, setInterruptedChecked] = useState(false);
+  /**
+   * Where the engine should start when a sitting is recovered. Kept apart from
+   * `resumedSession` because only this one can carry a countdown to restore.
+   */
+  const [resumePoint, setResumePoint] = useState<{
+    currentIndex: number;
+    userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
+    flaggedQuestions: Record<string, boolean>;
+    secondsElapsed: number;
+    secondsRemaining: number;
+  } | null>(null);
+
   // Stored attempts
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
+
+  /**
+   * Offer back whatever was interrupted. Runs once, and only after auth has
+   * settled: the sitting is per account, and a refresh normally keeps the user
+   * signed in, so deciding before the profile lands would throw away a paper
+   * that was perfectly resumable.
+   */
+  useEffect(() => {
+    if (authLoading || interruptedChecked) return;
+    setInterruptedChecked(true);
+    const saved = loadLiveSession();
+    if (!saved) return;
+    // Someone else's sitting on a shared browser is not ours to offer.
+    if (!belongsTo(saved, activeUser?.uid)) {
+      clearLiveSession();
+      return;
+    }
+    setInterrupted(saved);
+  }, [authLoading, activeUser, interruptedChecked]);
+
+  const handleResumeInterrupted = () => {
+    if (!interrupted) return;
+    if (!activeUser) {
+      openAuthModal('Please sign in to resume the examination you left unfinished.');
+      return;
+    }
+    const questions = resolveLiveQuestions(interrupted);
+    if (!questions) {
+      // The bank changed under the sitting. Resuming would score a different
+      // paper, so the only honest option is to let it go.
+      clearLiveSession();
+      setInterrupted(null);
+      return;
+    }
+    // Restore the identity too, or the report and the leaderboard would label
+    // the recovered paper with whatever happened to be selected on the setup
+    // screen — the same mistake the drill reporting had.
+    setSelectedSubject(interrupted.subject);
+    setSelectedYear(interrupted.year);
+    setSelectedMonth(interrupted.month);
+    setSelectedSource(interrupted.source);
+    setTimerMode(interrupted.timerMode);
+    setExamMode(interrupted.examMode);
+    if (interrupted.timerMode === 'exam_timer') {
+      // `totalDurationSeconds` is derived from this, and the restored countdown
+      // has to be measured against the same clock the sitting started on.
+      setCustomMinutes(Math.max(1, Math.round(interrupted.totalDurationSeconds / 60)));
+    }
+    setResumedSession(null);
+    setResumePoint({
+      currentIndex: interrupted.currentIndex,
+      userAnswers: interrupted.userAnswers,
+      flaggedQuestions: interrupted.flaggedQuestions,
+      secondsElapsed: resumeElapsed(interrupted),
+      secondsRemaining: resumeRemaining(interrupted),
+    });
+    setActiveQuestions(questions);
+    setIsExamRunning(true);
+    setIsExamFinished(false);
+    setInterrupted(null);
+  };
+
+  const handleDiscardInterrupted = () => {
+    clearLiveSession();
+    if (interrupted?.kind === 'paper') {
+      // Point the setup screen at the paper that was dropped, so "start a new
+      // one" means restarting that paper rather than hunting for it again.
+      setSelectedSubject(interrupted.subject);
+      setSelectedYear(interrupted.year);
+      setSelectedMonth(interrupted.month);
+      setSelectedSource(interrupted.source);
+    }
+    setInterrupted(null);
+  };
+
+  /**
+   * Where the engine starts. A deliberately paused session and a recovered
+   * interruption are the same thing to the engine, but only the latter carries
+   * a countdown, so the two sources are merged here rather than threaded
+   * through as separate props.
+   */
+  const engineStart = useMemo(
+    () =>
+      resumePoint ??
+      (resumedSession
+        ? {
+            currentIndex: resumedSession.currentIndex,
+            userAnswers: resumedSession.userAnswers,
+            flaggedQuestions: resumedSession.flaggedQuestions,
+            secondsElapsed: resumedSession.secondsElapsed,
+            secondsRemaining: undefined,
+          }
+        : null),
+    [resumePoint, resumedSession]
+  );
+
+  /**
+   * Whether the recovered sitting can still be rebuilt. Checked here rather
+   * than on click so the prompt never offers a Resume button that would fail.
+   */
+  const interruptedResolvable = useMemo(
+    () => (interrupted ? resolveLiveQuestions(interrupted) !== null : false),
+    [interrupted]
+  );
 
   // User activity & presence tracking (Admin feature usage analytics)
   useUserActivityTracker({
@@ -276,6 +411,8 @@ function MainApp() {
       return;
     }
     setResumedSession(null);
+    // A fresh sitting must not inherit the recovered position.
+    setResumePoint(null);
     // Worked-solution papers have no printed choices, so they can only be
     // scored in Interactive Study mode.
     if (isWorkedSolutionSet(selectedSubject, selectedYear, selectedMonth, selectedSource)) {
@@ -298,6 +435,7 @@ function MainApp() {
       return;
     }
     setResumedSession(null);
+    setResumePoint(null);
     setExamMode('interactive');
     setActiveQuestions(questions);
     setIsExamRunning(true);
@@ -317,6 +455,9 @@ function MainApp() {
     setTimerMode(session.timerMode);
     setExamMode('interactive');
     setResumedSession(session);
+    // A paused session and a recovered interruption are both "where to start";
+    // the one just chosen wins.
+    setResumePoint(null);
     const qList = getQuestionsForExam(session.subject, session.year, session.month, sessionSource);
     setActiveQuestions(qList);
     setIsExamRunning(true);
@@ -357,8 +498,12 @@ function MainApp() {
       scratchpadId,
     };
     savePausedSession(sessionToSave);
+    // The sitting now lives in the paused list, which is what the setup screen
+    // offers. Keeping the autosave too would prompt for the same paper twice.
+    clearLiveSession();
     setIsExamRunning(false);
     setResumedSession(null);
+    setResumePoint(null);
     setCurrentTab('setup');
   };
 
@@ -459,6 +604,7 @@ function MainApp() {
 
     deletePausedSession(selectedSubject, selectedYear, selectedMonth, selectedSource);
     setResumedSession(null);
+    setResumePoint(null);
     setLastUserAnswers(userAnswers);
     setLastTimeSpent(timeSpentSeconds);
     setIsExamRunning(false);
@@ -484,6 +630,7 @@ function MainApp() {
     setIsExamRunning(false);
     setIsExamFinished(false);
     setResumedSession(null);
+    setResumePoint(null);
     setCurrentTab('setup');
   };
 
@@ -586,6 +733,17 @@ function MainApp() {
         {/* Offers the new build when the service worker has one waiting */}
         <UpdatePrompt />
 
+        {/* Offers back a sitting interrupted by a refresh or a closed tab */}
+        {interrupted && (
+          <ResumeSessionModal
+            session={interrupted}
+            canResume={interruptedResolvable}
+            onResume={handleResumeInterrupted}
+            onDiscard={handleDiscardInterrupted}
+            onLater={() => setInterrupted(null)}
+          />
+        )}
+
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           {/* VIEW 1: Active Exam Engine */}
           {isExamRunning && (
@@ -598,10 +756,11 @@ function MainApp() {
               timerMode={timerMode}
               totalDurationSeconds={totalDurationSeconds}
               examMode={examMode}
-              initialCurrentIndex={resumedSession?.currentIndex}
-              initialUserAnswers={resumedSession?.userAnswers}
-              initialFlaggedQuestions={resumedSession?.flaggedQuestions}
-              initialSecondsElapsed={resumedSession?.secondsElapsed}
+              initialCurrentIndex={engineStart?.currentIndex}
+              initialUserAnswers={engineStart?.userAnswers}
+              initialFlaggedQuestions={engineStart?.flaggedQuestions}
+              initialSecondsElapsed={engineStart?.secondsElapsed}
+              initialSecondsRemaining={engineStart?.secondsRemaining}
               ownerId={activeUser?.uid}
               onSubmit={handleSubmitExam}
               onExit={handleExitHome}
