@@ -393,6 +393,26 @@ export const THEME_CONFIGS: Record<AppThemeId, ThemeConfig> = {
   },
 };
 
+/**
+ * The order the theme pickers render in, as opposed to the order the configs
+ * happen to be declared in.
+ *
+ * The two Fluent 2 skins lead the list because they are the newest and the ones
+ * a returning learner is most likely to be looking for; burying them behind
+ * fifteen 3D and mod themes meant scrolling past the whole catalogue to reach
+ * them. Everything else keeps its declaration order, so the rest of the list
+ * does not reshuffle — a picker whose entries move around is worse than one
+ * whose newest entry is at the bottom.
+ *
+ * Derived rather than hard-coded so a theme added to `THEME_CONFIGS` cannot be
+ * forgotten here; it simply lands in the tail with the others.
+ */
+export const THEME_LIST: ThemeConfig[] = (() => {
+  const all = Object.values(THEME_CONFIGS);
+  const lead = all.filter((t) => t.id === 'v2' || t.id === 'v2_dark');
+  return [...lead, ...all.filter((t) => !lead.includes(t))];
+})();
+
 export const FONT_OPTIONS: FontOption[] = [
   {
     id: 'arial',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import {
-  THEME_CONFIGS,
+  THEME_LIST,
   FONT_OPTIONS,
   FONT_SIZE_OPTIONS,
   AppThemeId,
@@ -168,7 +168,7 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
             style={{ color: activeTab === 'themes' ? themeConfig.accent : themeConfig.textSecondary }}
           >
             <Palette className="w-4 h-4" />
-            <span>Color Themes ({Object.keys(THEME_CONFIGS).length})</span>
+            <span>Color Themes ({THEME_LIST.length})</span>
           </button>
 
           <button
@@ -235,7 +235,7 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {Object.values(THEME_CONFIGS).map((item) => {
+                {THEME_LIST.map((item) => {
                   const isSelected = themeId === item.id;
                   const isOriginal = item.id === 'engineering_dark';
                   return (
@@ -927,7 +927,7 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                         }}
                       >
                         <option value="">Same as main</option>
-                        {Object.values(THEME_CONFIGS).map((t) => (
+                        {THEME_LIST.map((t) => (
                           <option key={t.id} value={t.id}>{t.name}</option>
                         ))}
                       </select>
