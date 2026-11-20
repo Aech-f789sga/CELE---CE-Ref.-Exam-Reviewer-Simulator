@@ -54,6 +54,13 @@ export function topicAccessView(args: {
   return 'ready';
 }
 
+/** "a" / "a and b" / "a, b and c" — for naming the unkeyed subjects in prose. */
+function joinWords(words: string[], last = 'and'): string {
+  if (words.length === 0) return '';
+  if (words.length === 1) return words[0];
+  return `${words.slice(0, -1).join(', ')} ${last} ${words[words.length - 1]}`;
+}
+
 interface Props {
   onClose: () => void;
   onStart: (questions: TopicQuestion[]) => void;
@@ -191,6 +198,16 @@ export function TopicExamModal({ onClose, onStart }: Props) {
 
   const view = topicAccessView({ checked, isAdmin, unlocked });
   const chosen = useMemo(() => TOPICS.filter((t) => picked.has(t.id)), [picked]);
+
+  /**
+   * The subjects whose chosen topics print no key yet, in the order the hub
+   * lists them. Derived rather than hard-coded: a second unkeyed booklet then
+   * reads correctly without touching the notice's wording.
+   */
+  const pendingSubjects = useMemo(() => {
+    const ids = new Set(chosen.filter((t) => t.keyPending).map((t) => t.subject));
+    return TOPIC_SUBJECTS.filter((s) => ids.has(s.id)).map((s) => s.name);
+  }, [chosen]);
   const { rows, draw, available: total } = planTopicDrill(
     chosen.map((t) => t.id),
     defaultQuota,
@@ -420,9 +437,12 @@ export function TopicExamModal({ onClose, onStart }: Props) {
 
               {chosen.some((t) => t.keyPending) && (
                 <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-[10px] leading-relaxed text-amber-200/90">
-                  Statics answer keys have not been encoded yet. The items open normally and your
-                  answers are kept, but nothing from Statics is marked right or wrong — your report
-                  will say the score is pending until the key is published.
+                  {pendingSubjects.length === 1
+                    ? `The answer key for ${pendingSubjects[0]} has not been encoded yet.`
+                    : `The answer keys for ${joinWords(pendingSubjects)} have not been encoded yet.`}{' '}
+                  The items open normally and your answers are kept, but nothing from{' '}
+                  {joinWords(pendingSubjects, 'or')} is marked right or wrong — your report will say
+                  the score is pending until the key is published.
                 </p>
               )}
 

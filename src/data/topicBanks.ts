@@ -17,6 +17,9 @@
  *                   `keyPending: true` so the UI refuses to score them rather
  *                   than marking every answer wrong. The arithmetic for that
  *                   lives in `grading.ts`; the flag is the only switch.
+ *   Fluid Mech .... same series, "[FLUID MECHANICS]" practice set, 148 items
+ *                   across nine sections. **No answer key yet** either, so it
+ *                   carries the same `keyPending` treatment.
  *
  * ## Adaptive draws
  *
@@ -42,8 +45,19 @@ import { BM_TRIG } from './topicBanksTrig';
 import { BM_GEOMETRY } from './topicBanksGeometry';
 import { CAL_DIFF, CAL_INT, CAL_DE } from './topicBanksCalculus';
 import { STAT_FORCES, STAT_EQUIL, STAT_FRAMES } from './topicBanksStatics';
+import {
+  FLUID_PROPERTIES,
+  FLUID_PRESSURE,
+  HYDRO_PLANE,
+  HYDRO_CURVED,
+  BUOYANCY,
+  DAM_ANALYSIS,
+  METACENTER,
+  RIGID_RECTILINEAR,
+  RIGID_ROTATIONAL,
+} from './topicBanksFluid';
 
-export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics';
+export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics' | 'FluidMech';
 
 export interface TopicSubjectMeta {
   id: TopicSubject;
@@ -55,6 +69,11 @@ export const TOPIC_SUBJECTS: TopicSubjectMeta[] = [
   { id: 'BasicMath', name: 'Basic Mathematics', blurb: 'Algebra · Trigonometry · Geometry' },
   { id: 'Calculus', name: 'Calculus', blurb: 'Differential · Integral · Differential Equations' },
   { id: 'Statics', name: 'Statics', blurb: 'Forces · Equilibrium · Frames & Trusses' },
+  {
+    id: 'FluidMech',
+    name: 'Fluid Mechanics',
+    blurb: 'Properties · Hydrostatics · Buoyancy · Dams · Rigid-body motion',
+  },
 ];
 
 export interface TopicDef {
@@ -75,6 +94,15 @@ export const TOPICS: TopicDef[] = [
   { id: 'stat-forces', subject: 'Statics', name: 'Forces & Resultants', keyPending: true },
   { id: 'stat-equil', subject: 'Statics', name: 'Equilibrium', keyPending: true },
   { id: 'stat-frames', subject: 'Statics', name: 'Frames & Trusses', keyPending: true },
+  { id: 'fluid-properties', subject: 'FluidMech', name: 'Fluid Properties', keyPending: true },
+  { id: 'fluid-pressure', subject: 'FluidMech', name: 'Pressure', keyPending: true },
+  { id: 'hydro-plane', subject: 'FluidMech', name: 'Plane Surfaces', keyPending: true },
+  { id: 'hydro-curved', subject: 'FluidMech', name: 'Curved Surfaces', keyPending: true },
+  { id: 'buoyancy', subject: 'FluidMech', name: 'Buoyancy', keyPending: true },
+  { id: 'dam-analysis', subject: 'FluidMech', name: 'Dam Analysis', keyPending: true },
+  { id: 'metacenter', subject: 'FluidMech', name: 'Metacenter', keyPending: true },
+  { id: 'rigid-rectilinear', subject: 'FluidMech', name: 'Rigid Body — Linear', keyPending: true },
+  { id: 'rigid-rotational', subject: 'FluidMech', name: 'Rigid Body — Rotation', keyPending: true },
 ];
 
 /** A topic item: a normal Question plus the topic it belongs to. */
@@ -106,6 +134,15 @@ export const TOPIC_QUESTIONS: TopicQuestion[] = [
   ...STAT_FORCES,
   ...STAT_EQUIL,
   ...STAT_FRAMES,
+  ...FLUID_PROPERTIES,
+  ...FLUID_PRESSURE,
+  ...HYDRO_PLANE,
+  ...HYDRO_CURVED,
+  ...BUOYANCY,
+  ...DAM_ANALYSIS,
+  ...METACENTER,
+  ...RIGID_RECTILINEAR,
+  ...RIGID_ROTATIONAL,
 ];
 
 /** How many items each topic currently holds. */

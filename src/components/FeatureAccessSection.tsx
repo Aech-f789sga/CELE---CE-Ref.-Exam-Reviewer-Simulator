@@ -64,9 +64,9 @@ export function FeatureAccessSection({
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Topic drills across Algebra, Trigonometry, Geometry, Calculus and Statics. While this is
-            off, reviewees still see the entry but it shows as locked; unlocking takes effect on
-            their screens straight away, with no reload.
+            Topic drills across Algebra, Trigonometry, Geometry, Calculus, Statics and Fluid
+            Mechanics. While this is off, reviewees still see the entry but it shows as locked;
+            unlocking takes effect on their screens straight away, with no reload.
           </p>
         </div>
 

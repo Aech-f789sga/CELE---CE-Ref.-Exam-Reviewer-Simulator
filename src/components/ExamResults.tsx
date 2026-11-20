@@ -308,8 +308,8 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                     {summary.pending} of {questions.length} items
                   </strong>{' '}
                   come from a booklet whose answer key has not been encoded yet, so they are not
-                  scored and no key is shown. Your answers are kept with this report. Statics
-                  scores will be announced once the answer key is encoded on the site.
+                  scored and no key is shown. Your answers are kept with this report. Scores for
+                  these items will be announced once their answer key is encoded on the site.
                 </>
               ) : topicDrill ? (
                 <>
@@ -609,7 +609,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
               <p className="text-[11px] text-slate-400">
                 {allPending ? (
                   <>
-                    Your responses are recorded. The Statics key has not been published yet, so
+                    Your responses are recorded. The answer key has not been published yet, so
                     nothing here is marked right or wrong and no score is reported.
                   </>
                 ) : isWorkedSet ? (
