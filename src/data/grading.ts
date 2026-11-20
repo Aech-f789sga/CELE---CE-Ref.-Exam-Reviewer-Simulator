@@ -2,11 +2,11 @@
  * What a paper is worth when part of it has no answer key yet.
  *
  * The Statics booklet (Margallo's) was transcribed complete — 176 items across
- * three topics — but no key was ever supplied for it. Each of those items
- * therefore carries `keyPending: true` and a placeholder in `correctAnswer`.
- * Comparing an answer against that placeholder marks every single response
- * wrong, which is worse than saying nothing: it produces a confident 0% and a
- * "FAILED" verdict for a learner who may have answered everything correctly.
+ * three topics — while its key was still outstanding, so each of those items
+ * carried `keyPending: true` and a placeholder in `correctAnswer`. Comparing an
+ * answer against that placeholder marks every single response wrong, which is
+ * worse than saying nothing: it produces a confident 0% and a "FAILED" verdict
+ * for a learner who may have answered everything correctly.
  *
  * So the rule is: **a pending item is not wrong, it is unknown**, and it is
  * excluded from every figure rather than counted as a miss. That distinction
@@ -14,9 +14,13 @@
  * the engine (what to reveal), the results screen (what to report), the submit
  * handler (what to save) and the leaderboards (what to rank).
  *
- * When the key is eventually encoded, deleting `keyPending` from the bank is
- * the entire migration: every caller goes back to scoring normally, because
- * none of them special-case a topic, only the flag.
+ * The Statics key has since been supplied and encoded, so those items are now
+ * scorable and the mechanism is idle for them. Fluid Mechanics is the set still
+ * running on it.
+ *
+ * Encoding a key is the entire migration: setting `correctAnswer` and deleting
+ * `keyPending` from the bank is enough, because every caller goes back to
+ * scoring normally — none of them special-case a topic, only the flag.
  */
 import type { Question } from '../types/exam';
 

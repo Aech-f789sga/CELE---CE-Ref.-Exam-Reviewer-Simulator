@@ -12,14 +12,15 @@
  *                   (Algebra, Trigonometry, Geometry). Answer key printed
  *                   separately: items 1–50.
  *   Calculus ...... same series (Differential, Integral, Differential Equations).
- *   Statics ....... same series. **No answer key yet** — items are transcribed
- *                   with `correctAnswer` left as the printed placeholder and
- *                   `keyPending: true` so the UI refuses to score them rather
+ *   Statics ....... same series. Keyed: the booklet's printed answer key
+ *                   (items 1–176) is encoded in `topicBanksStatics.ts`, so all
+ *                   three Statics topics are scored. It carries letters only,
+ *                   not worked solutions.
+ *   Fluid Mech .... same series, "[FLUID MECHANICS]" practice set, 148 items
+ *                   across nine sections. **No answer key yet**, so it carries
+ *                   the `keyPending` treatment: the UI refuses to score rather
  *                   than marking every answer wrong. The arithmetic for that
  *                   lives in `grading.ts`; the flag is the only switch.
- *   Fluid Mech .... same series, "[FLUID MECHANICS]" practice set, 148 items
- *                   across nine sections. **No answer key yet** either, so it
- *                   carries the same `keyPending` treatment.
  *
  * ## Adaptive draws
  *
@@ -102,9 +103,9 @@ export const TOPICS: TopicDef[] = [
   { id: 'cal-diff', subject: 'Calculus', name: 'Differential Calculus', boardArea: 'MSTC' },
   { id: 'cal-int', subject: 'Calculus', name: 'Integral Calculus', boardArea: 'MSTC' },
   { id: 'cal-de', subject: 'Calculus', name: 'Differential Equations', boardArea: 'MSTC' },
-  { id: 'stat-forces', subject: 'Statics', name: 'Forces & Resultants', boardArea: 'PSAD', keyPending: true },
-  { id: 'stat-equil', subject: 'Statics', name: 'Equilibrium', boardArea: 'PSAD', keyPending: true },
-  { id: 'stat-frames', subject: 'Statics', name: 'Frames & Trusses', boardArea: 'PSAD', keyPending: true },
+  { id: 'stat-forces', subject: 'Statics', name: 'Forces & Resultants', boardArea: 'PSAD' },
+  { id: 'stat-equil', subject: 'Statics', name: 'Equilibrium', boardArea: 'PSAD' },
+  { id: 'stat-frames', subject: 'Statics', name: 'Frames & Trusses', boardArea: 'PSAD' },
   { id: 'fluid-properties', subject: 'FluidMech', name: 'Fluid Properties', boardArea: 'HPGE', keyPending: true },
   { id: 'fluid-pressure', subject: 'FluidMech', name: 'Pressure', boardArea: 'HPGE', keyPending: true },
   { id: 'hydro-plane', subject: 'FluidMech', name: 'Plane Surfaces', boardArea: 'HPGE', keyPending: true },

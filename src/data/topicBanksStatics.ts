@@ -5,8 +5,14 @@
  *
  * ## Key status
  *
- * No answer key has been supplied for this booklet, so every item is
- * `keyPending` and the UI must not score it.
+ * Keyed. The booklet's own printed key — "[STATICS OF RIGID BODIES] / ANSWER
+ * KEY", one page, items 1–176 in five columns — is encoded in `STATICS_KEY`
+ * below, indexed by item number. Every item is therefore scorable and nothing
+ * in this module sets `keyPending`.
+ *
+ * The key is letters only; the booklet prints no worked solutions, so
+ * `solution` says exactly that rather than inventing a derivation for an answer
+ * we only know the letter of.
  *
  * ## Layout
  *
@@ -42,6 +48,37 @@
  * did not reconcile with the printed answer choices.
  */
 import type { TopicQuestion } from './topicBanks';
+
+/**
+ * Printed key, items 1–176. Index is `number - 1`.
+ *
+ * Transcribed from the booklet's single-page answer key, which lays the 176
+ * answers out in five columns of ten. Ten per line here so the array lines up
+ * with the printed rows and can be diffed against a scan by eye.
+ *
+ * The booklet prints no worked solutions, so this is the whole of the evidence
+ * for an answer — the letters are the key, not a summary of one.
+ */
+export const STATICS_KEY: string[] = [
+  'D', 'B', 'A', 'B', 'D', 'C', 'A', 'B', 'D', 'B',
+  'B', 'D', 'A', 'B', 'D', 'D', 'A', 'B', 'B', 'A',
+  'C', 'C', 'C', 'C', 'A', 'B', 'D', 'A', 'D', 'D',
+  'B', 'B', 'A', 'B', 'C', 'A', 'A', 'B', 'D', 'B',
+  'C', 'B', 'C', 'C', 'B', 'A', 'A', 'A', 'A', 'B',
+  'A', 'B', 'A', 'D', 'C', 'C', 'B', 'C', 'A', 'D',
+  'D', 'B', 'C', 'A', 'C', 'D', 'A', 'C', 'B', 'C',
+  'C', 'C', 'C', 'B', 'A', 'D', 'B', 'A', 'B', 'C',
+  'B', 'C', 'C', 'A', 'B', 'C', 'B', 'A', 'B', 'D',
+  'A', 'B', 'B', 'D', 'A', 'A', 'C', 'A', 'C', 'B',
+  'D', 'A', 'B', 'B', 'B', 'A', 'C', 'B', 'B', 'B',
+  'D', 'B', 'B', 'D', 'D', 'D', 'A', 'D', 'B', 'C',
+  'A', 'B', 'D', 'B', 'A', 'C', 'C', 'A', 'A', 'A',
+  'C', 'C', 'D', 'A', 'A', 'B', 'C', 'A', 'B', 'D',
+  'A', 'D', 'C', 'C', 'C', 'B', 'B', 'D', 'D', 'B',
+  'B', 'C', 'A', 'D', 'B', 'B', 'C', 'A', 'A', 'B',
+  'A', 'A', 'C', 'B', 'B', 'B', 'B', 'D', 'A', 'C',
+  'D', 'B', 'D', 'D', 'D', 'A',
+];
 
 /**
  * Shared wording for each "Situation N", transcribed from the booklet.
@@ -196,17 +233,20 @@ function makeStaticsItem(topicId: string, category: string, idPrefix: string) {
     figureSvg: staticsFigure(situation),
     figureCaption: `Situation ${situation}`,
     options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
-    correctAnswer: 'A',
-    keyPending: true,
+    /*
+     * `STATICS_KEY` is complete for 1–176. A new item outside that range has no
+     * key, and silently inheriting the `'A'` fallback would score it wrongly —
+     * extend the array with the printed letter first.
+     */
+    correctAnswer: (STATICS_KEY[number - 1] ?? 'A') as 'A' | 'B' | 'C' | 'D',
     referenceSource: 'Gillesania',
     topicId,
     situation,
     situationText: SITUATIONS[situation],
     solution: {
-      summary: 'No printed key supplied for this booklet yet.',
+      summary: 'Printed key only — this booklet carries no worked solutions.',
       steps: [],
-      finalAnswer: '',
-      note: 'Answer key pending — this item is not scored.',
+      finalAnswer: STATICS_KEY[number - 1] ?? '',
     },
   });
 }
