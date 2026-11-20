@@ -45,6 +45,7 @@ import {
   BookmarkCheck,
   History,
   Play,
+  Info,
 } from 'lucide-react';
 import {
   TOPICS,
@@ -463,7 +464,14 @@ export function TopicExamModal({ onClose, onStart }: Props) {
   const ownerId = profile?.uid || user?.uid;
   const [unlocked, setUnlocked] = useState<boolean>(false);
   const [checked, setChecked] = useState(false);
-  const [picked, setPicked] = useState<Set<string>>(() => new Set(['bm-algebra']));
+  /**
+   * Nothing is picked on open. Pre-selecting a topic quietly turns "choose what
+   * you want to drill" into "confirm our guess", and a learner who starts
+   * without reading the grid then gets a paper they never asked for — the
+   * footer says "Pick at least one topic" and Start stays disabled until they
+   * actually choose.
+   */
+  const [picked, setPicked] = useState<Set<string>>(() => new Set());
   /** Applies to every chosen topic that has no entry in `overrides`. */
   const [defaultQuota, setDefaultQuota] = useState<TopicQuota>(10);
   /** Topics pinned away from the default. `'all'` means the whole topic. */
@@ -490,6 +498,17 @@ export function TopicExamModal({ onClose, onStart }: Props) {
     const ids = new Set(chosen.filter((t) => t.keyPending).map((t) => t.subject));
     return TOPIC_SUBJECTS.filter((s) => ids.has(s.id)).map((s) => s.name);
   }, [chosen]);
+
+  /**
+   * The same list, but for the whole bank rather than the current selection —
+   * so the "keys are coming" note is visible before the learner has picked
+   * anything, which is when it is actually useful. Derived from the flag the
+   * engine scores on, so encoding a key retires the note with no second edit.
+   */
+  const pendingBankSubjects = useMemo(() => {
+    const ids = new Set(TOPICS.filter((t) => t.keyPending).map((t) => t.subject));
+    return TOPIC_SUBJECTS.filter((s) => ids.has(s.id)).map((s) => s.name);
+  }, []);
   const { rows, draw, available: total } = planTopicDrill(
     chosen.map((t) => t.id),
     defaultQuota,
@@ -616,6 +635,34 @@ export function TopicExamModal({ onClose, onStart }: Props) {
             ) : (
             <>
             <div className="p-5 space-y-4">
+              {/*
+               * Shown before anything is picked, because that is when the choice
+               * is actually being made: a learner who starts a keyless drill and
+               * only then reads the warning has already spent the draw. Wording
+               * is careful about what does *not* happen — an unkeyed sitting
+               * records no score (drillResults drops scorable === 0 rows), so
+               * promising a backfilled history would be a lie.
+               *
+               * It steps aside once a keyless topic is picked: the amber note by
+               * the Start button says the same thing about *this* drill, and two
+               * notices side by side read as two separate problems.
+               */}
+              {pendingBankSubjects.length > 0 && pendingSubjects.length === 0 && (
+                <div className="flex items-start gap-2.5 rounded-xl border border-sky-500/25 bg-sky-500/[0.08] px-3 py-2.5">
+                  <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-300" />
+                  <p className="text-[10px] leading-relaxed text-sky-100/90">
+                    <strong className="font-bold text-sky-200">Answer keys coming soon.</strong>{' '}
+                    {pendingBankSubjects.length === 1
+                      ? `${pendingBankSubjects[0]} is open to drill now, but its answer key has not been encoded yet.`
+                      : `${joinWords(pendingBankSubjects)} are open to drill now, but their answer keys have not been encoded yet.`}{' '}
+                    Nothing from {joinWords(pendingBankSubjects, 'or')} is marked right or wrong
+                    until then, and a sitting with no key does not record a score. The{' '}
+                    {pendingBankSubjects.length === 1 ? 'key is' : 'keys are'} being prepared and
+                    will be published soon — you can still drill, rate items and park a session in
+                    the meantime.
+                  </p>
+                </div>
+              )}
               {TOPIC_SUBJECTS.map((sub) => {
                 const list = TOPICS.filter((t) => t.subject === sub.id);
                 return (
@@ -648,7 +695,7 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                             title={
                               empty
                                 ? 'No items transcribed yet'
-                                : `${n} items available${t.keyPending ? ' — answer key not yet encoded, so they will not be scored' : ''}`
+                                : `${n} items available${t.keyPending ? ' — answer key coming soon, so they will not be scored yet' : ''}`
                             }
                           >
                             {on && !empty ? (
@@ -660,7 +707,7 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                             {t.keyPending && (
                               <span
                                 className="shrink-0 rounded px-1 py-0.5 text-[8px] font-black uppercase tracking-wider text-amber-400/90 border border-amber-500/40"
-                                title="Answer key not yet encoded — items open, but nothing is scored"
+                                title="Answer key coming soon — items open, but nothing is scored yet"
                               >
                                 no key
                               </span>
@@ -754,7 +801,8 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                     : `The answer keys for ${joinWords(pendingSubjects)} have not been encoded yet.`}{' '}
                   The items open normally and your answers are kept, but nothing from{' '}
                   {joinWords(pendingSubjects, 'or')} is marked right or wrong — your report will say
-                  the score is pending until the key is published.
+                  the score is pending until the key is published. That is in progress and will land
+                  soon.
                 </p>
               )}
 
