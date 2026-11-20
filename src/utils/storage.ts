@@ -10,6 +10,7 @@ import {
   ExamMonth,
   ReferenceSource,
 } from '../types/exam';
+import { buildSampleAttempts, isSampleAttempt } from '../data/sampleAttempts';
 
 const ATTEMPTS_STORAGE_KEY = 'ce_board_attempts_v1';
 const PAUSED_SESSIONS_STORAGE_KEY = 'ce_board_paused_sessions_v1';
@@ -59,12 +60,29 @@ export function getStoredAttempts(): ExamAttempt[] {
 
 export function saveAttempt(attempt: ExamAttempt): ExamAttempt[] {
   try {
-    const current = getStoredAttempts();
+    /*
+     * A real sitting retires the demonstration data.
+     *
+     * The two cannot coexist honestly. Cycles are paired by position within
+     * each subject, so a demo HPGE sitting would be paired with a real PSAD one
+     * and the composite on that card would describe nobody; readiness reads the
+     * latest sitting per area, so a generated paper could outrank a real one.
+     * Either the page shows a demonstration or it shows the learner's record,
+     * and a paper of their own is the moment the demonstration stops being
+     * useful. It is one click to load again.
+     */
+    const current = getStoredAttempts().filter((a) => !isSampleAttempt(a));
     // Count how many attempts for this subject already exist
     const subjectAttempts = current.filter((a) => a.subject === attempt.subject);
     const attemptWithIndex: ExamAttempt = {
       ...attempt,
-      attemptIndexInSubject: attempt.attemptIndexInSubject || subjectAttempts.length + 1,
+      /*
+       * Always the position in the subject, never the caller's value. The engine
+       * passes a placeholder `1` here and leaves the numbering to this function,
+       * so trusting the field meant every sitting was filed as "Attempt #1" —
+       * visible in the log and meaningless in the paired-cycle table.
+       */
+      attemptIndexInSubject: subjectAttempts.length + 1,
     };
     const updated = [attemptWithIndex, ...current];
     localStorage.setItem(ATTEMPTS_STORAGE_KEY, JSON.stringify(updated));
@@ -85,66 +103,59 @@ export function clearAllAttempts(): void {
   }
 }
 
-export function seedSampleAttempts(): ExamAttempt[] {
-  const sampleAttempts: ExamAttempt[] = [
-    {
-      id: 'demo-mstc-1',
-      attemptIndexInSubject: 1,
-      subject: 'MSTC',
-      year: 2024,
-      month: 'November',
-      date: new Date(Date.now() - 86400000 * 3).toISOString(),
-      timeSpentSeconds: 12450,
-      timerMode: 'exam_timer',
-      isInteractive: true,
-      userAnswers: {},
-      score: 62,
-      totalQuestions: 75,
-      ratingPercentage: 82.67,
-      passedArea: true,
-    },
-    {
-      id: 'demo-hpge-1',
-      attemptIndexInSubject: 1,
-      subject: 'HPGE',
-      year: 2024,
-      month: 'November',
-      date: new Date(Date.now() - 86400000 * 2).toISOString(),
-      timeSpentSeconds: 10800,
-      timerMode: 'exam_timer',
-      isInteractive: true,
-      userAnswers: {},
-      score: 41,
-      totalQuestions: 50,
-      ratingPercentage: 82.0,
-      passedArea: true,
-    },
-    {
-      id: 'demo-psad-1',
-      attemptIndexInSubject: 1,
-      subject: 'PSAD',
-      year: 2024,
-      month: 'November',
-      date: new Date(Date.now() - 86400000 * 1).toISOString(),
-      timeSpentSeconds: 17200,
-      timerMode: 'exam_timer',
-      isInteractive: true,
-      userAnswers: {},
-      score: 56,
-      totalQuestions: 75,
-      ratingPercentage: 74.67,
-      passedArea: true,
-    },
-  ];
-
+/** Write the whole ledger and tell every listener. Newest first, like `saveAttempt`. */
+function writeAttempts(attempts: ExamAttempt[]): ExamAttempt[] {
   try {
-    localStorage.setItem(ATTEMPTS_STORAGE_KEY, JSON.stringify(sampleAttempts));
+    localStorage.setItem(ATTEMPTS_STORAGE_KEY, JSON.stringify(attempts));
     window.dispatchEvent(new CustomEvent('ce_board_attempts_updated'));
   } catch (e) {
-    console.error('Failed to seed sample attempts:', e);
+    console.error('Failed to write exam attempts:', e);
+  }
+  return attempts;
+}
+
+/**
+ * Add the demonstration sittings alongside whatever is already recorded.
+ *
+ * Adding rather than replacing is deliberate: a learner who has one real sitting
+ * and wants to see what the panel grows into should not have to lose that
+ * sitting to look. Any previous demo is dropped first, so pressing the button
+ * twice refreshes the dates instead of stacking a second copy.
+ *
+ * The cycle numbers are shifted past the real sittings. They have to be: a
+ * demo's first MSTC paper is the learner's fifth sitting if they already have
+ * four, and leaving it at 1 would pair the demo against their own history.
+ */
+export function seedSampleAttempts(): ExamAttempt[] {
+  const real = getStoredAttempts().filter((a) => !isSampleAttempt(a));
+
+  const highest: Record<SubjectArea, number> = { MSTC: 0, HPGE: 0, PSAD: 0 };
+  for (const a of real) {
+    highest[a.subject] = Math.max(highest[a.subject], a.attemptIndexInSubject ?? 0);
   }
 
-  return sampleAttempts;
+  const samples = buildSampleAttempts().map((a) => ({
+    ...a,
+    attemptIndexInSubject: a.attemptIndexInSubject + highest[a.subject],
+  }));
+
+  const merged = [...real, ...samples].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  return writeAttempts(merged);
+}
+
+/**
+ * Delete the demonstration sittings and keep everything else.
+ *
+ * Open to every examinee, unlike {@link clearAllAttempts} — this is the undo for
+ * a button anyone can press, so it has to be a button anyone can press. It
+ * cannot reach a real attempt: the filter is the `isSample` flag, which only the
+ * seeder writes.
+ */
+export function removeSampleAttempts(): ExamAttempt[] {
+  const kept = getStoredAttempts().filter((a) => !isSampleAttempt(a));
+  return writeAttempts(kept);
 }
 
 export function computePairedCycles(attempts: ExamAttempt[]): PairedCycle[] {

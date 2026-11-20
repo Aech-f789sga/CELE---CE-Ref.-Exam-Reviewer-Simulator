@@ -246,8 +246,9 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({
           <div className="py-6 text-center">
             <p className="text-xs text-slate-400">Topic breakdown needs sittings with recorded answers.</p>
             <p className="text-[10px] text-slate-500 mt-1 max-w-md mx-auto leading-snug">
-              Demonstration data carries scores but no per-question answers, so only the trend and error profile
-              above can be derived from it.
+              A sitting only counts here when its answers can be matched back to the paper's own
+              questions. An older import, or a paper that has since been re-keyed, still shows in the
+              score trend above but contributes nothing to the topics.
             </p>
           </div>
         ) : (

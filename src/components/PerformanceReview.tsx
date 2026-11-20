@@ -5,7 +5,8 @@ import {
   SubjectArea,
   SUBJECT_CONFIGS,
 } from '../types/exam';
-import { computePairedCycles, clearAllAttempts, seedSampleAttempts } from '../utils/storage';
+import { computePairedCycles, clearAllAttempts, seedSampleAttempts, removeSampleAttempts } from '../utils/storage';
+import { isSampleAttempt, SAMPLE_ATTEMPT_COUNT } from '../data/sampleAttempts';
 import { getDrillResults } from '../data/drillResults';
 import type { DrillResult } from '../data/drillResults';
 import { loadDifficulty } from '../data/itemDifficulty';
@@ -123,6 +124,18 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
     onAttemptsChange(seeded);
   };
 
+  /**
+   * Undo for the demo. Deliberately not admin-gated: whoever can press "load
+   * demonstration data" has to be able to take it back off, and the filter only
+   * ever matches records the seeder wrote.
+   */
+  const handleRemoveSample = () => {
+    const kept = removeSampleAttempts();
+    onAttemptsChange(kept);
+  };
+
+  const sampleCount = attempts.filter(isSampleAttempt).length;
+
   const formatDate = (isoStr: string) => {
     try {
       const d = new Date(isoStr);
@@ -173,37 +186,104 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
               <span>Admin Donation</span>
             </button>
 
-            {attempts.length === 0 ? (
+            {attempts.length === 0 && (
               <button
                 type="button"
                 onClick={handleSeed}
                 className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-arnie font-bold text-xs tracking-wider transition-colors shadow-lg cursor-pointer"
+                title={`Loads ${SAMPLE_ATTEMPT_COUNT} demonstration sittings so you can see what the analytics look like`}
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Load Demonstration Attempt Data</span>
               </button>
-            ) : isAdmin ? (
+            )}
+
+            {sampleCount > 0 && (
               <button
                 type="button"
-                onClick={() => setShowClearConfirm(true)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-rose-500/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs transition-colors cursor-pointer"
-                title="Administrator only: delete all logged attempts"
+                onClick={handleRemoveSample}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-rose-500/15 border border-amber-500/40 hover:border-rose-500/40 text-amber-300 hover:text-rose-300 text-xs font-bold transition-colors cursor-pointer"
+                title="Deletes the demonstration sittings only — your own attempts are left untouched"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Reset History</span>
+                <span>Remove sample data ({sampleCount})</span>
               </button>
-            ) : (
-              <span
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800/60 text-slate-500 text-xs cursor-not-allowed select-none"
-                title="Attempt history can only be reset by the administrator. Contact admin via the support button if you need a reset."
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Reset History (admin only)</span>
-              </span>
             )}
+
+            {/*
+             * The loader lives in the empty state, which leaves a learner with
+             * two real sittings and a mostly blank panel with no way to see what
+             * it fills into. This is the same action, kept quiet so it does not
+             * compete with their actual history.
+             */}
+            {attempts.length > 0 && sampleCount === 0 && (
+              <button
+                type="button"
+                onClick={handleSeed}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition-colors cursor-pointer"
+                title={`Adds ${SAMPLE_ATTEMPT_COUNT} demonstration sittings to this page — removable in one click, and they stand down the first time you sit a paper`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Preview sample data</span>
+              </button>
+            )}
+
+            {attempts.length > 0 &&
+              (isAdmin ? (
+                <button
+                  type="button"
+                  onClick={() => setShowClearConfirm(true)}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-rose-500/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 text-xs transition-colors cursor-pointer"
+                  title="Administrator only: delete all logged attempts"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Reset History</span>
+                </button>
+              ) : (
+                <span
+                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-800/60 text-slate-500 text-xs cursor-not-allowed select-none"
+                  title="Attempt history can only be reset by the administrator. Contact admin via the support button if you need a reset."
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Reset History (admin only)</span>
+                </span>
+              ))}
           </div>
         </div>
       </div>
+
+      {/*
+       * The banner sits above the analytics, not inside it, because the numbers
+       * underneath are indistinguishable from a real record once they render —
+       * a learner must not read a demonstration 65.7% as their own result. The
+       * remove control is repeated here rather than only in the header so it is
+       * next to the thing it explains.
+       */}
+      {sampleCount > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.07] px-4 py-3">
+          <div className="flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+            <p className="text-[11px] leading-relaxed text-amber-100/90">
+              <strong className="font-bold text-amber-300">
+                {sampleCount} demonstration sitting{sampleCount === 1 ? '' : 's'}
+              </strong>{' '}
+              are mixed into this page so you can see what the analytics look like once you have
+              history. They are generated against real board papers, not your own results — remove
+              them at any time and everything else on this page stays exactly as it was. They also
+              stand down by themselves the first time you sit a paper here, so a demonstration never
+              ends up averaged into your record.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRemoveSample}
+            className="shrink-0 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-950/40 hover:bg-rose-500/20 border border-amber-500/40 hover:border-rose-500/50 text-amber-200 hover:text-rose-200 text-[11px] font-bold transition-colors cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Remove sample data</span>
+          </button>
+        </div>
+      )}
 
       {/* SECTION 0: ANALYTICS — what the scores mean, before the ledger of them */}
       <AnalyticsSection attempts={attempts} drills={drills} difficulty={difficulty} />
@@ -635,6 +715,11 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                         <span className="text-[11px] font-mono text-slate-300 bg-slate-800/90 px-2 py-0.5 rounded-md border border-slate-700/80 whitespace-nowrap inline-block">
                           Attempt #{att.attemptIndexInSubject}
                         </span>
+                        {isSampleAttempt(att) && (
+                          <span className="text-[10px] font-mono text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/30 whitespace-nowrap inline-block">
+                            Demo
+                          </span>
+                        )}
                         <span className="text-xs text-slate-400 font-mono">
                           {att.month} {att.year}
                         </span>
@@ -725,6 +810,11 @@ export const PerformanceReview: React.FC<PerformanceReviewProps> = ({
                             <span className="text-[11px] font-mono text-slate-300 bg-slate-800/90 px-2 py-0.5 rounded-md border border-slate-700/80 whitespace-nowrap inline-block">
                               Attempt #{att.attemptIndexInSubject}
                             </span>
+                            {isSampleAttempt(att) && (
+                              <span className="text-[10px] font-mono text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/30 whitespace-nowrap inline-block">
+                                Demo
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="p-4 text-slate-300 whitespace-nowrap">

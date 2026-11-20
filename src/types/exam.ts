@@ -203,6 +203,15 @@ export interface ExamAttempt {
   ratingPercentage: number;
   passedArea: boolean; // >= 50%
   scratchpadId?: string; // Linked rough sheets document ID
+  /**
+   * Written by the demonstration seeder, never by a real sitting.
+   *
+   * The flag exists so the records can be removed again without touching a
+   * single real attempt — deleting "the demo" must never be the same operation
+   * as deleting history, and an id prefix would be a convention someone
+   * eventually breaks. Absent (not `false`) on every attempt the engine saves.
+   */
+  isSample?: boolean;
 }
 
 export interface PairedCycle {
