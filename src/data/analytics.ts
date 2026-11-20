@@ -25,6 +25,7 @@ import { SUBJECT_CONFIGS } from '../types/exam';
 import { getQuestionsForExam } from './questionBankManager';
 import { isKeyPending } from './grading';
 import { normaliseTopic, topicById, topicsForSubject } from './topics';
+import { topicDefById } from './topicBanks';
 import type { DrillResult } from './drillResults';
 import { DEFAULT_WEIGHT, weightOf } from './itemDifficulty';
 import type { DifficultyMap, ItemDifficulty } from './itemDifficulty';
@@ -94,10 +95,10 @@ export function resolveAttemptQuestions(attempt: ExamAttempt): Question[] {
   }
 }
 
-function emptyRow(topicId: string, subject: SubjectArea): TopicRow {
+function emptyRow(topicId: string, subject: SubjectArea, label?: string): TopicRow {
   return {
     topicId,
-    label: topicById(topicId)?.label ?? topicId,
+    label: label ?? topicById(topicId)?.label ?? topicId,
     subject,
     scorable: 0,
     correct: 0,
@@ -110,6 +111,67 @@ function emptyRow(topicId: string, subject: SubjectArea): TopicRow {
     rated: 0,
     easyMisses: 0,
   };
+}
+
+/** Where an item's marks belong, and which board area that bucket sits in. */
+interface Bucket {
+  id: string;
+  label: string;
+  subject: SubjectArea;
+}
+
+/**
+ * Resolve a drill's `topicId` to the bucket its marks belong to.
+ *
+ * Two lookups, in order of authority. A ledger row written against the
+ * analytics taxonomy resolves directly. Otherwise the by-topics hub is asked,
+ * because that is the table the drill was actually drawn from — it knows that
+ * `buoyancy` is HPGE and what it is called.
+ *
+ * Where the hub topic has a counterpart in the taxonomy (`bm-algebra` →
+ * "Algebra" → `algebra`) the marks fold into that bucket, so a learner sees one
+ * Algebra row covering both papers and drills rather than two rows that look
+ * identical and disagree. Where it has none, the drill keeps its own row under
+ * its own name — inventing a neighbouring bucket would move a weakness out of
+ * the "study this" list, which is the one thing this panel must not do.
+ */
+function bucketForDrillTopic(topicId: string): Bucket | null {
+  const canonical = topicById(topicId);
+  if (canonical) return { id: canonical.id, label: canonical.label, subject: canonical.subject };
+
+  const hub = topicDefById(topicId);
+  if (!hub) return null;
+
+  const mapped = normaliseTopic(hub.name, hub.boardArea);
+  const def = mapped ? topicById(mapped) : undefined;
+  if (def) return { id: def.id, label: def.label, subject: def.subject };
+
+  return { id: `drill:${hub.id}`, label: hub.name, subject: hub.boardArea };
+}
+
+/**
+ * The bucket for one item on a paper.
+ *
+ * A board-paper item has no topic, so its area is the paper's and its bucket
+ * comes from the keyword taxonomy. A drill item carries a `topicId`, which is a
+ * far stronger signal than its category text — the bank already knows what it
+ * is and where it belongs, so there is nothing to infer. That is what lets a
+ * single drill mix MSTC algebra with HPGE fluid mechanics and still have each
+ * item counted in the right area.
+ */
+function bucketForQuestion(q: Question, paperSubject: SubjectArea): Bucket | null {
+  const drillTopic = (q as { topicId?: string }).topicId;
+  if (drillTopic) {
+    const bucket = bucketForDrillTopic(drillTopic);
+    if (bucket) return bucket;
+  }
+
+  const id = normaliseTopic(q.category, paperSubject);
+  if (!id) return null;
+  const def = topicById(id);
+  return def
+    ? { id: def.id, label: def.label, subject: def.subject }
+    : { id, label: id, subject: paperSubject };
 }
 
 /**
@@ -136,15 +198,15 @@ function foldQuestions(
     if (isKeyPending(q)) continue;
 
     const answer = answers[q.id];
-    const topicId = normaliseTopic(q.category, subject);
-    if (!topicId) {
+    const bucket = bucketForQuestion(q, subject);
+    if (!bucket) {
       counters.unmapped++;
       counters.scorable++;
       continue;
     }
 
     counters.scorable++;
-    const row = acc.get(topicId) ?? emptyRow(topicId, subject);
+    const row = acc.get(bucket.id) ?? emptyRow(bucket.id, bucket.subject, bucket.label);
 
     const weight = weightOf(difficulty, q.id);
     const flag: ItemDifficulty | undefined = difficulty[q.id];
@@ -169,7 +231,7 @@ function foldQuestions(
     }
     if (flag) row.rated++;
 
-    acc.set(topicId, row);
+    acc.set(bucket.id, row);
   }
 }
 
@@ -267,11 +329,11 @@ export function topicBreakdown(
   }
 
   for (const drill of drills) {
-    const def = topicById(drill.topicId);
-    if (!def) continue;
+    const bucket = bucketForDrillTopic(drill.topicId);
+    if (!bucket) continue;
     if (drill.scorable <= 0) continue;
 
-    const row = acc.get(drill.topicId) ?? emptyRow(drill.topicId, def.subject);
+    const row = acc.get(bucket.id) ?? emptyRow(bucket.id, bucket.subject, bucket.label);
 
     row.scorable += drill.scorable;
     row.correct += drill.correct;
@@ -288,7 +350,7 @@ export function topicBreakdown(
     row.easyMisses += drill.easyMisses ?? 0;
     row.rated += drill.rated ?? 0;
 
-    acc.set(drill.topicId, row);
+    acc.set(bucket.id, row);
   }
 
   const rows = [...acc.values()]

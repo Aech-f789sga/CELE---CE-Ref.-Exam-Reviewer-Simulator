@@ -157,6 +157,15 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   const topicDrill = useMemo(() => isTopicDrill(questions), [questions]);
 
   /**
+   * What to call this sitting in copy that is not the question card.
+   *
+   * A drill has no area and no month, so any sentence that names them would be
+   * describing a record that does not exist. One label, used everywhere such a
+   * sentence appears, keeps the wording from drifting apart again.
+   */
+  const paperLabel = topicDrill ? 'By topics drill' : `${subject} ${month} ${year} exam`;
+
+  /**
    * The learner's own easy/mid/hard ratings, which weight the next draw.
    * Read on mount, re-read if the account changes under us, and written
    * straight through on each tap so a closed tab cannot lose the rating.
@@ -431,12 +440,31 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
       {/* Top Sticky Test Bar */}
       <div className="bg-slate-900/95 border border-slate-800 rounded-2xl p-4 sticky top-18 z-30 shadow-xl backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
-          <span className="font-arnie text-xl font-bold text-amber-400">
-            {subject}
-          </span>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-tech-mono">
-            {month} {year}
-          </span>
+          {/*
+            A drill is not a sitting. It is drawn from booklets that belong to
+            different board areas — Algebra is MSTC, Fluid Mechanics is HPGE —
+            and it is not any one month's paper, so stamping "MSTC" and
+            "April 2024" on it would invent a record that does not exist and
+            imply a comparison the learner never asked for. The drill names
+            itself instead; which booklet the item came from is still on the
+            page reference beside it, and the area is worked out in analytics
+            from the topic, where it belongs.
+          */}
+          {topicDrill ? (
+            <span className="inline-flex items-center gap-1.5 font-arnie text-xl font-bold text-amber-400">
+              <Layers className="w-4 h-4" />
+              By topics
+            </span>
+          ) : (
+            <>
+              <span className="font-arnie text-xl font-bold text-amber-400">
+                {subject}
+              </span>
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-tech-mono">
+                {month} {year}
+              </span>
+            </>
+          )}
           <span className="hidden sm:inline text-xs text-slate-400">
             Booklet p. {currentQuestion?.pageNumber ?? '—'}
           </span>
@@ -1110,7 +1138,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
               isDocked={true}
               onToggleDock={() => setIsScratchpadDocked(false)}
               storageKeyPrefix={examStoragePrefix}
-              title={`${subject} ${month} ${year} Exam Rough Sheets`}
+              title={`${paperLabel} — Rough Sheets`}
               documentId={examStorageBase}
               engine={scratchpadEngine}
               onEngineChange={handleScratchpadEngineChange}
@@ -1293,7 +1321,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
           isDocked={false}
           onToggleDock={() => setIsScratchpadDocked(true)}
           storageKeyPrefix={examStoragePrefix}
-          title={`${subject} ${month} ${year} Exam Rough Sheets`}
+          title={`${paperLabel} — Rough Sheets`}
           documentId={examStorageBase}
           engine={scratchpadEngine}
           onEngineChange={handleScratchpadEngineChange}
@@ -1340,7 +1368,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              You are about to submit your {subject} paper. Once submitted, your score will be recorded, and the full <strong className="text-amber-400">Page 11 Answer Keys</strong> and <strong className="text-amber-400">Pages 11–33 Solutions</strong> will be revealed.
+              You are about to submit your {topicDrill ? 'drill' : `${subject} paper`}. Once submitted, your score will be recorded, and the full <strong className="text-amber-400">Page 11 Answer Keys</strong> and <strong className="text-amber-400">Pages 11–33 Solutions</strong> will be revealed.
             </p>
 
             <div className="grid grid-cols-2 gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-center font-tech-mono">

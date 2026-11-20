@@ -39,7 +39,7 @@
  * `category`. Nothing in the engine branches on `subject` except cosmetic
  * labelling, which the topic hub overrides.
  */
-import type { Question } from '../types/exam';
+import type { Question, SubjectArea } from '../types/exam';
 import { BM_ALGEBRA } from './topicBanksBasicMath';
 import { BM_TRIG } from './topicBanksTrig';
 import { BM_GEOMETRY } from './topicBanksGeometry';
@@ -80,30 +80,54 @@ export interface TopicDef {
   id: string;
   subject: TopicSubject;
   name: string;
+  /**
+   * Which board area the subject matter belongs to: MSTC, HPGE or PSAD.
+   *
+   * A drill itself is none of the three — it is a practice draw, not a sitting,
+   * which is why the engine refuses to stamp an area and a month on it. The
+   * *items* still belong somewhere, and that is what analytics needs in order
+   * to say "your buoyancy is weak" and mean an HPGE topic. Keeping the mapping
+   * here, beside the topics, is what stops it drifting from the bank: a new
+   * topic without an area is a type error rather than a silent miscount.
+   */
+  boardArea: SubjectArea;
   /** True when the booklet prints no key for this topic's items yet. */
   keyPending?: boolean;
 }
 
 export const TOPICS: TopicDef[] = [
-  { id: 'bm-algebra', subject: 'BasicMath', name: 'Algebra' },
-  { id: 'bm-trig', subject: 'BasicMath', name: 'Trigonometry' },
-  { id: 'bm-geometry', subject: 'BasicMath', name: 'Geometry' },
-  { id: 'cal-diff', subject: 'Calculus', name: 'Differential Calculus' },
-  { id: 'cal-int', subject: 'Calculus', name: 'Integral Calculus' },
-  { id: 'cal-de', subject: 'Calculus', name: 'Differential Equations' },
-  { id: 'stat-forces', subject: 'Statics', name: 'Forces & Resultants', keyPending: true },
-  { id: 'stat-equil', subject: 'Statics', name: 'Equilibrium', keyPending: true },
-  { id: 'stat-frames', subject: 'Statics', name: 'Frames & Trusses', keyPending: true },
-  { id: 'fluid-properties', subject: 'FluidMech', name: 'Fluid Properties', keyPending: true },
-  { id: 'fluid-pressure', subject: 'FluidMech', name: 'Pressure', keyPending: true },
-  { id: 'hydro-plane', subject: 'FluidMech', name: 'Plane Surfaces', keyPending: true },
-  { id: 'hydro-curved', subject: 'FluidMech', name: 'Curved Surfaces', keyPending: true },
-  { id: 'buoyancy', subject: 'FluidMech', name: 'Buoyancy', keyPending: true },
-  { id: 'dam-analysis', subject: 'FluidMech', name: 'Dam Analysis', keyPending: true },
-  { id: 'metacenter', subject: 'FluidMech', name: 'Metacenter', keyPending: true },
-  { id: 'rigid-rectilinear', subject: 'FluidMech', name: 'Rigid Body — Linear', keyPending: true },
-  { id: 'rigid-rotational', subject: 'FluidMech', name: 'Rigid Body — Rotation', keyPending: true },
+  { id: 'bm-algebra', subject: 'BasicMath', name: 'Algebra', boardArea: 'MSTC' },
+  { id: 'bm-trig', subject: 'BasicMath', name: 'Trigonometry', boardArea: 'MSTC' },
+  { id: 'bm-geometry', subject: 'BasicMath', name: 'Geometry', boardArea: 'MSTC' },
+  { id: 'cal-diff', subject: 'Calculus', name: 'Differential Calculus', boardArea: 'MSTC' },
+  { id: 'cal-int', subject: 'Calculus', name: 'Integral Calculus', boardArea: 'MSTC' },
+  { id: 'cal-de', subject: 'Calculus', name: 'Differential Equations', boardArea: 'MSTC' },
+  { id: 'stat-forces', subject: 'Statics', name: 'Forces & Resultants', boardArea: 'PSAD', keyPending: true },
+  { id: 'stat-equil', subject: 'Statics', name: 'Equilibrium', boardArea: 'PSAD', keyPending: true },
+  { id: 'stat-frames', subject: 'Statics', name: 'Frames & Trusses', boardArea: 'PSAD', keyPending: true },
+  { id: 'fluid-properties', subject: 'FluidMech', name: 'Fluid Properties', boardArea: 'HPGE', keyPending: true },
+  { id: 'fluid-pressure', subject: 'FluidMech', name: 'Pressure', boardArea: 'HPGE', keyPending: true },
+  { id: 'hydro-plane', subject: 'FluidMech', name: 'Plane Surfaces', boardArea: 'HPGE', keyPending: true },
+  { id: 'hydro-curved', subject: 'FluidMech', name: 'Curved Surfaces', boardArea: 'HPGE', keyPending: true },
+  { id: 'buoyancy', subject: 'FluidMech', name: 'Buoyancy', boardArea: 'HPGE', keyPending: true },
+  { id: 'dam-analysis', subject: 'FluidMech', name: 'Dam Analysis', boardArea: 'HPGE', keyPending: true },
+  { id: 'metacenter', subject: 'FluidMech', name: 'Metacenter', boardArea: 'HPGE', keyPending: true },
+  { id: 'rigid-rectilinear', subject: 'FluidMech', name: 'Rigid Body — Linear', boardArea: 'HPGE', keyPending: true },
+  { id: 'rigid-rotational', subject: 'FluidMech', name: 'Rigid Body — Rotation', boardArea: 'HPGE', keyPending: true },
 ];
+
+const TOPIC_DEF_BY_ID = new Map(TOPICS.map((t) => [t.id, t]));
+
+/**
+ * The hub's own topic definition, by id.
+ *
+ * Distinct from `data/topics.ts`'s `topicById`, which answers a different
+ * question: that table maps a free-text category onto a board-paper bucket.
+ * This one answers "what did the learner actually drill?".
+ */
+export function topicDefById(id: string): TopicDef | undefined {
+  return TOPIC_DEF_BY_ID.get(id);
+}
 
 /** A topic item: a normal Question plus the topic it belongs to. */
 export interface TopicQuestion extends Question {
