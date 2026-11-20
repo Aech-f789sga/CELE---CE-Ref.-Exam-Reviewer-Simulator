@@ -2633,6 +2633,27 @@ html[data-theme='v2'] [class*='-500/25'][class*='hover:text-white']:hover * {
   color: var(--f-fg-1) !important;
 }
 
+/* 100/200-level accent text is written for a dark surface: the app pairs it with
+   a tinted fill (`bg-emerald-500/15 text-emerald-200` for the correct option on
+   the results screen, and ~19 similar spots). On the light Fluent skin those
+   shades are near-white, so the tint shows and the label vanishes — a
+   highlighted answer renders as an empty green box. Step the label down to the
+   strong foreground, which is what the 300/400 remap above already does for the
+   chips that use those shades. */
+html[data-theme='v2'] .text-emerald-100,
+html[data-theme='v2'] .text-emerald-200,
+html[data-theme='v2'] .text-green-100,
+html[data-theme='v2'] .text-green-200 {
+  color: #0e700e !important;
+}
+
+html[data-theme='v2'] .text-rose-100,
+html[data-theme='v2'] .text-rose-200,
+html[data-theme='v2'] .text-red-100,
+html[data-theme='v2'] .text-red-200 {
+  color: #a4262c !important;
+}
+
 :is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-500'] .text-white,
 :is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-500'] [class*='text-slate-9'],
 :is(html[data-theme='v2'], html[data-theme='v2_dark']) [class~='from-amber-400'] .text-white,

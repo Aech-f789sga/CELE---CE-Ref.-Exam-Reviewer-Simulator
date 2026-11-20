@@ -43,9 +43,9 @@ import {
 import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
+import { DifficultyRating, DIFFICULTY_STYLE } from './DifficultyRating';
 import { isKeyPending, isTopicDrill } from '../data/grading';
 import {
-  DIFFICULTIES,
   loadDifficulty,
   setItemDifficulty,
   type DifficultyMap,
@@ -87,30 +87,6 @@ interface ExamEngineProps {
     secondsElapsed: number;
   }) => void;
 }
-
-/**
- * Appearance per rating. Colour carries the meaning — green for the items that
- * need less repetition, rose for the ones that need more — and the caption
- * below repeats the consequence in words, because a weighting the learner
- * cannot see is indistinguishable from no weighting.
- */
-const DIFFICULTY_STYLE: Record<ItemDifficulty, { label: string; on: string; hint: string }> = {
-  easy: {
-    label: 'Easy',
-    on: 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300',
-    hint: 'Drawn half as often as a mid item',
-  },
-  mid: {
-    label: 'Mid',
-    on: 'border-amber-500/60 bg-amber-500/15 text-amber-300',
-    hint: 'The baseline — neither favoured nor held back',
-  },
-  hard: {
-    label: 'Hard',
-    on: 'border-rose-500/60 bg-rose-500/15 text-rose-300',
-    hint: 'Drawn twice as often as a mid item',
-  },
-};
 
 export const ExamEngine: React.FC<ExamEngineProps> = ({
   subject,
@@ -751,39 +727,20 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
 
                 <div className="flex items-center gap-2">
                   {/*
-                    Rating control, drills only. A whole board paper is fixed, so
-                    rating its items would change nothing; a drill is redrawn
-                    every time, so here the rating is the point.
+                    Rating control in the header, drills only.
+
+                    The reason is no longer "rating a board paper would change
+                    nothing" — it now does change something, because weighted
+                    mastery counts rated items more heavily. The reason is that a
+                    timed sitting is the wrong moment to ask: the clock is
+                    running, and nobody can honestly judge how hard an item was
+                    before they have seen the solution. A drill reveals as it
+                    goes, so the judgement is available here; a board paper is
+                    rated on the results screen instead, once the solutions are
+                    in front of the learner.
                   */}
                   {topicDrill && (
-                    <div
-                      role="group"
-                      aria-label="How hard this item felt"
-                      className="flex items-center gap-0.5 rounded-xl border border-slate-800 bg-slate-950/70 p-0.5"
-                    >
-                      <span className="pl-1.5 pr-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                        Rate
-                      </span>
-                      {DIFFICULTIES.map((d) => {
-                        const active = currentDifficulty === d;
-                        return (
-                          <button
-                            key={d}
-                            type="button"
-                            aria-pressed={active}
-                            onClick={() => rateCurrent(d)}
-                            title={`${DIFFICULTY_STYLE[d].hint}${active ? ' — tap again to clear' : ''}`}
-                            className={`rounded-lg border px-2 py-1 text-[10px] font-bold transition-colors ${
-                              active
-                                ? DIFFICULTY_STYLE[d].on
-                                : 'border-transparent text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                            }`}
-                          >
-                            {DIFFICULTY_STYLE[d].label}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <DifficultyRating value={currentDifficulty} onRate={rateCurrent} />
                   )}
 
                   {/* Flag / Bookmark Button */}

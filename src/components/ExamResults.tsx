@@ -32,7 +32,9 @@ import { SolutionFigures } from './SolutionFigures';
 import { Scratchpad } from './Scratchpad';
 import { isKeyPending, isTopicDrill, summariseScore } from '../data/grading';
 import { breakdownForQuestions } from '../data/analytics';
-import { loadDifficulty } from '../data/itemDifficulty';
+import { loadDifficulty, setItemDifficulty } from '../data/itemDifficulty';
+import type { DifficultyMap, ItemDifficulty } from '../data/itemDifficulty';
+import { DifficultyRating } from './DifficultyRating';
 import { getExamStorageBase } from '../utils/storage';
 import {
   exportScratchpadBundle,
@@ -76,6 +78,17 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const [expandedSolutions, setExpandedSolutions] = useState<Record<string, boolean>>({});
   const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  /*
+   * Ratings are held in state as well as in storage so the topic chips below
+   * re-derive the moment one is set. Reading storage straight into the memo
+   * would mean a rating changed nothing on screen until the screen was
+   * remounted — the one piece of feedback that proves the control works.
+   */
+  const [ratings, setRatings] = useState<DifficultyMap>(() => loadDifficulty(ownerId));
+
+  const rate = (itemId: string, next: ItemDifficulty | null) => {
+    setRatings(setItemDifficulty(itemId, next, ownerId));
+  };
 
   const scratchpadDocId = getExamStorageBase(subject, year, month, source);
   const scratchpadPrefix = `${scratchpadDocId}_`;
@@ -184,15 +197,21 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
   const topicRows = useMemo(() => {
     if (!scoreKnown) return [];
     /*
-     * The ratings are read at submit time, not held in state: a board paper is
-     * fixed, but an item the learner rated during a drill can appear on it too
-     * (the id is the join), and honouring that rating here is what makes the
-     * strip agree with the mastery panel later.
+     * `ratings` is the live map, so rating an item in the review below moves the
+     * chip immediately. A board paper's own contribution to the mastery panel is
+     * recomputed from the same map, which means this strip and the panel can
+     * never disagree about what a paper cost.
      */
-    return breakdownForQuestions(questions, userAnswers, subject, loadDifficulty(ownerId))
+    return breakdownForQuestions(questions, userAnswers, subject, ratings)
       .rows.filter((row) => row.scorable >= 2)
       .slice(0, 6);
-  }, [questions, userAnswers, subject, scoreKnown, ownerId]);
+  }, [questions, userAnswers, subject, scoreKnown, ratings]);
+
+  /** How many items on *this* paper carry a rating, for the chip caption. */
+  const ratedHere = useMemo(
+    () => questions.filter((q) => ratings[q.id]).length,
+    [questions, ratings]
+  );
 
   // Trigger celebration confetti if passed
   useEffect(() => {
@@ -386,7 +405,11 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
             <div className="flex flex-wrap items-center gap-2 mb-2.5">
               <Layers className="w-3.5 h-3.5 text-amber-400" />
               <span className="text-xs font-semibold text-slate-200">Where this paper was lost</span>
-              <span className="text-[10px] text-slate-500">weakest first · 2+ questions</span>
+              <span className="text-[10px] text-slate-500">
+                {ratedHere > 0
+                  ? `weakest first · ${ratedHere} item${ratedHere === 1 ? '' : 's'} rated`
+                  : 'weakest first · rate items below to weight these'}
+              </span>
             </div>
             <div className="flex flex-wrap gap-2">
               {topicRows.map((row) => {
@@ -926,6 +949,37 @@ export const ExamResults: React.FC<ExamResultsProps> = ({
                           <MathView text={q.solution.finalAnswer} />
                         </strong>
                       </div>
+
+                      {/*
+                        Rate it here, not during the sitting. The solution is
+                        only now on screen, so this is the first moment the
+                        learner can honestly say whether the item was easy or
+                        hard — and it is the only moment for a board paper, which
+                        never passes through the drill header where the control
+                        lives.
+
+                        Key-pending items are excluded: there is no answer to
+                        judge against, and a rating there would weight a topic
+                        on an item that cannot even be scored.
+                      */}
+                      {!pending && (
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                          <span className="text-[11px] text-slate-400">
+                            How hard was this one?{' '}
+                            <span className="text-slate-500">
+                              {topicDrill
+                                ? 'It weights this topic and steers the next drill draw.'
+                                : 'It weights this topic in your analytics.'}
+                            </span>
+                          </span>
+                          <DifficultyRating
+                            variant="panel"
+                            label=""
+                            value={ratings[q.id]}
+                            onRate={(next) => rate(q.id, ratings[q.id] === next ? null : next)}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
