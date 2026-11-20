@@ -59,6 +59,15 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
   } = useTheme();
 
   const [activeTab, setActiveTab] = useState<'themes' | 'fonts' | 'display' | 'background'>('themes');
+
+  /*
+   * The FX panel is a sidebar beside the theme grid rather than a card under
+   * it: it belongs to the theme you are looking at, and scrolling past sixteen
+   * tiles to reach the controls for the one you just picked is a poor trade.
+   * It is also why the dialog widens while this is true — a 336px sidebar plus
+   * a two-column grid does not fit in the default max-w-3xl.
+   */
+  const fxActive = isFluentTheme(themeId) && activeTab === 'themes';
   const [customBg, setCustomBg] = useState<string | null>(() => {
     try { return localStorage.getItem('ce_custom_bg'); } catch { return null; }
   });
@@ -97,7 +106,7 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="w-full max-w-3xl rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors"
+        className={`w-full ${fxActive ? 'max-w-5xl' : 'max-w-3xl'} rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors`}
         style={{
           backgroundColor: themeConfig.bgCard,
           borderColor: themeConfig.border,
@@ -234,7 +243,8 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className={fxActive ? 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_336px]' : ''}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {THEME_LIST.map((item) => {
                   const isSelected = themeId === item.id;
                   const isOriginal = item.id === 'engineering_dark';
@@ -422,11 +432,21 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({ isOpen, onClose }) => {
                     </button>
                   );
                 })}
-              </div>
+                </div>
 
-              {/* Glass, depth and gradient knobs — only meaningful for the two
-                  Fluent skins, so they appear only while one is active. */}
-              {isFluentTheme(themeId) && <FluentFxPanel themeConfig={themeConfig} />}
+                {/* Glass, depth and gradient knobs — only meaningful for the
+                    two Fluent skins, so they appear only while one is active.
+                    Sticky so the controls stay in view while the grid scrolls:
+                    the point of putting them beside the tiles is that you can
+                    tune one while still looking at the others. */}
+                {fxActive && (
+                  <div>
+                    <div className="lg:sticky lg:top-0">
+                      <FluentFxPanel themeConfig={themeConfig} />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
