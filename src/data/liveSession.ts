@@ -202,6 +202,26 @@ export function liveSessionProgress(session: LiveSession): LiveSessionProgress {
 }
 
 /**
+ * Rebuild a paper from stored ids, or `null` if any id no longer resolves.
+ *
+ * Shared by the crash-recovery slot and the parked-drill list: both store ids
+ * rather than items, and both must fail loudly rather than resume a *different*
+ * paper. Extracted so the two cannot drift on what "resolvable" means.
+ */
+export function resolveQuestionsById<T extends Question>(ids: string[], pool: T[]): T[] | null {
+  const byId = new Map(pool.map((q) => [q.id, q]));
+  const out: T[] = [];
+  for (const id of ids) {
+    const q = byId.get(id);
+    if (!q) return null;
+    out.push(q);
+  }
+  // Renumber to the paper's own order. A drill's stored ids are already in draw
+  // order, but the bank's `number` field still holds the source numbering.
+  return out.map((q, i) => ({ ...q, number: i + 1 }));
+}
+
+/**
  * Rebuild the exact paper that was interrupted, or `null` if it cannot be.
  *
  * `null` is a real answer, not an error: the bank may have been edited between
@@ -214,16 +234,7 @@ export function resolveLiveQuestions(session: LiveSession): Question[] | null {
       ? TOPIC_QUESTIONS
       : getQuestionsForExam(session.subject, session.year, session.month, session.source);
 
-  const byId = new Map(pool.map((q) => [q.id, q]));
-  const out: Question[] = [];
-  for (const id of session.questionIds) {
-    const q = byId.get(id);
-    if (!q) return null;
-    out.push(q);
-  }
-  // Renumber to the paper's own order. A drill's stored ids are already in draw
-  // order, but the bank's `number` field still holds the source numbering.
-  return out.map((q, i) => ({ ...q, number: i + 1 }));
+  return resolveQuestionsById(session.questionIds, pool);
 }
 
 /** Build the record the engine writes. Kept here so every caller agrees. */

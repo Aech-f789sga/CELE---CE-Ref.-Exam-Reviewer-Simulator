@@ -84,6 +84,7 @@ import {
 import { recordExamAttempt, fetchAnnouncements, formatAnnouncerName, SystemAnnouncement } from './services/firebase';
 import { isKeyPending, isPublishable, isTopicDrill, summariseScore } from './data/grading';
 import { recordDrillResult } from './data/drillResults';
+import { removeSavedDrill, saveDrill, type SavedDrill } from './data/savedDrills';
 import { loadDifficulty, weightOf } from './data/itemDifficulty';
 import { watchTopicLock } from './data/topicLock';
 
@@ -430,14 +431,45 @@ function MainApp() {
    * By topics: the paper is already drawn, so there is no sitting to look up.
    * Same guards as a normal start — an account is still required for scoring
    * and for the leaderboard to stay meaningful.
+   *
+   * `saved` means this is a drill being picked up from the parked list rather
+   * than a fresh draw. The position, answers, flags and clock come from the
+   * record; the entry is dropped from the list because the drill is live again
+   * and the engine's autosave covers a crash from here on.
    */
-  const handleStartTopicExam = (questions: import('./data/topicBanks').TopicQuestion[]) => {
+  const handleStartTopicExam = (
+    questions: import('./data/topicBanks').TopicQuestion[],
+    saved?: SavedDrill
+  ) => {
     if (!activeUser) {
       openAuthModal('Please sign in or create an account first to start the examination.');
       return;
     }
     setResumedSession(null);
-    setResumePoint(null);
+    if (saved) {
+      /*
+       * A parked drill's clock is frozen (see `data/savedDrills.ts`), so both
+       * figures are restored exactly as they were left — no away time is added
+       * and none is subtracted.
+       */
+      setTimerMode(saved.timerMode);
+      if (saved.timerMode === 'exam_timer' && saved.totalDurationSeconds > 0) {
+        // `totalDurationSeconds` is derived from this, so the restored
+        // countdown has to be measured against the same clock it started on.
+        setCustomMinutes(Math.max(1, Math.round(saved.totalDurationSeconds / 60)));
+      }
+      setResumePoint({
+        currentIndex: saved.currentIndex,
+        userAnswers: saved.userAnswers,
+        flaggedQuestions: saved.flaggedQuestions,
+        secondsElapsed: saved.secondsElapsed,
+        secondsRemaining: saved.secondsRemaining,
+      });
+      removeSavedDrill(saved.id, activeUser.uid);
+    } else {
+      // A fresh draw must not inherit the position of a drill just resumed.
+      setResumePoint(null);
+    }
     setExamMode('interactive');
     setActiveQuestions(questions);
     setIsExamRunning(true);
@@ -471,7 +503,39 @@ function MainApp() {
     userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
     flaggedQuestions: Record<string, boolean>;
     secondsElapsed: number;
+    secondsRemaining: number;
   }) => {
+    /*
+     * A drill is parked in its own list, not in the paused-session list: that
+     * one is keyed by subject/year/month, which a drill does not have. The draw
+     * itself is the paper, so the id list is what gets stored — see
+     * `data/savedDrills.ts`.
+     */
+    if (isTopicDrill(activeQuestions)) {
+      saveDrill({
+        topicIds: activeQuestions.map((q) => q.topicId).filter((id): id is string => !!id),
+        questionIds: activeQuestions.map((q) => q.id),
+        currentIndex: state.currentIndex,
+        userAnswers: state.userAnswers,
+        flaggedQuestions: state.flaggedQuestions,
+        secondsElapsed: state.secondsElapsed,
+        secondsRemaining: state.secondsRemaining,
+        totalQuestions: activeQuestions.length,
+        totalDurationSeconds,
+        timerMode,
+        examMode,
+        ownerId: activeUser?.uid,
+      });
+      // The drill now lives in the parked list; keeping the autosave as well
+      // would offer the same drill twice on the next load.
+      clearLiveSession();
+      setIsExamRunning(false);
+      setResumedSession(null);
+      setResumePoint(null);
+      setCurrentTab('setup');
+      return;
+    }
+
     const scratchpadId = getExamStorageBase(selectedSubject, selectedYear, selectedMonth, selectedSource);
     const storageKeyPrefix = `${scratchpadId}_`;
 

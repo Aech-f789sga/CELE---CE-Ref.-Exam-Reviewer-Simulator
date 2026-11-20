@@ -19,19 +19,55 @@
  * this is already open, the body swaps to a "not open yet" notice rather than
  * letting a drill start. As noted in topicLock.ts this gates visibility, not
  * secrecy — the items ship in the bundle.
+ *
+ * ## The ledger pane
+ *
+ * Once the drills are open the modal is two panes: the setup on the left and a
+ * ledger on the right, itself split into two columns — drills parked for later,
+ * and drills already sat. They live here rather than on the setup screen
+ * because a parked drill belongs to this mode and nowhere else: it has no
+ * subject, year or month to file it under, so the paused-paper list cannot hold
+ * it (see `data/savedDrills.ts`).
+ *
+ * Resuming does not delete the record here. `handleStartTopicExam` in App drops
+ * it after the account check passes, so a signed-out visitor who is refused a
+ * start still finds their drill where they left it.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { X, Shuffle, Lock, CheckCircle2, Minus, Plus, RotateCcw } from 'lucide-react';
+import {
+  X,
+  Shuffle,
+  Lock,
+  CheckCircle2,
+  Minus,
+  Plus,
+  RotateCcw,
+  BookmarkCheck,
+  History,
+  Play,
+} from 'lucide-react';
 import {
   TOPICS,
   TOPIC_SUBJECTS,
   TOPIC_QUESTIONS,
   topicCount,
+  topicDefById,
   pickTopicQuestions,
   planTopicDrill,
   type TopicQuestion,
   type TopicQuota,
 } from '../data/topicBanks';
+import {
+  getSavedDrills,
+  onSavedDrillsChanged,
+  removeSavedDrill,
+  resolveSavedDrill,
+  savedDrillAnswered,
+  savedDrillFullLabel,
+  savedDrillLabel,
+  type SavedDrill,
+} from '../data/savedDrills';
+import { getDrillResults } from '../data/drillResults';
 import { loadDifficulty, tallyDifficulty, weightOf, type DifficultyMap } from '../data/itemDifficulty';
 import { watchTopicLock } from '../data/topicLock';
 import { useAuth } from '../context/AuthContext';
@@ -61,9 +97,255 @@ function joinWords(words: string[], last = 'and'): string {
   return `${words.slice(0, -1).join(', ')} ${last} ${words[words.length - 1]}`;
 }
 
+/**
+ * How long ago something was saved, in the smallest unit that still says
+ * something useful. A parked drill is read at a glance — "2h ago" is the whole
+ * question ("is this the one from this morning?"), and an exact timestamp is
+ * noise in a column this narrow. The tooltip carries the full date.
+ */
+function agoLabel(iso: string): string {
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return 'earlier';
+  const mins = Math.floor((Date.now() - t) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+/** Full timestamp for a tooltip, where there is room for it. */
+function exactLabel(iso: string): string {
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return 'Unknown time';
+  return new Date(t).toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+/**
+ * The right-hand ledger: what is parked, and what has been sat.
+ *
+ * Two columns because they answer two different questions — "what can I go
+ * back to?" and "how did the last ones go?" — and a learner scanning for one
+ * should not have to read past the other. Both are capped: the store holds at
+ * most a dozen parked drills, and the history is the newest slice of a ledger
+ * that can hold hundreds.
+ */
+function DrillLedgerPanel({
+  ownerId,
+  onResume,
+}: {
+  ownerId?: string;
+  onResume: (drill: SavedDrill) => void;
+}) {
+  const [parked, setParked] = useState<SavedDrill[]>(() => getSavedDrills(ownerId));
+  const [history, setHistory] = useState(() => getDrillResults());
+  /**
+   * Which parked drill is waiting on a "really discard?" tap. A parked drill is
+   * the answers to a paper the learner already sat — one stray click on a 3 mm
+   * × should not be able to throw that away, and this panel is too small for a
+   * modal on top of a modal.
+   */
+  const [confirming, setConfirming] = useState<string | null>(null);
+
+  useEffect(() => {
+    const refresh = () => {
+      setParked(getSavedDrills(ownerId));
+      setHistory(getDrillResults());
+    };
+    refresh();
+    const off = onSavedDrillsChanged(refresh);
+    // The drill ledger fires its own event when a drill is submitted.
+    window.addEventListener('ce_board_drills_updated', refresh);
+    return () => {
+      off();
+      window.removeEventListener('ce_board_drills_updated', refresh);
+    };
+  }, [ownerId]);
+
+  /** Newest first, capped — the panel is a glance, not an archive. */
+  const recent = useMemo(() => [...history].reverse().slice(0, 12), [history]);
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
+          Your drills
+        </div>
+        <p className="mt-0.5 text-[10px] leading-relaxed text-slate-500">
+          Pick up where you stopped, or look back at what you have already sat.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2.5">
+        {/* ------------------------------------------------ unfinished */}
+        <section className="min-w-0">
+          <header className="mb-1.5 flex items-center gap-1.5">
+            <BookmarkCheck className="h-3 w-3 shrink-0 text-amber-400" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">
+              Unfinished
+            </span>
+            {parked.length > 0 && (
+              <span className="ml-auto rounded bg-amber-500/20 px-1 font-tech-mono text-[9px] font-bold text-amber-300">
+                {parked.length}
+              </span>
+            )}
+          </header>
+
+          {parked.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-slate-800 px-2 py-3 text-center text-[10px] leading-relaxed text-slate-600">
+              Nothing parked. Choose <span className="text-slate-400">Continue Later</span> when
+              you leave a drill and it waits here.
+            </p>
+          ) : (
+            <ul className="space-y-1.5">
+              {parked.map((drill) => {
+                const answered = savedDrillAnswered(drill);
+                const pct = drill.totalQuestions
+                  ? Math.round((answered / drill.totalQuestions) * 100)
+                  : 0;
+                return (
+                  <li
+                    key={drill.id}
+                    className="relative rounded-lg border border-amber-500/30 bg-amber-500/10 transition-colors hover:border-amber-500/60"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onResume(drill)}
+                      title={`Resume ${savedDrillFullLabel(drill)} — saved ${exactLabel(drill.savedAt)}`}
+                      className="block w-full px-2 py-1.5 pr-6 text-left cursor-pointer"
+                    >
+                      <span className="block truncate text-[11px] font-semibold text-amber-100">
+                        {savedDrillLabel(drill)}
+                      </span>
+                      <span className="mt-0.5 flex items-center justify-between gap-1 font-tech-mono text-[9px] text-amber-300/80">
+                        <span>
+                          {answered}/{drill.totalQuestions}
+                        </span>
+                        <span>{agoLabel(drill.savedAt)}</span>
+                      </span>
+                      <span className="mt-1 block h-1 overflow-hidden rounded-full bg-slate-950/70">
+                        <span
+                          className="block h-full rounded-full bg-amber-400"
+                          style={{ width: `${Math.max(3, pct)}%` }}
+                        />
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirming(drill.id)}
+                      title="Discard this parked drill"
+                      aria-label={`Discard ${savedDrillFullLabel(drill)}`}
+                      className="absolute right-1 top-1 rounded p-0.5 text-amber-300/50 transition-colors hover:bg-rose-500/20 hover:text-rose-300 cursor-pointer"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+
+                    {confirming === drill.id && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-lg bg-slate-950 px-1">
+                        <span className="text-[9px] font-semibold text-slate-300">
+                          Discard {answered} answer{answered === 1 ? '' : 's'}?
+                        </span>
+                        <span className="flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setParked(removeSavedDrill(drill.id, ownerId));
+                              setConfirming(null);
+                            }}
+                            className="rounded bg-rose-500 px-1.5 py-0.5 text-[9px] font-bold text-white transition-colors hover:bg-rose-400 cursor-pointer"
+                          >
+                            Discard
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirming(null)}
+                            className="rounded bg-slate-700 px-1.5 py-0.5 text-[9px] font-semibold text-slate-200 transition-colors hover:bg-slate-600 cursor-pointer"
+                          >
+                            Keep
+                          </button>
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        {/* --------------------------------------------------- history */}
+        <section className="min-w-0">
+          <header className="mb-1.5 flex items-center gap-1.5">
+            <History className="h-3 w-3 shrink-0 text-slate-400" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">
+              History
+            </span>
+            {recent.length > 0 && (
+              <span className="ml-auto font-tech-mono text-[9px] text-slate-600">
+                {recent.length}
+              </span>
+            )}
+          </header>
+
+          {recent.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-slate-800 px-2 py-3 text-center text-[10px] leading-relaxed text-slate-600">
+              No drills finished yet. A submitted drill lands here with its score.
+            </p>
+          ) : (
+            <ul className="space-y-1.5">
+              {recent.map((row) => {
+                const pct = row.scorable
+                  ? Math.round((row.correct / row.scorable) * 100)
+                  : 0;
+                const name = topicDefById(row.topicId)?.name ?? row.topicId;
+                return (
+                  <li
+                    key={row.id}
+                    className="rounded-lg border border-slate-800 bg-slate-900/60 px-2 py-1.5"
+                    title={`${name} — ${row.correct} of ${row.scorable} — ${exactLabel(row.at)}`}
+                  >
+                    <div className="truncate text-[11px] font-semibold text-slate-300">{name}</div>
+                    <div className="mt-0.5 flex items-center justify-between gap-1 font-tech-mono text-[9px]">
+                      <span className="text-slate-500">
+                        {row.correct}/{row.scorable}
+                      </span>
+                      <span className={pct >= 50 ? 'text-emerald-400' : 'text-rose-400'}>
+                        {pct}%
+                      </span>
+                    </div>
+                    <div className="text-[9px] text-slate-600">{agoLabel(row.at)}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      {parked.length > 0 && (
+        <p className="flex items-start gap-1.5 rounded-lg border border-slate-800 bg-slate-950/60 px-2 py-1.5 text-[10px] leading-relaxed text-slate-500">
+          <Play className="mt-0.5 h-2.5 w-2.5 shrink-0 text-amber-400" />
+          <span>
+            A parked drill keeps its answers, flags and clock exactly as you left them — the timer
+            does not run while it waits.
+          </span>
+        </p>
+      )}
+    </div>
+  );
+}
+
 interface Props {
   onClose: () => void;
-  onStart: (questions: TopicQuestion[]) => void;
+  /** `saved` means the drill is being picked up from the parked list. */
+  onStart: (questions: TopicQuestion[], saved?: SavedDrill) => void;
 }
 
 /**
@@ -260,6 +542,27 @@ export function TopicExamModal({ onClose, onStart }: Props) {
     if (qs.length) onStart(qs);
   };
 
+  /**
+   * Pick a parked drill back up.
+   *
+   * The record is *not* deleted here — `handleStartTopicExam` drops it once the
+   * account check has passed. Removing it first would throw the drill away for
+   * a signed-out visitor, who is refused by the start handler and sent to the
+   * auth modal instead.
+   *
+   * If the draw no longer resolves (an item was renumbered or removed since it
+   * was parked) the record is dropped rather than resumed: resuming a
+   * *different* draw would silently mis-score every answer already given.
+   */
+  const resumeParked = (drill: SavedDrill) => {
+    const qs = resolveSavedDrill(drill);
+    if (!qs) {
+      removeSavedDrill(drill.id, ownerId);
+      return;
+    }
+    onStart(qs, drill);
+  };
+
   return (
     <div
       className="fixed inset-0 z-[95] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
@@ -267,7 +570,7 @@ export function TopicExamModal({ onClose, onStart }: Props) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-2xl max-h-[88vh] overflow-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
+      <div className="w-full max-w-6xl max-h-[88vh] overflow-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
         <div className="flex items-start justify-between gap-4 p-5 border-b border-slate-800">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400">
@@ -286,23 +589,32 @@ export function TopicExamModal({ onClose, onStart }: Props) {
           </button>
         </div>
 
-        {view === 'checking' ? (
-          // The admin's flag has not landed yet. Saying "locked" here would be
-          // a claim we cannot back, and it would flicker away a moment later.
-          <div className="p-6 text-sm text-slate-400">Checking access…</div>
-        ) : view === 'locked' ? (
-          <div className="p-6 flex items-start gap-3 text-sm text-slate-300">
-            <Lock className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <div className="font-semibold text-white">Locked by the admin</div>
-              <p className="text-slate-400 mt-1">
-                By-topic drills have not been opened yet. When the admin unlocks them this window
-                opens on its own — there is no need to reload.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
+        {/*
+         * Two panes once the drills are open: the setup on the left, the ledger
+         * on the right. The ledger is deliberately its own bordered column
+         * rather than a strip under the setup — it answers a different question
+         * ("what can I go back to?") and sharing a column would make one read
+         * like part of the other. Below `lg` it stacks underneath instead.
+         */}
+        <div className={view === 'ready' ? 'grid lg:grid-cols-[minmax(0,1fr)_24rem]' : ''}>
+          <div className="min-w-0">
+            {view === 'checking' ? (
+              // The admin's flag has not landed yet. Saying "locked" here would be
+              // a claim we cannot back, and it would flicker away a moment later.
+              <div className="p-6 text-sm text-slate-400">Checking access…</div>
+            ) : view === 'locked' ? (
+              <div className="p-6 flex items-start gap-3 text-sm text-slate-300">
+                <Lock className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-semibold text-white">Locked by the admin</div>
+                  <p className="text-slate-400 mt-1">
+                    By-topic drills have not been opened yet. When the admin unlocks them this window
+                    opens on its own — there is no need to reload.
+                  </p>
+                </div>
+              </div>
+            ) : (
+            <>
             <div className="p-5 space-y-4">
               {TOPIC_SUBJECTS.map((sub) => {
                 const list = TOPICS.filter((t) => t.subject === sub.id);
@@ -463,8 +775,16 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                 </button>
               </div>
             </div>
-          </>
-        )}
+            </>
+            )}
+          </div>
+
+          {view === 'ready' && (
+            <aside className="min-w-0 border-t border-slate-800 bg-slate-950/40 p-4 lg:border-t-0 lg:border-l">
+              <DrillLedgerPanel ownerId={ownerId} onResume={resumeParked} />
+            </aside>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -85,6 +85,13 @@ interface ExamEngineProps {
     userAnswers: Record<string, 'A' | 'B' | 'C' | 'D'>;
     flaggedQuestions: Record<string, boolean>;
     secondsElapsed: number;
+    /**
+     * The countdown as it stands, for a timed drill being parked. A parked
+     * drill freezes its clock, so this is the value to restore — see
+     * `data/savedDrills.ts`. Ignored for a board paper, whose paused-session
+     * record has no countdown of its own.
+     */
+    secondsRemaining: number;
   }) => void;
 }
 
@@ -155,6 +162,17 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
    * and self-set, so it has its own pace.
    */
   const topicDrill = useMemo(() => isTopicDrill(questions), [questions]);
+
+  /**
+   * Whether leaving can offer "continue later" rather than only "throw it away".
+   *
+   * A paper needs Interactive Study mode with an untimed clock, because a real
+   * timed sitting must not gain a free pause button. A **drill** is practice
+   * with no sitting behind it: the draw is the whole paper, so the only way to
+   * keep one is to store it, and refusing to store it just loses the learner's
+   * work. So a drill can always be parked, whatever its clock.
+   */
+  const canParkSession = topicDrill || isPauseEligible;
 
   /**
    * What to call this sitting in copy that is not the question card.
@@ -293,13 +311,20 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   }, [writeLiveSession]);
 
   const handleSaveAndExit = () => {
-    const storageKeyPrefix = examStoragePrefix;
-    syncExamScratchpadRecord({
-      subject,
-      year,
-      month,
-      storageKeyPrefix,
-    }).catch((e) => console.warn('Failed to sync scratchpad record on pause:', e));
+    /*
+     * A drill is drawn at random, so its identity lives in the engine rather
+     * than in the setup screen. Syncing a scratchpad record keyed by
+     * subject/year/month would file the rough sheets under whatever paper was
+     * last selected — a paper this drill has nothing to do with.
+     */
+    if (!topicDrill) {
+      syncExamScratchpadRecord({
+        subject,
+        year,
+        month,
+        storageKeyPrefix: examStoragePrefix,
+      }).catch((e) => console.warn('Failed to sync scratchpad record on pause:', e));
+    }
 
     if (onSaveAndExit) {
       onSaveAndExit({
@@ -307,6 +332,7 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
         userAnswers,
         flaggedQuestions,
         secondsElapsed,
+        secondsRemaining,
       });
     } else {
       onExit();
@@ -317,7 +343,14 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
     // The learner has explicitly walked away from this sitting, so the autosave
     // must not offer it back on the next load.
     clearLiveSession();
-    deletePausedSession(subject, year, month, source);
+    /*
+     * Only a board paper has a paused-session record. Running this for a drill
+     * would delete the saved progress of an unrelated paper — the one whose
+     * subject/year/month happen to still be selected behind the drill.
+     */
+    if (!topicDrill) {
+      deletePausedSession(subject, year, month, source);
+    }
     onExit();
   };
 
@@ -1501,22 +1534,59 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 className="font-arnie text-lg font-bold text-white">
-              {isPauseEligible ? 'Leave Examination?' : 'Exit Examination?'}
+              {topicDrill
+                ? 'Leave this drill?'
+                : isPauseEligible
+                  ? 'Leave Examination?'
+                  : 'Exit Examination?'}
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              {isPauseEligible
-                ? 'You are in Interactive Study Mode. You can save your progress and continue right where you left off later, or discard this session.'
-                : 'Exiting will cancel this exam attempt without recording it. Are you sure you want to return to the portal?'}
+              {topicDrill
+                ? 'Nothing here has been scored yet. Continue later puts the drill aside with the answers you have already given, so you can pick it up from the drill panel. Terminating ends it now and the progress is lost.'
+                : isPauseEligible
+                  ? 'You are in Interactive Study Mode. You can save your progress and continue right where you left off later, or discard this session.'
+                  : 'Exiting will cancel this exam attempt without recording it. Are you sure you want to return to the portal?'}
             </p>
+
+            {topicDrill && (
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-2 py-2">
+                  <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Question
+                  </div>
+                  <div className="font-tech-mono text-sm font-bold text-white">
+                    {currentIndex + 1}
+                    <span className="text-slate-500"> / {questions.length}</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-2 py-2">
+                  <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Answered
+                  </div>
+                  <div className="font-tech-mono text-sm font-bold text-emerald-400">
+                    {answeredCount}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-2 py-2">
+                  <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    {timerMode === 'exam_timer' ? 'Time left' : 'Time on task'}
+                  </div>
+                  <div className="font-tech-mono text-sm font-bold text-cyan-300">
+                    {formatTime(timerMode === 'exam_timer' ? secondsRemaining : secondsElapsed)}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col space-y-2 pt-2">
-              {isPauseEligible && (
+              {canParkSession && (
                 <button
                   type="button"
                   onClick={handleSaveAndExit}
                   className="w-full px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs font-arnie tracking-wide flex items-center justify-center space-x-2 cursor-pointer shadow-md"
                 >
                   <BookmarkCheck className="w-4 h-4 text-slate-950" />
-                  <span>Save & Continue Later</span>
+                  <span>{topicDrill ? 'Continue Later' : 'Save & Continue Later'}</span>
                 </button>
               )}
               <div className="flex items-center justify-end space-x-3 pt-1">
@@ -1525,14 +1595,18 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                   onClick={() => setShowExitConfirm(false)}
                   className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white cursor-pointer"
                 >
-                  Back to Exam
+                  {topicDrill ? 'Keep drilling' : 'Back to Exam'}
                 </button>
                 <button
                   type="button"
                   onClick={handleDiscardAndExit}
                   className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white font-bold text-xs border border-rose-500/40 transition-colors cursor-pointer"
                 >
-                  {isPauseEligible ? 'Discard & Exit' : 'Confirm Exit'}
+                  {topicDrill
+                    ? 'Terminate drill'
+                    : isPauseEligible
+                      ? 'Discard & Exit'
+                      : 'Confirm Exit'}
                 </button>
               </div>
             </div>

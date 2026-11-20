@@ -76,7 +76,10 @@ interface SubjectSelectorProps {
   onExamModeChange: (mode: ExamMode) => void;
   onStartExam: () => void;
   /** Draw a random paper from the chosen topics (By topics mode). */
-  onStartTopicExam?: (questions: import('../data/topicBanks').TopicQuestion[]) => void;
+  onStartTopicExam?: (
+    questions: import('../data/topicBanks').TopicQuestion[],
+    saved?: import('../data/savedDrills').SavedDrill
+  ) => void;
   /**
    * The admin has not opened By-topics yet. The entry stays visible so people
    * know the mode exists, but it advertises the lock instead of inviting a
@@ -1085,9 +1088,9 @@ export const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       {topicOpen && (
         <TopicExamModal
           onClose={() => setTopicOpen(false)}
-          onStart={(qs) => {
+          onStart={(qs, saved) => {
             setTopicOpen(false);
-            onStartTopicExam?.(qs);
+            onStartTopicExam?.(qs, saved);
           }}
         />
       )}
