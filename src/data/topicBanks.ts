@@ -21,6 +21,10 @@
  *                   the `keyPending` treatment: the UI refuses to score rather
  *                   than marking every answer wrong. The arithmetic for that
  *                   lives in `grading.ts`; the flag is the only switch.
+ *   Physics ....... same series, "[PHYSICS]" practice set, 90 items across eight
+ *                   sections, ending with a printed "--- END ---". **No answer
+ *                   key yet** either, so it takes the same `keyPending`
+ *                   treatment as Fluid Mechanics.
  *
  * ## Adaptive draws
  *
@@ -57,8 +61,18 @@ import {
   RIGID_RECTILINEAR,
   RIGID_ROTATIONAL,
 } from './topicBanksFluid';
+import {
+  PHYS_RECTILINEAR,
+  PHYS_PROJECTILE,
+  PHYS_ROTATIONAL,
+  PHYS_CIRCULAR,
+  PHYS_NEWTON,
+  PHYS_GRAVITATION,
+  PHYS_WORK_ENERGY,
+  PHYS_MOMENTUM,
+} from './topicBanksPhysics';
 
-export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics' | 'FluidMech';
+export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics' | 'FluidMech' | 'Physics';
 
 export interface TopicSubjectMeta {
   id: TopicSubject;
@@ -74,6 +88,11 @@ export const TOPIC_SUBJECTS: TopicSubjectMeta[] = [
     id: 'FluidMech',
     name: 'Fluid Mechanics',
     blurb: 'Properties · Hydrostatics · Buoyancy · Dams · Rigid-body motion',
+  },
+  {
+    id: 'Physics',
+    name: 'Physics',
+    blurb: 'Motion · Forces · Gravitation · Energy · Momentum',
   },
 ];
 
@@ -115,6 +134,14 @@ export const TOPICS: TopicDef[] = [
   { id: 'metacenter', subject: 'FluidMech', name: 'Metacenter', boardArea: 'HPGE', keyPending: true },
   { id: 'rigid-rectilinear', subject: 'FluidMech', name: 'Rigid Body — Linear', boardArea: 'HPGE', keyPending: true },
   { id: 'rigid-rotational', subject: 'FluidMech', name: 'Rigid Body — Rotation', boardArea: 'HPGE', keyPending: true },
+  { id: 'phys-rectilinear', subject: 'Physics', name: 'Rectilinear Motion', boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-projectile', subject: 'Physics', name: 'Projectile Motion', boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-rotational', subject: 'Physics', name: 'Rotational Motion', boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-circular', subject: 'Physics', name: 'Circular Motion', boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-newton', subject: 'Physics', name: "Newton's 2nd Law of Motion", boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-gravitation', subject: 'Physics', name: "Newton's Law of Universal Gravitation", boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-work-energy', subject: 'Physics', name: 'Work, Energy, and Power', boardArea: 'MSTC', keyPending: true },
+  { id: 'phys-momentum', subject: 'Physics', name: 'Impulse and Momentum', boardArea: 'MSTC', keyPending: true },
 ];
 
 const TOPIC_DEF_BY_ID = new Map(TOPICS.map((t) => [t.id, t]));
@@ -168,6 +195,14 @@ export const TOPIC_QUESTIONS: TopicQuestion[] = [
   ...METACENTER,
   ...RIGID_RECTILINEAR,
   ...RIGID_ROTATIONAL,
+  ...PHYS_RECTILINEAR,
+  ...PHYS_PROJECTILE,
+  ...PHYS_ROTATIONAL,
+  ...PHYS_CIRCULAR,
+  ...PHYS_NEWTON,
+  ...PHYS_GRAVITATION,
+  ...PHYS_WORK_ENERGY,
+  ...PHYS_MOMENTUM,
 ];
 
 /** How many items each topic currently holds. */

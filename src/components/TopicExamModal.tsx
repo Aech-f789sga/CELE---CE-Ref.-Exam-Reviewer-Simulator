@@ -703,7 +703,17 @@ export function TopicExamModal({ onClose, onStart }: Props) {
                             ) : (
                               <span className="w-3.5 h-3.5 rounded-full border border-current shrink-0" />
                             )}
-                            <span className="flex-1 min-w-0 truncate">{t.name}</span>
+                            {/*
+                             * Wraps rather than truncates. The booklet headings
+                             * are long ("Newton's Law of Universal
+                             * Gravitation") and a chip reading "Newton's Law
+                             * of ..." tells the learner nothing — three of them
+                             * would be indistinguishable. A second line costs a
+                             * few pixels and keeps the name whole.
+                             */}
+                            <span className="flex-1 min-w-0 leading-snug break-words">
+                              {t.name}
+                            </span>
                             {t.keyPending && (
                               <span
                                 className="shrink-0 rounded px-1 py-0.5 text-[8px] font-black uppercase tracking-wider text-amber-400/90 border border-amber-500/40"
