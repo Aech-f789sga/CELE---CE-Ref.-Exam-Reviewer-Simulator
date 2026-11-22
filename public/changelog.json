@@ -1,0 +1,89 @@
+{
+  "note": "Release notes shown in the update prompt and the What's new panel. Newest first. Edit this file only — src/data/changelog.ts imports it and re-fetches it from the network so a stale tab can name the build it is about to receive.",
+  "releases": [
+    {
+      "version": "1.7.0",
+      "date": "2026-11-22",
+      "title": "Fluid Mechanics drills are now scored",
+      "changes": [
+        {
+          "kind": "content",
+          "text": "Fluid Mechanics is marked: the booklet's printed key for all 148 items is in, so pressure, plane and curved surfaces, buoyancy, dams, metacenter and rigid-body motion now come back right or wrong."
+        },
+        {
+          "kind": "new",
+          "text": "Update notices now say what changed before you reload, and a What's new panel keeps the history."
+        }
+      ]
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-11-21",
+      "title": "Physics joins the by-topic drills",
+      "changes": [
+        {
+          "kind": "content",
+          "text": "90 Physics items across eight topics, from rectilinear and projectile motion through forces and gravitation to work, energy and momentum."
+        },
+        {
+          "kind": "content",
+          "text": "Ten Physics figures cropped from the booklet, sized so a tall diagram no longer pushes the answer choices off the screen."
+        }
+      ]
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-11-20",
+      "title": "Leave a drill and come back to it",
+      "changes": [
+        {
+          "kind": "new",
+          "text": "Leaving a drill now asks whether to keep it. Unfinished drills and finished ones are listed in their own panel beside the topic picker."
+        },
+        {
+          "kind": "content",
+          "text": "Statics is keyed — all 176 items, across forces, equilibrium, frames, friction and cables."
+        },
+        {
+          "kind": "improved",
+          "text": "The topic picker no longer pre-selects a subject, so a drill is always one you chose."
+        },
+        {
+          "kind": "fixed",
+          "text": "Powers and roots were printing as escape codes, so \"4 cm³/sec\" arrived as a jumble of letters and digits."
+        },
+        {
+          "kind": "fixed",
+          "text": "Calculus figures 40 and 41 were cropped through the drawing; both were re-cut."
+        },
+        {
+          "kind": "fixed",
+          "text": "Differential equations item 126 asked for a reading at 110° without saying half a minute."
+        }
+      ]
+    },
+    {
+      "version": "1.4.0",
+      "date": "2026-11-20",
+      "title": "Analytics, ratings and the Fluent 2 skins",
+      "changes": [
+        {
+          "kind": "new",
+          "text": "Performance analytics built from your own stored answers, with topic mastery weighted by how hard you rated each item."
+        },
+        {
+          "kind": "new",
+          "text": "Rate any item easy, mid or hard; hard items come back more often in the next draw."
+        },
+        {
+          "kind": "improved",
+          "text": "The two Fluent 2 skins lead the theme picker, with glass, gradient and pointer-driven depth."
+        },
+        {
+          "kind": "fixed",
+          "text": "A by-topic drill no longer reports itself as a board sitting."
+        }
+      ]
+    }
+  ]
+}

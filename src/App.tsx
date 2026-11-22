@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import {
   SubjectArea,
@@ -37,6 +37,12 @@ import {
 import { Navbar } from './components/Navbar';
 import { SubjectSelector } from './components/SubjectSelector';
 import { UpdatePrompt } from './components/UpdatePrompt';
+import { ChangelogModal } from './components/ChangelogModal';
+import {
+  LATEST_RELEASE,
+  hasUnseenRelease,
+  markReleaseSeen,
+} from './data/changelog';
 import { ExamEngine } from './components/ExamEngine';
 import { ResumeSessionModal } from './components/ResumeSessionModal';
 import { ExamResults } from './components/ExamResults';
@@ -197,6 +203,23 @@ function MainApp() {
   );
   const canOpenTopicExam = isAdmin || topicExamState.open;
   const topicExamLocked = topicExamState.known && !canOpenTopicExam;
+
+  /**
+   * "What's new" — the panel, and the dot that advertises it.
+   *
+   * The dot compares the newest release with the version the learner last
+   * opened, so it clears on the click that opens the panel rather than on some
+   * later launch. Reading the flag once on mount is enough: a release cannot
+   * arrive mid-session without a new build, and a new build arrives with a
+   * reload.
+   */
+  const [changelogOpen, setChangelogOpen] = useState(false);
+  const [hasUnseenChanges, setHasUnseenChanges] = useState(() => hasUnseenRelease());
+  const openChangelog = useCallback(() => {
+    setChangelogOpen(true);
+    setHasUnseenChanges(false);
+    if (LATEST_RELEASE) markReleaseSeen(LATEST_RELEASE.version);
+  }, []);
 
   // Selection states
   const [selectedSource, setSelectedSource] = useState<ReferenceSource>('Gillesania');
@@ -860,10 +883,16 @@ function MainApp() {
           onOpenThemeModal={() => setIsThemeModalOpen(true)}
           onOpenTour={() => setIsTourOpen(true)}
           onOpenContactAdmin={() => handleOpenContactAdmin('message')}
+          onOpenChangelog={openChangelog}
+          hasUnseenChanges={hasUnseenChanges}
         />
 
-        {/* Offers the new build when the service worker has one waiting */}
-        <UpdatePrompt />
+        {/* Offers the new build when the service worker has one waiting, and
+            names what changed in it */}
+        <UpdatePrompt onOpenChangelog={openChangelog} />
+
+        {/* The full release history, reachable long after the prompt is gone */}
+        {changelogOpen && <ChangelogModal onClose={() => setChangelogOpen(false)} />}
 
         {/* Offers back a sitting interrupted by a refresh or a closed tab */}
         {interrupted && (

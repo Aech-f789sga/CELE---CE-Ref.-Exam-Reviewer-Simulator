@@ -38,6 +38,10 @@ interface NavbarProps {
   onOpenThemeModal: () => void;
   onOpenTour?: () => void;
   onOpenContactAdmin?: () => void;
+  /** Opens the release notes. */
+  onOpenChangelog?: () => void;
+  /** Marks the button with a dot when a release has not been opened yet. */
+  hasUnseenChanges?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -49,6 +53,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenThemeModal,
   onOpenTour,
   onOpenContactAdmin,
+  onOpenChangelog,
+  hasUnseenChanges,
 }) => {
   const { themeConfig, fontId, setThemeId } = useTheme();
   const { user, profile, isAdmin, openAuthModal, signOut, loading: authLoading } = useAuth();
@@ -332,6 +338,38 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* PWA Install Button */}
             <PWAInstallButton variant="navbar" />
 
+            {/* What's new — release notes, with a dot while one is unread */}
+            {onOpenChangelog && (
+              <button
+                type="button"
+                onClick={onOpenChangelog}
+                title={
+                  hasUnseenChanges
+                    ? "What's new — updates you have not read yet"
+                    : "What's new — recent updates"
+                }
+                className="relative flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold border transition-all hover:scale-105 shadow-sm cursor-pointer whitespace-nowrap shrink-0"
+                style={{
+                  backgroundColor: themeConfig.bgCardSubtle,
+                  borderColor: themeConfig.border,
+                  color: themeConfig.textPrimary,
+                }}
+              >
+                <Sparkles
+                  className="w-3.5 h-3.5 shrink-0"
+                  style={{ color: hasUnseenChanges ? '#a63a2b' : themeConfig.accent }}
+                />
+                <span className="hidden sm:inline">What&rsquo;s new</span>
+                {hasUnseenChanges && (
+                  <span
+                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400"
+                    style={{ boxShadow: '0 0 0 2px ' + themeConfig.bgCardSubtle }}
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            )}
+
             {/* Theme & Fonts Customizer Trigger */}
             <button
               data-tour="theme-trigger"
@@ -498,6 +536,35 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="col-span-2 sm:col-span-3 pt-1">
               <PWAInstallButton variant="card" />
             </div>
+
+            {/* What's new in the mobile menu — the navbar label is hidden on
+                narrow screens, so this is the only place it reads as words. */}
+            {onOpenChangelog && (
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenChangelog();
+                  setMobileNavOpen(false);
+                }}
+                className="col-span-2 sm:col-span-3 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all hover:scale-102 cursor-pointer"
+                style={{
+                  backgroundColor: themeConfig.bgCardSubtle,
+                  borderColor: themeConfig.border,
+                  color: themeConfig.textPrimary,
+                }}
+              >
+                <Sparkles
+                  className="w-4 h-4 shrink-0"
+                  style={{ color: hasUnseenChanges ? '#a63a2b' : themeConfig.accent }}
+                />
+                <span>What&rsquo;s new in this update</span>
+                {hasUnseenChanges && (
+                  <span className="rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-black text-amber-950">
+                    NEW
+                  </span>
+                )}
+              </button>
+            )}
           </div>
         </div>
       )}
