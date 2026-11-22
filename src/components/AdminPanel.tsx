@@ -39,6 +39,7 @@ import {
   Trophy,
   Palette,
   Filter,
+  Flag,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -68,9 +69,12 @@ import {
   UserAdminMessage,
   UserPresence,
   FeatureInteraction,
+  fetchQuestionReports,
+  QuestionReport,
 } from '../services/firebase';
 import { CommunityStatsCards } from './CommunityStatsCards';
 import { FeatureAccessSection } from './FeatureAccessSection';
+import { AdminQuestionReports } from './AdminQuestionReports';
 import { errorCode, setTopicUnlocked, watchTopicLock, type TopicLock } from '../data/topicLock';
 
 interface AdminPanelProps {
@@ -85,6 +89,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const [attemptsList, setAttemptsList] = useState<CloudExamAttempt[]>([]);
   const [announcementsList, setAnnouncementsList] = useState<SystemAnnouncement[]>([]);
   const [messagesList, setMessagesList] = useState<UserAdminMessage[]>([]);
+  // Item reports filed from inside a drill or a sitting. Kept separate from the
+  // inbox: a report is a defect ticket about the bank, not a message to answer.
+  const [questionReportsList, setQuestionReportsList] = useState<QuestionReport[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState<boolean>(false);
@@ -112,7 +119,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
 
   // Admin section navigation
   const [adminSection, setAdminSection] = useState<
-    'inbox' | 'users' | 'activity' | 'announcements' | 'features' | 'all'
+    'inbox' | 'reports' | 'users' | 'activity' | 'announcements' | 'features' | 'all'
   >('inbox');
 
   // "By topics" access switch (app_config/topic_exams)
@@ -167,18 +174,35 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [allUsers, allAttempts, allAnnouncements, allMessages, allInteractions, allPresences] = await Promise.all([
+      const [
+        allUsers,
+        allAttempts,
+        allAnnouncements,
+        allMessages,
+        allInteractions,
+        allPresences,
+        allReports,
+      ] = await Promise.all([
         fetchAllUsers(),
         fetchExamAttempts(undefined, true),
         fetchAnnouncements(false),
         fetchUserAdminMessages(),
         fetchAllFeatureInteractions(500),
         fetchAllUserPresence(),
+        // The reports queue is the newest collection, so it is the one most
+        // likely to be missing from a published ruleset. Degrade to an empty
+        // queue rather than reject the batch — one unreachable collection must
+        // not blank out the inbox, the roster and the analytics with it.
+        fetchQuestionReports().catch((err) => {
+          console.warn('Question reports unavailable:', err);
+          return [] as QuestionReport[];
+        }),
       ]);
       setUsersList(allUsers);
       setAttemptsList(allAttempts);
       setAnnouncementsList(allAnnouncements);
       setMessagesList(allMessages);
+      setQuestionReportsList(allReports);
       // Analytics never includes accounts excluded from it. Rows written before
       // this rule existed (or by a stale tab) are dropped here, so the totals
       // describe the examinees only.
@@ -469,6 +493,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
 
   const unreadMessagesCount = messagesList.filter((m) => m.status === 'unread').length;
   const donationMessagesCount = messagesList.filter((m) => m.category === 'Admin Donation').length;
+  // Only "open" is a backlog. A report already under review is being handled, so
+  // counting it too would leave a badge that never clears.
+  const openReportCount = questionReportsList.filter((r) => r.status === 'open').length;
   const repliedMessagesCount = messagesList.filter((m) => Boolean(m.adminReply)).length;
 
   const filteredMessages = messagesList.filter((m) => {
@@ -608,6 +635,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
               }`}>
                 {messagesList.filter((m) => m.status === 'unread').length} New
               </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminSection('reports')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              adminSection === 'reports'
+                ? 'bg-amber-500 text-slate-950 shadow-lg scale-102 font-black'
+                : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+            }`}
+          >
+            <Flag className="w-4 h-4 text-rose-400" />
+            <span>Question Reports</span>
+            {openReportCount > 0 ? (
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                adminSection === 'reports' ? 'bg-slate-950 text-rose-300' : 'bg-rose-500 text-slate-950'
+              }`}>
+                {openReportCount} Open
+              </span>
+            ) : (
+              <span className="text-[10px] opacity-75 font-mono">({questionReportsList.length})</span>
             )}
           </button>
 
@@ -2033,7 +2082,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigateToExam }) => {
         </div>
       )}
 
-      {/* SECTION 5: Feature Access — exam modes the admin can open or close */}
+      {/* SECTION 5: Question Reports — defective items flagged mid-drill or mid-sitting */}
+      {(adminSection === 'reports' || adminSection === 'all') && (
+        <div
+          className="rounded-3xl border p-6 shadow-xl animate-in fade-in"
+          style={{ backgroundColor: themeConfig.bgCard, borderColor: themeConfig.border }}
+        >
+          <AdminQuestionReports
+            reports={questionReportsList}
+            onRefresh={loadData}
+            reviewerName={profile?.displayName || user?.email || 'Administrator'}
+          />
+        </div>
+      )}
+
+      {/* SECTION 6: Feature Access — exam modes the admin can open or close */}
       {(adminSection === 'features' || adminSection === 'all') && (
         <FeatureAccessSection
           unlocked={topicUnlocked}

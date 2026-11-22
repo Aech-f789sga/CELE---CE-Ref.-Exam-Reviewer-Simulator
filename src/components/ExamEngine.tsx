@@ -44,6 +44,7 @@ import { EngineeringFigure } from './EngineeringFigure';
 import { SolutionFigures } from './SolutionFigures';
 import { MathView } from './MathView';
 import { DifficultyRating, DIFFICULTY_STYLE } from './DifficultyRating';
+import { ReportQuestionModal } from './ReportQuestionModal';
 import { isKeyPending, isTopicDrill } from '../data/grading';
 import {
   loadDifficulty,
@@ -195,6 +196,13 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
   }, [ownerId]);
 
   const currentDifficulty = currentQuestion ? difficulty[currentQuestion.id] : undefined;
+
+  /**
+   * The item-report dialog. Deliberately independent of the answer state: a
+   * defect is worth reporting before answering, after answering, or instead of
+   * answering, and none of those should be a precondition.
+   */
+  const [reportOpen, setReportOpen] = useState(false);
 
   const rateCurrent = (next: ItemDifficulty) => {
     if (!currentQuestion) return;
@@ -816,6 +824,22 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
                   >
                     <Flag className="w-3.5 h-3.5" />
                     <span>{flaggedQuestions[currentQuestion.id] ? 'Flagged' : 'Flag'}</span>
+                  </button>
+
+                  {/*
+                    Report, not flag. Flag is the learner's own bookmark and
+                    stays private; this goes to the admin with the item
+                    attached, and is the only route by which a defective
+                    question ever gets fixed.
+                  */}
+                  <button
+                    type="button"
+                    onClick={() => setReportOpen(true)}
+                    title="Report a problem with this item"
+                    className="flex items-center space-x-1.5 rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:border-rose-500/40 hover:text-rose-300 cursor-pointer"
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>Report</span>
                   </button>
                 </div>
               </div>
@@ -1612,6 +1636,18 @@ export const ExamEngine: React.FC<ExamEngineProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {reportOpen && currentQuestion && (
+        <ReportQuestionModal
+          question={currentQuestion}
+          mode={topicDrill ? 'by-topic' : 'by-area'}
+          subject={subject}
+          year={year}
+          month={month}
+          source={source}
+          onClose={() => setReportOpen(false)}
+        />
       )}
     </div>
   );

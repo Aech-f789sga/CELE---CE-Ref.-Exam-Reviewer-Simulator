@@ -1109,6 +1109,208 @@ export async function deleteAdminMessage(id: string): Promise<boolean> {
 }
 
 /* ==========================================================================
+   ITEM REPORTS — a reviewee flagging a defective question from inside a sitting
+   ==========================================================================
+
+   A drill or a board paper is where a bad item is discovered: the keyed letter
+   contradicts the arithmetic, the figure belongs to another situation, the stem
+   is missing a value. Until now the only route out was the general "Message
+   Admin" form, which asks the learner to retype the item from memory and gives
+   the admin nothing to search on.
+
+   So a report carries a **snapshot** of the item as it was on screen — text,
+   options, the keyed answer, figure caption, booklet page — rather than a
+   reference to be looked up later. The bank is edited constantly; a report that
+   says "item 41 is broken" stops meaning anything the moment the numbering
+   shifts, while a snapshot keeps saying exactly what the learner saw.
+
+   Writes go to Firestore with a local mirror, the same shape as `userMessages`:
+   if the write is refused (rules not published, or offline) the report is still
+   kept on the device and shows up in the admin panel on that device rather than
+   being lost to a console error.
+   ========================================================================== */
+
+export type QuestionReportReason =
+  | 'Wrong answer key'
+  | 'Unclear or mistyped wording'
+  | 'Figure is wrong or missing'
+  | 'Solution or formula error'
+  | 'Other';
+
+/** The reasons, in the order the dialog offers them. */
+export const QUESTION_REPORT_REASONS: QuestionReportReason[] = [
+  'Wrong answer key',
+  'Unclear or mistyped wording',
+  'Figure is wrong or missing',
+  'Solution or formula error',
+  'Other',
+];
+
+export type QuestionReportStatus = 'open' | 'reviewing' | 'fixed' | 'dismissed';
+
+export interface ReportedOption {
+  label: string;
+  text: string;
+}
+
+export interface QuestionReport {
+  id: string;
+
+  /* The item, as the learner saw it. */
+  questionId: string;
+  itemNumber: number;
+  questionText: string;
+  options: ReportedOption[];
+  correctAnswer: string;
+  figureCaption?: string;
+  pageNumber?: number;
+  category?: string;
+
+  /* Where they met it — a drill has topics, a paper has a sitting. */
+  mode: 'by-topic' | 'by-area';
+  subject: string;
+  year?: number;
+  month?: string;
+  source?: string;
+  topicId?: string;
+  topicName?: string;
+
+  /* What they said about it. */
+  reason: QuestionReportReason;
+  note: string;
+  reporterId?: string;
+  reporterName: string;
+  reporterEmail?: string;
+  createdAt: string;
+
+  /* The admin's side of the conversation. */
+  status: QuestionReportStatus;
+  adminNote?: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
+const LOCAL_REPORTS_KEY = 'ce_local_question_reports';
+
+/**
+ * Drops `undefined` members before a write.
+ *
+ * Firestore treats `undefined` as an unsupported field value rather than as
+ * "absent", so a single optional field left undefined — no figure caption, no
+ * booklet page — fails the whole `setDoc`. That failure is invisible from the
+ * learner's side, because the local mirror catches it and the dialog still
+ * says "Report filed": the report would live on one device forever and never
+ * reach the admin. Stripping the key is the fix; `null` is not a substitute,
+ * since it would store a real null the panel has to special-case.
+ */
+function withoutUndefined<T extends object>(value: T): T {
+  return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as T;
+}
+
+function readLocalReports(): QuestionReport[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LOCAL_REPORTS_KEY) || '[]');
+    return Array.isArray(raw) ? (raw as QuestionReport[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalReport(report: QuestionReport): void {
+  try {
+    const list = readLocalReports();
+    list.unshift(report);
+    localStorage.setItem(LOCAL_REPORTS_KEY, JSON.stringify(list.slice(0, 200)));
+  } catch {
+    /* Storage full or disabled: the Firestore write is the real record. */
+  }
+}
+
+/**
+ * Files a report. Returns the id either way — a learner should not be told the
+ * report failed because the network did, when the item is safely recorded.
+ */
+export async function submitQuestionReport(
+  report: Omit<QuestionReport, 'id' | 'createdAt' | 'status'>
+): Promise<string> {
+  const id = `rep-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const payload: QuestionReport = {
+    ...report,
+    id,
+    createdAt: new Date().toISOString(),
+    status: 'open',
+  };
+
+  try {
+    await setDoc(doc(db, 'questionReports', id), withoutUndefined(payload));
+    return id;
+  } catch (e) {
+    console.error('Failed to file the report in Firestore, keeping it locally:', e);
+    writeLocalReport(payload);
+    return id;
+  }
+}
+
+/**
+ * Every report, newest first (admin only).
+ *
+ * Local reports are merged in so an admin working on the same device still sees
+ * anything that failed to reach Firestore.
+ */
+export async function fetchQuestionReports(): Promise<QuestionReport[]> {
+  const local = readLocalReports();
+  try {
+    const snap = await getDocs(collection(db, 'questionReports'));
+    const list: QuestionReport[] = [];
+    snap.forEach((d) => {
+      const data = d.data() as QuestionReport;
+      if (data) list.push(data);
+    });
+    local.forEach((r) => {
+      if (!list.some((existing) => existing.id === r.id)) list.push(r);
+    });
+    return list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  } catch (e) {
+    console.error('Failed to load reports from Firestore:', e);
+    return local.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  }
+}
+
+/**
+ * Moves a report's status, and optionally records the admin's own note.
+ *
+ * `merge: true` rather than a full document write: the panel does not hold the
+ * whole report in the form, and rewriting it wholesale would overwrite fields
+ * another tab had already changed.
+ */
+export async function updateQuestionReport(
+  id: string,
+  patch: Partial<Pick<QuestionReport, 'status' | 'adminNote'>>,
+  reviewedBy?: string
+): Promise<boolean> {
+  const body = {
+    ...patch,
+    reviewedAt: new Date().toISOString(),
+    ...(reviewedBy ? { reviewedBy } : {}),
+  };
+
+  try {
+    await setDoc(doc(db, 'questionReports', id), withoutUndefined(body), { merge: true });
+    return true;
+  } catch (e) {
+    console.error('Failed to update the report in Firestore, patching locally:', e);
+    try {
+      const list = readLocalReports();
+      const next = list.map((r) => (r.id === id ? { ...r, ...body } : r));
+      localStorage.setItem(LOCAL_REPORTS_KEY, JSON.stringify(next));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+/* ==========================================================================
    LEADERBOARDS COMPUTATION (OVERALL ALL-AREAS & PER-AREA)
    ========================================================================== */
 

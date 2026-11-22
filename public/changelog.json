@@ -2,6 +2,25 @@
   "note": "Release notes shown in the update prompt and the What's new panel. Newest first. Edit this file only — src/data/changelog.ts imports it and re-fetches it from the network so a stale tab can name the build it is about to receive.",
   "releases": [
     {
+      "version": "1.8.0",
+      "date": "2026-11-22",
+      "title": "Report a defective item mid-exam",
+      "changes": [
+        {
+          "kind": "new",
+          "text": "Every item now has a Report button beside Flag, in the by-topic drills and in the Gillesania and Besavilla sittings for MSTC, HPGE and PSAD. Pick what is wrong — key, wording, figure, solution — and add a note if you want."
+        },
+        {
+          "kind": "new",
+          "text": "The report travels with the item as you saw it: stem, choices, figure caption and booklet page, so the admin can find it without asking you to retype anything."
+        },
+        {
+          "kind": "improved",
+          "text": "Admins get a Question Reports queue that keeps the count of items still open, and can mark a report reviewing, fixed or dismissed with a note of what changed."
+        }
+      ]
+    },
+    {
       "version": "1.7.0",
       "date": "2026-11-22",
       "title": "Fluid Mechanics drills are now scored",

@@ -149,6 +149,27 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
     }
 
+    // Item reports filed from inside a sitting or a drill.
+    //
+    // A signed-in reviewee may file one, and may file nothing else: the shape
+    // is checked here so a tampered client cannot use the collection as free
+    // storage, and `status` must start at 'open' so nobody can file a report
+    // that is already marked fixed. Reading and moving the status is the
+    // admin's alone — a reporter does not need to see other people's reports,
+    // and the panel is the only place the decision is made.
+    match /questionReports/{reportId} {
+      allow create: if isSignedIn() &&
+                    isValidId(reportId) &&
+                    incoming().questionId is string && incoming().questionId.size() <= 128 &&
+                    incoming().reporterName is string && incoming().reporterName.size() <= 128 &&
+                    incoming().note is string && incoming().note.size() <= 2000 &&
+                    incoming().questionText is string && incoming().questionText.size() <= 20000 &&
+                    incoming().reason is string && incoming().reason.size() <= 64 &&
+                    incoming().createdAt is string &&
+                    incoming().status == 'open';
+      allow read, update, delete: if isAdmin();
+    }
+
     // User online presence and active feature tracking
     match /userPresence/{userId} {
       allow read: if true;
