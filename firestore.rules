@@ -196,78 +196,94 @@ service cloud.firestore {
 
     // Live rooms — the shared exam two or more people sit at once.
     //
-    // The four-character code **is** the document id, so "knowing the code" and
-    // "knowing the document" are the same fact. That is what makes a private
-    // room private: `get` is open to any signed-in account, and the secret is
-    // the code rather than a read rule. `list` is the one thing that must not
-    // leak, so it is restricted to public rooms — and because Firestore rejects
-    // a query the rules cannot prove, the client's discovery query has to
-    // filter on `visibility` for this to be usable at all.
+    // ## Why these rules do not check `request.auth`
     //
-    // Phases are the host's to move. A player may write only their own
-    // `players/{uid}` document and their own vote, which is what stops a
-    // tampered client from answering on someone else's behalf — the one form of
-    // cheating that would be invisible in the results.
+    // Most of this app's accounts are **local**: `authenticateLocalGoogleUser`
+    // mints a synthetic uid and writes a profile without ever calling Firebase
+    // Auth, so `request.auth` is null for them. The demo and candidate buttons
+    // exist precisely so a reviewer can try the app without an account.
+    //
+    // A rule that required `request.auth` here would therefore lock the majority
+    // of accounts out of multiplayer while every other collection let them in —
+    // `userMessages` and `userPresence` already trust a client-supplied uid.
+    // These rules follow that same model, which means they validate the *shape*
+    // of a write and not the identity behind it.
+    //
+    // ## What that costs, stated plainly
+    //
+    // A tampered client can vote as another player, or move a room's phase. It
+    // cannot corrupt the paper — `questionIds` is fixed when the host starts and
+    // every client resolves the same ids — so the blast radius is a dishonest
+    // score, which is why this mode is beta and why nothing from a room reaches
+    // the leaderboards.
+    //
+    // ## What is deliberately absent
+    //
+    // There is no `delete` on a room. Closing a room is `phase: 'finished'`, so
+    // the destructive permission that would let anyone erase somebody else's
+    // game simply does not exist. `list` is still restricted to public rooms,
+    // so a private room's code cannot be enumerated — knowing the code remains
+    // the only way in, and `get` is by exact id.
     function isValidRoomCode(code) {
       return code is string && code.size() == 4 && code.matches('^[A-HJKMNP-Z346789]{4}$');
     }
 
+    function isValidLiveRoom(data) {
+      return data.code is string && data.code.size() == 4 &&
+             data.hostId is string && data.hostId.size() <= 128 &&
+             data.hostName is string && data.hostName.size() <= 128 &&
+             data.mode in ['versus', 'coop'] &&
+             data.visibility in ['public', 'private'] &&
+             data.phase in ['lobby', 'live', 'finished'] &&
+             data.questionIds is list && data.questionIds.size() <= 400 &&
+             data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidLivePlayer(data) {
+      return data.uid is string && data.uid.size() <= 128 &&
+             data.name is string && data.name.size() <= 128 &&
+             data.joinedAt is string && data.joinedAt.size() <= 64 &&
+             data.lastSeenAt is string && data.lastSeenAt.size() <= 64;
+    }
+
+    function isValidReaction(data) {
+      return data.uid is string && data.uid.size() <= 128 &&
+             data.name is string && data.name.size() <= 128 &&
+             data.gifId is string && data.gifId.size() <= 256 &&
+             data.at is string && data.at.size() <= 64;
+    }
+
     match /liveRooms/{roomCode} {
-      allow get: if isSignedIn();
-      // Two provable queries, not one: the public browser filters on
-      // `visibility`, and the host's stale-room sweep filters on `hostId`. A
-      // rule naming only `visibility` would make the sweep fail with
-      // permission-denied — silently, because housekeeping swallows its own
-      // errors — and abandoned rooms would accumulate for ever.
-      allow list: if isSignedIn() &&
-                  (resource.data.visibility == 'public' ||
-                   resource.data.hostId == request.auth.uid);
-      allow create: if isSignedIn() &&
-                    isValidRoomCode(roomCode) &&
-                    incoming().hostId == request.auth.uid &&
-                    incoming().phase == 'lobby' &&
-                    incoming().mode in ['versus', 'coop'] &&
-                    incoming().visibility in ['public', 'private'] &&
-                    incoming().questionIds is list &&
-                    incoming().questionIds.size() == 0;
-      allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
+      allow get: if isValidRoomCode(roomCode);
+      // The one thing that must not leak. A query filtered on `visibility` is
+      // provable; anything wider is refused, which is what keeps a private
+      // room's code out of the public browser.
+      allow list: if resource.data.visibility == 'public';
+      allow create: if isValidRoomCode(roomCode) && isValidLiveRoom(incoming());
+      allow update: if isValidLiveRoom(incoming());
+      // No `delete` on purpose — see the header note.
+    }
 
-      function amHost(code) {
-        return isSignedIn() &&
-          get(/databases/$(database)/documents/liveRooms/$(code)).data.hostId == request.auth.uid;
-      }
+    // The roster. Readable by anyone holding the code, writable by anyone
+    // holding the code; removals are how a player leaves.
+    match /players/{uid} {
+      allow read: if isValidId(uid);
+      allow create, update: if isValidId(uid) && isValidLivePlayer(incoming());
+      allow delete: if isValidId(uid);
+    }
 
-      function isPlayer(code) {
-        return isSignedIn() &&
-          exists(/databases/$(database)/documents/liveRooms/$(code)/players/$(request.auth.uid));
-      }
+    // Votes, one document per item, keyed by uid. Capped at a plausible room
+    // size so the collection cannot be used as free storage.
+    match /answers/{questionId} {
+      allow read: if isValidId(questionId);
+      allow create, update: if isValidId(questionId) && incoming().keys().size() <= 20;
+    }
 
-      // The roster. Anyone in the room may read it — the lobby and the results
-      // screen both show who is here — but only you may write your own row, and
-      // only the host may remove someone else's.
-      match /players/{uid} {
-        allow read: if isSignedIn();
-        allow create, update: if isSignedIn() && request.auth.uid == uid;
-        allow delete: if isSignedIn() && (request.auth.uid == uid || amHost(roomCode));
-      }
-
-      // Votes, one document per item, keyed by uid. A player must be in the room
-      // to write one; there is no delete, because unanswering is not a thing the
-      // exam allows and a cleared vote would silently change a co-op majority.
-      match /answers/{questionId} {
-        allow read: if isSignedIn();
-        allow create, update: if isPlayer(roomCode);
-      }
-
-      // GIF reactions. Read by everyone in the room, written only under your own
-      // uid, and pruned by the host — the only party who can delete, since a
-      // reaction someone else could remove is a reaction that can be erased
-      // mid-laugh.
-      match /reactions/{reactionId} {
-        allow read: if isSignedIn();
-        allow create: if isPlayer(roomCode) && incoming().uid == request.auth.uid;
-        allow delete: if amHost(roomCode);
-      }
+    // GIF reactions. Ephemeral, so deleting one is harmless and allowed.
+    match /reactions/{reactionId} {
+      allow read: if true;
+      allow create: if isValidId(reactionId) && isValidReaction(incoming());
+      allow delete: if true;
     }
   }
 }

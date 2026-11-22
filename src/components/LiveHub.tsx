@@ -31,7 +31,6 @@ import {
   createRoom,
   joinRoom,
   listPublicRooms,
-  pruneMyStaleRooms,
   RoomError,
 } from '../services/liveRooms';
 import {
@@ -78,7 +77,7 @@ function defaultConfig(): RoomConfig {
 }
 
 export function LiveHub({ onJoined, onExit }: Props) {
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const [tab, setTab] = useState<'create' | 'join'>('create');
 
   const [mode, setMode] = useState<RoomMode>('coop');
@@ -92,7 +91,16 @@ export function LiveHub({ onJoined, onExit }: Props) {
   const [publicRooms, setPublicRooms] = useState<LiveRoom[]>([]);
   const [loadingRooms, setLoadingRooms] = useState(false);
 
-  const uid = user?.uid;
+  /*
+   * Two kinds of session exist in this app, and only one of them has a Firebase
+   * `user`. The demo and candidate sign-ins (`authenticateLocalGoogleUser`)
+   * mint a synthetic uid and write a profile — to Firestore and to
+   * localStorage — without ever calling Firebase Auth, so `user` stays null
+   * while `profile` is real. Gating on `user` alone therefore locks those
+   * accounts out of multiplayer while every other screen treats them as signed
+   * in. `profile.uid` is the identity the rest of the app uses; take it first.
+   */
+  const uid = user?.uid ?? profile?.uid;
   const name = profile?.displayName || user?.displayName || user?.email || 'Reviewee';
 
   const topics = useMemo(() => playableTopics(), []);
@@ -111,11 +119,6 @@ export function LiveHub({ onJoined, onExit }: Props) {
     if (tab !== 'join') return;
     void loadPublic();
   }, [tab]);
-
-  useEffect(() => {
-    // Opportunistic housekeeping, once per mount. See `pruneMyStaleRooms`.
-    if (uid) void pruneMyStaleRooms(uid);
-  }, [uid]);
 
   const patch = (next: Partial<RoomConfig>) => setConfig((cur) => ({ ...cur, ...next }));
 
@@ -173,6 +176,21 @@ export function LiveHub({ onJoined, onExit }: Props) {
       setBusy(false);
     }
   };
+
+  /*
+   * A session takes a moment to restore, and during that moment `user` and
+   * `profile` are both null. Rendering the sign-in card then means a signed-in
+   * learner sees "Sign in to play" on every reload — which reads as the feature
+   * being broken rather than as the page still loading.
+   */
+  if (authLoading) {
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center gap-2 text-[12.5px] text-slate-400">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Checking your session…
+      </div>
+    );
+  }
 
   if (!uid) {
     return (

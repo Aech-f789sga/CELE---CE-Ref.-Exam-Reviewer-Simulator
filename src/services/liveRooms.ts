@@ -43,8 +43,8 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import {
+  isRoomStale,
   makeRoomCode,
-  ROOM_STALE_MS,
   type AnswerVotes,
   type LivePlayer,
   type LiveReaction,
@@ -186,6 +186,12 @@ export async function joinRoom(
 /**
  * Remove a player. The host leaving the lobby closes the room.
  *
+ * Closing is `phase: 'finished'` rather than a delete: the rules grant no
+ * delete on a room, because without `request.auth` there is no way to prove who
+ * owns one and an unconditional delete would let any client erase anyone's
+ * game. Marking it finished achieves the same thing — the room drops out of the
+ * public list, which filters on `phase` — without the destructive permission.
+ *
  * A host who leaves mid-game does **not** close it: the paper and the clock are
  * already on the room document, so the remaining players can finish without
  * them. Ending everyone's sitting because one tab closed would be worse than
@@ -193,7 +199,10 @@ export async function joinRoom(
  */
 export async function leaveRoom(code: string, uid: string, isHost: boolean, phase: string): Promise<void> {
   if (isHost && phase === 'lobby') {
-    await deleteDoc(roomRef(code));
+    await updateDoc(roomRef(code), {
+      phase: 'finished',
+      finishedAt: new Date().toISOString(),
+    });
     return;
   }
   await deleteDoc(playerRef(code, uid));
@@ -353,6 +362,10 @@ export async function sendReaction(
  * terms of it — Firestore will not run a `list` the rules cannot prove, so a
  * query that omitted this filter would be rejected outright rather than
  * returning a subset.
+ *
+ * Stale rooms are dropped here rather than swept server-side. A room whose host
+ * closed the tab is still `phase: 'lobby'` and still public, so without this it
+ * would sit in the list for ever advertising a game nobody is in.
  */
 export async function listPublicRooms(): Promise<LiveRoom[]> {
   const q = query(
@@ -362,39 +375,27 @@ export async function listPublicRooms(): Promise<LiveRoom[]> {
     limit(20)
   );
   const snap = await getDocs(q);
+  const now = Date.now();
   const rooms: LiveRoom[] = [];
   snap.forEach((d) => {
     const room = asRoom(d.id, d.data());
-    if (room) rooms.push(room);
+    if (room && !isRoomStale(room, now)) rooms.push(room);
   });
   return rooms.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 }
 
 /**
- * Delete rooms this browser hosts that nobody has touched for a while.
+ * Deliberately removed: sweeping stale rooms by host.
  *
- * Called opportunistically when the hub opens, never on a timer. A room that is
- * stale was abandoned — a closed tab leaves no farewell — and the host's own
- * client is the only one allowed to remove it, so this is the only place the
- * cleanup can happen at all.
+ * That sweep queried `where('hostId', '==', uid)`, which only worked while the
+ * rules could prove the query — i.e. while they required `request.auth`. Now
+ * that they trust a client-supplied identity, the query is unprovable and would
+ * be refused, and the alternative (a delete permission with no ownership check)
+ * would let any client erase anyone's room.
+ *
+ * So abandoned rooms are simply not cleaned up. They are invisible: the public
+ * browser drops anything past `ROOM_STALE_MS`, and a private room is only
+ * reachable by a code nobody is typing any more. A finished room's host closes
+ * it on the way out; a host who closes the tab leaves a document behind, which
+ * is a smaller problem than a permission that can destroy other people's games.
  */
-export async function pruneMyStaleRooms(uid: string): Promise<void> {
-  try {
-    const q = query(collection(db, ROOMS), where('hostId', '==', uid), limit(20));
-    const snap = await getDocs(q);
-    const now = Date.now();
-    await Promise.all(
-      snap.docs.map(async (d) => {
-        const room = asRoom(d.id, d.data());
-        if (!room) return;
-        const anchor = Date.parse(room.finishedAt ?? room.startedAt ?? room.createdAt);
-        if (Number.isNaN(anchor) || now - anchor > ROOM_STALE_MS) {
-          await deleteDoc(d.ref);
-        }
-      })
-    );
-  } catch (e) {
-    // Housekeeping must never block the screen that triggered it.
-    console.warn('Stale room cleanup skipped:', e);
-  }
-}
