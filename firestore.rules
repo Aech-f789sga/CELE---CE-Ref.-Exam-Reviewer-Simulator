@@ -262,28 +262,34 @@ service cloud.firestore {
       allow create: if isValidRoomCode(roomCode) && isValidLiveRoom(incoming());
       allow update: if isValidLiveRoom(incoming());
       // No `delete` on purpose — see the header note.
-    }
 
-    // The roster. Readable by anyone holding the code, writable by anyone
-    // holding the code; removals are how a player leaves.
-    match /players/{uid} {
-      allow read: if isValidId(uid);
-      allow create, update: if isValidId(uid) && isValidLivePlayer(incoming());
-      allow delete: if isValidId(uid);
-    }
+      // The three subcollections below MUST stay inside this block. Declared as
+      // siblings they would match `/players/{uid}` at the root instead of
+      // `/liveRooms/{code}/players/{uid}`, and every write would fall through to
+      // the catch-all deny — which is exactly what happened the first time this
+      // block was written: rooms created fine and then failed on the roster.
 
-    // Votes, one document per item, keyed by uid. Capped at a plausible room
-    // size so the collection cannot be used as free storage.
-    match /answers/{questionId} {
-      allow read: if isValidId(questionId);
-      allow create, update: if isValidId(questionId) && incoming().keys().size() <= 20;
-    }
+      // The roster. Readable by anyone holding the code, writable by anyone
+      // holding the code; removals are how a player leaves.
+      match /players/{uid} {
+        allow read: if isValidId(uid);
+        allow create, update: if isValidId(uid) && isValidLivePlayer(incoming());
+        allow delete: if isValidId(uid);
+      }
 
-    // GIF reactions. Ephemeral, so deleting one is harmless and allowed.
-    match /reactions/{reactionId} {
-      allow read: if true;
-      allow create: if isValidId(reactionId) && isValidReaction(incoming());
-      allow delete: if true;
+      // Votes, one document per item, keyed by uid. Capped at a plausible room
+      // size so the collection cannot be used as free storage.
+      match /answers/{questionId} {
+        allow read: if isValidId(questionId);
+        allow create, update: if isValidId(questionId) && incoming().keys().size() <= 20;
+      }
+
+      // GIF reactions. Ephemeral, so deleting one is harmless and allowed.
+      match /reactions/{reactionId} {
+        allow read: if true;
+        allow create: if isValidId(reactionId) && isValidReaction(incoming());
+        allow delete: if true;
+      }
     }
   }
 }
