@@ -11,6 +11,7 @@ import {
   LogIn,
   LogOut,
   User,
+  Users,
   ChevronDown,
   Trophy,
   Megaphone,
@@ -30,8 +31,8 @@ import { Cube3D } from './Cube3D';
 import { PWAInstallButton } from './PWAInstallButton';
 
 interface NavbarProps {
-  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards';
-  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards') => void;
+  currentTab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards' | 'live';
+  setCurrentTab: (tab: 'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards' | 'live') => void;
   activeSubject: SubjectArea;
   onSubjectChange?: (subject: SubjectArea) => void;
   isExamRunning: boolean;
@@ -163,6 +164,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>Exam Portal</span>
+                </button>
+
+                <button
+                  data-tour="tab-live"
+                  data-active={currentTab === 'live'}
+                  onClick={() => setCurrentTab('live')}
+                  title="Multiplayer — sit a paper with other people"
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+                    currentTab === 'live' ? 'shadow-md font-semibold' : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: currentTab === 'live' ? themeConfig.accent : 'transparent',
+                    color: currentTab === 'live' ? themeConfig.accentText : themeConfig.textSecondary,
+                  }}
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Multiplayer</span>
+                  {/*
+                    Beta, and said so in the masthead rather than buried in a
+                    tooltip. The mode is host-authoritative and has no server to
+                    validate a score, so people should know what they are using
+                    before they invite someone into a room.
+                  */}
+                  <span className="hidden sm:inline rounded border border-amber-500/50 bg-amber-500/15 px-1 py-px text-[8px] font-black uppercase tracking-wider text-amber-300">
+                    Beta
+                  </span>
                 </button>
 
                 <button

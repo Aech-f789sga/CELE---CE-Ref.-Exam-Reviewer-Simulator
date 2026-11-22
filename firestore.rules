@@ -193,5 +193,74 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Live rooms — the shared exam two or more people sit at once.
+    //
+    // The four-character code **is** the document id, so "knowing the code" and
+    // "knowing the document" are the same fact. That is what makes a private
+    // room private: `get` is open to any signed-in account, and the secret is
+    // the code rather than a read rule. `list` is the one thing that must not
+    // leak, so it is restricted to public rooms — and because Firestore rejects
+    // a query the rules cannot prove, the client's discovery query has to
+    // filter on `visibility` for this to be usable at all.
+    //
+    // Phases are the host's to move. A player may write only their own
+    // `players/{uid}` document and their own vote, which is what stops a
+    // tampered client from answering on someone else's behalf — the one form of
+    // cheating that would be invisible in the results.
+    function isValidRoomCode(code) {
+      return code is string && code.size() == 4 && code.matches('^[A-HJKMNP-Z346789]{4}$');
+    }
+
+    match /liveRooms/{roomCode} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && resource.data.visibility == 'public';
+      allow create: if isSignedIn() &&
+                    isValidRoomCode(roomCode) &&
+                    incoming().hostId == request.auth.uid &&
+                    incoming().phase == 'lobby' &&
+                    incoming().mode in ['versus', 'coop'] &&
+                    incoming().visibility in ['public', 'private'] &&
+                    incoming().questionIds is list &&
+                    incoming().questionIds.size() == 0;
+      allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
+
+      function amHost(code) {
+        return isSignedIn() &&
+          get(/databases/$(database)/documents/liveRooms/$(code)).data.hostId == request.auth.uid;
+      }
+
+      function isPlayer(code) {
+        return isSignedIn() &&
+          exists(/databases/$(database)/documents/liveRooms/$(code)/players/$(request.auth.uid));
+      }
+
+      // The roster. Anyone in the room may read it — the lobby and the results
+      // screen both show who is here — but only you may write your own row, and
+      // only the host may remove someone else's.
+      match /players/{uid} {
+        allow read: if isSignedIn();
+        allow create, update: if isSignedIn() && request.auth.uid == uid;
+        allow delete: if isSignedIn() && (request.auth.uid == uid || amHost(roomCode));
+      }
+
+      // Votes, one document per item, keyed by uid. A player must be in the room
+      // to write one; there is no delete, because unanswering is not a thing the
+      // exam allows and a cleared vote would silently change a co-op majority.
+      match /answers/{questionId} {
+        allow read: if isSignedIn();
+        allow create, update: if isPlayer(roomCode);
+      }
+
+      // GIF reactions. Read by everyone in the room, written only under your own
+      // uid, and pruned by the host — the only party who can delete, since a
+      // reaction someone else could remove is a reaction that can be erased
+      // mid-laugh.
+      match /reactions/{reactionId} {
+        allow read: if isSignedIn();
+        allow create: if isPlayer(roomCode) && incoming().uid == request.auth.uid;
+        allow delete: if amHost(roomCode);
+      }
+    }
   }
 }

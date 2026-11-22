@@ -2,6 +2,37 @@
   "note": "Release notes shown in the update prompt and the What's new panel. Newest first. Edit this file only — src/data/changelog.ts imports it and re-fetches it from the network so a stale tab can name the build it is about to receive.",
   "releases": [
     {
+      "version": "1.9.0",
+      "date": "2026-11-22",
+      "title": "Multiplayer (beta) — sit a paper with other people",
+      "changes": [
+        {
+          "kind": "new",
+          "text": "Multiplayer is in beta. Rooms are run by the host's browser rather than a server, so a result is practice, not a record — nothing from a room reaches the leaderboards."
+        },
+        {
+          "kind": "new",
+          "text": "A Multiplayer section of its own. Host a room and get a four-character code, or browse the public rooms already waiting. Codes never use 0, O, 1, I, L, 5 or 2, so one read out loud cannot be mistyped."
+        },
+        {
+          "kind": "new",
+          "text": "Co-op: everyone shares one paper and scatters across the items. A choice needs the most picks to become the team's answer — an even split leaves the item unanswered rather than guessing."
+        },
+        {
+          "kind": "new",
+          "text": "Versus: the same paper, separate scores. The palette marks the items your opponent has already answered, without revealing what they picked."
+        },
+        {
+          "kind": "new",
+          "text": "Surprise me randomises a drill's topics and items, or picks a paper at random within the area you chose. Physics is left out of multiplayer until its key is printed, because an unkeyed paper cannot be scored."
+        },
+        {
+          "kind": "new",
+          "text": "Results show everyone's profile and score, and in Co-op a celebration banded by the team's percentage. Reaction GIFs — cats and dogs first — can be sent live and appear above the sender's card."
+        }
+      ]
+    },
+    {
       "version": "1.8.0",
       "date": "2026-11-22",
       "title": "Report a defective item mid-exam",

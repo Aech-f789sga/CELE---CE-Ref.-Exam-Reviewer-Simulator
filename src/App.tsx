@@ -60,6 +60,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { Scene3D } from './components/Scene3D';
 import { TerrariumOrb3D } from './components/TerrariumOrb3D';
 import { Matilda3D } from './components/Matilda3D';
+import { LiveSession as LiveRoomSession } from './components/LiveSession';
 import { ParticleSystem3D } from './components/ParticleSystem3D';
 import { SubmergedEra3D } from './components/SubmergedEra3D';
 import { UnderwaveBackdrop } from './components/UnderwaveBackdrop';
@@ -126,13 +127,20 @@ function CustomBgLayer() {
 
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<
-    'setup' | 'leaderboard' | 'announcements' | 'performance' | 'admin' | 'scratchpad' | 'flashcards'
+    | 'setup'
+    | 'leaderboard'
+    | 'announcements'
+    | 'performance'
+    | 'admin'
+    | 'scratchpad'
+    | 'flashcards'
+    | 'live'
   >(() => {
     try {
       const saved = localStorage.getItem('ce_board_current_tab');
       if (
         saved &&
-        ['setup', 'leaderboard', 'announcements', 'performance', 'admin', 'scratchpad', 'flashcards'].includes(saved)
+        ['setup', 'leaderboard', 'announcements', 'performance', 'admin', 'scratchpad', 'flashcards', 'live'].includes(saved)
       ) {
         return saved as any;
       }
@@ -215,6 +223,7 @@ function MainApp() {
    */
   const [changelogOpen, setChangelogOpen] = useState(false);
   const [hasUnseenChanges, setHasUnseenChanges] = useState(() => hasUnseenRelease());
+
   const openChangelog = useCallback(() => {
     setChangelogOpen(true);
     setHasUnseenChanges(false);
@@ -906,8 +915,15 @@ function MainApp() {
         )}
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {/*
+            Multiplayer is its own section, not a corner of the exam portal: a
+            room is a place with other people in it, and its paper runs on its
+            own clock rather than the portal's selected paper.
+          */}
+          {currentTab === 'live' && <LiveRoomSession onExit={() => setCurrentTab('setup')} />}
+
           {/* VIEW 1: Active Exam Engine */}
-          {isExamRunning && (
+          {currentTab !== 'live' && isExamRunning && (
             <ExamEngine
               subject={selectedSubject}
               year={selectedYear}
@@ -930,7 +946,7 @@ function MainApp() {
           )}
 
           {/* VIEW 2: Exam Results */}
-          {!isExamRunning && isExamFinished && (
+          {currentTab !== 'live' && !isExamRunning && isExamFinished && (
             <ExamResults
               subject={selectedSubject}
               year={selectedYear}
@@ -948,7 +964,7 @@ function MainApp() {
           )}
 
           {/* VIEW 3: Standard Navigation Views */}
-          {!isExamRunning && !isExamFinished && (
+          {currentTab !== 'live' && !isExamRunning && !isExamFinished && (
             <>
               {/* Optional Top Announcement Alert Banner on Exam Portal */}
               {currentTab === 'setup' && latestAnnouncement && (
