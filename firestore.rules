@@ -214,7 +214,14 @@ service cloud.firestore {
 
     match /liveRooms/{roomCode} {
       allow get: if isSignedIn();
-      allow list: if isSignedIn() && resource.data.visibility == 'public';
+      // Two provable queries, not one: the public browser filters on
+      // `visibility`, and the host's stale-room sweep filters on `hostId`. A
+      // rule naming only `visibility` would make the sweep fail with
+      // permission-denied — silently, because housekeeping swallows its own
+      // errors — and abandoned rooms would accumulate for ever.
+      allow list: if isSignedIn() &&
+                  (resource.data.visibility == 'public' ||
+                   resource.data.hostId == request.auth.uid);
       allow create: if isSignedIn() &&
                     isValidRoomCode(roomCode) &&
                     incoming().hostId == request.auth.uid &&
