@@ -8,11 +8,14 @@
  *
  * ## Key status
  *
- * No answer key has been supplied for this booklet, so **every** item is
- * `keyPending` and the UI must not score it. The arithmetic that keeps a
- * pending item out of a score, a pass mark and the leaderboard lives in
- * `grading.ts`; `keyPending` is the only switch, and it is set here once per
- * item by the factory below.
+ * Keyed. The booklet's own printed key — "[FLUID MECHANICS] / ANSWER KEY", one
+ * page, items 1–148 in five columns — is encoded in `FLUID_KEY` below, indexed
+ * by item number. Every item is therefore scorable and nothing in this module
+ * sets `keyPending`.
+ *
+ * The key is letters only; the booklet prints no worked solutions, so
+ * `solution` says exactly that rather than inventing a derivation for an answer
+ * we only know the letter of.
  *
  * ## Sections
  *
@@ -42,6 +45,36 @@
  * no crop simply renders without a figure.
  */
 import type { TopicQuestion } from './topicBanks';
+
+/**
+ * Printed key, items 1–148. Index is `number - 1`.
+ *
+ * Transcribed from the booklet's single-page answer key, which lays the 148
+ * answers out in five columns of ten. Ten per line here so the array lines up
+ * with the printed rows and can be diffed against a scan by eye — the last
+ * block of the page carries only 141–148 in its fifth column, which is why the
+ * final line is short.
+ *
+ * The booklet prints no worked solutions, so this is the whole of the evidence
+ * for an answer — the letters are the key, not a summary of one.
+ */
+export const FLUID_KEY: string[] = [
+  'B', 'A', 'A', 'C', 'D', 'D', 'B', 'A', 'A', 'C',
+  'C', 'D', 'D', 'B', 'D', 'C', 'A', 'D', 'A', 'A',
+  'D', 'A', 'C', 'B', 'A', 'B', 'A', 'C', 'C', 'D',
+  'A', 'C', 'B', 'C', 'B', 'C', 'D', 'C', 'B', 'C',
+  'A', 'D', 'D', 'A', 'D', 'D', 'D', 'B', 'C', 'C',
+  'B', 'B', 'A', 'B', 'C', 'B', 'A', 'B', 'A', 'A',
+  'B', 'A', 'B', 'A', 'C', 'A', 'A', 'A', 'C', 'B',
+  'B', 'D', 'B', 'C', 'B', 'A', 'A', 'D', 'C', 'A',
+  'B', 'A', 'D', 'C', 'C', 'B', 'D', 'B', 'D', 'B',
+  'A', 'C', 'C', 'B', 'C', 'D', 'B', 'A', 'A', 'B',
+  'A', 'B', 'D', 'D', 'A', 'D', 'B', 'B', 'A', 'B',
+  'B', 'A', 'A', 'B', 'A', 'A', 'B', 'B', 'B', 'D',
+  'C', 'D', 'A', 'A', 'B', 'C', 'D', 'D', 'A', 'B',
+  'A', 'B', 'A', 'D', 'B', 'D', 'B', 'A', 'D', 'B',
+  'A', 'C', 'C', 'A', 'A', 'B', 'B', 'A',
+];
 
 /** Shared wording for each printed "Situation N". */
 const SITUATIONS: Record<number, string> = {
@@ -129,16 +162,19 @@ function makeFluidItem(topicId: string, category: string) {
         : undefined,
       figureCaption: extra.caption ?? (extra.figure ? `Item ${number}` : undefined),
       options: opts.map((t, i) => ({ label: 'ABCD'[i] as 'A', text: t })),
-      correctAnswer: 'A',
-      keyPending: true,
+      /*
+       * `FLUID_KEY` is complete for 1–148. A new item outside that range has no
+       * key, and silently inheriting the `'A'` fallback would score it wrongly —
+       * extend the array with the printed letter first.
+       */
+      correctAnswer: (FLUID_KEY[number - 1] ?? 'A') as 'A' | 'B' | 'C' | 'D',
       topicId,
       situation,
       situationText: shared || undefined,
       solution: {
-        summary: 'No printed key supplied for this booklet yet.',
+        summary: 'Printed key only — this booklet carries no worked solutions.',
         steps: [],
-        finalAnswer: '',
-        note: 'Answer key pending — this item is not scored.',
+        finalAnswer: FLUID_KEY[number - 1] ?? '',
       },
     };
   };

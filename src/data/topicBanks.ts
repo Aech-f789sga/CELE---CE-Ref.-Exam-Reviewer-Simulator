@@ -17,14 +17,15 @@
  *                   three Statics topics are scored. It carries letters only,
  *                   not worked solutions.
  *   Fluid Mech .... same series, "[FLUID MECHANICS]" practice set, 148 items
- *                   across nine sections. **No answer key yet**, so it carries
- *                   the `keyPending` treatment: the UI refuses to score rather
- *                   than marking every answer wrong. The arithmetic for that
- *                   lives in `grading.ts`; the flag is the only switch.
+ *                   across nine sections. Keyed: the printed answer key
+ *                   (items 1–148) is encoded in `topicBanksFluid.ts`, so all
+ *                   nine Fluid topics are scored. Letters only, as with Statics.
  *   Physics ....... same series, "[PHYSICS]" practice set, 90 items across eight
  *                   sections, ending with a printed "--- END ---". **No answer
- *                   key yet** either, so it takes the same `keyPending`
- *                   treatment as Fluid Mechanics.
+ *                   key yet**, so it carries the `keyPending` treatment: the UI
+ *                   refuses to score rather than marking every answer wrong.
+ *                   The arithmetic for that lives in `grading.ts`; the flag is
+ *                   the only switch.
  *
  * ## Adaptive draws
  *
@@ -125,15 +126,15 @@ export const TOPICS: TopicDef[] = [
   { id: 'stat-forces', subject: 'Statics', name: 'Forces & Resultants', boardArea: 'PSAD' },
   { id: 'stat-equil', subject: 'Statics', name: 'Equilibrium', boardArea: 'PSAD' },
   { id: 'stat-frames', subject: 'Statics', name: 'Frames & Trusses', boardArea: 'PSAD' },
-  { id: 'fluid-properties', subject: 'FluidMech', name: 'Fluid Properties', boardArea: 'HPGE', keyPending: true },
-  { id: 'fluid-pressure', subject: 'FluidMech', name: 'Pressure', boardArea: 'HPGE', keyPending: true },
-  { id: 'hydro-plane', subject: 'FluidMech', name: 'Plane Surfaces', boardArea: 'HPGE', keyPending: true },
-  { id: 'hydro-curved', subject: 'FluidMech', name: 'Curved Surfaces', boardArea: 'HPGE', keyPending: true },
-  { id: 'buoyancy', subject: 'FluidMech', name: 'Buoyancy', boardArea: 'HPGE', keyPending: true },
-  { id: 'dam-analysis', subject: 'FluidMech', name: 'Dam Analysis', boardArea: 'HPGE', keyPending: true },
-  { id: 'metacenter', subject: 'FluidMech', name: 'Metacenter', boardArea: 'HPGE', keyPending: true },
-  { id: 'rigid-rectilinear', subject: 'FluidMech', name: 'Rigid Body — Linear', boardArea: 'HPGE', keyPending: true },
-  { id: 'rigid-rotational', subject: 'FluidMech', name: 'Rigid Body — Rotation', boardArea: 'HPGE', keyPending: true },
+  { id: 'fluid-properties', subject: 'FluidMech', name: 'Fluid Properties', boardArea: 'HPGE' },
+  { id: 'fluid-pressure', subject: 'FluidMech', name: 'Pressure', boardArea: 'HPGE' },
+  { id: 'hydro-plane', subject: 'FluidMech', name: 'Plane Surfaces', boardArea: 'HPGE' },
+  { id: 'hydro-curved', subject: 'FluidMech', name: 'Curved Surfaces', boardArea: 'HPGE' },
+  { id: 'buoyancy', subject: 'FluidMech', name: 'Buoyancy', boardArea: 'HPGE' },
+  { id: 'dam-analysis', subject: 'FluidMech', name: 'Dam Analysis', boardArea: 'HPGE' },
+  { id: 'metacenter', subject: 'FluidMech', name: 'Metacenter', boardArea: 'HPGE' },
+  { id: 'rigid-rectilinear', subject: 'FluidMech', name: 'Rigid Body — Linear', boardArea: 'HPGE' },
+  { id: 'rigid-rotational', subject: 'FluidMech', name: 'Rigid Body — Rotation', boardArea: 'HPGE' },
   { id: 'phys-rectilinear', subject: 'Physics', name: 'Rectilinear Motion', boardArea: 'MSTC', keyPending: true },
   { id: 'phys-projectile', subject: 'Physics', name: 'Projectile Motion', boardArea: 'MSTC', keyPending: true },
   { id: 'phys-rotational', subject: 'Physics', name: 'Rotational Motion', boardArea: 'MSTC', keyPending: true },
