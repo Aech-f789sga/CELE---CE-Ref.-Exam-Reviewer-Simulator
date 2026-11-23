@@ -45,7 +45,15 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,webmanifest}'],
+        // The second pattern is deliberately narrow. A bare `jpg` in the first
+        // list would sweep in `public/3d/**/*.jpg` — 359 MB of scene textures
+        // that are meant to load on demand — and turn a 33 MB precache into a
+        // 400 MB one. The Strength of Materials situation panels are the only
+        // JPEGs the app needs offline, and they are 75 files of about 30 kB.
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,webmanifest}',
+          'images/strength/*.jpg',
+        ],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [
           {

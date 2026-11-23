@@ -2,6 +2,25 @@
   "note": "Release notes shown in the update prompt and the What's new panel. Newest first. Edit this file only — src/data/changelog.ts imports it and re-fetches it from the network so a stale tab can name the build it is about to receive.",
   "releases": [
     {
+      "version": "1.10.0",
+      "date": "2026-11-23",
+      "title": "Strength of Materials joins the by-topic drills",
+      "changes": [
+        {
+          "kind": "content",
+          "text": "A sixth by-topic subject: Strength of Materials, 227 items across eight sections — simple stresses, axial deformation, torsion, shear and moment, flexure, combined loadings, thin-walled pressure vessels and Mohr's circle. Pick a section, or several, and sit as many items as you want from each."
+        },
+        {
+          "kind": "new",
+          "text": "The drawings come with it. Most of these situations read off a figure rather than the prose — a span, an eccentricity, a cross-section, an angle on a failure plane — so each one is reproduced as a panel cut from the scanned page, dimension labels and all."
+        },
+        {
+          "kind": "content",
+          "text": "No answer key yet. The booklet prints problems only, so every Strength item gets the same treatment Physics has: it opens, it takes your answers and your ratings, but nothing is marked right or wrong until the key is published. A sitting with no key does not record a score."
+        }
+      ]
+    },
+    {
       "version": "1.9.0",
       "date": "2026-11-22",
       "title": "Multiplayer (beta) — sit a paper with other people",

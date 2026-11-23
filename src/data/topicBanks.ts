@@ -26,6 +26,13 @@
  *                   refuses to score rather than marking every answer wrong.
  *                   The arithmetic for that lives in `grading.ts`; the flag is
  *                   the only switch.
+ *   Strength ...... same series, "[STRENGTH OF MATERIALS]" practice set, 227
+ *                   items across eight sections, ending with a printed
+ *                   "--- END ---". **No answer key yet**, so it carries the same
+ *                   `keyPending` treatment as Physics. Its situations are
+ *                   figure-heavy, so each drawing is reproduced as a panel cut
+ *                   from the scanned page; see `topicBanksStrength.ts` for why
+ *                   the panel is the whole block rather than a trimmed drawing.
  *
  * ## Adaptive draws
  *
@@ -72,8 +79,24 @@ import {
   PHYS_WORK_ENERGY,
   PHYS_MOMENTUM,
 } from './topicBanksPhysics';
+import {
+  STR_SIMPLE,
+  STR_DEFORM,
+  STR_TORSION,
+  STR_MOMENT,
+  STR_FLEXURAL,
+  STR_COMBINED,
+  STR_VESSEL,
+  STR_MOHR,
+} from './topicBanksStrength';
 
-export type TopicSubject = 'BasicMath' | 'Calculus' | 'Statics' | 'FluidMech' | 'Physics';
+export type TopicSubject =
+  | 'BasicMath'
+  | 'Calculus'
+  | 'Statics'
+  | 'FluidMech'
+  | 'Physics'
+  | 'Strength';
 
 export interface TopicSubjectMeta {
   id: TopicSubject;
@@ -94,6 +117,11 @@ export const TOPIC_SUBJECTS: TopicSubjectMeta[] = [
     id: 'Physics',
     name: 'Physics',
     blurb: 'Motion · Forces · Gravitation · Energy · Momentum',
+  },
+  {
+    id: 'Strength',
+    name: 'Strength of Materials',
+    blurb: 'Simple stresses · Deformation · Torsion · Shear & moment · Flexure',
   },
 ];
 
@@ -143,6 +171,14 @@ export const TOPICS: TopicDef[] = [
   { id: 'phys-gravitation', subject: 'Physics', name: "Newton's Law of Universal Gravitation", boardArea: 'MSTC', keyPending: true },
   { id: 'phys-work-energy', subject: 'Physics', name: 'Work, Energy, and Power', boardArea: 'MSTC', keyPending: true },
   { id: 'phys-momentum', subject: 'Physics', name: 'Impulse and Momentum', boardArea: 'MSTC', keyPending: true },
+  { id: 'str-simple', subject: 'Strength', name: 'Axial, Shear & Bearing Stress', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-deform', subject: 'Strength', name: 'Axial Deformation', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-torsion', subject: 'Strength', name: 'Torsion', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-shear-moment', subject: 'Strength', name: 'Shear & Moment Diagrams', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-flexural', subject: 'Strength', name: 'Flexural & Transverse Shear', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-combined', subject: 'Strength', name: 'Combined Loadings', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-vessel', subject: 'Strength', name: 'Thin-Walled Pressure Vessel', boardArea: 'PSAD', keyPending: true },
+  { id: 'str-mohr', subject: 'Strength', name: "Mohr's Circle", boardArea: 'PSAD', keyPending: true },
 ];
 
 const TOPIC_DEF_BY_ID = new Map(TOPICS.map((t) => [t.id, t]));
@@ -204,6 +240,14 @@ export const TOPIC_QUESTIONS: TopicQuestion[] = [
   ...PHYS_GRAVITATION,
   ...PHYS_WORK_ENERGY,
   ...PHYS_MOMENTUM,
+  ...STR_SIMPLE,
+  ...STR_DEFORM,
+  ...STR_TORSION,
+  ...STR_MOMENT,
+  ...STR_FLEXURAL,
+  ...STR_COMBINED,
+  ...STR_VESSEL,
+  ...STR_MOHR,
 ];
 
 /** How many items each topic currently holds. */
